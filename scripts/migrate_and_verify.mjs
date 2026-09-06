@@ -228,11 +228,18 @@ export function runMigration() {
     // Determine sizes array
     const distinctSizes = Array.from(new Set(productVariants.map(v => v.size)));
 
+    // Clean legacy brand text in descriptions to maintain pristine GulPash brand identity
+    let cleanDescription = p.body_html || `<p>${p.title}</p>`;
+    cleanDescription = cleanDescription
+      .replace(/Tawakal Closet/gi, 'GulPash')
+      .replace(/#TawakalCloset/gi, '#GulPash')
+      .replace(/Tawakal/gi, 'GulPash');
+
     const normalizedProduct = {
       id: productId,
       title: p.title,
       slug: p.handle,
-      description: p.body_html || `<p>${p.title}</p>`,
+      description: cleanDescription,
       shortDescription: `GulPash luxury ${catName} ensemble featuring intricate craftsmanship and signature details.`,
       sku: productVariants[0]?.sku || `GP-${p.id}`,
       categoryId: catObj.id,

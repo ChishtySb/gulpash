@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Heart, ShoppingBag, Truck, ShieldCheck, RefreshCw, 
   Play, Star, CheckCircle, ChevronRight, MessageCircle, 
@@ -60,6 +60,59 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   const discountPercent = product.compareAtPrice && product.compareAtPrice > product.price
     ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)
     : 0;
+
+  // Dynamic Product SEO & Structured Data (JSON-LD)
+  useEffect(() => {
+    const originalTitle = document.title;
+    document.title = `${product.title} | ${settings.brandName || 'GulPash'} Luxury Apparel`;
+
+    // Dynamic Canonical
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
+    if (!canonical) {
+      canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      document.head.appendChild(canonical);
+    }
+    canonical.href = `https://gulpash.pk/products/${product.slug}`;
+
+    // Dynamic JSON-LD structured data
+    const scriptId = 'product-jsonld-schema';
+    let scriptTag = document.getElementById(scriptId) as HTMLScriptElement;
+    if (!scriptTag) {
+      scriptTag = document.createElement('script');
+      scriptTag.id = scriptId;
+      scriptTag.type = 'application/ld+json';
+      document.head.appendChild(scriptTag);
+    }
+
+    const schemaData = {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": product.title,
+      "image": product.images,
+      "description": product.shortDescription || `${product.title} by GulPash`,
+      "sku": product.sku,
+      "brand": {
+        "@type": "Brand",
+        "name": settings.brandName || "GulPash"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": `https://gulpash.pk/products/${product.slug}`,
+        "priceCurrency": "PKR",
+        "price": product.price,
+        "availability": !product.isSoldOut ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+        "itemCondition": "https://schema.org/NewCondition"
+      }
+    };
+    scriptTag.textContent = JSON.stringify(schemaData);
+
+    return () => {
+      document.title = originalTitle;
+      const el = document.getElementById(scriptId);
+      if (el) el.remove();
+    };
+  }, [product, settings.brandName]);
 
   const handleAddToCart = () => {
     onAddToCart(product, selectedSize, quantity);
