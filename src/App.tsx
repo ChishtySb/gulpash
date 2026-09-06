@@ -26,11 +26,14 @@ import { WishlistModal } from './components/storefront/WishlistModal';
 import { PolicyPage } from './components/storefront/PolicyPage';
 
 import { AdminDashboard } from './components/admin/AdminDashboard';
+import { AdminAuthModal } from './components/admin/AdminAuthModal';
 
 export default function App() {
   // Navigation
   const [currentView, setCurrentView] = useState<'home' | 'shop' | 'product' | 'checkout' | 'admin' | 'policy'>('home');
   const [viewParam, setViewParam] = useState<string | undefined>(undefined);
+  const [isAdminAuthModalOpen, setIsAdminAuthModalOpen] = useState(false);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(StorageService.isAdminAuthenticated());
 
   // Global State
   const [currency, setCurrency] = useState<CurrencyCode>('PKR');
@@ -82,6 +85,10 @@ export default function App() {
       setCurrentView('checkout');
       setViewParam(undefined);
     } else if (view === 'admin') {
+      if (!StorageService.isAdminAuthenticated()) {
+        setIsAdminAuthModalOpen(true);
+        return;
+      }
       setCurrentView('admin');
       setViewParam(undefined);
     } else if (['shipping-policy', 'exchange-policy', 'privacy-policy', 'about'].includes(view)) {
@@ -332,6 +339,19 @@ export default function App() {
         onRemove={handleToggleWishlist}
         onSelectProduct={(slug) => navigate('product', slug)}
         currency={currency}
+      />
+
+      {/* 11. SUPABASE ADMIN AUTHENTICATION GUARD MODAL */}
+      <AdminAuthModal
+        isOpen={isAdminAuthModalOpen}
+        onSuccess={() => {
+          setIsAdminAuthModalOpen(false);
+          setIsAdminAuthenticated(true);
+          setCurrentView('admin');
+        }}
+        onCancel={() => {
+          setIsAdminAuthModalOpen(false);
+        }}
       />
 
     </div>

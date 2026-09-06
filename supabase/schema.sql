@@ -79,6 +79,24 @@ CREATE TABLE IF NOT EXISTS public.products (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 4b. PRODUCT VARIANTS
+CREATE TABLE IF NOT EXISTS public.product_variants (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  size TEXT NOT NULL,
+  color TEXT,
+  fabric TEXT,
+  sku TEXT UNIQUE NOT NULL,
+  price NUMERIC(10,2) NOT NULL,
+  compare_at_price NUMERIC(10,2),
+  available BOOLEAN DEFAULT TRUE,
+  stock INT NOT NULL DEFAULT 0,
+  position INT DEFAULT 1,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- 5. PRODUCT IMAGES
 CREATE TABLE IF NOT EXISTS public.product_images (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -98,6 +116,24 @@ CREATE TABLE IF NOT EXISTS public.product_videos (
   poster_url TEXT,
   is_active BOOLEAN DEFAULT TRUE,
   created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 6b. PRODUCT CATEGORIES (Junction)
+CREATE TABLE IF NOT EXISTS public.product_categories (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
+  category_id UUID REFERENCES public.categories(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(product_id, category_id)
+);
+
+-- 6c. PRODUCT COLLECTIONS (Junction)
+CREATE TABLE IF NOT EXISTS public.product_collections (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  product_id UUID REFERENCES public.products(id) ON DELETE CASCADE,
+  collection_id UUID REFERENCES public.collections(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(product_id, collection_id)
 );
 
 -- 7. ORDERS
@@ -190,6 +226,9 @@ ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.collections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.product_variants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.product_categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.product_collections ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.product_images ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.product_videos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
@@ -200,34 +239,84 @@ ALTER TABLE public.announcements ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
 
 -- Public can read visible catalog items
+DROP POLICY IF EXISTS "Public can view active categories" ON public.categories;
 CREATE POLICY "Public can view active categories" ON public.categories FOR SELECT USING (is_visible = true);
+DROP POLICY IF EXISTS "Public can view active collections" ON public.collections;
 CREATE POLICY "Public can view active collections" ON public.collections FOR SELECT USING (is_visible = true);
+DROP POLICY IF EXISTS "Public can view visible products" ON public.products;
 CREATE POLICY "Public can view visible products" ON public.products FOR SELECT USING (is_visible = true);
+DROP POLICY IF EXISTS "Public can view product variants" ON public.product_variants;
+CREATE POLICY "Public can view product variants" ON public.product_variants FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public can view product categories" ON public.product_categories;
+CREATE POLICY "Public can view product categories" ON public.product_categories FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public can view product collections" ON public.product_collections;
+CREATE POLICY "Public can view product collections" ON public.product_collections FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public can view product media" ON public.product_images;
 CREATE POLICY "Public can view product media" ON public.product_images FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public can view product videos" ON public.product_videos;
 CREATE POLICY "Public can view product videos" ON public.product_videos FOR SELECT USING (is_active = true);
+DROP POLICY IF EXISTS "Public can view approved reviews" ON public.reviews;
 CREATE POLICY "Public can view approved reviews" ON public.reviews FOR SELECT USING (is_approved = true);
+DROP POLICY IF EXISTS "Public can view active announcements" ON public.announcements;
 CREATE POLICY "Public can view active announcements" ON public.announcements FOR SELECT USING (is_active = true);
+DROP POLICY IF EXISTS "Public can view CMS data" ON public.homepage_cms;
 CREATE POLICY "Public can view CMS data" ON public.homepage_cms FOR SELECT USING (is_active = true);
+DROP POLICY IF EXISTS "Public can view public site settings" ON public.site_settings;
 CREATE POLICY "Public can view public site settings" ON public.site_settings FOR SELECT USING (true);
 
 -- Anyone can insert orders (for checkout)
+DROP POLICY IF EXISTS "Public can create orders" ON public.orders;
 CREATE POLICY "Public can create orders" ON public.orders FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Public can create order items" ON public.order_items;
 CREATE POLICY "Public can create order items" ON public.order_items FOR INSERT WITH CHECK (true);
 
 -- Admin has full read/write access to all tables
+DROP POLICY IF EXISTS "Admins full access to categories" ON public.categories;
 CREATE POLICY "Admins full access to categories" ON public.categories FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
+DROP POLICY IF EXISTS "Admins full access to collections" ON public.collections;
 CREATE POLICY "Admins full access to collections" ON public.collections FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
+DROP POLICY IF EXISTS "Admins full access to products" ON public.products;
 CREATE POLICY "Admins full access to products" ON public.products FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
+DROP POLICY IF EXISTS "Admins full access to product_variants" ON public.product_variants;
+CREATE POLICY "Admins full access to product_variants" ON public.product_variants FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
+DROP POLICY IF EXISTS "Admins full access to product_categories" ON public.product_categories;
+CREATE POLICY "Admins full access to product_categories" ON public.product_categories FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
+DROP POLICY IF EXISTS "Admins full access to product_collections" ON public.product_collections;
+CREATE POLICY "Admins full access to product_collections" ON public.product_collections FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
+DROP POLICY IF EXISTS "Admins full access to orders" ON public.orders;
 CREATE POLICY "Admins full access to orders" ON public.orders FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
+DROP POLICY IF EXISTS "Admins full access to CMS" ON public.homepage_cms;
 CREATE POLICY "Admins full access to CMS" ON public.homepage_cms FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
+DROP POLICY IF EXISTS "Admins full access to settings" ON public.site_settings;
 CREATE POLICY "Admins full access to settings" ON public.site_settings FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
 
 -- ==========================================================
--- STORAGE BUCKETS SETUP (Execute in Supabase Storage SQL)
+-- STORAGE BUCKETS SETUP & POLICIES
 -- ==========================================================
--- insert into storage.buckets (id, name, public) values ('product-images', 'product-images', true);
--- insert into storage.buckets (id, name, public) values ('product-videos', 'product-videos', true);
--- insert into storage.buckets (id, name, public) values ('hero-images', 'hero-images', true);
--- insert into storage.buckets (id, name, public) values ('hero-videos', 'hero-videos', true);
--- insert into storage.buckets (id, name, public) values ('category-images', 'category-images', true);
--- insert into storage.buckets (id, name, public) values ('site-assets', 'site-assets', true);
+INSERT INTO storage.buckets (id, name, public) VALUES ('product-images', 'product-images', true) ON CONFLICT (id) DO UPDATE SET public = true;
+INSERT INTO storage.buckets (id, name, public) VALUES ('hero-images', 'hero-images', true) ON CONFLICT (id) DO UPDATE SET public = true;
+INSERT INTO storage.buckets (id, name, public) VALUES ('hero-videos', 'hero-videos', true) ON CONFLICT (id) DO UPDATE SET public = true;
+INSERT INTO storage.buckets (id, name, public) VALUES ('category-images', 'category-images', true) ON CONFLICT (id) DO UPDATE SET public = true;
+INSERT INTO storage.buckets (id, name, public) VALUES ('site-assets', 'site-assets', true) ON CONFLICT (id) DO UPDATE SET public = true;
+
+-- Storage RLS Policies
+DROP POLICY IF EXISTS "Public can view storage objects" ON storage.objects;
+CREATE POLICY "Public can view storage objects" ON storage.objects FOR SELECT USING (bucket_id IN ('product-images', 'hero-images', 'hero-videos', 'category-images', 'site-assets'));
+
+DROP POLICY IF EXISTS "Admins can upload storage objects" ON storage.objects;
+CREATE POLICY "Admins can upload storage objects" ON storage.objects FOR INSERT WITH CHECK (
+  bucket_id IN ('product-images', 'hero-images', 'hero-videos', 'category-images', 'site-assets') 
+  AND auth.jwt() ->> 'email' LIKE '%@gulpash.pk'
+);
+
+DROP POLICY IF EXISTS "Admins can update storage objects" ON storage.objects;
+CREATE POLICY "Admins can update storage objects" ON storage.objects FOR UPDATE USING (
+  bucket_id IN ('product-images', 'hero-images', 'hero-videos', 'category-images', 'site-assets') 
+  AND auth.jwt() ->> 'email' LIKE '%@gulpash.pk'
+);
+
+DROP POLICY IF EXISTS "Admins can delete storage objects" ON storage.objects;
+CREATE POLICY "Admins can delete storage objects" ON storage.objects FOR DELETE USING (
+  bucket_id IN ('product-images', 'hero-images', 'hero-videos', 'category-images', 'site-assets') 
+  AND auth.jwt() ->> 'email' LIKE '%@gulpash.pk'
+);

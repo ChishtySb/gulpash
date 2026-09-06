@@ -96,8 +96,8 @@ npm run preview
 
 ---
 
-## 7. Admin Dashboard & Credentials
+## 7. Admin Dashboard & Supabase Authentication
 
-- Admin URL: Accessible via the Lock icon in the Header or navigating directly to Admin in the menu.
-- Default Admin Password: `gulpashadmin2025`
+- Admin URL: Accessible via the Admin button in the Header.
+- Production Authentication: Secured through official Supabase Auth (`supabase.auth.signInWithPassword`). Hardcoded fallback passwords have been completely eliminated. Create your store owner credentials in Supabase Dashboard -> Authentication -> Users.
 - Dynamic Brand Settings: Edit Brand Name, Domain, Logo URL, Favicon, Social Links, and WhatsApp Concierge Number directly from the Settings tab.

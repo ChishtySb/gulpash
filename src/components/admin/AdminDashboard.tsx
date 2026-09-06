@@ -4,12 +4,13 @@ import {
   TrendingUp, Users, Truck, CheckCircle2, AlertTriangle, 
   Plus, Edit, Trash2, Search, ArrowLeft, Save, Play, 
   Image as ImageIcon, RefreshCw, X, ShieldAlert, Eye, EyeOff,
-  Database, ExternalLink, ArrowUp, ArrowDown, Video, Layers, Globe
+  Database, ExternalLink, ArrowUp, ArrowDown, Video, Layers, Globe, LogOut, Upload, Loader2
 } from 'lucide-react';
 import { Product, Order, CMSConfig, SiteSettings, ProductSize, OrderStatus, ProductVariantDetailed } from '../../types';
 import { StorageService } from '../../lib/storage';
 import { formatPrice } from '../../lib/currency';
 import { MigrationReportView } from './MigrationReportView';
+import { getSupabaseClient } from '../../lib/supabaseClient';
 
 interface AdminDashboardProps {
   onExitAdmin: () => void;
@@ -40,6 +41,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
   const [newVariantSku, setNewVariantSku] = useState('');
   const [newVariantPrice, setNewVariantPrice] = useState(0);
   const [newVariantStock, setNewVariantStock] = useState(10);
+  const [uploadingProductImage, setUploadingProductImage] = useState(false);
+  const [uploadingHeroImage, setUploadingHeroImage] = useState(false);
+  const [uploadingHeroVideo, setUploadingHeroVideo] = useState(false);
 
   // Reload data on storage events
   useEffect(() => {
@@ -277,13 +281,29 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
           </span>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={async () => {
+              const supabase = getSupabaseClient();
+              if (supabase) {
+                await supabase.auth.signOut().catch(() => {});
+              }
+              StorageService.setAdminAuthenticated(false);
+              onExitAdmin();
+            }}
+            className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 bg-[#222] hover:bg-red-950/40 border border-red-900/40 px-3 py-1.5 rounded-xs transition-colors cursor-pointer"
+            title="Sign out of Admin Portal"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Logout</span>
+          </button>
+
           <button
             onClick={onExitAdmin}
             className="flex items-center gap-1.5 text-xs text-[#bbb] hover:text-white bg-[#222] hover:bg-[#333] px-3 py-1.5 rounded-xs transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Live Store</span>
+            <span>Live Store</span>
           </button>
         </div>
       </header>
@@ -788,29 +808,64 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                   </div>
                 </div>
 
-                {/* Media URLs */}
+                {/* Media URLs & Supabase Storage File Uploaders */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {cms.hero.type === 'video' && (
-                    <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold text-[#333] mb-1">
-                        Video Media URL (MP4 / WebM with HTTPS) *
+                    <div className="sm:col-span-2 space-y-2">
+                      <label className="block text-xs font-bold text-[#333]">
+                        Video Media URL (MP4 / WebM) *
                       </label>
                       <input
                         type="url"
                         required
                         value={cms.hero.videoUrl || ''}
                         onChange={(e) => setCms({ ...cms, hero: { ...cms.hero, videoUrl: e.target.value } })}
-                        placeholder="https://assets.mixkit.co/videos/preview/mixkit-girl-in-fashion-dress-posing-41793-large.mp4"
+                        placeholder="https://.../video.mp4"
                         className="w-full border border-[#ddd] p-2.5 text-xs rounded-xs font-mono focus:outline-hidden focus:border-[#c59b66]"
                       />
-                      <span className="text-[10px] text-[#777] mt-1 block">
+                      
+                      {/* Direct Hero Video Device Uploader */}
+                      <label className="block border border-dashed border-stone-300 hover:border-stone-800 p-2.5 text-center text-xs text-stone-600 rounded-xs cursor-pointer bg-stone-50 hover:bg-stone-100 transition-colors">
+                        {uploadingHeroVideo ? (
+                          <div className="flex items-center justify-center gap-2">
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            <span>Uploading video to Supabase Storage (hero-videos)...</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-center gap-2">
+                            <Upload className="w-3.5 h-3.5 text-stone-500" />
+                            <span>Upload MP4/WebM Video from Device (Supabase Storage)</span>
+                          </div>
+                        )}
+                        <input
+                          type="file"
+                          accept="video/mp4,video/webm"
+                          disabled={uploadingHeroVideo}
+                          className="hidden"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            setUploadingHeroVideo(true);
+                            const res = await StorageService.uploadMedia('hero-videos', file, 'homepage');
+                            setUploadingHeroVideo(false);
+                            if (res.url) {
+                              setCms({ ...cms, hero: { ...cms.hero, videoUrl: res.url } });
+                              triggerNotice('Hero video uploaded to Supabase Storage and applied!');
+                            } else {
+                              alert(res.error || 'Hero video upload failed');
+                            }
+                          }}
+                        />
+                      </label>
+
+                      <span className="text-[10px] text-[#777] block">
                         Will automatically play muted and loop continuously on all browsers with fallback poster.
                       </span>
                     </div>
                   )}
 
-                  <div>
-                    <label className="block text-xs font-bold text-[#333] mb-1">
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-[#333]">
                       Desktop Poster / Hero Image URL *
                     </label>
                     <input
@@ -820,6 +875,40 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                       onChange={(e) => setCms({ ...cms, hero: { ...cms.hero, desktopImageUrl: e.target.value } })}
                       className="w-full border border-[#ddd] p-2.5 text-xs rounded-xs font-mono focus:outline-hidden focus:border-[#c59b66]"
                     />
+
+                    {/* Direct Hero Desktop Image Device Uploader */}
+                    <label className="block border border-dashed border-stone-300 hover:border-stone-800 p-2 text-center text-xs text-stone-600 rounded-xs cursor-pointer bg-stone-50 hover:bg-stone-100 transition-colors">
+                      {uploadingHeroImage ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <span>Uploading hero image to Supabase Storage (hero-images)...</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center gap-2">
+                          <Upload className="w-3.5 h-3.5 text-stone-500" />
+                          <span>Upload Desktop Image File (Supabase Storage)</span>
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        disabled={uploadingHeroImage}
+                        className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          setUploadingHeroImage(true);
+                          const res = await StorageService.uploadMedia('hero-images', file, 'homepage_desktop');
+                          setUploadingHeroImage(false);
+                          if (res.url) {
+                            setCms({ ...cms, hero: { ...cms.hero, desktopImageUrl: res.url } });
+                            triggerNotice('Hero image uploaded to Supabase Storage and applied!');
+                          } else {
+                            alert(res.error || 'Hero image upload failed');
+                          }
+                        }}
+                      />
+                    </label>
                   </div>
 
                   <div>
@@ -1309,6 +1398,46 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                     className="w-full border border-[#ddd] p-2 rounded-xs focus:outline-hidden text-xs"
                   />
                 </div>
+
+                {/* Optional Product Runway Video */}
+                <div className="sm:col-span-2 space-y-1.5 p-3 bg-stone-50 border border-stone-200 rounded-xs">
+                  <label className="block font-bold text-[#333] text-xs flex items-center gap-1.5">
+                    <Video className="w-3.5 h-3.5 text-stone-700" />
+                    <span>Product Video / Runway Clip (Optional - Future Use)</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="url"
+                      value={editingProduct.videoUrl || ''}
+                      onChange={(e) => setEditingProduct({ ...editingProduct, videoUrl: e.target.value })}
+                      placeholder="https://.../runway.mp4"
+                      className="flex-1 border border-[#ddd] p-2 rounded-xs focus:outline-hidden text-xs font-mono bg-white"
+                    />
+                    <label className="border border-stone-300 hover:border-stone-800 bg-white hover:bg-stone-100 px-3 py-2 text-xs text-stone-700 rounded-xs cursor-pointer flex items-center gap-1.5 transition-colors shrink-0">
+                      <Upload className="w-3.5 h-3.5 text-stone-500" />
+                      <span>Upload Video File</span>
+                      <input
+                        type="file"
+                        accept="video/mp4,video/webm"
+                        className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file || !editingProduct) return;
+                          const res = await StorageService.uploadMedia('hero-videos', file, `product_${editingProduct.id}`);
+                          if (res.url) {
+                            setEditingProduct({ ...editingProduct, videoUrl: res.url });
+                            triggerNotice('Product video uploaded and linked!');
+                          } else {
+                            alert(res.error || 'Failed to upload product video');
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
+                  <span className="text-[10px] text-stone-500 block">
+                    Current migration status: 0 videos. Feature is ready for future product video additions.
+                  </span>
+                </div>
               </div>
 
               {/* STOREFRONT VISIBILITY & FLAGS */}
@@ -1433,22 +1562,62 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                   ))}
                 </div>
 
-                {/* Add Image URL */}
-                <div className="flex items-center gap-2 pt-2 border-t border-[#eee]">
-                  <input
-                    type="url"
-                    value={newImageUrl}
-                    onChange={(e) => setNewImageUrl(e.target.value)}
-                    placeholder="https://cdn.shopify.com/... (Image URL)"
-                    className="flex-1 border border-[#ddd] p-2 text-xs font-mono rounded-xs focus:outline-hidden"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddImage}
-                    className="bg-[#222] hover:bg-[#c59b66] text-white text-xs font-bold px-3 py-2 rounded-xs uppercase tracking-wider cursor-pointer"
-                  >
-                    Add Image
-                  </button>
+                {/* Add Image via URL or Direct Device Upload */}
+                <div className="pt-2 border-t border-[#eee] space-y-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="url"
+                      value={newImageUrl}
+                      onChange={(e) => setNewImageUrl(e.target.value)}
+                      placeholder="https://cdn.shopify.com/... (Image URL)"
+                      className="flex-1 border border-[#ddd] p-2 text-xs font-mono rounded-xs focus:outline-hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddImage}
+                      className="bg-[#222] hover:bg-[#c59b66] text-white text-xs font-bold px-3 py-2 rounded-xs uppercase tracking-wider cursor-pointer"
+                    >
+                      Add Image
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <label className="flex-1 border border-dashed border-stone-300 hover:border-stone-800 p-2 text-center text-xs text-stone-600 rounded-xs cursor-pointer flex items-center justify-center gap-2 transition-colors bg-stone-50 hover:bg-stone-100">
+                      {uploadingProductImage ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          <span>Uploading to Supabase Storage (product-images)...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-3.5 h-3.5 text-stone-500" />
+                          <span>Or Upload Image File from Device (Supabase Storage)</span>
+                        </>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        disabled={uploadingProductImage}
+                        className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file || !editingProduct) return;
+                          setUploadingProductImage(true);
+                          const res = await StorageService.uploadMedia('product-images', file, editingProduct.id);
+                          setUploadingProductImage(false);
+                          if (res.url) {
+                            setEditingProduct({
+                              ...editingProduct,
+                              images: [...editingProduct.images, res.url]
+                            });
+                            triggerNotice('Product image uploaded successfully to Supabase Storage!');
+                          } else {
+                            alert(res.error || 'Failed to upload product image');
+                          }
+                        }}
+                      />
+                    </label>
+                  </div>
                 </div>
               </div>
 

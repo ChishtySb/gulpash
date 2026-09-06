@@ -330,5 +330,42 @@ export const StorageService = {
     localStorage.removeItem(KEYS.CMS);
     localStorage.removeItem(KEYS.SETTINGS);
     notifyChange('all');
+  },
+
+  // SUPABASE STORAGE UPLOADER
+  async uploadMedia(bucket: 'product-images' | 'hero-images' | 'hero-videos', file: File, pathPrefix = ''): Promise<{ url: string | null; error: string | null }> {
+    const { getSupabaseClient } = await import('./supabaseClient');
+    const supabase = getSupabaseClient();
+    
+    if (!supabase) {
+      // Create a local object URL for preview if Supabase remote credentials are not set
+      const localUrl = URL.createObjectURL(file);
+      return { url: localUrl, error: null };
+    }
+
+    try {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const cleanName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${ext}`;
+      const fullPath = pathPrefix ? `${pathPrefix.replace(/\/$/, '')}/${cleanName}` : cleanName;
+
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .upload(fullPath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) {
+        return { url: null, error: error.message };
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from(bucket)
+        .getPublicUrl(data.path);
+
+      return { url: publicUrlData.publicUrl, error: null };
+    } catch (err: any) {
+      return { url: null, error: err.message || 'Upload failed' };
+    }
   }
 };

@@ -202,11 +202,11 @@ export const Header: React.FC<HeaderProps> = ({
               />
             ) : (
               <>
-                <h1 className="font-serif text-3xl sm:text-4xl lg:text-4xl tracking-[0.16em] font-light italic leading-none text-[#1A1A1A]">
+                <h1 className="font-serif text-3xl sm:text-4xl lg:text-4xl tracking-[0.16em] font-semibold tracking-wider leading-none text-[#111111]">
                   {settings.brandName || 'GULPASH'}
                 </h1>
-                <span className="text-[8px] uppercase tracking-[0.4em] mt-1 text-stone-400 font-medium">
-                  Lahore • Karachi • Dubai
+                <span className="text-[9px] uppercase tracking-[0.45em] mt-1.5 text-stone-500 font-semibold">
+                  Luxury Apparel &bull; Official
                 </span>
               </>
             )}
