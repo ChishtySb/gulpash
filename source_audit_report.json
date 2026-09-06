@@ -1,0 +1,55 @@
+{
+  "totalProducts": 68,
+  "sitemapProductCount": 0,
+  "totalCollections": 6,
+  "collectionsList": [
+    {
+      "id": 494022983995,
+      "title": "BEST SELLING",
+      "handle": "best-selling",
+      "products_count": 48
+    },
+    {
+      "id": 494187839803,
+      "title": "Co-Ords",
+      "handle": "co-ords",
+      "products_count": 16
+    },
+    {
+      "id": 494022951227,
+      "title": "Home",
+      "handle": "home",
+      "products_count": 89
+    },
+    {
+      "id": 494098481467,
+      "title": "NEW ARRIVALS",
+      "handle": "new-arrivals",
+      "products_count": 59
+    },
+    {
+      "id": 500706312507,
+      "title": "Trending Designs",
+      "handle": "short-length-article",
+      "products_count": 16
+    },
+    {
+      "id": 494023049531,
+      "title": "WINTER COLLECTION",
+      "handle": "winter-collection",
+      "products_count": 29
+    }
+  ],
+  "totalImages": 397,
+  "totalVariants": 269,
+  "totalProductTypes": 4,
+  "productTypes": [
+    "Stitched",
+    "woman",
+    "Clothing",
+    "3 Pieces"
+  ],
+  "tagsCount": 34,
+  "videoProductsCount": 0,
+  "videoProducts": []
+}

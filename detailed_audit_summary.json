@@ -1,0 +1,158 @@
+{
+  "totalProductsDetected": 68,
+  "totalCollectionsDetected": 6,
+  "collectionsSummary": [
+    {
+      "title": "BEST SELLING",
+      "handle": "best-selling",
+      "productCount": 47
+    },
+    {
+      "title": "Co-Ords",
+      "handle": "co-ords",
+      "productCount": 10
+    },
+    {
+      "title": "Home",
+      "handle": "home",
+      "productCount": 57
+    },
+    {
+      "title": "NEW ARRIVALS",
+      "handle": "new-arrivals",
+      "productCount": 45
+    },
+    {
+      "title": "Trending Designs",
+      "handle": "short-length-article",
+      "productCount": 14
+    },
+    {
+      "title": "WINTER COLLECTION",
+      "handle": "winter-collection",
+      "productCount": 17
+    }
+  ],
+  "totalCategoriesDetected": 5,
+  "categories": [
+    "Unstitched / Stitched",
+    "Stitched",
+    "woman",
+    "Clothing",
+    "3 Pieces"
+  ],
+  "totalProductImages": 397,
+  "minImagesPerProduct": 3,
+  "maxImagesPerProduct": 11,
+  "avgImagesPerProduct": "5.8",
+  "totalProductVariants": 269,
+  "variantOptionTypes": [
+    "Fabric",
+    "Size",
+    "Size Guide",
+    "Trousers",
+    "Color",
+    "Sizes",
+    "Shirt Length"
+  ],
+  "totalProductVideos": 0,
+  "nonAutomatableData": [
+    "No external video embeds or mp4 links detected in source catalog",
+    "Customer reviews on source site are managed via third-party Shopify widgets (Judge.me/Loox/Shopify Product Reviews app) which require merchant private API keys to export past reviews"
+  ],
+  "sampleProducts": [
+    {
+      "id": 10523493630267,
+      "title": "Plum 3Piece",
+      "handle": "plum-3piece",
+      "price": "5499.00",
+      "compare_at_price": "6899.00",
+      "images_count": 5,
+      "variants_count": 4,
+      "variant_options": [
+        "Fabric",
+        "Size"
+      ],
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "Trending Designs"
+      ],
+      "has_video": false,
+      "available": true
+    },
+    {
+      "id": 10505411232059,
+      "title": "Azmeen 3 Piece",
+      "handle": "azmeen-3-piece",
+      "price": "5499.00",
+      "compare_at_price": null,
+      "images_count": 7,
+      "variants_count": 4,
+      "variant_options": [
+        "Size"
+      ],
+      "collections": [
+        "BEST SELLING"
+      ],
+      "has_video": false,
+      "available": true
+    },
+    {
+      "id": 10505411199291,
+      "title": "Sunehri 3 Piece",
+      "handle": "sunehri-3-piece",
+      "price": "5499.00",
+      "compare_at_price": null,
+      "images_count": 4,
+      "variants_count": 4,
+      "variant_options": [
+        "Size"
+      ],
+      "collections": [
+        "BEST SELLING"
+      ],
+      "has_video": false,
+      "available": true
+    },
+    {
+      "id": 10505411133755,
+      "title": "Raniya 3 Piece",
+      "handle": "raniya-3-piece",
+      "price": "4999.00",
+      "compare_at_price": null,
+      "images_count": 3,
+      "variants_count": 4,
+      "variant_options": [
+        "Size"
+      ],
+      "collections": [
+        "BEST SELLING"
+      ],
+      "has_video": false,
+      "available": true
+    },
+    {
+      "id": 10458614595899,
+      "title": "Ruby Grace 3Pcs",
+      "handle": "ruby-grace-3pcs",
+      "price": "5499.00",
+      "compare_at_price": "6899.00",
+      "images_count": 5,
+      "variants_count": 4,
+      "variant_options": [
+        "Fabric",
+        "Size"
+      ],
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "Trending Designs"
+      ],
+      "has_video": false,
+      "available": true
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "id": 494022983995,
+    "title": "BEST SELLING",
+    "handle": "best-selling",
+    "description": "<p data-start=\"129\" data-end=\"416\"><strong data-start=\"129\" data-end=\"157\">Our Most Loved Styles ❤️</strong><br data-start=\"157\" data-end=\"160\">Shop the outfits everyone is talking about! These are our <strong data-start=\"218\" data-end=\"234\">Best Sellers</strong> – handpicked by our happy customers and restocked due to high demand. From elegant casuals to festive wear, each piece is designed to bring you comfort, style, and timeless charm.</p>\n<p data-start=\"418\" data-end=\"473\">✨ Find your favorite today before it sells out again!</p>",
+    "published_at": "2025-09-29T23:02:05+05:00",
+    "updated_at": "2026-09-05T16:25:06+05:00",
+    "image": null,
+    "products_count": 48
+  },
+  {
+    "id": 494187839803,
+    "title": "Co-Ords",
+    "handle": "co-ords",
+    "description": "",
+    "published_at": "2025-10-02T22:29:03+05:00",
+    "updated_at": "2026-09-05T16:25:06+05:00",
+    "image": null,
+    "products_count": 16
+  },
+  {
+    "id": 494022951227,
+    "title": "Home",
+    "handle": "home",
+    "description": "<p data-start=\"285\" data-end=\"594\"><strong data-start=\"285\" data-end=\"345\">Welcome to Tawakal Closet – Where Style Meets Elegance ✨</strong><br data-start=\"345\" data-end=\"348\">Discover timeless fashion crafted for every occasion. From our <strong data-start=\"411\" data-end=\"427\">Best Sellers</strong> loved by customers, to the freshest <strong data-start=\"464\" data-end=\"480\">New Arrivals</strong>, and the cozy warmth of our <strong data-start=\"509\" data-end=\"530\">Winter Collection</strong>, we bring you outfits that blend tradition with modern charm.</p>\n<p data-start=\"596\" data-end=\"779\">At Tawakal Closet, we believe in quality, comfort, and style that speaks for itself. Shop your favorites, stay on trend, and enjoy a seamless shopping experience – all in one place.</p>\n<p data-start=\"781\" data-end=\"871\">💌 For queries or custom orders, visit our <strong data-start=\"824\" data-end=\"840\">Contact Page</strong> – we’re always here to help!</p>",
+    "published_at": "2025-09-29T22:59:44+05:00",
+    "updated_at": "2026-09-05T16:25:06+05:00",
+    "image": null,
+    "products_count": 89
+  },
+  {
+    "id": 494098481467,
+    "title": "NEW ARRIVALS",
+    "handle": "new-arrivals",
+    "description": "",
+    "published_at": "2025-09-30T19:31:49+05:00",
+    "updated_at": "2026-09-05T16:25:06+05:00",
+    "image": null,
+    "products_count": 59
+  },
+  {
+    "id": 500706312507,
+    "title": "Trending Designs",
+    "handle": "short-length-article",
+    "description": "",
+    "published_at": "2026-06-23T18:23:00+05:00",
+    "updated_at": "2026-09-05T16:25:06+05:00",
+    "image": null,
+    "products_count": 16
+  },
+  {
+    "id": 494023049531,
+    "title": "WINTER COLLECTION",
+    "handle": "winter-collection",
+    "description": "<h3 data-start=\"98\" data-end=\"136\">Winter Collection Description</h3>\n<p data-start=\"138\" data-end=\"398\"><strong data-start=\"138\" data-end=\"169\">Cozy. Stylish. Timeless. ❄️</strong><br data-start=\"169\" data-end=\"172\">Step into the season with Tawakal Closet’s <strong data-start=\"215\" data-end=\"236\">Winter Collection</strong> – a perfect blend of warmth and elegance. From soft fabrics to chic designs, our winter wear is crafted to keep you comfortable while making a style statement.</p>\n<p data-start=\"400\" data-end=\"536\">✨ Whether it’s casual gatherings or festive evenings, find your perfect winter outfit here – because fashion never goes out of season.</p>",
+    "published_at": "2025-09-29T23:02:58+05:00",
+    "updated_at": "2026-09-05T16:25:06+05:00",
+    "image": null,
+    "products_count": 29
+  }
+]

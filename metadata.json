@@ -1,0 +1,6 @@
+{
+  "name": "GulPash - Luxury Pakistani Fashion",
+  "description": "Premium Pakistani women's fashion ecommerce offering luxury unstitched lawn, ready-to-wear pret, festive formal wear, and bridal collections with nationwide COD.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
