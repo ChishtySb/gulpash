@@ -1,0 +1,1534 @@
+{
+  "timestamp": "2026-09-06T12:01:44.281Z",
+  "sourceUrl": "https://tawakalcloset.com/",
+  "targetUrl": "https://gulpash.pk/",
+  "overallStatus": "PASS",
+  "metrics": {
+    "products": {
+      "expected": 68,
+      "migrated": 68,
+      "status": "PASS"
+    },
+    "variants": {
+      "expected": 269,
+      "migrated": 269,
+      "status": "PASS"
+    },
+    "images": {
+      "expected": 397,
+      "migrated": 397,
+      "status": "PASS"
+    },
+    "categories": {
+      "expected": 5,
+      "migrated": 5,
+      "status": "PASS"
+    },
+    "collections": {
+      "expected": 6,
+      "migrated": 6,
+      "status": "PASS"
+    },
+    "videos": {
+      "expected": 0,
+      "migrated": 0,
+      "status": "PASS"
+    },
+    "pricingVerification": {
+      "totalChecks": 68,
+      "mismatches": 0,
+      "status": "PASS"
+    },
+    "imageOrderingVerification": {
+      "totalChecks": 68,
+      "mismatches": 0,
+      "status": "PASS"
+    }
+  },
+  "categoriesAudit": [
+    {
+      "name": "Unstitched / Stitched",
+      "slug": "unstitched-stitched",
+      "productCount": 39
+    },
+    {
+      "name": "Stitched",
+      "slug": "stitched",
+      "productCount": 6
+    },
+    {
+      "name": "woman",
+      "slug": "woman",
+      "productCount": 10
+    },
+    {
+      "name": "Clothing",
+      "slug": "clothing",
+      "productCount": 12
+    },
+    {
+      "name": "3 Pieces",
+      "slug": "3-pieces",
+      "productCount": 1
+    }
+  ],
+  "collectionsAudit": [
+    {
+      "name": "BEST SELLING",
+      "slug": "best-selling",
+      "productCount": 47,
+      "sourceProductCount": 47,
+      "status": "PASS"
+    },
+    {
+      "name": "Co-Ords",
+      "slug": "co-ords",
+      "productCount": 10,
+      "sourceProductCount": 10,
+      "status": "PASS"
+    },
+    {
+      "name": "Home",
+      "slug": "home",
+      "productCount": 57,
+      "sourceProductCount": 57,
+      "status": "PASS"
+    },
+    {
+      "name": "NEW ARRIVALS",
+      "slug": "new-arrivals",
+      "productCount": 45,
+      "sourceProductCount": 45,
+      "status": "PASS"
+    },
+    {
+      "name": "Trending Designs",
+      "slug": "short-length-article",
+      "productCount": 14,
+      "sourceProductCount": 14,
+      "status": "PASS"
+    },
+    {
+      "name": "WINTER COLLECTION",
+      "slug": "winter-collection",
+      "productCount": 17,
+      "sourceProductCount": 17,
+      "status": "PASS"
+    }
+  ],
+  "productAudits": [
+    {
+      "id": "3421d51c-3c3a-4908-8bfe-1d8dbd6e8e62",
+      "sourceId": 10523493630267,
+      "title": "Plum 3Piece",
+      "slug": "plum-3piece",
+      "price": 5499,
+      "compareAtPrice": 6899,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 5,
+      "sourceImagesCount": 5,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/17_22ba13c3-6eda-4dde-a515-e01030c718f6.png?v=1787217341",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "Trending Designs"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "ae8fd4b2-58b5-49e2-8d7d-5f4359c3ad66",
+      "sourceId": 10505411232059,
+      "title": "Azmeen 3 Piece",
+      "slug": "azmeen-3-piece",
+      "price": 5499,
+      "compareAtPrice": null,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 7,
+      "sourceImagesCount": 7,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/rn-image_picker_lib_temp_ad02dec1-398e-422d-83dd-795d0f8b888d.jpg?v=1785345921",
+      "collections": [
+        "BEST SELLING"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "67b3518e-d0ff-4acd-8b3e-b87304e54d66",
+      "sourceId": 10505411199291,
+      "title": "Sunehri 3 Piece",
+      "slug": "sunehri-3-piece",
+      "price": 5499,
+      "compareAtPrice": null,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 4,
+      "sourceImagesCount": 4,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/rn-image_picker_lib_temp_2464a6e2-8a9a-422c-9cda-21adbf389488.jpg?v=1785345449",
+      "collections": [
+        "BEST SELLING"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "46699592-2e2c-420e-8247-fee7434fa613",
+      "sourceId": 10505411133755,
+      "title": "Raniya 3 Piece",
+      "slug": "raniya-3-piece",
+      "price": 4999,
+      "compareAtPrice": null,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 3,
+      "sourceImagesCount": 3,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/rn-image_picker_lib_temp_5d4c42f9-505f-45d3-957e-0e5ade3063b9.jpg?v=1785345447",
+      "collections": [
+        "BEST SELLING"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "684c1b5a-5fa9-4218-8a7d-51b4d13c3b2a",
+      "sourceId": 10458614595899,
+      "title": "Ruby Grace 3Pcs",
+      "slug": "ruby-grace-3pcs",
+      "price": 5499,
+      "compareAtPrice": 6899,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 5,
+      "sourceImagesCount": 5,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/657949007_18519088627073967_8926792540500625221_n_jpg.jpg?v=1782742886",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "Trending Designs"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "67095467-a083-423e-8b8a-b8961289cfee",
+      "sourceId": 10458612728123,
+      "title": "Black Pearl 3Pcs",
+      "slug": "black-pearl-3pcs",
+      "price": 4999,
+      "compareAtPrice": 6899,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 5,
+      "sourceImagesCount": 5,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/1782741729121_publer_com_jpg.jpg?v=1782742613",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "Trending Designs"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "65de1f33-06b1-4c12-80cb-5fe8df1057b0",
+      "sourceId": 10458611056955,
+      "title": "Sapphire Bloom 3Pcs",
+      "slug": "sapphire-bloom-3pcs",
+      "price": 5499,
+      "compareAtPrice": 6899,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 5,
+      "sourceImagesCount": 5,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/1_534918c3-fb63-4a81-b54c-260716f7d770_1.png?v=1782742247",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "Trending Designs"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "7ceb5e6e-3b16-456c-8b29-0bc0c774c5a7",
+      "sourceId": 10261128741179,
+      "title": "Mehndi Emb 3Pc Stitched",
+      "slug": "mehndi-emb-3pc-stitched",
+      "price": 6499,
+      "compareAtPrice": 19000,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 9,
+      "sourceImagesCount": 9,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Mirana11thoct-1502_1000x_jpg.jpg?v=1767786202",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "WINTER COLLECTION"
+      ],
+      "category": "Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "79ebaf1d-ffdc-4092-89b3-4840149e235a",
+      "sourceId": 10408639758651,
+      "title": "Pink Hearts Set",
+      "slug": "pink-hearts-set",
+      "price": 4999,
+      "compareAtPrice": 6899,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 4,
+      "sourceImagesCount": 4,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/D87B454F-1D7A-4DEB-810F-30353E10D055_jpg.jpg?v=1780940232",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "Trending Designs"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "18d9605c-92fc-4e49-8891-9c5e85d4cf91",
+      "sourceId": 10407801487675,
+      "title": "Mehar 2 PCs EMBROIDERY",
+      "slug": "mehar-2-pcs-embroidery",
+      "price": 4699,
+      "compareAtPrice": 5999,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 8,
+      "sourceImagesCount": 8,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/35A9176_1.webp?v=1780752552",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "Trending Designs"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": false,
+      "status": "PASS"
+    },
+    {
+      "id": "5632555b-9cb5-4c9a-8cb1-d5183d52965d",
+      "sourceId": 10405312659771,
+      "title": "Mulberry Bloom 3 PCs EMBROIDERY",
+      "slug": "mulberry-bloom-3-pcs-embroidery",
+      "price": 4999,
+      "compareAtPrice": 6500,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 4,
+      "sourceImagesCount": 4,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Jul9_2026_07_53_28PM.png?v=1783609114",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "Trending Designs"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "cc06c4e2-3dae-4ae5-856d-a7a6e587e5c2",
+      "sourceId": 10403611345211,
+      "title": "Elara 2 PCs EMB",
+      "slug": "elara-3-pcs-emb",
+      "price": 3199,
+      "compareAtPrice": 7500,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 7,
+      "sourceImagesCount": 7,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/DSC01957.webp?v=1780416886",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "Trending Designs"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "429029be-2e20-4c49-880e-ec39fd65cf01",
+      "sourceId": 10382350680379,
+      "title": "RUMI 3 PC EMBROIDERY",
+      "slug": "rumi-3-pc-embroidery",
+      "price": 4999,
+      "compareAtPrice": 6299,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 4,
+      "sourceImagesCount": 4,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/83EA3D67-ED6D-4C10-A329-0E32A3C3ABBC.webp?v=1778593068",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "Trending Designs"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "d2d0021f-d086-4ec9-8c57-b2fc95b01a97",
+      "sourceId": 10379191517499,
+      "title": "NEW MAJESTIC OLIVE",
+      "slug": "new-majestic-olive",
+      "price": 4500,
+      "compareAtPrice": 10000,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 4,
+      "sourceImagesCount": 4,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/20260211171210-2e07735c8a854412-media_image-5903f828fedc451aa9c3c56dea342cef.webp?v=1778330126",
+      "collections": [
+        "NEW ARRIVALS"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "83a52645-309b-4a4e-8e74-07ab1256b510",
+      "sourceId": 10379189813563,
+      "title": "Black Elegance",
+      "slug": "black-elegance-1",
+      "price": 2989,
+      "compareAtPrice": 6100,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 6,
+      "sourceImagesCount": 6,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/cropped_image-173745718973721_b50029fa-91b9-4a18-9da2-baceeec436b9.webp?v=1778329842",
+      "collections": [
+        "NEW ARRIVALS"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": false,
+      "status": "PASS"
+    },
+    {
+      "id": "7672b263-f881-4f47-8bda-42f2e7f58a5f",
+      "sourceId": 10379183522107,
+      "title": "Noir Luxe",
+      "slug": "noir-luxe",
+      "price": 5145,
+      "compareAtPrice": null,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 3,
+      "sourceImagesCount": 3,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/pixelcut-export_1_-174428980325467_ad8c94af-0090-4f9f-89dd-1c4a93c04274.webp?v=1778328922",
+      "collections": [
+        "NEW ARRIVALS"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "24fcf3b0-026f-4c86-84ea-f38b335abfcc",
+      "sourceId": 10277820858683,
+      "title": "IZNA 3PC",
+      "slug": "izna-3pc",
+      "price": 5999,
+      "compareAtPrice": 7950,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 4,
+      "sourceImagesCount": 4,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/IMG_2687_JPG_4dc21aa4-35f1-47d2-9fe7-123e330d107a.png?v=1769775422",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "WINTER COLLECTION"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "d20ee07c-b0eb-4a12-8bab-42c43f3a62db",
+      "sourceId": 10364056404283,
+      "title": "Roshaneh 3Pcs",
+      "slug": "roshaneh-3pcs",
+      "price": 6499,
+      "compareAtPrice": 8860,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 8,
+      "sourceImagesCount": 8,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/MaaheZrmny-2623_jpg_1.png?v=1777640850",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS"
+      ],
+      "category": "woman",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "d2e352fa-f3ac-4907-86a3-dc849766e49f",
+      "sourceId": 10364053193019,
+      "title": "Parisa 3Pcs",
+      "slug": "parisa-3pcs",
+      "price": 6499,
+      "compareAtPrice": 8860,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 7,
+      "sourceImagesCount": 7,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Ava_5__jpg.jpg?v=1777640217",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS"
+      ],
+      "category": "woman",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "2deba161-c048-41b9-8b6a-0ea73d93caf5",
+      "sourceId": 10363343470907,
+      "title": "Zohra 3Pcs",
+      "slug": "zohra-3pcs",
+      "price": 4999,
+      "compareAtPrice": 8199,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 4,
+      "sourceImagesCount": 4,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/imgi_96_MSS-5751_3_fe45d47b-39a0-4cfb-8c50-73b86c82f29a_jpg.jpg?v=1777546756",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "Trending Designs"
+      ],
+      "category": "Clothing",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "a6ea17b7-590f-4f76-8c41-374034ec75aa",
+      "sourceId": 10361443221819,
+      "title": "Noor-e-Naz Luxury 3Pcs",
+      "slug": "noor-e-naz-luxury-3pcs",
+      "price": 6499,
+      "compareAtPrice": 8860,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 4,
+      "sourceImagesCount": 4,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Untitled-1_0097_DSC02955.jpg?v=1777378910",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS"
+      ],
+      "category": "woman",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "2bb9d3f7-8c4d-41b0-8845-0bc41fd66e90",
+      "sourceId": 10357876883771,
+      "title": "SWEETIE 3 PC EMBROIDERY",
+      "slug": "sweetie-3-pc-embroidery",
+      "price": 3999,
+      "compareAtPrice": 6199,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 5,
+      "sourceImagesCount": 5,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/E3F1B20A-11C9-489B-9A39-FCB111246529.webp?v=1776789610",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "Trending Designs"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "c085a81b-1df4-4308-899b-8cc4c7a5450e",
+      "sourceId": 10352489496891,
+      "title": "ZAARIF - COTTON 2 PC EMB",
+      "slug": "zaarif-cotton-3-pc-emb",
+      "price": 4499,
+      "compareAtPrice": 8000,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 7,
+      "sourceImagesCount": 7,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/DSC07527_jpg.jpg?v=1776437150",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "Trending Designs"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "8497ab44-9624-4c9c-83d2-19d1a1cb8505",
+      "sourceId": 10341072699707,
+      "title": "Rina",
+      "slug": "camel-brown-linen-3-piece",
+      "price": 6499,
+      "compareAtPrice": 8550,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 4,
+      "sourceImagesCount": 4,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Thefirstofmany_simpleyetmodern-amusthaveforyouriftaarevents_Staytunedforthela_3.jpg?v=1775923770",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS"
+      ],
+      "category": "woman",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "0c50bfb0-2e11-4dcf-845b-ca6d96a959c9",
+      "sourceId": 10333013541179,
+      "title": "MULTI FOWER 3PCS",
+      "slug": "florals-premium-cotton-3pcs",
+      "price": 7499,
+      "compareAtPrice": 8860,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 7,
+      "sourceImagesCount": 7,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/050A7010_1.jpg?v=1775662680",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS"
+      ],
+      "category": "woman",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "e55417e5-e933-4996-8b9a-9408cbe83481",
+      "sourceId": 10323012387131,
+      "title": "Meadow Grace 3Pc EMB",
+      "slug": "meadow-grace-3pc-emb",
+      "price": 6499,
+      "compareAtPrice": 8299,
+      "variantsCount": 8,
+      "sourceVariantsCount": 8,
+      "imagesCount": 11,
+      "sourceImagesCount": 11,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Vintage23rdDec-302_1.jpg?v=1774870997",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS"
+      ],
+      "category": "woman",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "334907a5-b18e-4895-8563-d126ef81414e",
+      "sourceId": 10301757948219,
+      "title": "Armeen 3pcs",
+      "slug": "armeen-3pcs",
+      "price": 6499,
+      "compareAtPrice": 8250,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 6,
+      "sourceImagesCount": 6,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/1_e908f076-38a6-4c33-a784-da13a142a343.png?v=1774535145",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS"
+      ],
+      "category": "woman",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "39cc2be0-b2e8-4c1e-8275-3b529e6dc727",
+      "sourceId": 10289553834299,
+      "title": "Shamsa 2 PCs Embroidered",
+      "slug": "yellow-kurta-set-copy",
+      "price": 3999,
+      "compareAtPrice": 5500,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 5,
+      "sourceImagesCount": 5,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/EidcollectionisavailablenowZimalbyModernmilaapGoandshoponlinefromwebsite_1.jpg?v=1771952830",
+      "collections": [
+        "BEST SELLING",
+        "Co-Ords",
+        "Home"
+      ],
+      "category": "Clothing",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "4abb99fa-b4b7-4916-871d-aa08e5c09297",
+      "sourceId": 10289034494267,
+      "title": "Sophie 3Pcs",
+      "slug": "sophie-3pcs",
+      "price": 5999,
+      "compareAtPrice": 7950,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 7,
+      "sourceImagesCount": 7,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/eidshoot_s_z_a_-3027_jpg.jpg?v=1771846601",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS"
+      ],
+      "category": "woman",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "95e7f24f-4cea-452d-8a64-903e7e0171e1",
+      "sourceId": 10288336666939,
+      "title": "Matka Mirror Work",
+      "slug": "matka-mirror-work",
+      "price": 2850,
+      "compareAtPrice": 4500,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 5,
+      "sourceImagesCount": 5,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/WhatsApp_Image_2025-11-20_at_8.39.38_PM.jpg?v=1772031408",
+      "collections": [
+        "Co-Ords",
+        "Home"
+      ],
+      "category": "Clothing",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "ed78e020-ca45-4711-8cbf-b297452ae95a",
+      "sourceId": 10288335782203,
+      "title": "Sunset 2pcs",
+      "slug": "sunset-2pcs",
+      "price": 2850,
+      "compareAtPrice": 4500,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 5,
+      "sourceImagesCount": 5,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/493667759_122138684192408152_3231786512462453256_n.jpg?v=1771670075",
+      "collections": [
+        "Co-Ords",
+        "Home"
+      ],
+      "category": "Clothing",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "795eb11f-d487-4cc0-894e-c4374af06804",
+      "sourceId": 10285157318971,
+      "title": "Multi Color Black 3Pcs",
+      "slug": "multi-color-black-3pcs",
+      "price": 6499,
+      "compareAtPrice": 8750,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 4,
+      "sourceImagesCount": 4,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Gemini_Generated_Image_8cxrw78cxrw78cxr.png?v=1771001914",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS"
+      ],
+      "category": "woman",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "50505619-aad0-46d7-8f7e-30d60142a79d",
+      "sourceId": 10285064028475,
+      "title": "Aleeeza Black 3pcs",
+      "slug": "alize-black-3pcs-embroidery",
+      "price": 6499,
+      "compareAtPrice": 8750,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 5,
+      "sourceImagesCount": 5,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/5.png?v=1772298010",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "WINTER COLLECTION"
+      ],
+      "category": "Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "1e98264d-e4ca-4b33-849b-51daed1fcb17",
+      "sourceId": 10275293954363,
+      "title": "Regal Dream 3Pcs",
+      "slug": "regal-dream-3pcs",
+      "price": 6199,
+      "compareAtPrice": 7990,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 5,
+      "sourceImagesCount": 5,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/5_0f2902da-8b93-4f00-98b3-69de90fec358_jpg.jpg?v=1769455006",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS"
+      ],
+      "category": "Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "b7401728-a250-45c6-8127-c30147a0bb76",
+      "sourceId": 10275293888827,
+      "title": "Chiku Embroidery 3Pcs",
+      "slug": "chiku-embroidery-3pcs",
+      "price": 5999,
+      "compareAtPrice": 7830,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 5,
+      "sourceImagesCount": 5,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/IMG_20251101_002112_7ab25f69-918d-43f5-9ada-78b2ca914dfc_1.jpg?v=1769455005",
+      "collections": [],
+      "category": "3 Pieces",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "a9c529e1-e76d-430c-804c-bdda76d34e12",
+      "sourceId": 10275291103547,
+      "title": "Cream Alishba Emb",
+      "slug": "cream-alishba-emb",
+      "price": 6499,
+      "compareAtPrice": 8150,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 6,
+      "sourceImagesCount": 6,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/POV-off-whiteisyourfavouritecolor_TobookstudioappointmentspleasereachouttousonWha_4.jpg?v=1769454490",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "WINTER COLLECTION"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "b8afb0c8-a81f-4669-8115-d707b8164a48",
+      "sourceId": 10272034128187,
+      "title": "Multi Color 3Pcs Embroidery",
+      "slug": "multi-color-3pcs-embroidery",
+      "price": 6499,
+      "compareAtPrice": 8750,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 5,
+      "sourceImagesCount": 5,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/VDCPF25-Nisha-5.jpg?v=1768915843",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS"
+      ],
+      "category": "woman",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "f274da04-3f35-4ba4-8b4c-3b5d97ff94cb",
+      "sourceId": 10254738850107,
+      "title": "pistiana 3pcs",
+      "slug": "pistachio-3pcs",
+      "price": 6491,
+      "compareAtPrice": 8250,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 10,
+      "sourceImagesCount": 10,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Mirana18JULY-84.jpg?v=1766162560",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "WINTER COLLECTION"
+      ],
+      "category": "Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "e19fa59a-b017-4a7d-8d5c-b9daa6f1da28",
+      "sourceId": 10248330477883,
+      "title": "NEW BROWNIE",
+      "slug": "brownish-3pc",
+      "price": 6499,
+      "compareAtPrice": 7650,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 6,
+      "sourceImagesCount": 6,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/IMG-7792.jpg?v=1765614695",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "WINTER COLLECTION"
+      ],
+      "category": "Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "a6512b44-8268-47e2-84c4-daf6a1e3c792",
+      "sourceId": 10246164316475,
+      "title": "NEW AYRA 3PCS",
+      "slug": "aria-stitched-3pc",
+      "price": 6499,
+      "compareAtPrice": 8450,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 11,
+      "sourceImagesCount": 11,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/IMG_3341.jpg?v=1765233649",
+      "collections": [
+        "BEST SELLING",
+        "Co-Ords",
+        "Home",
+        "NEW ARRIVALS",
+        "WINTER COLLECTION"
+      ],
+      "category": "Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "ede8c9da-99a4-4a48-8410-6407a56fcc5c",
+      "sourceId": 10240559350075,
+      "title": "Blackish EMB 3PCS",
+      "slug": "blackish-emb-3pcs-1",
+      "price": 6499,
+      "compareAtPrice": 8150,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 5,
+      "sourceImagesCount": 5,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/SnapInsta_imgupscaler.ai_v1_Fast__4K_4.png?v=1764692220",
+      "collections": [
+        "BEST SELLING",
+        "NEW ARRIVALS",
+        "WINTER COLLECTION"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": false,
+      "status": "PASS"
+    },
+    {
+      "id": "2b3ed078-321b-43ac-8ff2-9ed0fcb9dff1",
+      "sourceId": 10211372532027,
+      "title": "Zeenat EMB – 3PCs",
+      "slug": "zeenat-emb-3pcs",
+      "price": 6499,
+      "compareAtPrice": 8460,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 10,
+      "sourceImagesCount": 10,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/eidshoot_s_z_a_-1902_jpg.jpg?v=1762781175",
+      "collections": [
+        "BEST SELLING",
+        "NEW ARRIVALS",
+        "WINTER COLLECTION"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "9e23c099-e2ef-454c-8500-52c782931f0f",
+      "sourceId": 10191918006587,
+      "title": "SAYA EMB 3PCS",
+      "slug": "aish-3pcs",
+      "price": 5580,
+      "compareAtPrice": 8500,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 8,
+      "sourceImagesCount": 8,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/WhatsAppImage2025-10-18at21.35.30_2.jpg?v=1760981349",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "WINTER COLLECTION"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "de978772-42a9-4557-836a-5db4e762f36e",
+      "sourceId": 10187393237307,
+      "title": "Kehksha  2PC Dhank Suit",
+      "slug": "pista-3pcs-copy",
+      "price": 3999,
+      "compareAtPrice": 7500,
+      "variantsCount": 3,
+      "sourceVariantsCount": 3,
+      "imagesCount": 4,
+      "sourceImagesCount": 4,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/undefined_change_pose_3_1.png?v=1759926490",
+      "collections": [
+        "Home",
+        "NEW ARRIVALS",
+        "WINTER COLLECTION"
+      ],
+      "category": "Clothing",
+      "available": false,
+      "status": "PASS"
+    },
+    {
+      "id": "4fbf5d47-0b38-4025-8534-321f3c711e3b",
+      "sourceId": 10186390077755,
+      "title": "Red Reverie 3pcs",
+      "slug": "red-reverie-3pcs",
+      "price": 6499,
+      "compareAtPrice": 8250,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 8,
+      "sourceImagesCount": 8,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/RedReverie6.webp?v=1759595664",
+      "collections": [
+        "BEST SELLING"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "d0dec34a-83bb-4da2-844d-743e9f382462",
+      "sourceId": 10186390044987,
+      "title": "ALEESHA EMBROIDERY 3PC",
+      "slug": "aleesha-embroidery-3pc",
+      "price": 6499,
+      "compareAtPrice": 8350,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 4,
+      "sourceImagesCount": 4,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/alishaweb2.jpg?v=1759595663",
+      "collections": [
+        "BEST SELLING",
+        "WINTER COLLECTION"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "2921bc89-7bfc-42b0-81a9-2932ea5b6fdc",
+      "sourceId": 10183925268795,
+      "title": "LEMON BLOSSOM 3Pcs",
+      "slug": "lemon-blossom-3pcs",
+      "price": 4999,
+      "compareAtPrice": 8199,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 7,
+      "sourceImagesCount": 7,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/rn-image_picker_lib_temp_d4bcc5c1-d0c6-4e11-afab-3d022473a9f4.jpg?v=1759167756",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "Trending Designs"
+      ],
+      "category": "Clothing",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "f861af9f-db50-4881-8c47-0050e0bdcada",
+      "sourceId": 10183925236027,
+      "title": "Mustard Hill",
+      "slug": "mustard-hill",
+      "price": 3999,
+      "compareAtPrice": 5400,
+      "variantsCount": 3,
+      "sourceVariantsCount": 3,
+      "imagesCount": 6,
+      "sourceImagesCount": 6,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/rn-image_picker_lib_temp_3f6c3247-be8f-43f1-b342-b8194a86c6e6.jpg?v=1759167755",
+      "collections": [
+        "Co-Ords",
+        "Home"
+      ],
+      "category": "Clothing",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "d1039b8d-4e55-4c37-8899-d8a28d40d890",
+      "sourceId": 10183925104955,
+      "title": "Zirwah 3pcs",
+      "slug": "pink-aura-2pcs-copy",
+      "price": 4599,
+      "compareAtPrice": 6200,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 4,
+      "sourceImagesCount": 4,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/1_1.png?v=1759167751",
+      "collections": [
+        "Co-Ords",
+        "Home",
+        "Trending Designs"
+      ],
+      "category": "Clothing",
+      "available": false,
+      "status": "PASS"
+    },
+    {
+      "id": "1bddab07-6191-4d3a-8e3c-16b73a06db25",
+      "sourceId": 10183925072187,
+      "title": "Pink Aura 2PCS",
+      "slug": "pink-aura-2pcs",
+      "price": 3050,
+      "compareAtPrice": 5200,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 6,
+      "sourceImagesCount": 6,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/pink4.jpg?v=1759167749",
+      "collections": [
+        "Home"
+      ],
+      "category": "Clothing",
+      "available": false,
+      "status": "PASS"
+    },
+    {
+      "id": "bd422046-dfd8-4dee-8cb1-f2ff3167669b",
+      "sourceId": 10183925039419,
+      "title": "Noir Dream",
+      "slug": "mah-jabeen-embroidered-2pc",
+      "price": 4999,
+      "compareAtPrice": 5800,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 8,
+      "sourceImagesCount": 8,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/WhatsAppImage2025-06-18at21.27.46_11d7006e.jpg?v=1759167748",
+      "collections": [
+        "Co-Ords",
+        "Home"
+      ],
+      "category": "Clothing",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "1685fec3-6037-4328-8384-955e120fac09",
+      "sourceId": 10183925006651,
+      "title": "Hira Digital",
+      "slug": "hira-digital",
+      "price": 2850,
+      "compareAtPrice": 4500,
+      "variantsCount": 3,
+      "sourceVariantsCount": 3,
+      "imagesCount": 4,
+      "sourceImagesCount": 4,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/insta-save.net_InstagramPost_amna_tahir_3512798734632368079.jpg?v=1759167747",
+      "collections": [
+        "Co-Ords",
+        "Home"
+      ],
+      "category": "Clothing",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "9a1a3ea2-e7d0-4ffb-838a-c3db35681bc7",
+      "sourceId": 10183924646203,
+      "title": "NAVY CUT 3PCS",
+      "slug": "nailfoir-3pcs",
+      "price": 4399,
+      "compareAtPrice": 7400,
+      "variantsCount": 2,
+      "sourceVariantsCount": 2,
+      "imagesCount": 6,
+      "sourceImagesCount": 6,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/navyblue1.webp?v=1759167736",
+      "collections": [
+        "Home"
+      ],
+      "category": "Clothing",
+      "available": false,
+      "status": "PASS"
+    },
+    {
+      "id": "3b072d2d-f780-4a08-8372-b53b544ffba9",
+      "sourceId": 10183924482363,
+      "title": "Black Chic",
+      "slug": "noir-elegance-black-3-piece-cotton-suit",
+      "price": 3120,
+      "compareAtPrice": 6500,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 6,
+      "sourceImagesCount": 6,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/JSP00478_1_1.jpg?v=1759167732",
+      "collections": [
+        "Home"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "fda2b621-f13a-47ed-8046-a8cb491b8f0e",
+      "sourceId": 10183924384059,
+      "title": "Red RoYal 3 Pc EMB",
+      "slug": "red-royal-1",
+      "price": 5800,
+      "compareAtPrice": 7250,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 3,
+      "sourceImagesCount": 3,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/MaroonMirana_1_1.jpg?v=1759594902",
+      "collections": [
+        "BEST SELLING",
+        "Home"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "542e185f-06a1-4d47-83d6-58a32db00995",
+      "sourceId": 10183924351291,
+      "title": "TW009",
+      "slug": "green-2pcs",
+      "price": 3000,
+      "compareAtPrice": 5500,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 4,
+      "sourceImagesCount": 4,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/greenshort2pcs_2_1.jpg?v=1759167728",
+      "collections": [
+        "Co-Ords",
+        "Home"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "fa2966de-d499-4342-8e79-1dce97d7969b",
+      "sourceId": 10183924187451,
+      "title": "RUBY",
+      "slug": "olive-ruby",
+      "price": 3360,
+      "compareAtPrice": 6500,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 4,
+      "sourceImagesCount": 4,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/DSC00367-174540333032158_82a9eeff-92ed-4317-9935-d4ac05cea3a3.jpg?v=1778070815",
+      "collections": [
+        "Home"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "d1791c46-820a-48f9-8659-0b2d8716d249",
+      "sourceId": 10183924121915,
+      "title": "Black Iris",
+      "slug": "black-iris",
+      "price": 3150,
+      "compareAtPrice": 6000,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 7,
+      "sourceImagesCount": 7,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/BlackIris1.jpg?v=1759167722",
+      "collections": [
+        "Home",
+        "WINTER COLLECTION"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "d9708490-a31f-4983-8a8c-9a38c22178c5",
+      "sourceId": 10183924089147,
+      "title": "Gajri",
+      "slug": "gajri",
+      "price": 2999,
+      "compareAtPrice": 6000,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 8,
+      "sourceImagesCount": 8,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Gajri1.jpg?v=1759167720",
+      "collections": [
+        "Home"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "ed894cc9-3129-4df2-817c-a1305094834a",
+      "sourceId": 10183924023611,
+      "title": "Golden Grace",
+      "slug": "golden-grace",
+      "price": 5499,
+      "compareAtPrice": 7000,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 7,
+      "sourceImagesCount": 7,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/LNF-41-GOLDEN.1_700x_fd684c0a-a5a2-4a8c-a72a-85f0c7815dec.jpg?v=1759167718",
+      "collections": [
+        "Home",
+        "NEW ARRIVALS"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "653cf7a4-5b79-444e-8dfe-69d1280438b2",
+      "sourceId": 10183923761467,
+      "title": "Zaitoon 3pcs",
+      "slug": "zaitoon-3pcs",
+      "price": 5499,
+      "compareAtPrice": 7000,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 8,
+      "sourceImagesCount": 8,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/LNF-22-MEHNDI_1_700x_jpg.jpg?v=1759167710",
+      "collections": [
+        "Home",
+        "NEW ARRIVALS"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "9bde093d-a2c3-4a5f-8f1e-a57fb379761a",
+      "sourceId": 10183923597627,
+      "title": "Multi Sabz 3Pcs EMB",
+      "slug": "multi-sabz-3pcs",
+      "price": 5999,
+      "compareAtPrice": 8650,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 4,
+      "sourceImagesCount": 4,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/get.jpg?v=1759167706",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "WINTER COLLECTION"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "9788fcb0-862f-4956-8316-6c16854e2ec7",
+      "sourceId": 10183923564859,
+      "title": "Multi Black 2pcs EMB",
+      "slug": "multi-black-2pcs",
+      "price": 4999,
+      "compareAtPrice": 6350,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 7,
+      "sourceImagesCount": 7,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/6.jpg?v=1784994988",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "WINTER COLLECTION"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "a7477c39-fbd8-4502-801e-8d8f654c179e",
+      "sourceId": 10183923401019,
+      "title": "Kaavya Emb 3pcs",
+      "slug": "kaavya-emb-3pcs",
+      "price": 5999,
+      "compareAtPrice": 7399,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 7,
+      "sourceImagesCount": 7,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Vintage21stJuly-369_jpg_jpg.jpg?v=1759167700",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "WINTER COLLECTION"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "220c2c68-0fb5-4273-814d-17bf1d635f97",
+      "sourceId": 10183923335483,
+      "title": "Musturd Embroidery 2pcs",
+      "slug": "musturd-embroidery-3pcs",
+      "price": 4320,
+      "compareAtPrice": 6450,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 8,
+      "sourceImagesCount": 8,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Mirana18JULY-636_720x_9a40962a-ef57-4ecd-aa9c-99dc08de713c_webp_jpg.jpg?v=1759167698",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "fa17e1b8-89a6-4e2c-84f7-932253a1a588",
+      "sourceId": 10183923302715,
+      "title": "Elsa Embroidery 3pcs",
+      "slug": "elsa-embroidery-3pcs",
+      "price": 5999,
+      "compareAtPrice": 7399,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 7,
+      "sourceImagesCount": 7,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Mirana18JULY-1255_720x_cec48211-056f-4a61-b34a-4874d065cae3_webp_jpg.jpg?v=1759167697",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS",
+        "WINTER COLLECTION"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "1d94525e-6e71-43bf-842a-e7d28946c08e",
+      "sourceId": 10183923269947,
+      "title": "Laal Ishq",
+      "slug": "laal-ishq",
+      "price": 2850,
+      "compareAtPrice": 7000,
+      "variantsCount": 2,
+      "sourceVariantsCount": 2,
+      "imagesCount": 3,
+      "sourceImagesCount": 3,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/W.SS25.516.T-1.jpg?v=1759167695",
+      "collections": [
+        "Co-Ords",
+        "Home"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    },
+    {
+      "id": "223fbb5e-f1b0-47a5-848d-db9fe9a45e4d",
+      "sourceId": 10183923237179,
+      "title": "Stitched Peach Wool Emb 3pc",
+      "slug": "stitched-peach-wool-emb-3pc",
+      "price": 5999,
+      "compareAtPrice": 7450,
+      "variantsCount": 4,
+      "sourceVariantsCount": 4,
+      "imagesCount": 5,
+      "sourceImagesCount": 5,
+      "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/neww2.webp?v=1759167695",
+      "collections": [
+        "BEST SELLING",
+        "Home",
+        "NEW ARRIVALS"
+      ],
+      "category": "Unstitched / Stitched",
+      "available": true,
+      "status": "PASS"
+    }
+  ]
+}

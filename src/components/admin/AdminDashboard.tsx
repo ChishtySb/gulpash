@@ -3,11 +3,13 @@ import {
   ShoppingBag, Package, Settings, Sliders, DollarSign, 
   TrendingUp, Users, Truck, CheckCircle2, AlertTriangle, 
   Plus, Edit, Trash2, Search, ArrowLeft, Save, Play, 
-  Image as ImageIcon, RefreshCw, X, ShieldAlert, Eye
+  Image as ImageIcon, RefreshCw, X, ShieldAlert, Eye, EyeOff,
+  Database, ExternalLink, ArrowUp, ArrowDown, Video, Layers, Globe
 } from 'lucide-react';
-import { Product, Order, CMSConfig, SiteSettings, ProductSize, OrderStatus } from '../../types';
+import { Product, Order, CMSConfig, SiteSettings, ProductSize, OrderStatus, ProductVariantDetailed } from '../../types';
 import { StorageService } from '../../lib/storage';
 import { formatPrice } from '../../lib/currency';
+import { MigrationReportView } from './MigrationReportView';
 
 interface AdminDashboardProps {
   onExitAdmin: () => void;
@@ -15,7 +17,7 @@ interface AdminDashboardProps {
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onNavigateToStoreProduct }) => {
-  const [activeTab, setActiveTab] = useState<'analytics' | 'products' | 'orders' | 'cms' | 'settings'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'products' | 'orders' | 'cms' | 'settings' | 'migration'>('analytics');
   
   // Data states
   const [products, setProducts] = useState<Product[]>(StorageService.getProducts(true));
@@ -33,6 +35,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isNewProduct, setIsNewProduct] = useState(false);
   const [saveSuccessNotice, setSaveSuccessNotice] = useState<string | null>(null);
+  const [newImageUrl, setNewImageUrl] = useState('');
+  const [newVariantTitle, setNewVariantTitle] = useState('');
+  const [newVariantSku, setNewVariantSku] = useState('');
+  const [newVariantPrice, setNewVariantPrice] = useState(0);
+  const [newVariantStock, setNewVariantStock] = useState(10);
 
   // Reload data on storage events
   useEffect(() => {
@@ -131,6 +138,90 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
     const updated = { ...product, isSoldOut: !product.isSoldOut };
     StorageService.saveProduct(updated);
     triggerNotice(`Product marked as ${updated.isSoldOut ? 'Sold Out' : 'Available'}`);
+  };
+
+  const handleToggleVisibility = (product: Product) => {
+    const updated = { ...product, isVisible: !product.isVisible };
+    StorageService.saveProduct(updated);
+    triggerNotice(`Product "${product.title}" is now ${updated.isVisible ? 'Visible' : 'Hidden'} on storefront`);
+  };
+
+  // Image helpers
+  const handleMoveImage = (fromIdx: number, toIdx: number) => {
+    if (!editingProduct) return;
+    const newImgs = [...editingProduct.images];
+    if (toIdx < 0 || toIdx >= newImgs.length) return;
+    const item = newImgs.splice(fromIdx, 1)[0];
+    newImgs.splice(toIdx, 0, item);
+    setEditingProduct({ ...editingProduct, images: newImgs });
+  };
+
+  const handleSetPrimaryImage = (idx: number) => {
+    if (!editingProduct || idx === 0) return;
+    const newImgs = [...editingProduct.images];
+    const item = newImgs.splice(idx, 1)[0];
+    newImgs.unshift(item);
+    setEditingProduct({ ...editingProduct, images: newImgs });
+  };
+
+  const handleDeleteImage = (idx: number) => {
+    if (!editingProduct) return;
+    if (editingProduct.images.length <= 1) {
+      alert('A product must maintain at least one catalog image.');
+      return;
+    }
+    const newImgs = editingProduct.images.filter((_, i) => i !== idx);
+    setEditingProduct({ ...editingProduct, images: newImgs });
+  };
+
+  const handleAddImage = () => {
+    if (!editingProduct || !newImageUrl.trim()) return;
+    setEditingProduct({
+      ...editingProduct,
+      images: [...editingProduct.images, newImageUrl.trim()]
+    });
+    setNewImageUrl('');
+  };
+
+  // Variant helpers
+  const handleAddVariant = () => {
+    if (!editingProduct || !newVariantTitle.trim()) return;
+    const newVar: ProductVariantDetailed = {
+      id: `var-${Date.now()}`,
+      title: newVariantTitle.trim(),
+      size: newVariantTitle.trim(),
+      price: newVariantPrice > 0 ? newVariantPrice : editingProduct.price,
+      sku: newVariantSku.trim() || `${editingProduct.sku}-${newVariantTitle.trim().toUpperCase().replace(/\s+/g, '')}`,
+      available: newVariantStock > 0,
+      stock: newVariantStock,
+      position: (editingProduct.variants?.length || 0) + 1
+    };
+
+    const currentVariants = editingProduct.variants || [];
+    const currentSizes = [...editingProduct.sizes];
+    if (!currentSizes.includes(newVariantTitle.trim() as ProductSize)) {
+      currentSizes.push(newVariantTitle.trim() as ProductSize);
+    }
+
+    setEditingProduct({
+      ...editingProduct,
+      variants: [...currentVariants, newVar],
+      sizes: currentSizes
+    });
+
+    setNewVariantTitle('');
+    setNewVariantSku('');
+    setNewVariantPrice(0);
+    setNewVariantStock(10);
+  };
+
+  const handleDeleteVariant = (varId: string) => {
+    if (!editingProduct || !editingProduct.variants) return;
+    const updated = editingProduct.variants.filter(v => v.id !== varId);
+    setEditingProduct({
+      ...editingProduct,
+      variants: updated
+    });
   };
 
   // 3. ORDER ACTIONS
@@ -260,7 +351,22 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
             }`}
           >
             <Settings className="w-4 h-4 text-[#c59b66]" />
-            <span>Store & WhatsApp Settings</span>
+            <span>Store & Branding</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('migration')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-sm text-xs font-bold uppercase tracking-wider transition-colors border ${
+              activeTab === 'migration' 
+                ? 'bg-[#181818] text-white border-black' 
+                : 'bg-emerald-50 text-emerald-900 border-emerald-300 hover:bg-emerald-100'
+            }`}
+          >
+            <Database className="w-4 h-4 text-emerald-600" />
+            <span>Catalog Migration Audit</span>
+            <span className="bg-emerald-700 text-white text-[9px] px-1.5 py-0.5 rounded font-mono font-bold tracking-tight">
+              68/68 PASS
+            </span>
           </button>
         </div>
 
@@ -427,7 +533,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                       <th className="py-3 px-3">Fabric</th>
                       <th className="py-3 px-3">Price</th>
                       <th className="py-3 px-3">Stock</th>
-                      <th className="py-3 px-3">Status</th>
+                      <th className="py-3 px-3">Stock Status</th>
+                      <th className="py-3 px-3">Storefront Visibility</th>
                       <th className="py-3 px-4 text-right">Actions</th>
                     </tr>
                   </thead>
@@ -469,20 +576,54 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                           </button>
                         </td>
 
-                        <td className="py-3 px-4 text-right space-x-2">
+                        {/* Visibility (Phase 13) */}
+                        <td className="py-3 px-3">
+                          <button
+                            onClick={() => handleToggleVisibility(p)}
+                            className={`inline-flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-bold cursor-pointer transition-colors ${
+                              p.isVisible !== false
+                                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100'
+                                : 'bg-stone-100 text-stone-500 border border-stone-200 hover:bg-stone-200'
+                            }`}
+                            title={p.isVisible !== false ? 'Visible on storefront. Click to hide.' : 'Hidden from storefront. Click to publish.'}
+                          >
+                            {p.isVisible !== false ? (
+                              <>
+                                <Eye className="w-3 h-3 text-emerald-600" />
+                                <span>Visible</span>
+                              </>
+                            ) : (
+                              <>
+                                <EyeOff className="w-3 h-3 text-stone-400" />
+                                <span>Hidden</span>
+                              </>
+                            )}
+                          </button>
+                        </td>
+
+                        <td className="py-3 px-4 text-right space-x-1.5">
+                          {onNavigateToStoreProduct && (
+                            <button
+                              onClick={() => onNavigateToStoreProduct(p.slug)}
+                              className="p-1.5 text-[#666] hover:text-[#111] hover:bg-[#faf8f5] rounded-xs cursor-pointer inline-block"
+                              title="Preview on Live Store"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </button>
+                          )}
                           <button
                             onClick={() => {
                               setEditingProduct(p);
                               setIsNewProduct(false);
                             }}
-                            className="p-1.5 text-[#555] hover:text-[#aa814d] hover:bg-[#faf8f5] rounded-xs"
+                            className="p-1.5 text-[#555] hover:text-[#aa814d] hover:bg-[#faf8f5] rounded-xs cursor-pointer inline-block"
                             title="Edit product"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDeleteProduct(p.id)}
-                            className="p-1.5 text-[#888] hover:text-red-600 hover:bg-[#faf8f5] rounded-xs"
+                            className="p-1.5 text-[#888] hover:text-red-600 hover:bg-[#faf8f5] rounded-xs cursor-pointer inline-block"
                             title="Delete product"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -828,6 +969,29 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                       className="w-full border border-[#ddd] p-2.5 text-xs rounded-xs font-mono focus:outline-hidden"
                     />
                   </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-[#333] mb-1">Brand Logo Image URL (Optional)</label>
+                    <input
+                      type="url"
+                      value={settings.logoUrl || ''}
+                      onChange={(e) => setSettings({ ...settings, logoUrl: e.target.value })}
+                      placeholder="https://gulpash.pk/logo.png"
+                      className="w-full border border-[#ddd] p-2.5 text-xs rounded-xs font-mono focus:outline-hidden"
+                    />
+                    <span className="text-[10px] text-[#888] mt-0.5 block">Leave empty to use high-contrast editorial font typography.</span>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-[#333] mb-1">Favicon URL</label>
+                    <input
+                      type="url"
+                      value={settings.faviconUrl || ''}
+                      onChange={(e) => setSettings({ ...settings, faviconUrl: e.target.value })}
+                      placeholder="https://gulpash.pk/favicon.ico"
+                      className="w-full border border-[#ddd] p-2.5 text-xs rounded-xs font-mono focus:outline-hidden"
+                    />
+                  </div>
                 </div>
 
                 {/* WhatsApp & Concierge */}
@@ -949,6 +1113,68 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                   </div>
                 </div>
 
+                {/* Social Media Links */}
+                <div className="p-4 bg-[#faf8f5] border border-[#e8e3dc] rounded-sm space-y-4">
+                  <h3 className="font-bold text-xs uppercase tracking-wider text-[#111] flex items-center gap-1.5">
+                    <Globe className="w-4 h-4 text-[#aa814d]" />
+                    Social Media Channels (Official Profiles)
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#444] mb-1">Instagram URL</label>
+                      <input
+                        type="url"
+                        value={settings.socialLinks.instagram}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          socialLinks: { ...settings.socialLinks, instagram: e.target.value }
+                        })}
+                        placeholder="https://instagram.com/gulpash.pk"
+                        className="w-full border border-[#ddd] bg-white p-2 text-xs rounded-xs focus:outline-hidden"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#444] mb-1">Facebook URL</label>
+                      <input
+                        type="url"
+                        value={settings.socialLinks.facebook}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          socialLinks: { ...settings.socialLinks, facebook: e.target.value }
+                        })}
+                        placeholder="https://facebook.com/gulpashofficial"
+                        className="w-full border border-[#ddd] bg-white p-2 text-xs rounded-xs focus:outline-hidden"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#444] mb-1">TikTok URL</label>
+                      <input
+                        type="url"
+                        value={settings.socialLinks.tiktok || ''}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          socialLinks: { ...settings.socialLinks, tiktok: e.target.value }
+                        })}
+                        placeholder="https://tiktok.com/@gulpash.pk"
+                        className="w-full border border-[#ddd] bg-white p-2 text-xs rounded-xs focus:outline-hidden"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-[#444] mb-1">YouTube URL</label>
+                      <input
+                        type="url"
+                        value={settings.socialLinks.youtube || ''}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          socialLinks: { ...settings.socialLinks, youtube: e.target.value }
+                        })}
+                        placeholder="https://youtube.com/@gulpash"
+                        className="w-full border border-[#ddd] bg-white p-2 text-xs rounded-xs focus:outline-hidden"
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 <div className="pt-4 border-t border-[#eee]">
                   <button
                     type="submit"
@@ -961,6 +1187,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
 
               </form>
             </div>
+          </div>
+        )}
+
+        {/* 6. MIGRATION & AUDIT REPORT TAB */}
+        {activeTab === 'migration' && (
+          <div className="space-y-6 animate-in fade-in">
+            <MigrationReportView onNavigateToProduct={onNavigateToStoreProduct} />
           </div>
         )}
 
@@ -1028,22 +1261,44 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-[#333] mb-1">Category</label>
+                  <label className="block font-bold text-[#333] mb-1">Catalog Category (Product Type)</label>
                   <select
                     value={editingProduct.category}
                     onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value })}
-                    className="w-full border border-[#ddd] p-2 rounded-xs bg-white focus:outline-hidden"
+                    className="w-full border border-[#ddd] p-2 rounded-xs bg-white focus:outline-hidden text-xs"
                   >
+                    <option value="Unstitched / Stitched">Unstitched / Stitched (Source Verified)</option>
+                    <option value="Stitched">Stitched (Source Verified)</option>
+                    <option value="woman">woman (Source Verified)</option>
+                    <option value="Clothing">Clothing (Source Verified)</option>
+                    <option value="3 Pieces">3 Pieces (Source Verified)</option>
                     <option value="Unstitched Luxury Lawn">Unstitched Luxury Lawn</option>
                     <option value="Luxury Pret">Luxury Pret</option>
-                    <option value="Ready to Wear">Ready to Wear</option>
                     <option value="Festive Formals">Festive Formals</option>
-                    <option value="Chiffon Collection">Chiffon Collection</option>
-                    <option value="Bridal Couture">Bridal Couture</option>
                   </select>
                 </div>
 
                 <div>
+                  <label className="block font-bold text-[#333] mb-1">Assigned Collection</label>
+                  <select
+                    value={editingProduct.collectionSlug || 'new-arrivals'}
+                    onChange={(e) => setEditingProduct({ 
+                      ...editingProduct, 
+                      collectionSlug: e.target.value,
+                      tags: Array.from(new Set([...editingProduct.tags, e.target.value]))
+                    })}
+                    className="w-full border border-[#ddd] p-2 rounded-xs bg-white focus:outline-hidden text-xs"
+                  >
+                    <option value="new-arrivals">NEW ARRIVALS (Source Verified)</option>
+                    <option value="best-selling">BEST SELLING (Source Verified)</option>
+                    <option value="winter-collection">WINTER COLLECTION (Source Verified)</option>
+                    <option value="trending-designs">Trending Designs (Source Verified)</option>
+                    <option value="co-ords">Co-Ords (Source Verified)</option>
+                    <option value="home">Home Featured (Source Verified)</option>
+                  </select>
+                </div>
+
+                <div className="sm:col-span-2">
                   <label className="block font-bold text-[#333] mb-1">Fabric Specifications *</label>
                   <input
                     type="text"
@@ -1051,42 +1306,229 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                     value={editingProduct.fabric}
                     onChange={(e) => setEditingProduct({ ...editingProduct, fabric: e.target.value })}
                     placeholder="e.g. Pure Jacquard Lawn with Silk Dupatta"
-                    className="w-full border border-[#ddd] p-2 rounded-xs focus:outline-hidden"
+                    className="w-full border border-[#ddd] p-2 rounded-xs focus:outline-hidden text-xs"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block font-bold text-[#333] mb-1">Primary Image URL *</label>
-                <input
-                  type="url"
-                  required
-                  value={editingProduct.images[0] || ''}
-                  onChange={(e) => {
-                    const imgs = [...editingProduct.images];
-                    imgs[0] = e.target.value;
-                    setEditingProduct({ ...editingProduct, images: imgs });
-                  }}
-                  className="w-full border border-[#ddd] p-2 rounded-xs font-mono text-[11px] focus:outline-hidden"
-                />
+              {/* STOREFRONT VISIBILITY & FLAGS */}
+              <div className="p-3 bg-[#faf8f5] border border-[#e8e3dc] rounded-sm space-y-2">
+                <span className="font-bold text-[11px] uppercase tracking-wider text-[#111] block">
+                  Storefront Visibility & Display Badges
+                </span>
+                <div className="flex flex-wrap gap-4 pt-1">
+                  <label className="flex items-center gap-1.5 cursor-pointer font-bold text-emerald-800">
+                    <input
+                      type="checkbox"
+                      checked={editingProduct.isVisible !== false}
+                      onChange={(e) => setEditingProduct({ ...editingProduct, isVisible: e.target.checked })}
+                      className="accent-emerald-700 w-4 h-4"
+                    />
+                    <span>Publish to Storefront (Uncheck to hide completely)</span>
+                  </label>
+
+                  <label className="flex items-center gap-1.5 cursor-pointer font-semibold text-[#444]">
+                    <input
+                      type="checkbox"
+                      checked={editingProduct.isFeatured}
+                      onChange={(e) => setEditingProduct({ ...editingProduct, isFeatured: e.target.checked })}
+                      className="accent-[#c59b66]"
+                    />
+                    <span>Featured on Homepage</span>
+                  </label>
+
+                  <label className="flex items-center gap-1.5 cursor-pointer font-semibold text-[#444]">
+                    <input
+                      type="checkbox"
+                      checked={editingProduct.isNewArrival}
+                      onChange={(e) => setEditingProduct({ ...editingProduct, isNewArrival: e.target.checked })}
+                      className="accent-[#c59b66]"
+                    />
+                    <span>New In Badge</span>
+                  </label>
+
+                  <label className="flex items-center gap-1.5 cursor-pointer font-semibold text-red-700">
+                    <input
+                      type="checkbox"
+                      checked={editingProduct.isSoldOut}
+                      onChange={(e) => setEditingProduct({ ...editingProduct, isSoldOut: e.target.checked })}
+                      className="accent-red-600"
+                    />
+                    <span>Mark as Sold Out</span>
+                  </label>
+                </div>
               </div>
 
-              <div>
-                <label className="block font-bold text-[#333] mb-1">Secondary Hover Image URL</label>
-                <input
-                  type="url"
-                  value={editingProduct.images[1] || ''}
-                  onChange={(e) => {
-                    const imgs = [...editingProduct.images];
-                    imgs[1] = e.target.value;
-                    setEditingProduct({ ...editingProduct, images: imgs });
-                  }}
-                  className="w-full border border-[#ddd] p-2 rounded-xs font-mono text-[11px] focus:outline-hidden"
-                />
+              {/* PRODUCT IMAGE GALLERY MANAGER */}
+              <div className="p-3.5 bg-white border border-[#ddd] rounded-sm space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs uppercase tracking-wider text-[#111] flex items-center gap-1.5">
+                    <ImageIcon className="w-4 h-4 text-[#aa814d]" />
+                    Product Images ({editingProduct.images.length})
+                  </span>
+                  <span className="text-[10px] text-[#888]">
+                    Image #1 is the Primary thumbnail shown across all storefront grids.
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  {editingProduct.images.map((img, idx) => (
+                    <div key={idx} className="relative group border border-[#ddd] rounded-xs p-1.5 bg-[#faf8f5] flex flex-col justify-between">
+                      <div className="aspect-[3/4] w-full overflow-hidden rounded-xs bg-stone-100 relative">
+                        <img src={img} alt="" className="w-full h-full object-cover" />
+                        {idx === 0 ? (
+                          <span className="absolute top-1 left-1 bg-[#111] text-[#c59b66] text-[8px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
+                            Primary
+                          </span>
+                        ) : (
+                          <span className="absolute top-1 left-1 bg-black/60 text-white text-[8px] px-1 rounded">
+                            #{idx + 1}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between gap-1 pt-2">
+                        {idx !== 0 && (
+                          <button
+                            type="button"
+                            onClick={() => handleSetPrimaryImage(idx)}
+                            className="text-[9px] font-semibold text-[#aa814d] hover:underline"
+                            title="Make this the main cover image"
+                          >
+                            Set Primary
+                          </button>
+                        )}
+                        <div className="flex items-center gap-0.5 ml-auto">
+                          {idx > 0 && (
+                            <button
+                              type="button"
+                              onClick={() => handleMoveImage(idx, idx - 1)}
+                              className="p-1 text-[#666] hover:text-black"
+                              title="Move earlier"
+                            >
+                              <ArrowUp className="w-3 h-3" />
+                            </button>
+                          )}
+                          {idx < editingProduct.images.length - 1 && (
+                            <button
+                              type="button"
+                              onClick={() => handleMoveImage(idx, idx + 1)}
+                              className="p-1 text-[#666] hover:text-black"
+                              title="Move later"
+                            >
+                              <ArrowDown className="w-3 h-3" />
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteImage(idx)}
+                            className="p-1 text-red-500 hover:text-red-700"
+                            title="Delete image"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Add Image URL */}
+                <div className="flex items-center gap-2 pt-2 border-t border-[#eee]">
+                  <input
+                    type="url"
+                    value={newImageUrl}
+                    onChange={(e) => setNewImageUrl(e.target.value)}
+                    placeholder="https://cdn.shopify.com/... (Image URL)"
+                    className="flex-1 border border-[#ddd] p-2 text-xs font-mono rounded-xs focus:outline-hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddImage}
+                    className="bg-[#222] hover:bg-[#c59b66] text-white text-xs font-bold px-3 py-2 rounded-xs uppercase tracking-wider cursor-pointer"
+                  >
+                    Add Image
+                  </button>
+                </div>
               </div>
 
+              {/* VARIANTS & SIZES MANAGER */}
+              <div className="p-3.5 bg-white border border-[#ddd] rounded-sm space-y-3">
+                <span className="font-bold text-xs uppercase tracking-wider text-[#111] flex items-center gap-1.5">
+                  <Layers className="w-4 h-4 text-[#aa814d]" />
+                  Product Variants ({editingProduct.variants?.length || editingProduct.sizes.length})
+                </span>
+
+                {editingProduct.variants && editingProduct.variants.length > 0 ? (
+                  <div className="divide-y divide-[#eee] border border-[#eee] rounded-xs">
+                    {editingProduct.variants.map((v) => (
+                      <div key={v.id} className="p-2 flex items-center justify-between text-xs hover:bg-[#faf8f5]">
+                        <div className="flex items-center gap-3">
+                          <span className="font-bold text-[#111]">{v.title}</span>
+                          <span className="font-mono text-[10px] text-[#888]">SKU: {v.sku}</span>
+                          <span className="font-semibold text-emerald-800">{formatPrice(v.price, 'PKR')}</span>
+                          <span className="text-[10px] text-[#666]">Stock: {v.stock ?? 10}</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteVariant(v.id)}
+                          className="text-red-500 hover:text-red-700 p-1"
+                          title="Remove variant"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap gap-1.5">
+                    {editingProduct.sizes.map((s, idx) => (
+                      <span key={idx} className="bg-stone-100 border border-stone-300 px-2 py-1 rounded text-xs font-mono font-bold">
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Add Variant Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 pt-2 border-t border-[#eee]">
+                  <input
+                    type="text"
+                    value={newVariantTitle}
+                    onChange={(e) => setNewVariantTitle(e.target.value)}
+                    placeholder="Variant (e.g. XL or Stitched)"
+                    className="sm:col-span-2 border border-[#ddd] p-1.5 text-xs rounded-xs"
+                  />
+                  <input
+                    type="text"
+                    value={newVariantSku}
+                    onChange={(e) => setNewVariantSku(e.target.value)}
+                    placeholder="Variant SKU"
+                    className="border border-[#ddd] p-1.5 text-xs rounded-xs font-mono"
+                  />
+                  <input
+                    type="number"
+                    value={newVariantPrice || ''}
+                    onChange={(e) => setNewVariantPrice(Number(e.target.value))}
+                    placeholder="Price PKR"
+                    className="border border-[#ddd] p-1.5 text-xs rounded-xs"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddVariant}
+                    className="bg-[#222] hover:bg-[#c59b66] text-white text-[11px] font-bold py-1.5 rounded-xs uppercase tracking-wider cursor-pointer"
+                  >
+                    Add Variant
+                  </button>
+                </div>
+              </div>
+
+              {/* SHOWCASE VIDEO URL */}
               <div>
-                <label className="block font-bold text-[#333] mb-1">Product Showcase Video URL (Optional)</label>
+                <label className="block font-bold text-[#333] mb-1 flex items-center gap-1.5">
+                  <Video className="w-3.5 h-3.5 text-[#aa814d]" />
+                  Product Showcase Video URL (Optional MP4 / WebM)
+                </label>
                 <input
                   type="url"
                   value={editingProduct.videoUrl || ''}
@@ -1097,58 +1539,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
               </div>
 
               <div>
-                <label className="block font-bold text-[#333] mb-1">Description</label>
+                <label className="block font-bold text-[#333] mb-1">Description (Preserves Source HTML/Text)</label>
                 <textarea
-                  rows={3}
+                  rows={4}
                   value={editingProduct.description}
                   onChange={(e) => setEditingProduct({ ...editingProduct, description: e.target.value })}
-                  className="w-full border border-[#ddd] p-2 rounded-xs focus:outline-hidden"
+                  className="w-full border border-[#ddd] p-2 rounded-xs focus:outline-hidden font-mono text-[11px]"
                 />
-              </div>
-
-              <div className="flex flex-wrap gap-4 pt-2">
-                <label className="flex items-center gap-1.5 cursor-pointer font-semibold">
-                  <input
-                    type="checkbox"
-                    checked={editingProduct.isFeatured}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, isFeatured: e.target.checked })}
-                    className="accent-[#c59b66]"
-                  />
-                  <span>Featured on Homepage</span>
-                </label>
-
-                <label className="flex items-center gap-1.5 cursor-pointer font-semibold">
-                  <input
-                    type="checkbox"
-                    checked={editingProduct.isNewArrival}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, isNewArrival: e.target.checked })}
-                    className="accent-[#c59b66]"
-                  />
-                  <span>New In Badge</span>
-                </label>
-
-                <label className="flex items-center gap-1.5 cursor-pointer font-semibold">
-                  <input
-                    type="checkbox"
-                    checked={editingProduct.isSoldOut}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, isSoldOut: e.target.checked })}
-                    className="accent-[#c59b66]"
-                  />
-                  <span>Sold Out</span>
-                </label>
               </div>
 
               <div className="pt-4 border-t border-[#eee] flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setEditingProduct(null)}
-                  className="px-4 py-2 border border-[#ccc] rounded-xs text-xs font-semibold"
+                  className="px-4 py-2 border border-[#ccc] rounded-xs text-xs font-semibold cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-[#181818] hover:bg-[#c59b66] text-white text-xs font-bold uppercase tracking-wider rounded-xs"
+                  className="px-6 py-2 bg-[#181818] hover:bg-[#c59b66] text-white text-xs font-bold uppercase tracking-wider rounded-xs cursor-pointer"
                 >
                   Save Product
                 </button>

@@ -6,9 +6,45 @@ export interface CurrencyRate {
   rateAgainstPKR: number; // 1 USD = ~280 PKR, so rate is 1/280
 }
 
-export type ProductSize = 'XS' | 'S' | 'M' | 'L' | 'XL' | 'Unstitched' | 'Custom Stitch';
+export type ProductSize = 'XS' | 'S' | 'M' | 'L' | 'XL' | 'Unstitched' | 'Custom Stitch' | string;
 
 export type ProductStatus = 'active' | 'draft' | 'archived';
+
+export type MigrationStatus = 'pending' | 'imported' | 'verified' | 'needs_review' | 'failed';
+
+export interface ProductImageDetailed {
+  id: string;
+  productId: string;
+  sourceImageId?: number;
+  storagePath: string;
+  sourceUrl: string;
+  altText: string;
+  sortOrder: number;
+  isPrimary: boolean;
+  width?: number;
+  height?: number;
+  createdAt: string;
+}
+
+export interface ProductVariantDetailed {
+  id: string;
+  productId?: string;
+  sourceVariantId?: number;
+  title: string;
+  size: string;
+  color?: string;
+  fabric?: string;
+  length?: string;
+  optionValues?: Record<string, string>;
+  sku: string;
+  price: number;
+  compareAtPrice?: number | null;
+  available: boolean;
+  stock: number;
+  position?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 export interface ProductVariant {
   id: string;
@@ -26,18 +62,23 @@ export interface Product {
   description: string;
   shortDescription?: string;
   sku: string;
-  category: string; // e.g., 'Unstitched', 'Luxury Pret', 'Festive Chiffon', 'Bridal & Formal'
-  collection?: string; // e.g., 'Gul-e-Bahar 2026', 'Noor Festive Edit'
+  category: string; // e.g. "Unstitched / Stitched", "Stitched", etc.
+  categoryId?: string;
+  collection?: string;
+  collectionIds?: string[];
+  collectionNames?: string[];
   price: number; // in PKR
-  compareAtPrice?: number; // original price in PKR
+  compareAtPrice?: number | null; // original price in PKR
   costPrice?: number;
   stock: number;
-  sizes: ProductSize[];
-  fabric: string; // e.g., 'Premium Lawn with Chiffon Dupatta', 'Organza with Raw Silk'
+  sizes: (ProductSize | string)[];
+  fabric: string;
   colors?: string[];
   tags: string[];
   images: string[];
   primaryImageIndex?: number;
+  productImages?: ProductImageDetailed[];
+  variants?: ProductVariantDetailed[];
   videoUrl?: string; // MP4 or WebM video
   isVisible: boolean;
   isFeatured?: boolean;
@@ -55,6 +96,10 @@ export interface Product {
   };
   seoTitle?: string;
   seoDescription?: string;
+  sourceUrl?: string;
+  sourceProductId?: number | string;
+  sourceSlug?: string;
+  migrationStatus?: MigrationStatus;
   createdAt: string;
   updatedAt: string;
 }

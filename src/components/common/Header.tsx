@@ -194,12 +194,22 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Center: BRAND LOGO */}
           <div className="flex flex-col items-center justify-center lg:w-1/3 text-center cursor-pointer" onClick={() => onNavigate('home')}>
-            <h1 className="font-serif text-3xl sm:text-4xl lg:text-4xl tracking-[0.16em] font-light italic leading-none text-[#1A1A1A]">
-              {settings.brandName || 'GULPASH'}
-            </h1>
-            <span className="text-[8px] uppercase tracking-[0.4em] mt-1 text-stone-400 font-medium">
-              Lahore • Karachi • Dubai
-            </span>
+            {settings.logoUrl ? (
+              <img 
+                src={settings.logoUrl} 
+                alt={settings.brandName || 'GulPash'} 
+                className="h-9 sm:h-12 w-auto object-contain max-w-[180px]"
+              />
+            ) : (
+              <>
+                <h1 className="font-serif text-3xl sm:text-4xl lg:text-4xl tracking-[0.16em] font-light italic leading-none text-[#1A1A1A]">
+                  {settings.brandName || 'GULPASH'}
+                </h1>
+                <span className="text-[8px] uppercase tracking-[0.4em] mt-1 text-stone-400 font-medium">
+                  Lahore • Karachi • Dubai
+                </span>
+              </>
+            )}
           </div>
 
           {/* Right: Actions (Search, Wishlist, Cart, Admin/Account) */}

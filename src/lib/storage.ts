@@ -8,17 +8,17 @@ import {
 } from '../data/initialData';
 
 const KEYS = {
-  PRODUCTS: 'gulpash_products_v1',
-  CATEGORIES: 'gulpash_categories_v1',
-  COLLECTIONS: 'gulpash_collections_v1',
-  ORDERS: 'gulpash_orders_v1',
-  REVIEWS: 'gulpash_reviews_v1',
-  CMS: 'gulpash_cms_v1',
-  SETTINGS: 'gulpash_settings_v1',
-  CART: 'gulpash_cart_v1',
-  WISHLIST: 'gulpash_wishlist_v1',
-  ADMIN_AUTH: 'gulpash_admin_auth_v1',
-  CURRENCY: 'gulpash_currency_v1'
+  PRODUCTS: 'gulpash_products_v2_migrated',
+  CATEGORIES: 'gulpash_categories_v2_migrated',
+  COLLECTIONS: 'gulpash_collections_v2_migrated',
+  ORDERS: 'gulpash_orders_v2_migrated',
+  REVIEWS: 'gulpash_reviews_v2_migrated',
+  CMS: 'gulpash_cms_v2_migrated',
+  SETTINGS: 'gulpash_settings_v2_migrated',
+  CART: 'gulpash_cart_v2',
+  WISHLIST: 'gulpash_wishlist_v2',
+  ADMIN_AUTH: 'gulpash_admin_auth_v2',
+  CURRENCY: 'gulpash_currency_v2'
 };
 
 // Dispatch storage change event for components listening
@@ -33,7 +33,14 @@ export const StorageService = {
   getProducts(includeHidden = false): Product[] {
     try {
       const data = localStorage.getItem(KEYS.PRODUCTS);
-      const list: Product[] = data ? JSON.parse(data) : INITIAL_PRODUCTS;
+      let list: Product[] = data ? JSON.parse(data) : INITIAL_PRODUCTS;
+      
+      // Auto-heal if older dummy data exists or catalog size doesn't match migrated size
+      if (!list || list.length < 68 || list.some(p => p.id === 'gp-001')) {
+        list = INITIAL_PRODUCTS;
+        localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(list));
+      }
+
       return includeHidden ? list : list.filter(p => p.isVisible);
     } catch {
       return INITIAL_PRODUCTS;

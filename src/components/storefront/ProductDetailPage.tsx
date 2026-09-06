@@ -472,7 +472,14 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
           {/* Tab Contents */}
           {activeInfoTab === 'details' && (
             <div className="text-sm text-stone-600 leading-relaxed space-y-4 max-w-3xl font-light">
-              <p>{product.description}</p>
+              {product.description?.includes('<') ? (
+                <div 
+                  className="prose prose-stone max-w-none text-sm leading-relaxed text-stone-600 [&_p]:mb-3 [&_strong]:text-stone-900 [&_strong]:font-medium [&_ul]:list-disc [&_ul]:pl-5"
+                  dangerouslySetInnerHTML={{ __html: product.description }} 
+                />
+              ) : (
+                <p>{product.description}</p>
+              )}
               {product.details?.stitchingDetails && (
                 <div className="bg-stone-50 p-4 border border-stone-200 text-xs space-y-1">
                   <h4 className="font-medium text-stone-900 uppercase tracking-wider text-[11px]">Tailoring & Embellishments:</h4>
