@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS public.products (
   slug TEXT NOT NULL UNIQUE,
   description TEXT NOT NULL,
   short_description TEXT,
-  sku TEXT UNIQUE NOT NULL,
+  sku TEXT NOT NULL,
   category_id UUID REFERENCES public.categories(id) ON DELETE SET NULL,
   collection_id UUID REFERENCES public.collections(id) ON DELETE SET NULL,
   category_name TEXT NOT NULL,
@@ -79,6 +79,10 @@ CREATE TABLE IF NOT EXISTS public.products (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Safely remove any legacy unique constraint on sku if table was pre-created
+ALTER TABLE public.products DROP CONSTRAINT IF EXISTS products_sku_key;
+CREATE INDEX IF NOT EXISTS idx_products_sku ON public.products(sku);
+
 -- 4b. PRODUCT VARIANTS
 CREATE TABLE IF NOT EXISTS public.product_variants (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -87,7 +91,7 @@ CREATE TABLE IF NOT EXISTS public.product_variants (
   size TEXT NOT NULL,
   color TEXT,
   fabric TEXT,
-  sku TEXT UNIQUE NOT NULL,
+  sku TEXT NOT NULL,
   price NUMERIC(10,2) NOT NULL,
   compare_at_price NUMERIC(10,2),
   available BOOLEAN DEFAULT TRUE,
@@ -96,6 +100,10 @@ CREATE TABLE IF NOT EXISTS public.product_variants (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Safely remove any legacy unique constraint on variant sku if table was pre-created
+ALTER TABLE public.product_variants DROP CONSTRAINT IF EXISTS product_variants_sku_key;
+CREATE INDEX IF NOT EXISTS idx_product_variants_sku ON public.product_variants(sku);
 
 -- 5. PRODUCT IMAGES
 CREATE TABLE IF NOT EXISTS public.product_images (

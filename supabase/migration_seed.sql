@@ -53,7 +53,24 @@ VALUES ('3421d51c-3c3a-4908-8bfe-1d8dbd6e8e62', 'Plum 3Piece', 'plum-3piece', '<
 <strong>Dupatta:</strong> Dupata Chiffon Emb</li>
 </ul>
 <p><span style="color: rgb(0, 0, 0);"><strong>Type: Stitched<br>stuff <br>Cotton </strong></span></p>', 'TAW-RG3-S-0', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 5499, 6899, 'Embroidered shirt with Dupata Chiffon Emb', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('ce2fbb2c-886d-4382-8cf5-a0dedf1dec35', '3421d51c-3c3a-4908-8bfe-1d8dbd6e8e62', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/17_22ba13c3-6eda-4dde-a515-e01030c718f6.png?v=1787217341', 'Plum 3Piece - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -97,7 +114,24 @@ VALUES ('ae8fd4b2-58b5-49e2-8d7d-5f4359c3ad66', 'Azmeen 3 Piece', 'azmeen-3-piec
 </li>
 </ul>
 <h4><br></h4>', 'GP-10505411232059-51514460537147', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 5499, NULL, 'Embroidered Shirt with Embroidered Chiffon Dupatta', '{}', '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', true, true, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('81687408-b425-4041-811a-955689e81a3d', 'ae8fd4b2-58b5-49e2-8d7d-5f4359c3ad66', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/rn-image_picker_lib_temp_ad02dec1-398e-422d-83dd-795d0f8b888d.jpg?v=1785345921', 'Azmeen 3 Piece - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -147,7 +181,24 @@ VALUES ('67b3518e-d0ff-4acd-8b3e-b87304e54d66', 'Sunehri 3 Piece', 'sunehri-3-pi
 <h4><br></h4>
 </li>
 </ul>', 'TAW-SE3-S-5', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 5499, NULL, 'Embroidered Shirt with Printed Chiffon Dupatta', '{}', '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', true, true, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('33213ed4-c804-4df4-8ebf-b7ef25d87a58', '67b3518e-d0ff-4acd-8b3e-b87304e54d66', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/rn-image_picker_lib_temp_2464a6e2-8a9a-422c-9cda-21adbf389488.jpg?v=1785345449', 'Sunehri 3 Piece - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -180,7 +231,24 @@ VALUES ('46699592-2e2c-420e-8247-fee7434fa613', 'Raniya 3 Piece', 'raniya-3-piec
 </li>
 </ul>
 <p><br></p>', 'GP-10505411133755-51514459586875', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 4999, NULL, 'Embroidered Shirt with Printed Chiffon Dupatta', '{}', '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', true, true, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('5db1a88c-a3c8-48ac-88ad-6a92d61d055e', '46699592-2e2c-420e-8247-fee7434fa613', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/rn-image_picker_lib_temp_5d4c42f9-505f-45d3-957e-0e5ade3063b9.jpg?v=1785345447', 'Raniya 3 Piece - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -201,7 +269,24 @@ VALUES ('684c1b5a-5fa9-4218-8a7d-51b4d13c3b2a', 'Ruby Grace 3Pcs', 'ruby-grace-3
 <strong data-end="461" data-start="449">Dupatta:</strong> Dupata Chiffon Emb</li>
 </ul>
 <p><span style="color: rgb(0, 0, 0);"><strong>Type: Stitched<br>stuff <br>Cotton </strong></span></p>', 'TAW-RG3-S-0', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 5499, 6899, 'Embroidered shirt with Dupata Chiffon Emb', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('cc8b4b81-e3c5-46cd-8ed6-ecbf796a4cf1', '684c1b5a-5fa9-4218-8a7d-51b4d13c3b2a', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/657949007_18519088627073967_8926792540500625221_n_jpg.jpg?v=1782742886', 'Ruby Grace 3Pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -228,7 +313,24 @@ VALUES ('67095467-a083-423e-8b8a-b8961289cfee', 'Black Pearl 3Pcs', 'black-pearl
 <strong data-start="449" data-end="461">Dupatta:</strong> Printed Dupata </li>
 </ul>
 <p><span style="color: rgb(0, 0, 0);"><strong>Type: Stitched<br>stuff <br>Cotton </strong></span></p>', 'TAW-BP3-S-0', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 4999, 6899, 'Embroidered shirt with Printed Dupata', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('3a8e31db-68ce-4461-857f-1177b16f18f6', '67095467-a083-423e-8b8a-b8961289cfee', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/1782741729121_publer_com_jpg.jpg?v=1782742613', 'Black Pearl 3Pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -255,7 +357,24 @@ VALUES ('65de1f33-06b1-4c12-80cb-5fe8df1057b0', 'Sapphire Bloom 3Pcs', 'sapphire
 <strong data-start="449" data-end="461">Dupatta:</strong> Printed Dupata </li>
 </ul>
 <p><span style="color: rgb(0, 0, 0);"><strong>Type: Stitched<br>stuff <br>Cotton </strong></span></p>', 'TAW-SB3-S-1', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 5499, 6899, 'Embroidered shirt with Printed Dupata', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('fe115062-9e69-4c7e-8054-60805b03396c', '65de1f33-06b1-4c12-80cb-5fe8df1057b0', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/1_534918c3-fb63-4a81-b54c-260716f7d770_1.png?v=1782742247', 'Sapphire Bloom 3Pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -285,7 +404,24 @@ VALUES ('7ceb5e6e-3b16-456c-8b29-0bc0c774c5a7', 'Mehndi Emb 3Pc Stitched', 'mehn
 <strong data-end="972" data-start="962"><strong data-end="1015" data-start="1004">Season:</strong><span> Summer<br><img src="https://cdn.shopify.com/s/files/1/0977/8429/9803/files/co_ord_48.png?v=1761008602"></span></strong><br>
 </li>
 </ul>', 'GP-10261128741179-50895259500859', 'b6f45e57-efe5-4094-8c75-91ca5cde1f1e', 'Stitched', 6499, 19000, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('44f072a3-c3df-4a39-8f1a-85df5fbd65e0', '7ceb5e6e-3b16-456c-8b29-0bc0c774c5a7', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Mirana11thoct-1502_1000x_jpg.jpg?v=1767786202', 'Mehndi Emb 3Pc Stitched - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -323,7 +459,24 @@ VALUES ('79ebaf1d-ffdc-4092-89b3-4840149e235a', 'Pink Hearts Set', 'pink-hearts-
 <p><span style="color: rgb(0, 0, 0);"><strong>Model is wearing size M</strong></span></p>
 <p><span style="color: rgb(0, 0, 0);"><strong>Fabric: Cotton</strong></span></p>
 <p><span style="color: rgb(0, 0, 0);"><strong>Type: Stitched</strong></span></p>', 'TAW-PHS-S-0', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 4999, 6899, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('3bfb7c4c-a19f-4781-834d-4d2ce4f4cfe9', '79ebaf1d-ffdc-4092-89b3-4840149e235a', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/D87B454F-1D7A-4DEB-810F-30353E10D055_jpg.jpg?v=1780940232', 'Pink Hearts Set - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -358,7 +511,24 @@ VALUES ('18d9605c-92fc-4e49-8891-9c5e85d4cf91', 'Mehar 2 PCs EMBROIDERY', 'mehar
 <p>Size- The Model is wearing an S size</p>
 </div>
 </div>', 'GP-10407801487675-51317837168955', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 4699, 5999, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, true, true, true, 0)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('b557e160-5021-4cc4-8fd7-580e5bc1160e', '18d9605c-92fc-4e49-8891-9c5e85d4cf91', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/35A9176_1.webp?v=1780752552', 'Mehar 2 PCs EMBROIDERY - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -393,7 +563,24 @@ VALUES ('5632555b-9cb5-4c9a-8cb1-d5183d52965d', 'Mulberry Bloom 3 PCs EMBROIDERY
 <p><span style="color: #000000;"><strong>Shirt &amp; Trouser Fabric:</strong> Premium Cotton (Summer Fabric)</span></p>
 <p><span style="color: #000000;"><strong>Technique:</strong> Fully Embroidered</span></p>
 <p><span style="color: #000000;">Radiate elegance in ‘Mulberry Bloom,’ a striking magenta-toned ensemble featuring a sophisticated blend of intricate thread-work, delicate <strong>schiffli embroidery on the shirt</strong>, and premium appliqué accents. The outfit is paired with a statement off-white farshi-style Trouser, boasting a voluminous ''gher'' and matching embroidered borders at the hem for a truly regal flair. Perfectly blending a modern vibrant palette with a timeless traditional cut, this look is the quintessential choice for a standout Eid celebration.</span></p>', 'TAW-MB3PE-S-0', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 4999, 6500, ', and premium appliqué accents. The outfit is paired with a statement off-white farshi-style Trouser, boasting a voluminous ''gher'' and matching embroidered borders at the hem for a truly regal flair. Perfectly blending a modern vibrant palette with a timeless traditional cut, this look is the quintessential choice for a standout Eid celebration. with matching fabric', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('ce7ddd0b-dc79-440f-86d5-742ae5de26e3', '5632555b-9cb5-4c9a-8cb1-d5183d52965d', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Jul9_2026_07_53_28PM.png?v=1783609114', 'Mulberry Bloom 3 PCs EMBROIDERY - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -418,7 +605,24 @@ VALUES ('cc06c4e2-3dae-4ae5-856d-a7a6e587e5c2', 'Elara 2 PCs EMB', 'elara-3-pcs-
 <p><span style="color: rgb(0, 0, 0);"><b>Stretch</b>: Low</span><br><span style="color: rgb(0, 0, 0);"><b>Transparency</b>: None</span><br><span style="color: rgb(0, 0, 0);"><b>Hand feel</b>: Soft</span><br><span style="color: rgb(0, 0, 0);"><b>Lining</b>: None</span><br><span style="color: rgb(0, 0, 0);"><b>Material</b>: 100% Premium Cotton</span><br><span style="color: rgb(0, 0, 0);"><b>Size</b>: The model is 5''5" and wears a size SMALL</span><br><span style="color: rgb(0, 0, 0);"><b>Occasion</b>: Daily Wear</span></p>
 <p><span style="color: rgb(0, 0, 0);"><b>Note</b>: The actual color of the product may vary slightly from the image.</span></p>
 <p><span style="color: rgb(0, 0, 0);">Our Standard Delivery Time is 5 - 8 Days</span></p>', 'TAW-E3PE-S-0', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 3199, 7500, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('7b65882d-f36f-4189-8088-a55fffb988aa', 'cc06c4e2-3dae-4ae5-856d-a7a6e587e5c2', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/DSC01957.webp?v=1780416886', 'Elara 2 PCs EMB - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -450,7 +654,24 @@ VALUES ('429029be-2e20-4c49-880e-ec39fd65cf01', 'RUMI 3 PC EMBROIDERY', 'rumi-3-
 <p><span style="color: rgb(0, 0, 0);"><strong>Model is wearing M size</strong></span></p>
 <p><span style="color: rgb(0, 0, 0);"><strong>Fabric: Soft summer cotton </strong></span></p>
 <p><span style="color: rgb(0, 0, 0);"><strong>Type: Stitched </strong></span></p>', 'GP-10382350680379-51247277441339', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 4999, 6299, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('ba978219-a3de-462b-83e2-a81d74dfc0f3', '429029be-2e20-4c49-880e-ec39fd65cf01', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/83EA3D67-ED6D-4C10-A329-0E32A3C3ABBC.webp?v=1778593068', 'RUMI 3 PC EMBROIDERY - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -525,7 +746,24 @@ VALUES ('d2d0021f-d086-4ec9-8c57-b2fc95b01a97', 'NEW MAJESTIC OLIVE', 'new-majes
 <div class="text-sm text-gray-700 description-text font-regular"><br></div>
 <p><span class="text-md text-gray-700 description-text font-medium">Disclaimer:</span></p>
 <div class="text-sm text-gray-700 description-text font-regular">Actual product color may vary slightly from the image.</div>', 'GP-10379191517499-51236268474683', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 4500, 10000, 'Premium Cotton Lawn / Raw Silk', '{"3PCS","fashion clothing","ladies two piefce","newarrival","ready to wear"}', '{"S","M","L","XL"}', true, false, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('d0e6a31d-bc6d-42b7-8655-16098ad52ee2', 'd2d0021f-d086-4ec9-8c57-b2fc95b01a97', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/20260211171210-2e07735c8a854412-media_image-5903f828fedc451aa9c3c56dea342cef.webp?v=1778330126', 'NEW MAJESTIC OLIVE - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -596,7 +834,24 @@ VALUES ('83a52645-309b-4a4e-8e74-07ab1256b510', 'Black Elegance', 'black-eleganc
 <div class="text-sm text-gray-700 description-text font-regular"><br></div>
 <p><span class="text-md text-gray-700 description-text font-medium">Disclaimer:</span></p>
 <div class="text-sm text-gray-700 description-text font-regular">Actual product color may vary slightly from the image.</div>', 'GP-10379189813563-51236264542523', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 2989, 6100, 'Premium Cotton Lawn / Raw Silk', '{"2pcs","fashion clothing","ladies two piefce","newarrival","ready to wear"}', '{"S","M","L","XL"}', true, false, true, true, 0)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('60a71b5e-454d-4561-8bf8-5936d64abf3f', '83a52645-309b-4a4e-8e74-07ab1256b510', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/cropped_image-173745718973721_b50029fa-91b9-4a18-9da2-baceeec436b9.webp?v=1778329842', 'Black Elegance - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -672,7 +927,24 @@ VALUES ('7672b263-f881-4f47-8bda-42f2e7f58a5f', 'Noir Luxe', 'noir-luxe', '<tabl
 </tr>
 </tbody>
 </table>', 'GP-10379183522107-51236247765307', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 5145, NULL, 'Premium Cotton Lawn / Raw Silk', '{"3PCS","fashion clothing","newarrival","ready to wear"}', '{"S","M","L","XL"}', true, false, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('1a6058b1-6fc5-4b49-87f5-eaabc517a57a', '7672b263-f881-4f47-8bda-42f2e7f58a5f', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/pixelcut-export_1_-174428980325467_ad8c94af-0090-4f9f-89dd-1c4a93c04274.webp?v=1778328922', 'Noir Luxe - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -687,7 +959,24 @@ VALUES ('24fcf3b0-026f-4c86-84ea-f38b335abfcc', 'IZNA 3PC', 'izna-3pc', '<p data
 <p data-end="442" data-start="127">✨ <strong data-end="140" data-start="129">Fabric:</strong> Premium Linen <br data-end="157" data-start="154">✨ <strong data-end="188" data-start="159">Intricate Embroidery Work</strong><br data-end="191" data-start="188">✨ <strong data-end="240" data-start="193">Long, graceful shirt with elegant detailing</strong><br data-end="243" data-start="240">✨ <strong data-end="298" data-start="245">Standard-fit trousers for a sleek and modest look</strong><br data-end="301" data-start="298">✨ <strong data-is-only-node="" data-end="327" data-start="303">Soft Chiffon Dupatta</strong> completing the outfit with a refined touch<br data-end="373" data-start="370">✨ <strong data-end="442" data-start="375">Perfect blend of comfort, elegance, and timeless sophistication</strong></p>
 <p data-end="635" data-start="444">🌟 A stunning Cream<em data-end="472" data-start="458">-colored</em> embroidered 3-piece suit crafted in premium Dhank fabric, paired with a beautifull y draped chiffon dupatta — designed to make you stand out with effortless charm.</p>
 <p data-end="725" data-start="637">📩 <strong data-end="659" data-start="640">DM to Order Now</strong><br data-end="662" data-start="659">🛍️ <strong data-end="686" data-start="666">Order on Website</strong><br data-end="689" data-start="686">🚚 <strong data-end="725" data-start="692">Nationwide Delivery Available</strong></p>', 'GP-10277820858683-50950131941691', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 5999, 7950, 'Premium Cotton Lawn / Raw Silk', '{}', '{"Standard Size"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('3b69d006-246e-4dd5-8e72-cee13940e980', '24fcf3b0-026f-4c86-84ea-f38b335abfcc', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/IMG_2687_JPG_4dc21aa4-35f1-47d2-9fe7-123e330d107a.png?v=1769775422', 'IZNA 3PC - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -714,7 +1003,24 @@ VALUES ('d20ee07c-b0eb-4a12-8bab-42c43f3a62db', 'Roshaneh 3Pcs', 'roshaneh-3pcs'
 <h3 data-section-id="o1351e" data-start="1243" data-end="1287"><span role="text" style="color: rgb(249, 11, 11);"><strong data-start="1247" data-end="1285">Why Choose Roshaneh 3Pcs<span style="color: rgb(0, 0, 0);"> </span>?</strong></span></h3>
 <p data-start="1288" data-end="1543"><span style="color: rgb(0, 0, 0);">✔ <strong data-start="1290" data-end="1326">Premium Linen Fabric for Comfort</strong></span><br data-start="1326" data-end="1329"><span style="color: rgb(0, 0, 0);">✔ <strong data-start="1331" data-end="1367">Elegant Embroidered Shirt Design</strong></span><br data-start="1367" data-end="1370"><span style="color: rgb(0, 0, 0);">✔ <strong data-start="1372" data-end="1412">Graceful Chiffon Embroidered Dupatta</strong></span><br data-start="1412" data-end="1415"><span style="color: rgb(0, 0, 0);">✔ <strong data-start="1417" data-end="1451">Simple Trouser for Classy Look</strong></span><br data-start="1451" data-end="1454" data-is-only-node=""><span style="color: rgb(0, 0, 0);">✔ <strong data-start="1456" data-end="1493">Perfect for Festive &amp; Casual Wear</strong></span><br data-start="1493" data-end="1496"><span style="color: rgb(0, 0, 0);">✔ <strong data-start="1498" data-end="1541">High-Quality Stitching &amp; Premium Finish</strong></span></p>
 <p data-start="1545" data-end="1654" data-is-last-node="" data-is-only-node=""><span style="color: rgb(0, 0, 0);">Add a touch of sophistication to your wardrobe with Roshaneh 3Pcs<strong data-start="1597" data-end="1623"> </strong>— where luxury meets elegance.</span></p>', 'GP-10364056404283-51209885024571', 'eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e', 'woman', 6499, 8860, 'Premium Cotton Lawn / Raw Silk', '{"FloralsPremiumLawn3Pcs","meadowgrace"}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('b9df6e3d-3a64-45fe-8036-56f0f2307f22', 'd20ee07c-b0eb-4a12-8bab-42c43f3a62db', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/MaaheZrmny-2623_jpg_1.png?v=1777640850', 'Roshaneh 3Pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -753,7 +1059,24 @@ VALUES ('d2e352fa-f3ac-4907-86a3-dc849766e49f', 'Parisa 3Pcs', 'parisa-3pcs', '<
 <h3 data-end="1287" data-start="1243" data-section-id="o1351e"><span style="color: rgb(249, 11, 11);" role="text"><strong data-end="1285" data-start="1247">Why Choose Parisa 3Pcs 3Pcs?</strong></span></h3>
 <p data-end="1543" data-start="1288"><span style="color: rgb(0, 0, 0);">✔ <strong data-end="1326" data-start="1290">Premium Linen Fabric for Comfort</strong></span><br data-end="1329" data-start="1326"><span style="color: rgb(0, 0, 0);">✔ <strong data-end="1367" data-start="1331">Elegant Embroidered Shirt Design</strong></span><br data-end="1370" data-start="1367"><span style="color: rgb(0, 0, 0);">✔ <strong data-end="1412" data-start="1372">Graceful Chiffon Embroidered Dupatta</strong></span><br data-end="1415" data-start="1412"><span style="color: rgb(0, 0, 0);">✔ <strong data-end="1451" data-start="1417">Simple Trouser for Classy Look</strong></span><br data-is-only-node="" data-end="1454" data-start="1451"><span style="color: rgb(0, 0, 0);">✔ <strong data-end="1493" data-start="1456">Perfect for Festive &amp; Casual Wear</strong></span><br data-end="1496" data-start="1493"><span style="color: rgb(0, 0, 0);">✔ <strong data-end="1541" data-start="1498">High-Quality Stitching &amp; Premium Finish</strong></span></p>
 <p data-is-only-node="" data-is-last-node="" data-end="1654" data-start="1545"><span style="color: rgb(0, 0, 0);">Add a touch of sophistication to your wardrobe with <strong data-end="1623" data-start="1597">Parisa 3Pcs </strong>— where luxury meets elegance.</span></p>', 'GP-10364053193019-51209879912763', 'eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e', 'woman', 6499, 8860, 'Premium Cotton Lawn / Raw Silk', '{"FloralsPremiumLawn3Pcs","meadowgrace"}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('972e5fe1-5182-4e87-820a-371ea073e138', 'd2e352fa-f3ac-4907-86a3-dc849766e49f', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Ava_5__jpg.jpg?v=1777640217', 'Parisa 3Pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -793,7 +1116,24 @@ VALUES ('2deba161-c048-41b9-8b6a-0ea73d93caf5', 'Zohra 3Pcs', 'zohra-3pcs', '<p>
 <p data-start="1344" data-end="1481"><strong data-start="1344" data-end="1366">Delivery &amp; Payment</strong><br data-start="1366" data-end="1369">Cash on Delivery available nationwide<br data-start="1406" data-end="1409">Fast shipping across Pakistan<br data-start="1438" data-end="1441">Carefully packed for quality assurance</p>
 <hr data-start="1483" data-end="1486">
 <p data-start="1488" data-end="1547"><strong data-start="1488" data-end="1547">Limited pieces available — restocks are not guaranteed</strong></p>', 'GP-10363343470907-51207656046907', '238b9607-7157-468b-82ad-49fd47f535f7', 'Clothing', 4999, 8199, 'Premium Cotton Lawn / Raw Silk', '{"3PCS","Bloom pret","farshi shalwar","fashion clothing","lawndress","newarrival","ready to wear"}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('5d637304-9b04-4a29-80e4-d4b457d17773', '2deba161-c048-41b9-8b6a-0ea73d93caf5', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/imgi_96_MSS-5751_3_fe45d47b-39a0-4cfb-8c50-73b86c82f29a_jpg.jpg?v=1777546756', 'Zohra 3Pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -820,7 +1160,24 @@ VALUES ('a6ea17b7-590f-4f76-8c41-374034ec75aa', 'Noor-e-Naz Luxury 3Pcs', 'noor-
 <h3 data-section-id="o1351e" data-start="1243" data-end="1287"><span role="text" style="color: rgb(249, 11, 11);"><strong data-start="1247" data-end="1285">Why Choose Noor-e-Naz Luxury 3Pcs?</strong></span></h3>
 <p data-start="1288" data-end="1543"><span style="color: rgb(0, 0, 0);">✔ <strong data-start="1290" data-end="1326">Premium Linen Fabric for Comfort</strong></span><br data-start="1326" data-end="1329"><span style="color: rgb(0, 0, 0);">✔ <strong data-start="1331" data-end="1367">Elegant Embroidered Shirt Design</strong></span><br data-start="1367" data-end="1370"><span style="color: rgb(0, 0, 0);">✔ <strong data-start="1372" data-end="1412">Graceful Organza Embroidered Dupatta</strong></span><br data-start="1412" data-end="1415"><span style="color: rgb(0, 0, 0);">✔ <strong data-start="1417" data-end="1451">Simple Trouser for Classy Look</strong></span><br data-start="1451" data-end="1454" data-is-only-node=""><span style="color: rgb(0, 0, 0);">✔ <strong data-start="1456" data-end="1493">Perfect for Festive &amp; Casual Wear</strong></span><br data-start="1493" data-end="1496"><span style="color: rgb(0, 0, 0);">✔ <strong data-start="1498" data-end="1541">High-Quality Stitching &amp; Premium Finish</strong></span></p>
 <p data-start="1545" data-end="1654" data-is-last-node="" data-is-only-node=""><span style="color: rgb(0, 0, 0);">Add a touch of sophistication to your wardrobe with <strong data-start="1597" data-end="1623">Noor-e-Naz Luxury 3Pcs</strong> — where luxury meets elegance.</span></p>', 'TAW-NL3-S-0', 'eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e', 'woman', 6499, 8860, 'Premium Cotton Lawn / Raw Silk', '{"FloralsPremiumLawn3Pcs","meadowgrace"}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('e88e9057-3071-43fd-8247-bb3c67e1c7cd', 'a6ea17b7-590f-4f76-8c41-374034ec75aa', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Untitled-1_0097_DSC02955.jpg?v=1777378910', 'Noor-e-Naz Luxury 3Pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -843,7 +1200,24 @@ VALUES ('2bb9d3f7-8c4d-41b0-8845-0bc41fd66e90', 'SWEETIE 3 PC EMBROIDERY', 'swee
 <p><span style="color: rgb(0, 0, 0);">Model is wearing Medium size</span></p>
 <p><span style="color: rgb(0, 0, 0);"><strong>Fabric: Soft cotton</strong></span></p>
 <p><span style="color: rgb(0, 0, 0);"><strong>Stitched</strong></span></p>', 'TAW-SE3-S-2', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 3999, 6199, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('847667c4-fd9c-4e4b-821b-49c7fce87453', '2bb9d3f7-8c4d-41b0-8845-0bc41fd66e90', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/E3F1B20A-11C9-489B-9A39-FCB111246529.webp?v=1776789610', 'SWEETIE 3 PC EMBROIDERY - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -894,7 +1268,24 @@ VALUES ('c085a81b-1df4-4308-899b-8cc4c7a5450e', 'ZAARIF - COTTON 2 PC EMB', 'zaa
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'GP-10352489496891-51179307761979', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 4499, 8000, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('e0ad05fe-b43e-421c-8147-be4a4156ea17', 'c085a81b-1df4-4308-899b-8cc4c7a5450e', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/DSC07527_jpg.jpg?v=1776437150', 'ZAARIF - COTTON 2 PC EMB - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -951,7 +1342,24 @@ VALUES ('8497ab44-9624-4c9c-83d2-19d1a1cb8505', 'Rina', 'camel-brown-linen-3-pie
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'GP-10341072699707-51135296536891', 'eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e', 'woman', 6499, 8550, 'Premium Cotton Lawn / Raw Silk', '{"FloralsPremiumLawn3Pcs","meadowgrace"}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('f01b3671-b38f-452e-8473-e8e07cd7bbce', '8497ab44-9624-4c9c-83d2-19d1a1cb8505', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Thefirstofmany_simpleyetmodern-amusthaveforyouriftaarevents_Staytunedforthela_3.jpg?v=1775923770', 'Rina - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1000,7 +1408,24 @@ VALUES ('0c50bfb0-2e11-4dcf-845b-ca6d96a959c9', 'MULTI FOWER 3PCS', 'florals-pre
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'GP-10333013541179-51107043836219', 'eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e', 'woman', 7499, 8860, 'Premium Cotton Lawn / Raw Silk', '{"FloralsPremiumLawn3Pcs","meadowgrace"}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('9d36d3cc-e292-40f2-8659-f92febceabfb', '0c50bfb0-2e11-4dcf-845b-ca6d96a959c9', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/050A7010_1.jpg?v=1775662680', 'MULTI FOWER 3PCS - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1045,7 +1470,24 @@ VALUES ('e55417e5-e933-4996-8b9a-9408cbe83481', 'Meadow Grace 3Pc EMB', 'meadow-
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'GP-10323012387131-51082348069179', 'eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e', 'woman', 6499, 8299, 'Premium Cotton Lawn / Raw Silk', '{"meadowgrace"}', '{"S","Black","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('e9bf950d-f0c5-4d5c-8e94-b6a74c433f0b', 'e55417e5-e933-4996-8b9a-9408cbe83481', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Vintage23rdDec-302_1.jpg?v=1774870997', 'Meadow Grace 3Pc EMB - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1104,7 +1546,24 @@ VALUES ('334907a5-b18e-4895-8563-d126ef81414e', 'Armeen 3pcs', 'armeen-3pcs', '<
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'GP-10301757948219-51019441144123', 'eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e', 'woman', 6499, 8250, 'Premium Cotton Lawn / Raw Silk', '{"armeen"}', '{"Black"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('4fb4232f-15eb-47b6-8e83-a68db48d7fa3', '334907a5-b18e-4895-8563-d126ef81414e', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/1_e908f076-38a6-4c33-a784-da13a142a343.png?v=1774535145', 'Armeen 3pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1159,7 +1618,24 @@ VALUES ('39cc2be0-b2e8-4c1e-8275-3b529e6dc727', 'Shamsa 2 PCs Embroidered', 'yel
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'GP-10289553834299-50992498966843', '238b9607-7157-468b-82ad-49fd47f535f7', 'Clothing', 3999, 5500, 'Premium Cotton Lawn / Raw Silk', '{"Bloom pret","fashion clothing","ladies two piefce","lawndress","newarrival","ready to wear"}', '{"S","M","L","XL"}', true, true, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('aa43b980-a425-4663-8f1a-9aa856b1695e', '39cc2be0-b2e8-4c1e-8275-3b529e6dc727', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/EidcollectionisavailablenowZimalbyModernmilaapGoandshoponlinefromwebsite_1.jpg?v=1771952830', 'Shamsa 2 PCs Embroidered - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1200,7 +1676,24 @@ VALUES ('4abb99fa-b4b7-4916-871d-aa08e5c09297', 'Sophie 3Pcs', 'sophie-3pcs', '<
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available.</span></p>', 'GP-10289034494267-50987429593403', 'eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e', 'woman', 5999, 7950, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('f99db419-a55f-494c-858d-8db2229dda53', '4abb99fa-b4b7-4916-871d-aa08e5c09297', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/eidshoot_s_z_a_-3027_jpg.jpg?v=1771846601', 'Sophie 3Pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1260,7 +1753,24 @@ VALUES ('95e7f24f-4cea-452d-8a64-903e7e0171e1', 'Matka Mirror Work', 'matka-mirr
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'GP-10288336666939-50984737997115', '238b9607-7157-468b-82ad-49fd47f535f7', 'Clothing', 2850, 4500, 'Premium Cotton Lawn / Raw Silk', '{"fashion clothing","ladies two piefce","newarrival","ready to wear"}', '{"S","M","L","XL"}', true, false, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('8f99927d-bb44-4ba9-8fdf-0b185e7dea3d', '95e7f24f-4cea-452d-8a64-903e7e0171e1', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/WhatsApp_Image_2025-11-20_at_8.39.38_PM.jpg?v=1772031408', 'Matka Mirror Work - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1317,7 +1827,24 @@ VALUES ('ed78e020-ca45-4711-8cbf-b297452ae95a', 'Sunset 2pcs', 'sunset-2pcs', '<
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'GP-10288335782203-50984736227643', '238b9607-7157-468b-82ad-49fd47f535f7', 'Clothing', 2850, 4500, 'Premium Cotton Lawn / Raw Silk', '{"fashion clothing","ladies two piefce","newarrival","ready to wear"}', '{"S","M","L","XL"}', true, false, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('9a3be5ba-262c-45d0-8497-ec501ed075ec', 'ed78e020-ca45-4711-8cbf-b297452ae95a', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/493667759_122138684192408152_3231786512462453256_n.jpg?v=1771670075', 'Sunset 2pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1367,7 +1894,24 @@ VALUES ('795eb11f-d487-4cc0-894e-c4374af06804', 'Multi Color Black 3Pcs', 'multi
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'GP-10285157318971-50973113221435', 'eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e', 'woman', 6499, 8750, 'Premium Cotton Lawn / Raw Silk', '{}', '{"Black"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('46a01a44-9280-44a2-8d77-f083daea3662', '795eb11f-d487-4cc0-894e-c4374af06804', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Gemini_Generated_Image_8cxrw78cxrw78cxr.png?v=1771001914', 'Multi Color Black 3Pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1413,7 +1957,24 @@ VALUES ('50505619-aad0-46d7-8f7e-30d60142a79d', 'Aleeeza Black 3pcs', 'alize-bla
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'GP-10285064028475-50972766372155', 'b6f45e57-efe5-4094-8c75-91ca5cde1f1e', 'Stitched', 6499, 8750, 'Premium Cotton Lawn / Raw Silk', '{"3PCS","fashion clothing","ladies two piefce","newarrival","ready to wear"}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('cb4923f7-a3d8-4d4c-86e4-c72e0b189036', '50505619-aad0-46d7-8f7e-30d60142a79d', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/5.png?v=1772298010', 'Aleeeza Black 3pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1463,7 +2024,24 @@ VALUES ('1e98264d-e4ca-4b33-849b-51daed1fcb17', 'Regal Dream 3Pcs', 'regal-dream
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'GP-10275293954363-50942228267323', 'b6f45e57-efe5-4094-8c75-91ca5cde1f1e', 'Stitched', 6199, 7990, 'Premium Cotton Lawn / Raw Silk', '{"3PCS","fashion clothing","ladies two piefce","newarrival","ready to wear"}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('2443d963-6b23-4aba-8fcf-9046733df372', '1e98264d-e4ca-4b33-849b-51daed1fcb17', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/5_0f2902da-8b93-4f00-98b3-69de90fec358_jpg.jpg?v=1769455006', 'Regal Dream 3Pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1485,7 +2063,24 @@ VALUES ('b7401728-a250-45c6-8127-c30147a0bb76', 'Chiku Embroidery 3Pcs', 'chiku-
 <p>Embroidery Trouser</p>
 <p>Embroidery Shawl</p>
 <p>Size Chart<strong>         <br><img src="https://cdn.shopify.com/s/files/1/0977/8429/9803/files/co_ord_48.png?v=1761008602"></strong><br></p>', 'GP-10275293888827-50942227743035', '182c6be1-75c0-406c-826f-770ab3725133', '3 Pieces', 5999, 7830, 'Premium Cotton Lawn / Raw Silk', '{"2pcs","3PCS","fashion clothing","LINEN","ready to wear","Trending Now","women suite","womens clothing"}', '{"S","Meidum","L","XL"}', true, false, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('15eea5f1-fd09-4497-872e-92f53a3bccff', 'b7401728-a250-45c6-8127-c30147a0bb76', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/IMG_20251101_002112_7ab25f69-918d-43f5-9ada-78b2ca914dfc_1.jpg?v=1769455005', 'Chiku Embroidery 3Pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1534,7 +2129,24 @@ VALUES ('a9c529e1-e76d-430c-804c-bdda76d34e12', 'Cream Alishba Emb', 'cream-alis
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'GP-10275291103547-51097599574331', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 6499, 8150, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('9cdf7180-3681-4b32-8322-6758579fd359', 'a9c529e1-e76d-430c-804c-bdda76d34e12', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/POV-off-whiteisyourfavouritecolor_TobookstudioappointmentspleasereachouttousonWha_4.jpg?v=1769454490', 'Cream Alishba Emb - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1588,7 +2200,24 @@ VALUES ('b8afb0c8-a81f-4669-8115-d707b8164a48', 'Multi Color 3Pcs Embroidery', '
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'GP-10272034128187-51169367916859', 'eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e', 'woman', 6499, 8750, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('1c984cbf-75c8-41fd-8c47-543c2b8a9374', 'b8afb0c8-a81f-4669-8115-d707b8164a48', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/VDCPF25-Nisha-5.jpg?v=1768915843', 'Multi Color 3Pcs Embroidery - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1639,7 +2268,24 @@ VALUES ('f274da04-3f35-4ba4-8b4c-3b5d97ff94cb', 'pistiana 3pcs', 'pistachio-3pcs
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'GP-10254738850107-50956405932347', 'b6f45e57-efe5-4094-8c75-91ca5cde1f1e', 'Stitched', 6491, 8250, 'Premium Cotton Lawn / Raw Silk', '{"3PCS","fashion clothing","ladies two piefce","newarrival","ready to wear"}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('21b20555-9e62-4473-898c-2f28ba74b4fe', 'f274da04-3f35-4ba4-8b4c-3b5d97ff94cb', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Mirana18JULY-84.jpg?v=1766162560', 'pistiana 3pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1704,7 +2350,24 @@ VALUES ('e19fa59a-b017-4a7d-8d5c-b9daa6f1da28', 'NEW BROWNIE', 'brownish-3pc', '
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'GP-10248330477883-50840689443131', 'b6f45e57-efe5-4094-8c75-91ca5cde1f1e', 'Stitched', 6499, 7650, 'Premium Cotton Lawn / Raw Silk', '{"3PCS","fashion clothing","newarrival","ready to wear"}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('4a151d76-b8a1-48ec-83a9-1c77c9072c2b', 'e19fa59a-b017-4a7d-8d5c-b9daa6f1da28', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/IMG-7792.jpg?v=1765614695', 'NEW BROWNIE - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1757,7 +2420,24 @@ VALUES ('a6512b44-8268-47e2-84c4-daf6a1e3c792', 'NEW AYRA 3PCS', 'aria-stitched-
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'GP-10246164316475-50832862314811', 'b6f45e57-efe5-4094-8c75-91ca5cde1f1e', 'Stitched', 6499, 8450, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('21a2647f-b276-4d6d-8b01-d7ad94cb9378', 'a6512b44-8268-47e2-84c4-daf6a1e3c792', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/IMG_3341.jpg?v=1765233649', 'NEW AYRA 3PCS - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1829,7 +2509,24 @@ VALUES ('ede8c9da-99a4-4a48-8410-6407a56fcc5c', 'Blackish EMB 3PCS', 'blackish-e
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'TAW-TC-S-1', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 6499, 8150, 'Premium Cotton Lawn / Raw Silk', '{"3PCS","aura","ladies two piefce","ready to wear","wintercollection"}', '{"S","M","L","XL"}', true, true, true, true, 0)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('c0265ac4-f839-41db-8d2f-8afe0ce3a1cc', 'ede8c9da-99a4-4a48-8410-6407a56fcc5c', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/SnapInsta_imgupscaler.ai_v1_Fast__4K_4.png?v=1764692220', 'Blackish EMB 3PCS - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1881,7 +2578,24 @@ VALUES ('2b3ed078-321b-43ac-8ff2-9ed0fcb9dff1', 'Zeenat EMB – 3PCs', 'zeenat-e
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'TAW-NE-S', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 6499, 8460, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('efcb2e27-be5e-44dc-8eea-9dc3f9b755b3', '2b3ed078-321b-43ac-8ff2-9ed0fcb9dff1', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/eidshoot_s_z_a_-1902_jpg.jpg?v=1762781175', 'Zeenat EMB – 3PCs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1949,7 +2663,24 @@ VALUES ('9e23c099-e2ef-454c-8500-52c782931f0f', 'SAYA EMB 3PCS', 'aish-3pcs', '<
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'TAW-SE3-S', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 5580, 8500, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('75967362-e0a5-4801-817f-df6ced38f433', '9e23c099-e2ef-454c-8500-52c782931f0f', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/WhatsAppImage2025-10-18at21.35.30_2.jpg?v=1760981349', 'SAYA EMB 3PCS - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -1980,7 +2711,24 @@ VALUES ('de978772-42a9-4557-836a-5db4e762f36e', 'Kehksha  2PC Dhank Suit', 'pist
 <p data-start="1054" data-end="1222">🌿 <strong data-start="1057" data-end="1068">Fabric:</strong> Premium Dhank – breathable &amp; soft<br data-start="1109" data-end="1112">💚 <strong data-start="1115" data-end="1125">Shade:</strong> Pastel Green – calm, refreshing look<br data-start="1162" data-end="1165">🌸 <strong data-start="1168" data-end="1178">Style:</strong> Elegant embroidery with minimal aesthetic</p>
 <p data-start="1224" data-end="1375">✨ <strong data-start="1226" data-end="1242">Perfect for:</strong> Daily wear, office, and casual outings.<br data-start="1282" data-end="1285"><br></p>
 <p data-start="779" data-end="854"><img src="https://cdn.shopify.com/s/files/1/0950/1478/1245/files/42_size.jpg?v=1757954418" alt=""><br></p>', 'TAW-KEHKS-S', '238b9607-7157-468b-82ad-49fd47f535f7', 'Clothing', 3999, 7500, 'Premium Cotton Lawn / Raw Silk', '{"fashion clothing","ladies two piefce","newarrival","ready to wear"}', '{"S","M","L"}', true, false, true, true, 0)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('a09e8c29-0311-4f7d-872d-ed3a6e691a01', 'de978772-42a9-4557-836a-5db4e762f36e', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/undefined_change_pose_3_1.png?v=1759926490', 'Kehksha  2PC Dhank Suit - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2026,7 +2774,24 @@ VALUES ('4fbf5d47-0b38-4025-8534-321f3c711e3b', 'Red Reverie 3pcs', 'red-reverie
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'TAW-RN3-S', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 6499, 8250, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, true, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('1a6a820b-c238-45e6-8418-d373626dcf36', '4fbf5d47-0b38-4025-8534-321f3c711e3b', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/RedReverie6.webp?v=1759595664', 'Red Reverie 3pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2084,7 +2849,24 @@ VALUES ('d0dec34a-83bb-4da2-844d-743e9f382462', 'ALEESHA EMBROIDERY 3PC', 'alees
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'TAW-ND3-S-0', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 6499, 8350, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","Extra-Large"}', true, true, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('135c8999-b147-4af1-8ab2-6c19af0ac6be', 'd0dec34a-83bb-4da2-844d-743e9f382462', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/alishaweb2.jpg?v=1759595663', 'ALEESHA EMBROIDERY 3PC - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2133,7 +2915,24 @@ VALUES ('2921bc89-7bfc-42b0-81a9-2932ea5b6fdc', 'LEMON BLOSSOM 3Pcs', 'lemon-blo
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'TAW-LEMON-S-0', '238b9607-7157-468b-82ad-49fd47f535f7', 'Clothing', 4999, 8199, 'Premium Cotton Lawn / Raw Silk', '{"3PCS","Bloom pret","farshi shalwar","fashion clothing","lawndress","newarrival","ready to wear"}', '{"S","M","L","X Large"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('527a29b6-02ba-40c0-8c8c-1950d3a0c485', '2921bc89-7bfc-42b0-81a9-2932ea5b6fdc', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/rn-image_picker_lib_temp_d4bcc5c1-d0c6-4e11-afab-3d022473a9f4.jpg?v=1759167756', 'LEMON BLOSSOM 3Pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2176,7 +2975,24 @@ VALUES ('f861af9f-db50-4881-8c47-0050e0bdcada', 'Mustard Hill', 'mustard-hill', 
 <p data-start="576" data-end="623">💛 Mustard tones for a bold yet graceful look</p>
 <p data-start="625" data-end="695">#MustardHill #EasternWear #SummerStyle #CottonChic #EmbroideredLooks</p>
 <p data-start="697" data-end="793">⚠️ <strong data-start="700" data-end="715">Disclaimer:</strong> Product color may slightly vary due to lighting or screen display settings.<img src="https://cdn.shopify.com/s/files/1/0950/1478/1245/files/42_size.jpg?v=1757954418" alt=""></p>', 'TAW-ME2-S-1', '238b9607-7157-468b-82ad-49fd47f535f7', 'Clothing', 3999, 5400, 'Premium Cotton Lawn / Raw Silk', '{"Bloom pret","fashion clothing","ladies two piefce","lawndress","newarrival","ready to wear"}', '{"Mustard"}', true, false, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('f6adc88a-ab17-4af4-8a21-eeec4edc16c4', 'f861af9f-db50-4881-8c47-0050e0bdcada', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/rn-image_picker_lib_temp_3f6c3247-be8f-43f1-b342-b8194a86c6e6.jpg?v=1759167755', 'Mustard Hill - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2200,7 +3016,24 @@ VALUES ('d1039b8d-4e55-4c37-8899-d8a28d40d890', 'Zirwah 3pcs', 'pink-aura-2pcs-c
 <p data-start="347" data-end="468">🔹 Fabric: Cotton<br data-start="364" data-end="367">🔹 3 Piece Set – Kurta + Trouser + Dupatta<br data-start="409" data-end="412">🔹 Embroidered Details | Regular Fit | Summer Friendly</p>
 <p data-start="470" data-end="513">🌿 Style made simple, elegance made easy.</p>
 <p data-start="515" data-end="627">⚠️ <strong data-start="518" data-end="533">Disclaimer:</strong> Actual product color may vary slightly from the images due to lighting and screen settings.<br><br><img src="https://cdn.shopify.com/s/files/1/0935/5368/8891/files/ChatGPT_Image_Oct_20_2025_10_41_54_PM.png?v=1760982220" alt=""><br></p>', 'TAW-MM3-S', '238b9607-7157-468b-82ad-49fd47f535f7', 'Clothing', 4599, 6200, 'Premium Cotton Lawn / Raw Silk', '{"fashion clothing","ladies two piefce","newarrival","ready to wear"}', '{"S","M","L","XL"}', true, false, false, true, 0)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('4f9fcc4a-a9b4-4549-8ae4-5c079680df1c', 'd1039b8d-4e55-4c37-8899-d8a28d40d890', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/1_1.png?v=1759167751', 'Zirwah 3pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2217,7 +3050,24 @@ INSERT INTO public.products (id, title, slug, description, sku, category_id, cat
 VALUES ('1bddab07-6191-4d3a-8e3c-16b73a06db25', 'Pink Aura 2PCS', 'pink-aura-2pcs', '<p>Bring grace and freshness to your wardrobe with the Pink Aura 3-Piece Kurta Set by GulPash. 🌷✨<br>Crafted from breathable cotton fabric, this long embroidered kurta in a soft pink hue exudes charm and sophistication. It is paired with a matching straight trouser for everyday comfort, while the elegant poly silk dupatta adds a touch of refined beauty. Perfect for daily summer wear, Pink Aura combines elegance with effortless style.</p>
 <p>👗 Outfit Type: Eastern Ready-to-Wear<br>🧵 Fabric: Cotton Shirt &amp; Trouser, Poly Silk Dupatta<br>🎨 Color: Pink<br>✨ Work: Embroidered<br>👚 Top Style: Long Kurta, Regular Fit<br>👖 Bottom Style: Straight Trouser<br>🧕 Dupatta: Poly Silk Dupatta<br>🔹 Pieces: 3 (Shirt + Trouser + Dupatta)<br>🌸 Season: Summer Wear⚠️ Disclaimer: Actual product color may vary slightly from the image.</p>
 <p>🌷 Pink Aura – soft, elegant, and perfect for effortless everyday charm.<br><img src="https://cdn.shopify.com/s/files/1/0950/1478/1245/files/42_size.jpg?v=1757954418" alt=""><br></p>', 'TAW-HP2-S-0', '238b9607-7157-468b-82ad-49fd47f535f7', 'Clothing', 3050, 5200, 'Premium Cotton Lawn / Raw Silk', '{"fashion clothing","ladies two piefce","newarrival","ready to wear"}', '{"S","M","L","XL"}', true, false, false, true, 0)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('8811d3ce-2767-4aa5-8caf-8439c33b58f9', '1bddab07-6191-4d3a-8e3c-16b73a06db25', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/pink4.jpg?v=1759167749', 'Pink Aura 2PCS - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2261,7 +3111,24 @@ VALUES ('bd422046-dfd8-4dee-8cb1-f2ff3167669b', 'Noir Dream', 'mah-jabeen-embroi
 <p data-start="634" data-end="736">🌿 Perfect for summer wear – breathable &amp; comfortable<br data-start="687" data-end="690">🖤 Classic black shade – versatile &amp; stylish</p>
 <p data-start="738" data-end="810">#BlackElegance #EasternWear #SummerStyle #CottonChic #EmbroideredLooks</p>
 <p data-start="812" data-end="908">⚠️ <strong data-start="815" data-end="830">Disclaimer:</strong> Product color may slightly vary due to lighting or screen display settings.<br><img src="https://cdn.shopify.com/s/files/1/0950/1478/1245/files/42_size.jpg?v=1757954418" alt=""><br></p>', 'TAW-ND-S', '238b9607-7157-468b-82ad-49fd47f535f7', 'Clothing', 4999, 5800, 'Premium Cotton Lawn / Raw Silk', '{"fashion clothing","ladies two piefce","newarrival","ready to wear"}', '{"S","M","L","XL"}', true, false, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('5bb55ce5-9a64-41d0-81f8-4acfbbaa2f90', 'bd422046-dfd8-4dee-8cb1-f2ff3167669b', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/WhatsAppImage2025-06-18at21.27.46_11d7006e.jpg?v=1759167748', 'Noir Dream - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2302,7 +3169,24 @@ VALUES ('1685fec3-6037-4328-8384-955e120fac09', 'Hira Digital', 'hira-digital', 
 <p><strong>Trouser Fabrics: </strong>Basic Lawn</p>
 <p><strong>Work Technique: </strong>Digital Printed</p>
 <p><strong>Disclaimer: </strong>Actual product color may vary slightly from the image.</p>', 'TAW-HD-S-175335437044423', '238b9607-7157-468b-82ad-49fd47f535f7', 'Clothing', 2850, 4500, 'Premium Cotton Lawn / Raw Silk', '{"fashion clothing","ladies two piefce","newarrival","ready to wear"}', '{"S","m-1","L"}', true, false, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('301c09af-82c5-49c0-8817-2cda78688f8d', '1685fec3-6037-4328-8384-955e120fac09', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/insta-save.net_InstagramPost_amna_tahir_3512798734632368079.jpg?v=1759167747', 'Hira Digital - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2319,7 +3203,24 @@ INSERT INTO public.products (id, title, slug, description, sku, category_id, cat
 VALUES ('9a1a3ea2-e7d0-4ffb-838a-c3db35681bc7', 'NAVY CUT 3PCS', 'nailfoir-3pcs', '<p>Elevate your summer wardrobe with this elegant Blue 3-Piece Kurta Set by GulPash. ✨<br>Crafted from breathable cotton fabric, the set features a beautifully embroidered long kurta paired with a comfortable straight trouser and a soft chiffon dupatta. With an attached lining for a neat finish, this outfit is the perfect mix of comfort and style – ideal for daily summer wear.</p>
 <p>👗 Outfit Type: Eastern Ready-to-Wear<br>🧵 Fabric: Cotton Shirt &amp; Trouser, Chiffon Dupatta<br>🎨 Color: Blue<br>✨ Work: Embroidered<br>👚 Top Style: Long Kurta, Regular Fit<br>👖 Bottom Style: Straight Trouser<br>🧕 Dupatta: Chiffon<br>🔹 Pieces: 3 (Shirt + Trouser + Dupatta)<br>🌸 Season: Summer Wear<br>📌 Product ID: LFP2366<br>⚠️ Disclaimer: Actual product color may vary slightly from the image.</p>
 <p>💙 An exquisite embroidered 3-piece set – light, elegant, and perfect for your summer chic style.<br><img src="https://cdn.shopify.com/s/files/1/0950/1478/1245/files/42_size.jpg?v=1757954418" alt=""><br></p>', 'TAW-NAILO-M', '238b9607-7157-468b-82ad-49fd47f535f7', 'Clothing', 4399, 7400, 'Premium Cotton Lawn / Raw Silk', '{"3PCS","fashion clothing","ladies two piefce","newarrival","ready to wear"}', '{"M","L"}', true, false, false, true, 0)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('f66499e0-6b65-4678-830a-30be82b9c654', '9a1a3ea2-e7d0-4ffb-838a-c3db35681bc7', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/navyblue1.webp?v=1759167736', 'NAVY CUT 3PCS - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2345,7 +3246,24 @@ VALUES ('3b072d2d-f780-4a08-8372-b53b544ffba9', 'Black Chic', 'noir-elegance-bla
 <p data-start="549" data-end="599">Step into elegance that never goes out of style.</p>
 <p data-start="549" data-end="599"> #EasternWear #BlackOutfit #CottonChic #TimelessStyle #ElegantLooks</p>
 <p data-start="685" data-end="781">⚠️ <strong data-start="688" data-end="703">Disclaimer:</strong> Product color may slightly vary due to lighting or screen display settings.<img src="https://cdn.shopify.com/s/files/1/0950/1478/1245/files/42_size.jpg?v=1757954418" alt=""></p>', 'TAW-BC-S', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 3120, 6500, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, false, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('2273388a-802c-42c1-8c0a-d4c2764ae834', '3b072d2d-f780-4a08-8372-b53b544ffba9', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/JSP00478_1_1.jpg?v=1759167732', 'Black Chic - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2400,7 +3318,24 @@ VALUES ('fda2b621-f13a-47ed-8046-a8cb491b8f0e', 'Red RoYal 3 Pc EMB', 'red-royal
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'TAW-RR-S-176053764426708', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 5800, 7250, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, true, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('bffb72bb-5191-4e11-8dcc-afb1f89dd3ec', 'fda2b621-f13a-47ed-8046-a8cb491b8f0e', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/MaroonMirana_1_1.jpg?v=1759594902', 'Red RoYal 3 Pc EMB - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2430,7 +3365,24 @@ VALUES ('542e185f-06a1-4d47-83d6-58a32db00995', 'TW009', 'green-2pcs', '<p data-
 <p data-start="683" data-end="762"><strong data-start="683" data-end="696">Occasion:</strong> Ideal for festive events, casual gatherings, and summer outings</p>
 </li>
 </ul>', 'TAW-TW009-S', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 3000, 5500, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, false, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('a82b1e33-74ba-4186-886f-3ca433c77af5', '542e185f-06a1-4d47-83d6-58a32db00995', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/greenshort2pcs_2_1.jpg?v=1759167728', 'TW009 - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2447,7 +3399,24 @@ INSERT INTO public.products (id, title, slug, description, sku, category_id, cat
 VALUES ('fa2966de-d499-4342-8e79-1dce97d7969b', 'RUBY', 'olive-ruby', '<p>Elevate your summer wardrobe with the Olive Ruby 2-Piece Kurta Set by GulPash. 🌿<br>This elegant ensemble features a beautifully embroidered long kurta in a graceful mustard shade, paired with a comfortable straight trouser. To complete the look, a stunning digital printed dupatta adds charm and style, making it a perfect pick for both casual outings and daily wear.</p>
 <p>👗 Outfit Type: Eastern Ready-to-Wear<br>🧵 Fabric: Cotton Shirt &amp; Trouser<br>🎨 Color: Mustard (Olive Ruby)<br>✨ Work: Embroidered<br>👚 Top Style: Long Kurta, Regular Fit<br>👖 Bottom Style: Straight Trouser<br>🔹 Pieces: 2 (Shirt + Trouser)<br>🌸 Season: Summer Wear<br>⚠️ Disclaimer: Actual product color may vary slightly from the image.</p>
 <p>💛 Olive Ruby – timeless embroidery meets modern digital prints for effortless summer elegance.<br><img src="https://cdn.shopify.com/s/files/1/0950/1478/1245/files/42_size.jpg?v=1757954418" alt=""><br></p>', 'TAW-RUBY-S', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 3360, 6500, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, false, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('fba6157a-d178-4d47-84e7-beb4ae63f452', 'fa2966de-d499-4342-8e79-1dce97d7969b', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/DSC00367-174540333032158_82a9eeff-92ed-4317-9935-d4ac05cea3a3.jpg?v=1778070815', 'RUBY - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2464,7 +3433,24 @@ INSERT INTO public.products (id, title, slug, description, sku, category_id, cat
 VALUES ('d1791c46-820a-48f9-8659-0b2d8716d249', 'Black Iris', 'black-iris', '<p>Embrace sophistication this winter with the Black Iris 3-Piece Kurta Set by GulPash. ✨<br>Tailored from warm dhanak fabric, this embroidered straight-cut kurta comes with a comfortable straight trouser and a matching embroidered dupatta, creating the perfect blend of comfort and elegance. The attached lining ensures a polished finish, making it an ideal choice for daily winter wear with a graceful touch.</p>
 <p>👗 Outfit Type: Eastern Ready-to-Wear<br>🧵 Fabric: Dhanak Shirt &amp; Trouser, Matching Embroidered Dupatta<br>🎨 Color: Black<br>✨ Work: Embroidered<br>👚 Top Style: Straight Cut Kurta, Regular Fit<br>👖 Bottom Style: Straight Trouser<br>🧕 Dupatta: Matching Embroidered Dupatta<br>🔹 Pieces: 3 (Shirt + Trouser + Dupatta)<br>❄️ Season: Winter Wear<br>⚠️ Disclaimer: Actual product color may vary slightly from the image.</p>
 <p>🖤 Black Iris – a versatile 3-piece set that brings warmth, elegance, and timeless charm to your winter wardrobe.<br><br><img src="https://cdn.shopify.com/s/files/1/0950/1478/1245/files/42_size.jpg?v=1757954418" alt=""><br></p>', 'TAW-ZOEE-S-0', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 3150, 6000, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, false, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('016ed484-5002-445c-8078-c6ee8ef0c66c', 'd1791c46-820a-48f9-8659-0b2d8716d249', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/BlackIris1.jpg?v=1759167722', 'Black Iris - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2490,7 +3476,24 @@ INSERT INTO public.products (id, title, slug, description, sku, category_id, cat
 VALUES ('d9708490-a31f-4983-8a8c-9a38c22178c5', 'Gajri', 'gajri', '<p>Step into elegance with the Gajr Pink Kurta Set by GulPash. 🌺<br>Made from soft cotton fabric, this straight kurta paired with straight trousers is delicately embroidered to bring charm and comfort together. The attached lining ensures a polished look, making it the perfect choice for daily summer wear.</p>
 <p>👗 Outfit Type: Eastern Ready-to-Wear<br>🧵 Fabric: Cotton Shirt &amp; Trouser<br>🎨 Color: Pink<br>✨ Work: Embroidered<br>👚 Top Style: Straight Kurta, Regular Fit<br>👖 Bottom Style: Straight Trouser<br>🔹 Pieces Available:<br>🌸 Season: Summer Wear<br>⚠️ Disclaimer: Actual product color may vary slightly from the image.</p>
 <p>💖 Garji brings you versatile elegance – available in both 2-piece and 3-<br> options to suit your style.<br><img alt="" src="https://cdn.shopify.com/s/files/1/0950/1478/1245/files/42_size.jpg?v=1757954418"><br></p>', 'TAW-GAJRI-S', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 2999, 6000, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, false, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('edfdf4e9-a020-4db7-86fc-78960e865878', 'd9708490-a31f-4983-8a8c-9a38c22178c5', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Gajri1.jpg?v=1759167720', 'Gajri - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2520,7 +3523,24 @@ VALUES ('ed894cc9-3129-4df2-817c-a1305094834a', 'Golden Grace', 'golden-grace', 
 <p data-start="167" data-end="353">✨ <strong data-start="169" data-end="180">Fabric:</strong> Dhank<br data-start="186" data-end="189">✨ <strong data-start="191" data-end="218">3 Piece Suit with Shawl</strong><br data-start="218" data-end="221">✨ <strong data-start="223" data-end="252">Beautiful Embroidery Work</strong><br data-start="252" data-end="255">✨ <strong data-start="257" data-end="280" data-is-only-node="">Long Graceful Shirt</strong> with Standard-Fit Trousers<br data-start="307" data-end="310">✨ <strong data-start="312" data-end="351">Perfect Blend of Comfort &amp; Elegance</strong></p>
 <p data-start="355" data-end="448">🌟 A timeless mustard outfit with elegant embroidery — made to make you stand out in style!</p>
 <p data-start="450" data-end="514">📩 <strong data-start="453" data-end="473">DM to Order Now!</strong><br data-start="473" data-end="476">🚚 <strong data-start="479" data-end="512">Nationwide Delivery Available</strong></p>', 'TAW-GE3-S', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 5499, 7000, 'with Standard-Fit Trousers with matching fabric', '{}', '{"Standard Size"}', true, false, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('85cb67b7-8102-46b7-8742-44c9b61be23a', 'ed894cc9-3129-4df2-817c-a1305094834a', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/LNF-41-GOLDEN.1_700x_fd684c0a-a5a2-4a8c-a72a-85f0c7815dec.jpg?v=1759167718', 'Golden Grace - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2548,7 +3568,24 @@ VALUES ('653cf7a4-5b79-444e-8dfe-69d1280438b2', 'Zaitoon 3pcs', 'zaitoon-3pcs', 
 <p data-start="446" data-end="561">🌟 A chic mustard outfit with embroidery &amp; matching shawl – designed to make you stand out with effortless grace!</p>
 <p data-start="563" data-end="618">📩 DM to order now<br data-start="581" data-end="584">🚚 Nationwide Delivery Available</p>
 <p data-start="620" data-end="732">⚠️ <strong data-start="623" data-end="638">Disclaimer:</strong> Actual product color may vary slightly from the images due to lighting and screen settings.<br><img src="https://cdn.shopify.com/s/files/1/0950/1478/1245/files/size.jpg?v=1757952369" alt=""><br></p>', 'TAW-ZE3-S-1', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 5499, 7000, 'Premium Cotton Lawn / Raw Silk', '{}', '{"Standard Size"}', true, false, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('235b5df9-c6de-4da0-82e1-005c9ee00f4f', '653cf7a4-5b79-444e-8dfe-69d1280438b2', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/LNF-22-MEHNDI_1_700x_jpg.jpg?v=1759167710', 'Zaitoon 3pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2621,7 +3658,24 @@ VALUES ('9bde093d-a2c3-4a5f-8f1e-a57fb379761a', 'Multi Sabz 3Pcs EMB', 'multi-sa
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available.</span></p>', 'TAW-3G-S-0', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 5999, 8650, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('43710845-46bb-454d-8202-2b47fa1bf781', '9bde093d-a2c3-4a5f-8f1e-a57fb379761a', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/get.jpg?v=1759167706', 'Multi Sabz 3Pcs EMB - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2668,7 +3722,24 @@ VALUES ('9788fcb0-862f-4956-8316-6c16854e2ec7', 'Multi Black 2pcs EMB', 'multi-b
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available .</span></p>', 'TAW-MB2-S-177089380415670', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 4999, 6350, 'Premium Cotton Lawn / Raw Silk', '{"Black 2pcs Outfit","black dress set","black embroidered shirt and trousers","casual outfit","cotton outfit","Cotton Shirt and Trouser","cotton shirt and trousers","Elegant Daily Wear","embroidered cotton 2pcs","Embroidered Cotton Set","everyday elegant clothing","Multi Black Embroidered Cotton","Multi Black Embroidered Cotton 2 piece","Premium Cotton Clothing","premium cotton outfit","stylish black 2-piece set"}', '{"S","M","L","XL"}', true, true, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('6ab121e9-9442-4e94-8827-899d4186fa1f', '9788fcb0-862f-4956-8316-6c16854e2ec7', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/6.jpg?v=1784994988', 'Multi Black 2pcs EMB - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2725,7 +3796,24 @@ VALUES ('a7477c39-fbd8-4502-801e-8d8f654c179e', 'Kaavya Emb 3pcs', 'kaavya-emb-3
 <li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
 </ul>
 <p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'TAW-KE3-S', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 5999, 7399, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","XL"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('23777810-cb52-4733-804c-4f1b4a471804', 'a7477c39-fbd8-4502-801e-8d8f654c179e', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Vintage21stJuly-369_jpg_jpg.jpg?v=1759167700', 'Kaavya Emb 3pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2756,7 +3844,24 @@ VALUES ('220c2c68-0fb5-4273-814d-17bf1d635f97', 'Musturd Embroidery 2pcs', 'must
 <hr data-start="660" data-end="665">
 <p data-start="666" data-end="849"><strong data-start="666" data-end="847">#AnabyaGarments #MusturdEmbroidery #3PieceSuit #LinenOutfit #Mustard #EmbroideredCollection #LuxuryPret #PakistaniFashion #ShawlSuit #ElegantStyle #NewArrivals #TimelessElegance</strong></p>
 <p data-start="94" data-end="149"><img src="https://cdn.shopify.com/s/files/1/0950/1478/1245/files/size.jpg?v=1757952369" alt="" style="font-size: 0.875rem;"></p>', 'TAW-MA2-S', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 4320, 6450, 'Premium Cotton Lawn / Raw Silk', '{}', '{"Standard Size"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('69b4da19-40c5-4bf0-8f75-e0947e517e0e', '220c2c68-0fb5-4273-814d-17bf1d635f97', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Mirana18JULY-636_720x_9a40962a-ef57-4ecd-aa9c-99dc08de713c_webp_jpg.jpg?v=1759167698', 'Musturd Embroidery 2pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2788,7 +3893,24 @@ VALUES ('fa17e1b8-89a6-4e2c-84f7-932253a1a588', 'Elsa Embroidery 3pcs', 'elsa-em
 <p data-start="637" data-end="725">📩 <strong data-start="640" data-end="659">DM to Order Now</strong><br data-start="659" data-end="662">🛍️ <strong data-start="666" data-end="686">Order on Website</strong><br data-start="686" data-end="689">🚚 <strong data-start="692" data-end="725">Nationwide Delivery Available</strong></p>
 <p data-start="727" data-end="819">⚠️ <em data-start="730" data-end="743">Disclaimer:</em> Actual product color may vary slightly due to lighting and screen settings.</p>
 <p data-start="821" data-end="909">#GulPash #DhankFabric #3PcsSuit #ChiffonDupatta #ElegantWear #NewArrival #ZincSuit</p>', 'TAW-EE3-S', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 5999, 7399, 'Premium Cotton Lawn / Raw Silk', '{}', '{"Standard Size"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('ae5b3767-be6a-457b-8df9-6beb4ba2dd8b', 'fa17e1b8-89a6-4e2c-84f7-932253a1a588', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Mirana18JULY-1255_720x_cec48211-056f-4a61-b34a-4874d065cae3_webp_jpg.jpg?v=1759167697', 'Elsa Embroidery 3pcs - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2835,7 +3957,24 @@ VALUES ('1d94525e-6e71-43bf-842a-e7d28946c08e', 'Laal Ishq', 'laal-ishq', '<h3 d
 <p data-start="1069" data-end="1224">✨ Make a bold yet graceful statement this season with <em data-start="1123" data-end="1134">Laal Ishq</em>. A true wardrobe essential from our <strong data-start="1171" data-end="1221">Best Sellers, Winter Collection &amp; New Arrivals</strong>.</p>
 <p data-start="1226" data-end="1312">📌 <strong data-start="1229" data-end="1238">Note:</strong> Actual product color may vary slightly due to lighting and photography.</p>
 <p data-start="94" data-end="149"><img src="https://cdn.shopify.com/s/files/1/0950/1478/1245/files/size.jpg?v=1757952369" alt="" style="font-size: 0.875rem;"></p>', 'TAW-LI-M-0', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 2850, 7000, 'Premium Cotton Lawn / Raw Silk', '{}', '{"Standard Size"}', true, false, false, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('01eaa378-f908-441a-8ab1-fd0935a4ce21', '1d94525e-6e71-43bf-842a-e7d28946c08e', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/W.SS25.516.T-1.jpg?v=1759167695', 'Laal Ishq - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
@@ -2851,7 +3990,24 @@ VALUES ('223fbb5e-f1b0-47a5-848d-db9fe9a45e4d', 'Stitched Peach Wool Emb 3pc', '
 <p data-start="396" data-end="438">🔥 A must-have for your winter wardrobe!</p>
 <p data-start="440" data-end="506">📩 DM now to place your order<br data-start="469" data-end="472">🚚 Nationwide Delivery Available</p>
 <p data-start="508" data-end="601">⚠️<span> </span><em data-start="511" data-end="599">Disclaimer: Actual product color may slightly vary due to lighting &amp; screen resolution</em></p>', 'TAW-A3-S-4', '90151ef9-20ad-496b-8daf-eef1fb0a8aa9', 'Unstitched / Stitched', 5999, 7450, 'Premium Cotton Lawn / Raw Silk', '{}', '{"S","M","L","X-Large"}', true, true, true, false, 100)
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, description = EXCLUDED.description, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price;
+ON CONFLICT (id) DO UPDATE SET
+  title = EXCLUDED.title,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  sku = EXCLUDED.sku,
+  category_id = EXCLUDED.category_id,
+  category_name = EXCLUDED.category_name,
+  price = EXCLUDED.price,
+  compare_at_price = EXCLUDED.compare_at_price,
+  fabric = EXCLUDED.fabric,
+  tags = EXCLUDED.tags,
+  sizes = EXCLUDED.sizes,
+  stock = EXCLUDED.stock,
+  is_visible = EXCLUDED.is_visible,
+  is_best_seller = EXCLUDED.is_best_seller,
+  is_new_arrival = EXCLUDED.is_new_arrival,
+  is_sold_out = EXCLUDED.is_sold_out,
+  updated_at = NOW();
 INSERT INTO public.product_images (id, product_id, image_url, alt_text, is_primary, display_order)
 VALUES ('3dda4f58-c5d2-4f92-8073-b8b264387bf1', '223fbb5e-f1b0-47a5-848d-db9fe9a45e4d', 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/neww2.webp?v=1759167695', 'Stitched Peach Wool Emb 3pc - View 1', true, 1)
 ON CONFLICT (id) DO NOTHING;
