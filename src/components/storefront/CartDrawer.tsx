@@ -111,7 +111,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               <div key={item.id} className="py-4 flex gap-3.5 items-start">
                 {/* Product Thumbnail */}
                 <img
-                  src={item.product.images[0] || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=300&q=80'}
+                  src={item.product.images[0] || ''}
                   alt={item.product.title}
                   className="w-18 h-24 object-cover object-top border border-stone-200 shrink-0 bg-stone-100"
                 />

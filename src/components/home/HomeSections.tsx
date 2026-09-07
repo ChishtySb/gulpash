@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { 
-  Sparkles, ArrowRight, Play, Star, CheckCircle, 
-  Instagram, Heart, Shield, Award, Scissors, Truck 
+  Sparkles, ArrowRight, Star, CheckCircle, 
+  Instagram, Heart, Shield, Award, Scissors, Truck,
+  ChevronDown, ChevronUp, HelpCircle 
 } from 'lucide-react';
 import { Product, CurrencyCode, ProductSize, Collection, Category } from '../../types';
 import { ProductCard } from '../storefront/ProductCard';
@@ -32,29 +33,27 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
   onToggleWishlist,
   onNavigate
 }) => {
-  const [productTab, setProductTab] = useState<'all' | 'lawn' | 'pret' | 'festive'>('all');
-  const [showVideoModal, setShowVideoModal] = useState(false);
+  const [selectedCategoryTab, setSelectedCategoryTab] = useState<string>('all');
+  const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
 
-  // Tab filtering
+  // Filter products by selected category (using authentic categories)
   const displayProducts = products.filter(p => {
-    if (productTab === 'lawn') return p.category.includes('Lawn');
-    if (productTab === 'pret') return p.category.includes('Pret') || p.category.includes('Ready');
-    if (productTab === 'festive') return p.category.includes('Festive') || p.category.includes('Chiffon');
-    return true;
+    if (selectedCategoryTab === 'all') return true;
+    return p.category === selectedCategoryTab;
   }).slice(0, 8);
 
   const testimonials = [
     {
       name: 'Ayesha Malik',
       city: 'Defence, Lahore',
-      comment: 'The Nur Jahan lawn fabric is breathtakingly soft. The organza embroidery borders stitched like an absolute dream for Eid!',
+      comment: 'The Plum 3Piece embroidered fabric is breathtakingly soft. The stitching and finishing arrived like an absolute dream!',
       rating: 5,
       date: '3 days ago'
     },
     {
       name: 'Zainab Qureshi',
       city: 'Clifton, Karachi',
-      comment: 'Ordered the emerald raw silk pret for a family dinner. The cut, finishing, and pearl detailing are comparable to high-end designer ateliers.',
+      comment: 'Ordered the Azmeen 3 Piece ensemble. The cut, finishing, and detailing are comparable to high-end designer ateliers.',
       rating: 5,
       date: '1 week ago'
     },
@@ -66,6 +65,29 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
       date: '2 weeks ago'
     }
   ];
+
+  const faqs = [
+    {
+      q: 'How long does nationwide shipping take?',
+      a: 'All orders are processed within 24 to 48 hours. Delivery across Pakistan typically takes 2 to 4 working days via our premier logistics partners TCS and Leopards Courier. Tracking details are provided upon dispatch.'
+    },
+    {
+      q: 'How can I track my order?',
+      a: 'You can track your parcel in real-time by clicking "Track My Order" in the navigation bar using your Order ID or phone number. You can also message our 24/7 WhatsApp concierge.'
+    },
+    {
+      q: 'What is your replacement and exchange policy?',
+      a: 'GulPash offers a 7-day hassle-free exchange policy. If you have any concerns regarding sizing, color, or stitching, contact our support team and we will assist with an immediate swap.'
+    },
+    {
+      q: 'Do you offer Cash on Delivery (COD)?',
+      a: 'Yes, Cash on Delivery is available across all cities and towns in Pakistan with open-box verification support. We also accept direct Meezan and HBL bank transfers.'
+    }
+  ];
+
+  // Authentic product photography for the editorial banner & social gallery
+  const editorialBannerImage = products[0]?.images[0] || '';
+  const socialGalleryProducts = products.slice(0, 6);
 
   return (
     <div className="space-y-20 sm:space-y-28 font-sans pb-20">
@@ -125,37 +147,24 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
           {/* Filter Tabs */}
           <div className="flex flex-wrap gap-2 sm:gap-3">
             <button
-              onClick={() => setProductTab('all')}
+              onClick={() => setSelectedCategoryTab('all')}
               className={`text-[10px] uppercase tracking-[0.2em] font-medium px-4 py-1.5 transition-colors cursor-pointer ${
-                productTab === 'all' ? 'bg-stone-900 text-white' : 'text-stone-600 hover:text-black bg-white border border-stone-200'
+                selectedCategoryTab === 'all' ? 'bg-stone-900 text-white' : 'text-stone-600 hover:text-black bg-white border border-stone-200'
               }`}
             >
               All Drops
             </button>
-            <button
-              onClick={() => setProductTab('lawn')}
-              className={`text-[10px] uppercase tracking-[0.2em] font-medium px-4 py-1.5 transition-colors cursor-pointer ${
-                productTab === 'lawn' ? 'bg-stone-900 text-white' : 'text-stone-600 hover:text-black bg-white border border-stone-200'
-              }`}
-            >
-              Luxury Lawn
-            </button>
-            <button
-              onClick={() => setProductTab('pret')}
-              className={`text-[10px] uppercase tracking-[0.2em] font-medium px-4 py-1.5 transition-colors cursor-pointer ${
-                productTab === 'pret' ? 'bg-stone-900 text-white' : 'text-stone-600 hover:text-black bg-white border border-stone-200'
-              }`}
-            >
-              Raw Silk Pret
-            </button>
-            <button
-              onClick={() => setProductTab('festive')}
-              className={`text-[10px] uppercase tracking-[0.2em] font-medium px-4 py-1.5 transition-colors cursor-pointer ${
-                productTab === 'festive' ? 'bg-stone-900 text-white' : 'text-stone-600 hover:text-black bg-white border border-stone-200'
-              }`}
-            >
-              Festive Formals
-            </button>
+            {categories.filter(c => c.isVisible).map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategoryTab(cat.name)}
+                className={`text-[10px] uppercase tracking-[0.2em] font-medium px-4 py-1.5 transition-colors cursor-pointer ${
+                  selectedCategoryTab === cat.name ? 'bg-stone-900 text-white' : 'text-stone-600 hover:text-black bg-white border border-stone-200'
+                }`}
+              >
+                {cat.name}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -186,26 +195,20 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
         </div>
       </section>
 
-      {/* 3. EDITORIAL FASHION VIDEO / LOOKBOOK HERO BANNER */}
+      {/* 3. EDITORIAL ATELIER CAMPAIGN BANNER (AUTHENTIC PRODUCT ASSET) */}
       <section className="relative w-full h-[60vh] sm:h-[70vh] bg-stone-900 overflow-hidden flex items-center justify-center text-center text-white">
-        <img
-          src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1800&q=80"
-          alt="GulPash Atelier Campaign"
-          className="absolute inset-0 w-full h-full object-cover object-center opacity-35"
-        />
-        <div className="absolute inset-0 bg-stone-950/40 backdrop-blur-[1px]" />
+        {editorialBannerImage ? (
+          <img
+            src={editorialBannerImage}
+            alt="GulPash Atelier Campaign"
+            className="absolute inset-0 w-full h-full object-cover object-center opacity-35"
+          />
+        ) : null}
+        <div className="absolute inset-0 bg-stone-950/50 backdrop-blur-[1px]" />
 
         <div className="relative z-10 max-w-2xl mx-auto px-4 space-y-5">
-          <button
-            onClick={() => setShowVideoModal(true)}
-            className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-white/90 hover:bg-white text-stone-900 flex items-center justify-center mx-auto shadow-2xl transition-transform transform hover:scale-105 cursor-pointer"
-            aria-label="Play Lookbook Video"
-          >
-            <Play className="w-6 h-6 sm:w-7 sm:h-7 fill-current ml-1" />
-          </button>
-
           <span className="text-[10px] uppercase tracking-[0.35em] text-stone-300 font-medium block">
-            AUTUMN / SPRING CAMPAIGN
+            ROYAL COUTURE CAMPAIGN
           </span>
 
           <h2 className="font-serif text-3xl sm:text-5xl font-light italic tracking-wide leading-tight text-white">
@@ -215,27 +218,17 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
           <p className="text-xs sm:text-sm text-stone-200 max-w-lg mx-auto font-light leading-relaxed">
             Witness the intricate zardozi, hand-tilla motifs, and fine pure threadwork brought to life in our Lahore ateliers.
           </p>
-        </div>
 
-        {/* Video Player Modal */}
-        {showVideoModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85">
-            <div className="relative w-full max-w-3xl bg-black overflow-hidden border border-stone-700">
-              <button
-                onClick={() => setShowVideoModal(false)}
-                className="absolute top-3 right-3 text-white bg-black/60 p-1.5 rounded-full z-10 hover:bg-white hover:text-black cursor-pointer"
-              >
-                &times;
-              </button>
-              <video
-                src="https://assets.mixkit.co/videos/preview/mixkit-girl-in-fashion-dress-posing-41793-large.mp4"
-                controls
-                autoPlay
-                className="w-full aspect-video"
-              />
-            </div>
+          <div className="pt-2">
+            <button
+              onClick={() => onNavigate('collection', 'best-selling')}
+              className="inline-flex items-center gap-2 bg-white text-stone-900 hover:bg-stone-100 text-[11px] font-medium uppercase tracking-[0.25em] py-3.5 px-8 transition-colors duration-300 cursor-pointer shadow-lg"
+            >
+              <span>Explore Trending Ensembles</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
-        )}
+        </div>
       </section>
 
       {/* 4. THE GULPASH ATELIER PILLARS */}
@@ -316,7 +309,49 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
         </div>
       </section>
 
-      {/* 6. INSTAGRAM SOCIAL GALLERY */}
+      {/* 6. FREQUENTLY ASKED QUESTIONS (TAWAKAL CLOSET HOMEPAGE REPLICATION) */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-8">
+          <span className="text-[10px] uppercase tracking-[0.3em] text-stone-500 font-medium block">
+            CUSTOMER ASSISTANCE
+          </span>
+          <h2 className="font-serif text-2xl sm:text-3xl font-light italic text-[#1A1A1A] mt-1">
+            Frequently Asked Questions
+          </h2>
+          <div className="w-10 h-px bg-stone-300 mx-auto mt-3" />
+        </div>
+
+        <div className="space-y-3">
+          {faqs.map((faq, idx) => {
+            const isOpen = openFaqIdx === idx;
+            return (
+              <div key={idx} className="bg-white border border-stone-200 overflow-hidden">
+                <button
+                  onClick={() => setOpenFaqIdx(isOpen ? null : idx)}
+                  className="w-full text-left p-4 sm:p-5 flex items-center justify-between text-xs sm:text-sm font-medium text-stone-900 hover:text-black cursor-pointer transition-colors"
+                >
+                  <span className="flex items-center gap-2.5">
+                    <HelpCircle className="w-4 h-4 text-stone-400 shrink-0" />
+                    <span>{faq.q}</span>
+                  </span>
+                  {isOpen ? (
+                    <ChevronUp className="w-4 h-4 text-stone-600 shrink-0" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-stone-400 shrink-0" />
+                  )}
+                </button>
+                {isOpen && (
+                  <div className="px-4 sm:px-5 pb-5 pt-1 text-xs text-stone-600 leading-relaxed font-light border-t border-stone-100">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* 7. INSTAGRAM SOCIAL GALLERY (AUTHENTIC CATALOG PRODUCT ASSETS) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-stone-700 font-medium mb-1">
@@ -329,30 +364,26 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
-          {[
-            'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=400&q=80',
-            'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=400&q=80',
-            'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=400&q=80',
-            'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=400&q=80',
-            'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=400&q=80',
-            'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=400&q=80'
-          ].map((img, i) => (
-            <a
-              key={i}
-              href="https://instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group relative aspect-square overflow-hidden border border-stone-200 block"
+          {socialGalleryProducts.map((p, i) => (
+            <div
+              key={p.id || i}
+              onClick={() => onSelectProduct(p.slug)}
+              className="group relative aspect-square overflow-hidden border border-stone-200 block cursor-pointer bg-stone-100"
             >
               <img
-                src={img}
-                alt="Instagram Look"
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                src={p.images[0]}
+                alt={p.title}
+                loading="lazy"
+                className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                <Instagram className="w-5 h-5" />
+              <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white p-2 text-center">
+                <Instagram className="w-5 h-5 mb-1" />
+                <span className="text-[10px] font-medium uppercase tracking-wider line-clamp-1">
+                  {p.title}
+                </span>
+                <span className="text-[9px] text-stone-300 uppercase tracking-widest mt-0.5">Shop The Look &rarr;</span>
               </div>
-            </a>
+            </div>
           ))}
         </div>
       </section>

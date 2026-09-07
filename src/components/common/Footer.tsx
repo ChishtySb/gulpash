@@ -311,7 +311,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenTrackOrder }) 
       {/* 3. COPYRIGHT & DOMAIN NOTICE */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 border-t border-stone-800 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500">
         <p>
-          &copy; {new Date().getFullYear()} GulPash (<a href="https://gulpash.pk" className="text-stone-300 hover:underline">gulpash.pk</a>). All rights reserved. Crafted with authentic Pakistani couture heritage.
+          &copy; {new Date().getFullYear()} GulPash (<a href="https://gulpash.online" className="text-stone-300 hover:underline">gulpash.online</a>). All rights reserved. Crafted with authentic Pakistani couture heritage.
         </p>
         <p className="mt-2 sm:mt-0 text-[11px] text-stone-500">
           Production Ecommerce • Vercel Ready • Supabase Integrated

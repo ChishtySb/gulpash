@@ -92,7 +92,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
               Popular Searches
             </span>
             <div className="flex flex-wrap gap-2">
-              {['Nur Jahan Lawn', 'Raw Silk Pret', 'Ready to Wear', 'Chiffon 3-Piece', 'Co-ord Sets', 'Chikankari Kurti'].map((tag) => (
+              {['Trending', 'Unstitched / Stitched', 'Stitched', 'Co-Ords', 'WINTER COLLECTION', 'Trending Designs'].map((tag) => (
                 <button
                   key={tag}
                   onClick={() => setQuery(tag)}

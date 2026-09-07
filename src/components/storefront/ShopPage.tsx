@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Filter, SlidersHorizontal, ArrowUpDown, X, ChevronRight } from 'lucide-react';
 import { Product, CurrencyCode, ProductSize } from '../../types';
 import { StorageService } from '../../lib/storage';
@@ -29,6 +29,19 @@ export const ShopPage: React.FC<ShopPageProps> = ({
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory || 'all');
   const [selectedCollection, setSelectedCollection] = useState<string>(initialCollection || 'all');
+
+  useEffect(() => {
+    if (initialCategory) {
+      setSelectedCategory(initialCategory);
+    } else {
+      setSelectedCategory('all');
+    }
+    if (initialCollection) {
+      setSelectedCollection(initialCollection);
+    } else {
+      setSelectedCollection('all');
+    }
+  }, [initialCategory, initialCollection]);
   const [sortBy, setSortBy] = useState<'featured' | 'newest' | 'price-low' | 'price-high' | 'rating'>('newest');
   const [priceMax, setPriceMax] = useState<number>(35000);
   const [selectedFabric, setSelectedFabric] = useState<string>('all');
@@ -66,7 +79,12 @@ export const ShopPage: React.FC<ShopPageProps> = ({
       // Collection filter
       if (selectedCollection !== 'all') {
         const colObj = collections.find(c => c.slug === selectedCollection);
-        if (colObj && p.collection !== colObj.name) return false;
+        if (colObj) {
+          const matchId = p.collectionIds && p.collectionIds.includes(colObj.id);
+          const matchName = p.collectionNames && (p.collectionNames.includes(colObj.name) || (colObj.slug === 'best-selling' && p.collectionNames.includes('BEST SELLING')));
+          const matchSingle = p.collection === colObj.name || (colObj.slug === 'best-selling' && p.collection === 'BEST SELLING');
+          if (!matchId && !matchName && !matchSingle) return false;
+        }
       }
 
       // Fabric filter

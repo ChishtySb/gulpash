@@ -79,15 +79,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
       sku: `GP-${Math.floor(1000 + Math.random() * 9000)}`,
       price: 12500,
       compareAtPrice: 15000,
-      category: 'Luxury Pret',
-      collection: 'Spring Pret',
-      fabric: 'Pure Raw Silk with Organza Border',
+      category: 'Unstitched / Stitched',
+      collection: 'New Arrivals',
+      fabric: 'Pure Lawn with Embroidered Chiffon Dupatta',
       shortDescription: '',
       description: '',
-      images: [
-        'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80',
-        'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=800&q=80'
-      ],
+      images: [],
       videoUrl: '',
       sizes: ['XS', 'S', 'M', 'L', 'XL'],
       colors: ['Ivory', 'Gold'],
@@ -1065,7 +1062,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                       type="url"
                       value={settings.logoUrl || ''}
                       onChange={(e) => setSettings({ ...settings, logoUrl: e.target.value })}
-                      placeholder="https://gulpash.pk/logo.png"
+                      placeholder="https://gulpash.online/logo.png"
                       className="w-full border border-[#ddd] p-2.5 text-xs rounded-xs font-mono focus:outline-hidden"
                     />
                     <span className="text-[10px] text-[#888] mt-0.5 block">Leave empty to use high-contrast editorial font typography.</span>
@@ -1077,7 +1074,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                       type="url"
                       value={settings.faviconUrl || ''}
                       onChange={(e) => setSettings({ ...settings, faviconUrl: e.target.value })}
-                      placeholder="https://gulpash.pk/favicon.ico"
+                      placeholder="https://gulpash.online/favicon.ico"
                       className="w-full border border-[#ddd] p-2.5 text-xs rounded-xs font-mono focus:outline-hidden"
                     />
                   </div>
@@ -1218,7 +1215,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                           ...settings,
                           socialLinks: { ...settings.socialLinks, instagram: e.target.value }
                         })}
-                        placeholder="https://instagram.com/gulpash.pk"
+                        placeholder="https://instagram.com/gulpash.online"
                         className="w-full border border-[#ddd] bg-white p-2 text-xs rounded-xs focus:outline-hidden"
                       />
                     </div>
@@ -1244,7 +1241,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                           ...settings,
                           socialLinks: { ...settings.socialLinks, tiktok: e.target.value }
                         })}
-                        placeholder="https://tiktok.com/@gulpash.pk"
+                        placeholder="https://tiktok.com/@gulpash.online"
                         className="w-full border border-[#ddd] bg-white p-2 text-xs rounded-xs focus:outline-hidden"
                       />
                     </div>

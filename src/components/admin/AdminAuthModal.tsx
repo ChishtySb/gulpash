@@ -97,7 +97,7 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({ isOpen, onSucces
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@gulpash.pk"
+                placeholder="admin@gulpash.online"
                 className="w-full pl-9 pr-3 py-2 text-xs border border-stone-300 rounded-sm focus:outline-hidden focus:border-stone-900"
               />
             </div>

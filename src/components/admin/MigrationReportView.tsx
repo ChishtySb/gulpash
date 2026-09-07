@@ -60,7 +60,7 @@ export const MigrationReportView: React.FC<MigrationReportViewProps> = ({ onNavi
             Catalog Migration & Integrity Audit
           </h2>
           <p className="text-sm text-[#7A766F] mt-1 max-w-3xl">
-            Complete reconciliation between source <span className="font-mono text-[#1C1B1A]">tawakalcloset.com</span> and target <span className="font-mono text-[#1C1B1A]">gulpash.pk</span>. Verified idempotent migration snapshot.
+            Complete reconciliation between source <span className="font-mono text-[#1C1B1A]">tawakalcloset.com</span> and target <span className="font-mono text-[#1C1B1A]">gulpash.online</span>. Verified idempotent migration snapshot.
           </p>
         </div>
 
@@ -298,7 +298,7 @@ export const MigrationReportView: React.FC<MigrationReportViewProps> = ({ onNavi
                   <div>
                     <div className="text-sm font-medium text-[#1C1B1A]">GulPash Central Branding & Domain</div>
                     <div className="text-xs text-[#7A766F] mt-0.5">
-                      Target domain <span className="font-mono text-[#1C1B1A]">gulpash.pk</span> active, no legacy Tawakal branding in customer storefront.
+                      Target domain <span className="font-mono text-[#1C1B1A]">gulpash.online</span> active, no legacy Tawakal branding in customer storefront.
                     </div>
                   </div>
                 </div>

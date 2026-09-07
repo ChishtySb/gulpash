@@ -176,18 +176,18 @@ export const Header: React.FC<HeaderProps> = ({
                 Shop All
               </button>
               <button
-                id="nav-link-lawn"
-                onClick={() => onNavigate('category', 'unstitched-luxury-lawn')}
+                id="nav-link-trending"
+                onClick={() => onNavigate('collection', 'best-selling')}
                 className="text-[11px] uppercase tracking-widest font-medium text-stone-600 hover:text-black transition-colors"
               >
-                Luxury Lawn
+                Trending
               </button>
               <button
-                id="nav-link-pret"
-                onClick={() => onNavigate('category', 'ready-to-wear-pret')}
+                id="nav-link-unstitched-stitched"
+                onClick={() => onNavigate('category', 'unstitched-stitched')}
                 className="text-[11px] uppercase tracking-widest font-medium text-stone-600 hover:text-black transition-colors"
               >
-                Pret
+                Unstitched / Stitched
               </button>
             </nav>
           </div>
@@ -285,10 +285,10 @@ export const Header: React.FC<HeaderProps> = ({
               Home
             </button>
             <button
-              onClick={() => onNavigate('collection', 'nur-jahan-festive-lawn')}
+              onClick={() => onNavigate('collection', 'best-selling')}
               className="text-[10px] uppercase tracking-[0.25em] font-medium text-stone-800 hover:text-black flex items-center gap-1 transition-colors"
             >
-              <Sparkles className="w-3 h-3 text-stone-500" /> Nur Jahan Lawn '26
+              <Sparkles className="w-3 h-3 text-stone-500" /> Trending
             </button>
             {categories.map(cat => (
               <button
@@ -347,11 +347,11 @@ export const Header: React.FC<HeaderProps> = ({
                   Shop All Products
                 </button>
                 <button
-                  onClick={() => { onNavigate('collection', 'nur-jahan-festive-lawn'); setMobileMenuOpen(false); }}
+                  onClick={() => { onNavigate('collection', 'best-selling'); setMobileMenuOpen(false); }}
                   className="text-left text-xs uppercase tracking-widest font-medium text-stone-900 flex items-center justify-between py-2 border-b border-stone-200"
                 >
-                  <span>Nur Jahan Lawn '26</span>
-                  <span className="text-[9px] bg-stone-900 text-white px-2 py-0.5 tracking-wider">NEW</span>
+                  <span>Trending</span>
+                  <span className="text-[9px] bg-stone-900 text-white px-2 py-0.5 tracking-wider">POPULAR</span>
                 </button>
 
                 {categories.map(cat => (

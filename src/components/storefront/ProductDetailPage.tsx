@@ -73,7 +73,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
       canonical.rel = 'canonical';
       document.head.appendChild(canonical);
     }
-    canonical.href = `https://gulpash.pk/products/${product.slug}`;
+    canonical.href = `https://gulpash.online/products/${product.slug}`;
 
     // Dynamic JSON-LD structured data
     const scriptId = 'product-jsonld-schema';
@@ -98,7 +98,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
       },
       "offers": {
         "@type": "Offer",
-        "url": `https://gulpash.pk/products/${product.slug}`,
+        "url": `https://gulpash.online/products/${product.slug}`,
         "priceCurrency": "PKR",
         "price": product.price,
         "availability": !product.isSoldOut ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",

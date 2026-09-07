@@ -115,22 +115,22 @@ export const INITIAL_CMS: HomepageCMS = {
 export const INITIAL_SETTINGS: SiteSettings = {
   brandName: 'GulPash',
   tagline: 'Luxury Pakistani Women Fashion & Haute Couture',
-  domain: 'gulpash.pk',
+  domain: 'gulpash.online',
   logoUrl: '',
   faviconUrl: '',
-  contactEmail: 'care@gulpash.pk',
+  contactEmail: 'care@gulpash.online',
   whatsappNumber: '923218489999',
-  whatsappDefaultMessage: 'Assalam o Alaikum GulPash, I am inquiring about your luxury collection on gulpash.pk',
+  whatsappDefaultMessage: 'Assalam o Alaikum GulPash, I am inquiring about your luxury collection on gulpash.online',
   supportPhone: '+92 42 3578 9922',
   address: 'Flagship Studio: 14-L, Mini Market, Gulberg II, Lahore, Pakistan',
   city: 'Lahore',
   country: 'Pakistan',
   socialLinks: {
-    instagram: 'https://instagram.com/gulpash.pk',
-    facebook: 'https://facebook.com/gulpash.pk',
-    tiktok: 'https://tiktok.com/@gulpash.pk',
+    instagram: 'https://instagram.com/gulpash.online',
+    facebook: 'https://facebook.com/gulpash.online',
+    tiktok: 'https://tiktok.com/@gulpash.online',
     youtube: 'https://youtube.com/@gulpashofficial',
-    pinterest: 'https://pinterest.com/gulpashpk'
+    pinterest: 'https://pinterest.com/gulpashonline'
   },
   shipping: {
     standardFee: 250,
@@ -141,8 +141,8 @@ export const INITIAL_SETTINGS: SiteSettings = {
     bankDetails: 'Bank: Meezan Bank Ltd\nAccount Title: GulPash Luxury Apparel\nIBAN: PK45MEZN0001892019283746\nBranch: Gulberg Lahore\n(Please send transfer receipt screenshot to WhatsApp +92 321 8489999)'
   },
   seo: {
-    siteTitle: 'GulPash | Luxury Pakistani Fashion | Unstitched Lawn & Ready to Wear',
-    metaDescription: 'Shop GulPash for authentic Pakistani luxury women fashion. Unstitched embroidered lawn, festive formals, and pret delivered nationwide with Cash on Delivery.',
+    siteTitle: 'GulPash | Luxury Pakistani Fashion | Unstitched & Stitched Ensembles',
+    metaDescription: 'Shop GulPash for authentic Pakistani luxury women fashion. Unstitched & Stitched collections delivered nationwide with Cash on Delivery.',
     ogImage: MIGRATED_PRODUCTS[0]?.images[0] || ''
   }
 };

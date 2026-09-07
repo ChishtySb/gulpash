@@ -103,7 +103,7 @@ export const PolicyPage: React.FC<PolicyPageProps> = ({ type, onNavigate }) => {
 
             <div className="text-xs text-stone-600 space-y-4 leading-relaxed font-light">
               <p>
-                GulPash (<a href="https://gulpash.pk" className="text-stone-900 underline font-medium">gulpash.pk</a>) respects your personal privacy. When you purchase from us or register an account, we strictly collect only the necessary details (such as name, delivery address, phone number, and email) required to process and dispatch your parcels.
+                GulPash (<a href="https://gulpash.online" className="text-stone-900 underline font-medium">gulpash.online</a>) respects your personal privacy. When you purchase from us or register an account, we strictly collect only the necessary details (such as name, delivery address, phone number, and email) required to process and dispatch your parcels.
               </p>
               <p>
                 • We do not sell or rent your contact information to third parties.<br />

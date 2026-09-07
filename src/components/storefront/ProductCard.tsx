@@ -26,7 +26,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [showSizePicker, setShowSizePicker] = useState(false);
   const [addedNotice, setAddedNotice] = useState(false);
 
-  const primaryImage = product.images[0] || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80';
+  const primaryImage = product.images[0] || '';
   const secondaryImage = product.images[1] || primaryImage;
 
   // Calculate discount %
@@ -57,17 +57,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         onClick={() => onSelect(product.slug)}
       >
         {/* Primary Image */}
-        <img
-          src={primaryImage}
-          alt={product.title}
-          loading="lazy"
-          className={`w-full h-full object-cover object-top transition-all duration-700 ease-out ${
-            isHovered && secondaryImage !== primaryImage ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
-          }`}
-        />
+        {primaryImage ? (
+          <img
+            src={primaryImage}
+            alt={product.title}
+            loading="lazy"
+            className={`w-full h-full object-cover object-top transition-all duration-700 ease-out ${
+              isHovered && secondaryImage !== primaryImage ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+            }`}
+          />
+        ) : (
+          <div className="w-full h-full bg-stone-100 flex items-center justify-center text-stone-400 text-xs uppercase tracking-wider">
+            GulPash Couture
+          </div>
+        )}
 
         {/* Secondary Image on Hover */}
-        {secondaryImage !== primaryImage && (
+        {secondaryImage && secondaryImage !== primaryImage && (
           <img
             src={secondaryImage}
             alt={`${product.title} Alternate View`}
@@ -96,7 +102,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
           {product.isBestSeller && !product.isSoldOut && (
             <span className="bg-stone-700 text-stone-100 text-[9px] uppercase font-medium tracking-wider px-2 py-0.5">
-              Best Seller
+              Trending
             </span>
           )}
         </div>
