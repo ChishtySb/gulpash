@@ -26,7 +26,7 @@ export const WhatsAppButton: React.FC = () => {
   )}`;
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 flex items-end gap-3 font-sans">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 flex items-end gap-3 font-sans">
       {/* Tooltip speech bubble */}
       {showTooltip && (
         <div className="hidden sm:flex items-center gap-2 bg-white text-[#222] text-xs py-2 px-3 rounded-md shadow-xl border border-[#e8e3dc] max-w-xs animate-in fade-in slide-in-from-bottom-2">
@@ -47,12 +47,12 @@ export const WhatsAppButton: React.FC = () => {
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white shadow-2xl flex items-center justify-center transition-transform hover:scale-105 active:scale-95 group cursor-pointer"
+        className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white shadow-2xl flex items-center justify-center transition-transform hover:scale-105 active:scale-95 group cursor-pointer"
         aria-label="Chat on WhatsApp"
         title="Chat on WhatsApp (+92 321 8489999)"
       >
-        <MessageCircle className="w-7 h-7" />
-        <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full border-2 border-white animate-pulse" />
+        <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7" />
+        <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-3 sm:w-3.5 h-3 sm:h-3.5 bg-red-500 rounded-full border-2 border-white animate-pulse" />
       </a>
     </div>
   );

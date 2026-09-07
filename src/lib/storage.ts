@@ -91,7 +91,17 @@ export const StorageService = {
   getCategories(): Category[] {
     try {
       const data = localStorage.getItem(KEYS.CATEGORIES);
-      return data ? JSON.parse(data) : INITIAL_CATEGORIES;
+      let list: Category[] = data ? JSON.parse(data) : INITIAL_CATEGORIES;
+      // Auto-heal if older dummy data exists, categories count doesn't match 5, imageUrl is missing, or legacy mock categories exist
+      if (
+        !list || 
+        list.length !== 5 || 
+        list.some(c => (!c.imageUrl && !c.image) || c.name === 'Ready to Wear' || c.name === 'Lawn' || c.name === 'Shawls')
+      ) {
+        list = INITIAL_CATEGORIES;
+        localStorage.setItem(KEYS.CATEGORIES, JSON.stringify(list));
+      }
+      return list;
     } catch {
       return INITIAL_CATEGORIES;
     }
@@ -119,7 +129,18 @@ export const StorageService = {
   getCollections(): Collection[] {
     try {
       const data = localStorage.getItem(KEYS.COLLECTIONS);
-      return data ? JSON.parse(data) : INITIAL_COLLECTIONS;
+      let list: Collection[] = data ? JSON.parse(data) : INITIAL_COLLECTIONS;
+      // Auto-heal if collections count doesn't match 6 or customer-facing display name BEST SELLING hasn't been updated to TRENDING
+      if (
+        !list || 
+        list.length !== 6 || 
+        list.some(c => c.name === 'BEST SELLING') || 
+        list.some(c => (!c.imageUrl && !c.image))
+      ) {
+        list = INITIAL_COLLECTIONS;
+        localStorage.setItem(KEYS.COLLECTIONS, JSON.stringify(list));
+      }
+      return list;
     } catch {
       return INITIAL_COLLECTIONS;
     }

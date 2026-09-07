@@ -110,6 +110,7 @@ export interface Category {
   slug: string;
   description?: string;
   imageUrl?: string;
+  image?: string;
   productCount?: number;
   isVisible: boolean;
   order: number;
@@ -121,6 +122,7 @@ export interface Collection {
   slug: string;
   description?: string;
   imageUrl?: string;
+  image?: string;
   bannerUrl?: string;
   isVisible: boolean;
   order: number;

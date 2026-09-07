@@ -66,7 +66,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search luxury lawn, pret, silk formals, SKU..."
+            placeholder="Search unstitched, stitched, 3 pieces, SKU..."
             className="w-full text-base sm:text-lg text-stone-900 placeholder-stone-400 focus:outline-hidden font-sans font-light"
           />
           {query && (
@@ -112,7 +112,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
             {results.length === 0 ? (
               <div className="text-center py-12 text-stone-500 font-light">
                 <p className="text-sm">No products found matching &ldquo;{query}&rdquo;</p>
-                <p className="text-xs text-stone-400 mt-1">Try searching by category such as Lawn, Silk, Pret, or Festive.</p>
+                <p className="text-xs text-stone-400 mt-1">Try searching by category such as Unstitched, Stitched, Embroidered, or 3 Pieces.</p>
               </div>
             ) : (
               results.map(product => (

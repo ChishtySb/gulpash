@@ -25,9 +25,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const [isHovered, setIsHovered] = useState(false);
   const [showSizePicker, setShowSizePicker] = useState(false);
   const [addedNotice, setAddedNotice] = useState(false);
+  const [primaryFailed, setPrimaryFailed] = useState(false);
+  const [secondaryFailed, setSecondaryFailed] = useState(false);
 
-  const primaryImage = product.images[0] || '';
-  const secondaryImage = product.images[1] || primaryImage;
+  const primaryImage = (!primaryFailed && product.images[0]) ? product.images[0] : (product.images[1] || '');
+  const secondaryImage = (!secondaryFailed && product.images[1]) ? product.images[1] : primaryImage;
 
   // Calculate discount %
   const discountPercent = product.compareAtPrice && product.compareAtPrice > product.price
@@ -62,6 +64,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             src={primaryImage}
             alt={product.title}
             loading="lazy"
+            onError={() => setPrimaryFailed(true)}
             className={`w-full h-full object-cover object-top transition-all duration-700 ease-out ${
               isHovered && secondaryImage !== primaryImage ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
             }`}
@@ -78,6 +81,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             src={secondaryImage}
             alt={`${product.title} Alternate View`}
             loading="lazy"
+            onError={() => setSecondaryFailed(true)}
             className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 ease-out ${
               isHovered ? 'opacity-100 scale-105' : 'opacity-0 scale-100 pointer-events-none'
             }`}
@@ -193,7 +197,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {/* 2. PRODUCT INFO & DETAILS */}
-      <div className="p-3.5 sm:p-4 flex flex-col flex-1 justify-between bg-white">
+      <div className="p-2.5 sm:p-4 flex flex-col flex-1 justify-between bg-white">
         <div>
           {/* Category / Fabric Subtitle */}
           <div className="flex items-center justify-between text-[10px] uppercase font-medium text-stone-400 tracking-widest mb-1">
@@ -219,20 +223,20 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         {/* Pricing & Add to Cart Action */}
-        <div className="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between">
-          <div className="flex flex-col">
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-xs sm:text-sm font-serif italic font-semibold text-[#1A1A1A]">
+        <div className="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-1">
+          <div className="flex flex-col min-w-0">
+            <div className="flex items-baseline gap-1.5 flex-wrap">
+              <span className="text-xs sm:text-sm font-serif italic font-semibold text-[#1A1A1A] whitespace-nowrap">
                 {formatPrice(product.price, currency)}
               </span>
               {product.compareAtPrice && product.compareAtPrice > product.price && (
-                <span className="text-[11px] text-stone-400 line-through font-serif italic">
+                <span className="text-[10px] sm:text-[11px] text-stone-400 line-through font-serif italic whitespace-nowrap">
                   {formatPrice(product.compareAtPrice, currency)}
                 </span>
               )}
             </div>
             {discountPercent > 0 && (
-              <span className="text-[9px] text-stone-600 font-medium tracking-wider">
+              <span className="text-[9px] text-stone-600 font-medium tracking-wider whitespace-nowrap">
                 ({discountPercent}% OFF)
               </span>
             )}
@@ -249,12 +253,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                   setShowSizePicker(!showSizePicker);
                 }
               }}
-              className="text-[10px] uppercase tracking-widest font-medium text-stone-800 hover:text-white bg-transparent hover:bg-stone-900 border border-stone-300 hover:border-stone-900 px-3 py-1.5 transition-all cursor-pointer"
+              className="text-[9px] sm:text-[10px] uppercase tracking-wider sm:tracking-widest font-medium text-stone-800 hover:text-white bg-transparent hover:bg-stone-900 border border-stone-300 hover:border-stone-900 px-2 sm:px-3 py-1 sm:py-1.5 transition-all cursor-pointer whitespace-nowrap shrink-0"
             >
               + Add
             </button>
           ) : (
-            <span className="text-[10px] uppercase tracking-widest text-stone-400 font-medium">
+            <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-stone-400 font-medium whitespace-nowrap">
               Out of stock
             </span>
           )}

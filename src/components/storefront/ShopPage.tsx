@@ -73,7 +73,12 @@ export const ShopPage: React.FC<ShopPageProps> = ({
       // Category filter
       if (selectedCategory !== 'all') {
         const catObj = categories.find(c => c.slug === selectedCategory);
-        if (catObj && p.category !== catObj.name) return false;
+        if (catObj) {
+          const matchName = p.category === catObj.name;
+          const matchId = p.categoryId === catObj.id;
+          const matchTag = p.tags && p.tags.some(t => t.toLowerCase() === catObj.name.toLowerCase() || t.toLowerCase() === catObj.slug.toLowerCase());
+          if (!matchName && !matchId && !matchTag) return false;
+        }
       }
 
       // Collection filter
@@ -133,12 +138,12 @@ export const ShopPage: React.FC<ShopPageProps> = ({
             <button onClick={() => onNavigate('home')} className="hover:text-white cursor-pointer">Home</button>
             <ChevronRight className="w-3 h-3 text-stone-500" />
             <span className="text-stone-200">
-              {activeCollectionObj?.name || activeCategoryObj?.name || 'All Collections'}
+              {activeCollectionObj ? (activeCollectionObj.name === 'BEST SELLING' ? 'TRENDING' : activeCollectionObj.name) : (activeCategoryObj?.name || 'All Collections')}
             </span>
           </nav>
           
           <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light italic tracking-wide text-stone-100">
-            {activeCollectionObj?.name || activeCategoryObj?.name || 'GulPash Haute Couture Catalog'}
+            {activeCollectionObj ? (activeCollectionObj.name === 'BEST SELLING' ? 'Trending' : activeCollectionObj.name) : (activeCategoryObj?.name || 'GulPash Haute Couture Catalog')}
           </h1>
           <p className="mt-2 text-xs sm:text-sm text-stone-300 max-w-xl mx-auto font-light leading-relaxed">
             {activeCollectionObj?.description || activeCategoryObj?.description || 'Explore Pakistani luxury unstitched lawn, embellished pret, festive chiffon formals, and bridal couture.'}
@@ -258,7 +263,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
                       selectedCollection === col.slug ? 'font-semibold text-stone-900' : 'text-stone-500 hover:text-stone-900'
                     }`}
                   >
-                    <span>{col.name}</span>
+                    <span>{col.name === 'BEST SELLING' ? 'TRENDING' : col.name}</span>
                   </button>
                 ))}
               </div>
@@ -409,6 +414,28 @@ export const ShopPage: React.FC<ShopPageProps> = ({
                       className={`block w-full text-left text-xs py-1 ${selectedCategory === c.slug ? 'font-semibold text-stone-900' : 'text-stone-600'}`}
                     >
                       {c.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Collections */}
+              <div>
+                <h4 className="text-[11px] font-medium uppercase tracking-wider text-stone-900 mb-2">Collection</h4>
+                <div className="space-y-1">
+                  <button
+                    onClick={() => setSelectedCollection('all')}
+                    className={`block w-full text-left text-xs py-1 ${selectedCollection === 'all' ? 'font-semibold text-stone-900' : 'text-stone-600'}`}
+                  >
+                    All Collections
+                  </button>
+                  {collections.map(col => (
+                    <button
+                      key={col.id}
+                      onClick={() => setSelectedCollection(col.slug)}
+                      className={`block w-full text-left text-xs py-1 ${selectedCollection === col.slug ? 'font-semibold text-stone-900' : 'text-stone-600'}`}
+                    >
+                      {col.name === 'BEST SELLING' ? 'TRENDING' : col.name}
                     </button>
                   ))}
                 </div>

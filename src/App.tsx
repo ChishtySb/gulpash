@@ -182,7 +182,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF9F6] text-[#1A1A1A] selection:bg-stone-900 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#FAF9F6] text-[#1A1A1A] selection:bg-stone-900 selection:text-white overflow-x-hidden w-full">
       
       {/* 1. SITE HEADER & NAVIGATION */}
       <Header

@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   Sparkles, ArrowRight, Star, CheckCircle, 
   Instagram, Heart, Shield, Award, Scissors, Truck,
-  ChevronDown, ChevronUp, HelpCircle 
+  ChevronDown, ChevronUp, HelpCircle, Mail, Send, Check
 } from 'lucide-react';
 import { Product, CurrencyCode, ProductSize, Collection, Category } from '../../types';
 import { ProductCard } from '../storefront/ProductCard';
+import { CategoryCard } from './CategoryCard';
 import { formatPrice } from '../../lib/currency';
 
 interface HomeSectionsProps {
@@ -35,12 +36,36 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
 }) => {
   const [selectedCategoryTab, setSelectedCategoryTab] = useState<string>('all');
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterSuccess, setNewsletterSuccess] = useState(false);
 
   // Filter products by selected category (using authentic categories)
   const displayProducts = products.filter(p => {
     if (selectedCategoryTab === 'all') return true;
     return p.category === selectedCategoryTab;
   }).slice(0, 8);
+
+  // Customer-facing TRENDING products (from BEST SELLING collection)
+  const trendingProducts = useMemo(() => {
+    const list = products.filter(p => 
+      p.isBestSeller || 
+      p.collectionNames?.includes('BEST SELLING') || 
+      p.collection === 'BEST SELLING' ||
+      p.collectionIds?.includes('4ca893b6-3d59-4256-86b9-81b25057c513')
+    );
+    return list.length >= 4 ? list.slice(0, 8) : products.slice(0, 8);
+  }, [products]);
+
+  // NEW ARRIVALS products (from NEW ARRIVALS collection)
+  const newArrivalsProducts = useMemo(() => {
+    const list = products.filter(p => 
+      p.isNewArrival || 
+      p.collectionNames?.includes('NEW ARRIVALS') || 
+      p.collection === 'NEW ARRIVALS' ||
+      p.collectionIds?.includes('4ab60e51-dddb-433c-880c-d30909bcbcb3')
+    );
+    return list.length >= 4 ? list.slice(0, 8) : products.slice(8, 16);
+  }, [products]);
 
   const testimonials = [
     {
@@ -106,28 +131,12 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-6">
           {categories.filter(c => c.isVisible).map((cat) => (
-            <div
+            <CategoryCard
               key={cat.id}
-              onClick={() => onNavigate('category', cat.slug)}
-              className="group cursor-pointer flex flex-col items-center text-center space-y-3"
-            >
-              <div className="relative w-full aspect-[4/5] overflow-hidden border border-stone-200 group-hover:border-stone-500 transition-all duration-300">
-                <img
-                  src={cat.image}
-                  alt={cat.name}
-                  loading="lazy"
-                  className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity" />
-                <span className="absolute bottom-3 inset-x-2 text-white text-[11px] font-medium uppercase tracking-widest line-clamp-1">
-                  {cat.name}
-                </span>
-              </div>
-              <span className="text-[10px] uppercase tracking-[0.2em] font-medium text-stone-500 group-hover:text-black transition-colors flex items-center gap-1 border-b border-transparent group-hover:border-stone-400 pb-0.5">
-                <span>View Collection</span>
-                <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-              </span>
-            </div>
+              category={cat}
+              products={products}
+              onNavigate={onNavigate}
+            />
           ))}
         </div>
       </section>
@@ -195,7 +204,87 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
         </div>
       </section>
 
-      {/* 3. EDITORIAL ATELIER CAMPAIGN BANNER (AUTHENTIC PRODUCT ASSET) */}
+      {/* 3. TRENDING SECTION (BEST SELLING COLLECTION) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-stone-200 gap-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.3em] text-stone-500 font-medium mb-1">
+              <Sparkles className="w-3.5 h-3.5 text-stone-700" />
+              <span>MOST COVETED</span>
+            </div>
+            <h2 className="font-serif text-2xl sm:text-4xl font-light italic text-[#1A1A1A]">
+              Trending
+            </h2>
+            <p className="text-xs text-stone-500 mt-1 max-w-md font-light">
+              Viral and top-selling embroidered 3-piece silhouettes favored across Pakistan.
+            </p>
+          </div>
+          <button
+            onClick={() => onNavigate('collection', 'best-selling')}
+            className="self-start sm:self-auto inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest font-medium text-stone-800 hover:text-black border-b border-stone-800 pb-0.5 cursor-pointer transition-colors"
+          >
+            <span>View All Trending</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6">
+          {trendingProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              currency={currency}
+              onSelect={onSelectProduct}
+              onQuickView={onQuickView}
+              onQuickAddToCart={onQuickAddToCart}
+              isWishlisted={isWishlisted(product.id)}
+              onToggleWishlist={onToggleWishlist}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* 4. NEW ARRIVALS SECTION (NEW ARRIVALS COLLECTION) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-4 border-b border-stone-200 gap-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.3em] text-stone-500 font-medium mb-1">
+              <Sparkles className="w-3.5 h-3.5 text-stone-700" />
+              <span>FRESH OFF THE LOOM</span>
+            </div>
+            <h2 className="font-serif text-2xl sm:text-4xl font-light italic text-[#1A1A1A]">
+              New Arrivals
+            </h2>
+            <p className="text-xs text-stone-500 mt-1 max-w-md font-light">
+              The latest festive unstitched drops and ready-to-wear seasonal cuts.
+            </p>
+          </div>
+          <button
+            onClick={() => onNavigate('collection', 'new-arrivals')}
+            className="self-start sm:self-auto inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest font-medium text-stone-800 hover:text-black border-b border-stone-800 pb-0.5 cursor-pointer transition-colors"
+          >
+            <span>View All New Arrivals</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6">
+          {newArrivalsProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              currency={currency}
+              onSelect={onSelectProduct}
+              onQuickView={onQuickView}
+              onQuickAddToCart={onQuickAddToCart}
+              isWishlisted={isWishlisted(product.id)}
+              onToggleWishlist={onToggleWishlist}
+            />
+          ))}
+        </div>
+      </section>
+
+      {/* 5. EDITORIAL ATELIER CAMPAIGN BANNER (AUTHENTIC PRODUCT ASSET) */}
       <section className="relative w-full h-[60vh] sm:h-[70vh] bg-stone-900 overflow-hidden flex items-center justify-center text-center text-white">
         {editorialBannerImage ? (
           <img
@@ -385,6 +474,67 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* 8. NEWSLETTER VIP ATELIER SIGNUP */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-[#1A1A1A] text-white p-8 sm:p-14 border border-stone-800 text-center relative overflow-hidden">
+          <div className="max-w-2xl mx-auto space-y-4 relative z-10">
+            <span className="text-[10px] uppercase tracking-[0.35em] text-stone-400 font-medium block">
+              GULPASH ATELIER PRIVILEGE
+            </span>
+            <h2 className="font-serif text-2xl sm:text-4xl font-light italic tracking-wide text-stone-100">
+              Be the First to Experience New Drops
+            </h2>
+            <p className="text-xs sm:text-sm text-stone-300 font-light leading-relaxed max-w-lg mx-auto">
+              Subscribe to receive exclusive access to limited unstitched festive edits, private seasonal previews, and member-only styling announcements.
+            </p>
+
+            {newsletterSuccess ? (
+              <div className="p-4 bg-stone-900 border border-emerald-600/50 text-emerald-300 text-xs flex items-center justify-center gap-2 max-w-md mx-auto">
+                <Check className="w-4 h-4 text-emerald-400" />
+                <span>Welcome to the GulPash Atelier Circle. Check your inbox shortly.</span>
+              </div>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (newsletterEmail.trim()) {
+                    setNewsletterSuccess(true);
+                    setNewsletterEmail('');
+                  }
+                }}
+                className="flex flex-col sm:flex-row items-center justify-center gap-2 max-w-md mx-auto pt-2"
+              >
+                <div className="relative w-full">
+                  <Mail className="w-4 h-4 text-stone-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="email"
+                    required
+                    value={newsletterEmail}
+                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                    placeholder="Enter your email address"
+                    className="w-full bg-stone-900/90 border border-stone-700 text-white placeholder-stone-400 text-xs py-3 pl-10 pr-4 focus:outline-hidden focus:border-stone-400"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full sm:w-auto bg-white hover:bg-stone-200 text-stone-900 text-[11px] font-medium uppercase tracking-widest py-3 px-6 whitespace-nowrap cursor-pointer transition-colors"
+                >
+                  Subscribe
+                </button>
+              </form>
+            )}
+
+            <div className="pt-2 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-[10px] text-stone-400 uppercase tracking-widest">
+              <span>Authentic Pakistani Craft</span>
+              <span className="hidden sm:inline">•</span>
+              <span>No Spam Guarantee</span>
+              <span className="hidden sm:inline">•</span>
+              <span>Instant Dispatch</span>
+            </div>
+          </div>
         </div>
       </section>
 
