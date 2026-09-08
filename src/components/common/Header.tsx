@@ -4,7 +4,7 @@ import {
   Phone, Globe, ShieldCheck, Truck, Sparkles, User
 } from 'lucide-react';
 import { StorageService } from '../../lib/storage';
-import { CurrencyCode, SiteSettings, HomepageCMS } from '../../types';
+import { CurrencyCode, SiteSettings, HomepageCMS, Category } from '../../types';
 import { CURRENCY_RATES } from '../../lib/currency';
 
 interface HeaderProps {
@@ -36,6 +36,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [settings, setSettings] = useState<SiteSettings>(StorageService.getSettings());
   const [cms, setCms] = useState<HomepageCMS>(StorageService.getCMS());
+  const [categories, setCategories] = useState<Category[]>(StorageService.getCategories());
   const [activeAnnouncementIdx, setActiveAnnouncementIdx] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
@@ -45,6 +46,7 @@ export const Header: React.FC<HeaderProps> = ({
     const handleDataChange = () => {
       setSettings(StorageService.getSettings());
       setCms(StorageService.getCMS());
+      setCategories(StorageService.getCategories());
     };
     window.addEventListener('gulpash_data_changed', handleDataChange);
     return () => window.removeEventListener('gulpash_data_changed', handleDataChange);
@@ -59,8 +61,38 @@ export const Header: React.FC<HeaderProps> = ({
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Cycle announcements
-  const activeAnnouncements = cms.announcements.filter(a => a.isActive);
+  // Dynamic announcement list respecting Admin Announcement & Shipping settings
+  const rawAnnouncements = cms.announcements.filter(a => a.isActive);
+  const isFreeCodOn = settings.shipping?.freeCodEnabled !== false;
+  const freeShippingThreshold = settings.shipping?.freeShippingThreshold || 5000;
+  const formattedThreshold = freeShippingThreshold.toLocaleString();
+  const configuredCodText = settings.shipping?.codAnnouncementText || '✨ FREE NATIONWIDE CASH ON DELIVERY ON ALL ORDERS ABOVE PKR {amount} ✨';
+  const resolvedCodText = configuredCodText.replace('{amount}', `PKR ${formattedThreshold}`).replace('PKR PKR', 'PKR');
+
+  let activeAnnouncements = rawAnnouncements
+    .map(a => {
+      const isCodClaim = a.text.includes('CASH ON DELIVERY') || a.text.includes('FREE NATIONWIDE') || a.text.includes('DELIVERY ON ALL ORDERS');
+      if (isCodClaim) {
+        if (!isFreeCodOn) return null; // Do NOT display free COD promotional claim if turned OFF
+        return {
+          ...a,
+          text: resolvedCodText
+        };
+      }
+      return a;
+    })
+    .filter((a): a is { id: string; text: string; link?: string; isActive: boolean } => a !== null);
+
+  if (activeAnnouncements.length === 0) {
+    activeAnnouncements = [
+      {
+        id: 'default-ann',
+        text: '✨ FAST DISPATCH WITHIN 24-48 HOURS • EASY EXCHANGE POLICY ✨',
+        isActive: true
+      }
+    ];
+  }
+
   useEffect(() => {
     if (activeAnnouncements.length <= 1) return;
     const interval = setInterval(() => {
@@ -69,25 +101,11 @@ export const Header: React.FC<HeaderProps> = ({
     return () => clearInterval(interval);
   }, [activeAnnouncements.length]);
 
-  // Authentic categories ordered exactly as required
-  const authenticCategoryOrder = [
-    'Unstitched / Stitched',
-    'Stitched',
-    'woman',
-    'Clothing',
-    '3 Pieces'
-  ];
-
-  const categories = StorageService.getCategories()
-    .filter(c => c.isVisible)
-    .sort((a, b) => {
-      const idxA = authenticCategoryOrder.indexOf(a.name);
-      const idxB = authenticCategoryOrder.indexOf(b.name);
-      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-      if (idxA !== -1) return -1;
-      if (idxB !== -1) return 1;
-      return (a.order || 0) - (b.order || 0);
-    });
+  // Category visibility in Navigation:
+  // Admin configures per category: Visible in Navigation YES/NO, and Display Order
+  const navCategories = categories
+    .filter(c => c.isVisible && c.visibleInNav !== false)
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   return (
     <header className="sticky top-0 z-40 w-full transition-all duration-300">
@@ -195,7 +213,7 @@ export const Header: React.FC<HeaderProps> = ({
               />
             ) : (
               <>
-                <h1 className="font-serif text-3xl sm:text-4xl lg:text-4xl tracking-[0.16em] font-semibold tracking-wider leading-none text-[#111111]">
+                <h1 className="font-zaslia text-3xl sm:text-4xl lg:text-4xl tracking-[0.16em] font-semibold tracking-wider leading-none text-[#111111]">
                   {settings.brandName || 'GULPASH'}
                 </h1>
                 <span className="text-[9px] uppercase tracking-[0.45em] mt-1.5 text-stone-500 font-semibold">
@@ -305,30 +323,21 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900" />
               )}
             </button>
-            <button
-              id="desktop-nav-unstitched-stitched"
-              onClick={() => onNavigate('category', 'unstitched-stitched')}
-              className={`text-[11px] uppercase tracking-[0.22em] font-medium transition-colors hover:text-black shrink-0 relative py-2.5 cursor-pointer ${
-                currentView === 'shop' && currentParam === 'unstitched-stitched' ? 'text-black font-semibold' : 'text-stone-600'
-              }`}
-            >
-              <span>UNSTITCHED / STITCHED</span>
-              {currentView === 'shop' && currentParam === 'unstitched-stitched' && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900" />
-              )}
-            </button>
-            <button
-              id="desktop-nav-stitched"
-              onClick={() => onNavigate('category', 'stitched')}
-              className={`text-[11px] uppercase tracking-[0.22em] font-medium transition-colors hover:text-black shrink-0 relative py-2.5 cursor-pointer ${
-                currentView === 'shop' && currentParam === 'stitched' ? 'text-black font-semibold' : 'text-stone-600'
-              }`}
-            >
-              <span>STITCHED</span>
-              {currentView === 'shop' && currentParam === 'stitched' && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900" />
-              )}
-            </button>
+            {navCategories.map(cat => (
+              <button
+                key={cat.id}
+                id={`desktop-nav-${cat.slug}`}
+                onClick={() => onNavigate('category', cat.slug)}
+                className={`text-[11px] uppercase tracking-[0.22em] font-medium transition-colors hover:text-black shrink-0 relative py-2.5 cursor-pointer ${
+                  currentView === 'shop' && currentParam === cat.slug ? 'text-black font-semibold' : 'text-stone-600'
+                }`}
+              >
+                <span>{cat.name.toUpperCase()}</span>
+                {currentView === 'shop' && currentParam === cat.slug && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900" />
+                )}
+              </button>
+            ))}
             <button
               id="desktop-nav-track-order"
               onClick={onOpenTrackOrder}
@@ -394,24 +403,18 @@ export const Header: React.FC<HeaderProps> = ({
                   <span>Trending</span>
                   <span className="text-[9px] bg-stone-900 text-white px-2 py-0.5 tracking-wider font-semibold">POPULAR</span>
                 </button>
-                <button
-                  id="mobile-nav-unstitched-stitched"
-                  onClick={() => { onNavigate('category', 'unstitched-stitched'); setMobileMenuOpen(false); }}
-                  className={`text-left text-xs uppercase tracking-[0.18em] font-medium py-3 border-b border-stone-200 transition-colors cursor-pointer ${
-                    currentView === 'shop' && currentParam === 'unstitched-stitched' ? 'text-stone-950 font-semibold pl-2 border-l-2 border-l-stone-900' : 'text-stone-700 hover:text-black'
-                  }`}
-                >
-                  Unstitched / Stitched
-                </button>
-                <button
-                  id="mobile-nav-stitched"
-                  onClick={() => { onNavigate('category', 'stitched'); setMobileMenuOpen(false); }}
-                  className={`text-left text-xs uppercase tracking-[0.18em] font-medium py-3 border-b border-stone-200 transition-colors cursor-pointer ${
-                    currentView === 'shop' && currentParam === 'stitched' ? 'text-stone-950 font-semibold pl-2 border-l-2 border-l-stone-900' : 'text-stone-700 hover:text-black'
-                  }`}
-                >
-                  Stitched
-                </button>
+                {navCategories.map(cat => (
+                  <button
+                    key={cat.id}
+                    id={`mobile-nav-${cat.slug}`}
+                    onClick={() => { onNavigate('category', cat.slug); setMobileMenuOpen(false); }}
+                    className={`text-left text-xs uppercase tracking-[0.18em] font-medium py-3 border-b border-stone-200 transition-colors cursor-pointer ${
+                      currentView === 'shop' && currentParam === cat.slug ? 'text-stone-950 font-semibold pl-2 border-l-2 border-l-stone-900' : 'text-stone-700 hover:text-black'
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
                 <button
                   id="mobile-nav-track-order"
                   onClick={() => { onOpenTrackOrder(); setMobileMenuOpen(false); }}

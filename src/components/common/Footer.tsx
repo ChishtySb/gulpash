@@ -30,24 +30,9 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenTrackOrder }) 
     setTimeout(() => setSubscribed(false), 5000);
   };
 
-  const authenticCategoryOrder = [
-    'Unstitched / Stitched',
-    'Stitched',
-    'woman',
-    'Clothing',
-    '3 Pieces'
-  ];
-
   const categories = StorageService.getCategories()
-    .filter(c => c.isVisible)
-    .sort((a, b) => {
-      const idxA = authenticCategoryOrder.indexOf(a.name);
-      const idxB = authenticCategoryOrder.indexOf(b.name);
-      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-      if (idxA !== -1) return -1;
-      if (idxB !== -1) return 1;
-      return (a.order || 0) - (b.order || 0);
-    });
+    .filter(c => c.isVisible && c.visibleInNav !== false)
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   return (
     <footer className="bg-[#1A1A1A] text-stone-300 border-t border-stone-800 pt-16 pb-12 font-sans">
@@ -61,7 +46,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenTrackOrder }) 
             <div>
               <h4 className="text-white text-xs uppercase tracking-widest font-medium">Nationwide Delivery</h4>
               <p className="text-stone-400 text-xs mt-1 leading-relaxed">
-                Fast dispatch via TCS & Leopards to all cities across Pakistan. Free above Rs. 5,000.
+                Fast dispatch via TCS & Leopards to all cities across Pakistan.{settings.shipping?.freeCodEnabled !== false ? ` Free above Rs. ${(settings.shipping?.freeShippingThreshold || 5000).toLocaleString()}.` : ''}
               </p>
             </div>
           </div>
@@ -111,7 +96,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenTrackOrder }) 
           {/* Brand Info */}
           <div className="lg:col-span-2 space-y-4">
             <div>
-              <span className="font-serif text-3xl font-light italic tracking-[0.2em] text-white uppercase">
+              <span className="font-zaslia text-3xl font-light italic tracking-[0.2em] text-white uppercase">
                 {settings.brandName || 'GULPASH'}
               </span>
               <p className="text-[10px] tracking-[0.3em] uppercase text-stone-400 mt-1 font-medium">

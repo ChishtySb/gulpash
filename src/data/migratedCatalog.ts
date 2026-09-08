@@ -11,7 +11,9 @@ export const MIGRATED_PRODUCTS: Product[] = migratedProductsJson as unknown as P
 export const MIGRATED_CATEGORIES: Category[] = (migratedCategoriesJson as unknown as Category[]).map(c => ({
   ...c,
   imageUrl: c.imageUrl,
-  image: c.imageUrl
+  image: c.imageUrl,
+  visibleInNav: c.slug === 'unstitched-stitched' || c.slug === 'stitched',
+  visibleOnHomepage: c.slug === 'unstitched-stitched' || c.slug === 'stitched'
 }));
 
 // Authoritative Collections from Source: Map customer-facing display name BEST SELLING -> TRENDING while preserving IDs, handles, and underlying product relationships

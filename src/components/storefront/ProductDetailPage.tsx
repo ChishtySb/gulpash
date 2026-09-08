@@ -268,12 +268,12 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 <span className="font-mono text-stone-400">SKU: {product.sku}</span>
               </div>
 
-              <h1 className="font-serif text-2xl sm:text-3xl lg:text-[34px] font-light italic text-[#1A1A1A] leading-tight">
+              <h1 className="font-rush-driver text-2xl sm:text-3xl lg:text-[34px] font-bold text-[#1A1A1A] leading-tight">
                 {product.title}
               </h1>
 
               {/* Brand Name */}
-              <div className="text-xs uppercase tracking-widest text-stone-500 font-medium mt-1">
+              <div className="font-zaslia text-sm tracking-[0.2em] uppercase text-stone-500 font-semibold mt-1">
                 GulPash
               </div>
 
@@ -303,7 +303,9 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   )}
                 </div>
                 <span className="text-[11px] text-stone-500 mt-0.5 block font-light">
-                  Inclusive of all taxes. Free shipping on orders above Rs. 5,000.
+                  Inclusive of all taxes. {settings.shipping?.freeCodEnabled !== false 
+                    ? `Free shipping on orders above Rs. ${(settings.shipping?.freeShippingThreshold || 5000).toLocaleString()}.` 
+                    : 'Nationwide delivery across Pakistan.'}
                 </span>
               </div>
 
@@ -573,7 +575,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 • <strong className="text-stone-900 font-medium">Delivery Timeline:</strong> Major cities (Karachi, Lahore, Islamabad, Rawalpindi, Faisalabad) receive packages within 2-3 business days. Rural destinations take 3-5 business days.
               </p>
               <p>
-                • <strong className="text-stone-900 font-medium">Shipping Charges:</strong> Flat Rs. 250 across Pakistan. Free shipping on all orders above Rs. 5,000.
+                • <strong className="text-stone-900 font-medium">Shipping Charges:</strong> Flat Rs. {settings.shipping?.standardFee || 250} across Pakistan.{settings.shipping?.freeCodEnabled !== false ? ` Free shipping on all orders above Rs. ${(settings.shipping?.freeShippingThreshold || 5000).toLocaleString()}.` : ''}
               </p>
               <p>
                 • <strong className="text-stone-900 font-medium">Exchanges:</strong> If you face size or design issues, notify our WhatsApp concierge within 7 days of delivery for a seamless replacement.

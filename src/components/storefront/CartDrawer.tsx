@@ -28,9 +28,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
   if (!isOpen) return null;
 
   const settings = StorageService.getSettings();
+  const freeCodEnabled = settings.shipping.freeCodEnabled !== false;
   const freeShippingThreshold = settings.shipping.freeShippingThreshold || 5000;
 
   const subtotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const isQualifiedForFree = freeCodEnabled && subtotal >= freeShippingThreshold;
   const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
   const progressPercent = Math.min(100, Math.round((subtotal / freeShippingThreshold) * 100));
 
@@ -60,28 +62,30 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
         </div>
 
         {/* Free Shipping Progress Indicator */}
-        <div className="bg-stone-100 px-5 py-3 border-b border-stone-200">
-          <div className="flex items-center justify-between text-xs font-medium text-stone-700 mb-1.5">
-            {remainingForFreeShipping === 0 ? (
-              <span className="text-emerald-800 flex items-center gap-1 font-medium">
-                <Truck className="w-3.5 h-3.5" /> You qualify for FREE Nationwide Delivery!
-              </span>
-            ) : (
-              <span>
-                Add <strong className="text-stone-900 font-semibold">{formatPrice(remainingForFreeShipping, currency)}</strong> more for <span className="underline">FREE Delivery</span>
-              </span>
-            )}
-            <span className="text-[10px] text-stone-500">{progressPercent}%</span>
+        {freeCodEnabled && (
+          <div className="bg-stone-100 px-5 py-3 border-b border-stone-200">
+            <div className="flex items-center justify-between text-xs font-medium text-stone-700 mb-1.5">
+              {isQualifiedForFree ? (
+                <span className="text-emerald-800 flex items-center gap-1 font-medium">
+                  <Truck className="w-3.5 h-3.5" /> You qualify for FREE Nationwide Delivery!
+                </span>
+              ) : (
+                <span>
+                  Add <strong className="text-stone-900 font-semibold">{formatPrice(remainingForFreeShipping, currency)}</strong> more for <span className="underline">FREE Delivery</span>
+                </span>
+              )}
+              <span className="text-[10px] text-stone-500">{progressPercent}%</span>
+            </div>
+            <div className="w-full bg-stone-200 h-1.5 overflow-hidden">
+              <div 
+                className={`h-full transition-all duration-500 ${
+                  isQualifiedForFree ? 'bg-emerald-700' : 'bg-stone-900'
+                }`}
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
           </div>
-          <div className="w-full bg-stone-200 h-1.5 overflow-hidden">
-            <div 
-              className={`h-full transition-all duration-500 ${
-                remainingForFreeShipping === 0 ? 'bg-emerald-700' : 'bg-stone-900'
-              }`}
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
-        </div>
+        )}
 
         {/* Cart Item List */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5 divide-y divide-stone-200">
@@ -191,7 +195,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               <div className="flex items-center justify-between text-stone-600">
                 <span>Shipping across Pakistan:</span>
                 <span>
-                  {remainingForFreeShipping === 0 ? (
+                  {isQualifiedForFree ? (
                     <span className="text-emerald-700 font-medium uppercase text-[10px] tracking-wider">FREE</span>
                   ) : (
                     formatPrice(settings.shipping.standardFee, currency)
@@ -202,7 +206,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 <span>Estimated Total:</span>
                 <span className="text-base font-serif italic font-semibold text-[#1A1A1A]">
                   {formatPrice(
-                    subtotal + (remainingForFreeShipping === 0 ? 0 : settings.shipping.standardFee),
+                    subtotal + (isQualifiedForFree ? 0 : settings.shipping.standardFee),
                     currency
                   )}
                 </span>

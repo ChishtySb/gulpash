@@ -1,12 +1,40 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Rush Driver';
+  src: url('/fonts/rush-driver.woff2') format('woff2'),
+       url('/fonts/rush-driver.woff') format('woff');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Zaslia';
+  src: url('/fonts/zaslia-regular.woff2') format('woff2'),
+       url('/fonts/zaslia-regular.woff') format('woff');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   --font-serif: "Cormorant Garamond", Georgia, serif;
   --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-rush-driver: "Rush Driver", "Playfair Display", "Cormorant Garamond", Georgia, serif;
+  --font-zaslia: "Zaslia", "Cinzel", "Cormorant Garamond", Georgia, serif;
   --color-editorial-bg: #FAF9F6;
   --color-editorial-dark: #1A1A1A;
   --color-editorial-stone: #78716c;
   --color-editorial-border: #e7e5e4;
+}
+
+.font-rush-driver {
+  font-family: var(--font-rush-driver);
+}
+
+.font-zaslia {
+  font-family: var(--font-zaslia);
 }
 
 @layer base {

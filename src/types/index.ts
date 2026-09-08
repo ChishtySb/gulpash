@@ -113,6 +113,8 @@ export interface Category {
   image?: string;
   productCount?: number;
   isVisible: boolean;
+  visibleInNav?: boolean;
+  visibleOnHomepage?: boolean;
   order: number;
 }
 
@@ -281,6 +283,8 @@ export interface SiteSettings {
   shipping: {
     standardFee: number; // e.g. 250 PKR
     freeShippingThreshold: number; // e.g. 5000 PKR
+    freeCodEnabled: boolean; // Free Nationwide COD toggle [ON / OFF]
+    codAnnouncementText?: string; // Editable custom announcement text
     estimatedDeliveryDays: string; // e.g. "3 - 5 Business Days"
     codEnabled: boolean;
     bankTransferEnabled: boolean;

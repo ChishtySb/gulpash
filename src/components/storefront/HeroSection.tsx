@@ -131,7 +131,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ config, onNavigate }) 
         )}
 
         {/* Main Heading */}
-        <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-light italic tracking-wider leading-tight sm:leading-none text-white drop-shadow-md">
+        <h1 className="font-rush-driver text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-wider leading-tight sm:leading-none text-white drop-shadow-md">
           {config.heading}
         </h1>
 
@@ -165,7 +165,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ config, onNavigate }) 
       </div>
 
       {/* Decorative luxury marker */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-[10px] text-white/60 tracking-[0.3em] uppercase">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 text-[10px] text-white/60 tracking-[0.3em] uppercase font-zaslia">
         <span className="w-8 h-px bg-white/40" />
         <span>GULPASH COUTURE</span>
         <span className="w-8 h-px bg-white/40" />

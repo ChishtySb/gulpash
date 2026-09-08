@@ -39,26 +39,13 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSuccess, setNewsletterSuccess] = useState(false);
 
-  // Authentic category order
-  const authenticCategoryOrder = [
-    'Unstitched / Stitched',
-    'Stitched',
-    'woman',
-    'Clothing',
-    '3 Pieces'
-  ];
-
+  // Category Visibility on Homepage:
+  // When a category has: Visible on Homepage = NO, do NOT show it in homepage category sections.
+  // When Display Order changed, display categories in the specified order.
   const sortedCategories = useMemo(() => {
     return [...categories]
-      .filter(c => c.isVisible)
-      .sort((a, b) => {
-        const idxA = authenticCategoryOrder.indexOf(a.name);
-        const idxB = authenticCategoryOrder.indexOf(b.name);
-        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-        if (idxA !== -1) return -1;
-        if (idxB !== -1) return 1;
-        return (a.order || 0) - (b.order || 0);
-      });
+      .filter(c => c.isVisible && c.visibleOnHomepage !== false)
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   }, [categories]);
 
   // Filter products by selected category (using authentic categories)
@@ -139,29 +126,37 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
   return (
     <div className="space-y-20 sm:space-y-28 font-sans pb-20">
       
-      {/* 1. CURATED CATEGORIES ROW */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-16">
-        <div className="text-center mb-8 sm:mb-12">
-          <span className="text-[10px] uppercase tracking-[0.3em] text-stone-500 font-medium block">
-            TIMELESS SILHOUETTES
-          </span>
-          <h2 className="font-serif text-2xl sm:text-4xl font-light italic text-[#1A1A1A] mt-1">
-            Explore Curated Collections
-          </h2>
-          <div className="w-10 h-px bg-stone-300 mx-auto mt-3" />
-        </div>
+      {/* 1. CURATED CATEGORIES ROW (Respects visibleOnHomepage) */}
+      {sortedCategories.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-16">
+          <div className="text-center mb-8 sm:mb-12">
+            <span className="text-[10px] uppercase tracking-[0.3em] text-stone-500 font-medium block">
+              TIMELESS SILHOUETTES
+            </span>
+            <h2 className="font-serif text-2xl sm:text-4xl font-light italic text-[#1A1A1A] mt-1">
+              Explore Curated Collections
+            </h2>
+            <div className="w-10 h-px bg-stone-300 mx-auto mt-3" />
+          </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-6">
-          {sortedCategories.map((cat) => (
-            <CategoryCard
-              key={cat.id}
-              category={cat}
-              products={products}
-              onNavigate={onNavigate}
-            />
-          ))}
-        </div>
-      </section>
+          <div className={`grid grid-cols-2 ${
+            sortedCategories.length <= 2 
+              ? 'sm:grid-cols-2 max-w-2xl mx-auto' 
+              : sortedCategories.length <= 4 
+                ? 'sm:grid-cols-3 lg:grid-cols-4' 
+                : 'sm:grid-cols-3 lg:grid-cols-5'
+          } gap-3.5 sm:gap-6`}>
+            {sortedCategories.map((cat) => (
+              <CategoryCard
+                key={cat.id}
+                category={cat}
+                products={products}
+                onNavigate={onNavigate}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 2. SIGNATURE BEST-SELLING PRODUCTS GRID WITH TABS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -59,8 +59,8 @@ export const INITIAL_REVIEWS: Review[] = [];
 export const INITIAL_CMS: HomepageCMS = {
   hero: {
     type: 'image', // toggleable between 'video' and 'image' by admin
-    heading: 'GulPash Luxury Collection',
-    subheading: 'Timeless Pakistani Craftsmanship, Hand-Embroidered Silhouettes & Signature Formals',
+    heading: 'GulPash Haute Couture',
+    subheading: 'Discover the pinnacle of Pakistani craftsmanship, hand-embroidered silhouettes & signature formals',
     badge: 'GULPASH COUTURE 2026',
     buttonText: 'EXPLORE TRENDING',
     buttonUrl: '/collections/best-selling',
@@ -135,6 +135,8 @@ export const INITIAL_SETTINGS: SiteSettings = {
   shipping: {
     standardFee: 250,
     freeShippingThreshold: 5000,
+    freeCodEnabled: true,
+    codAnnouncementText: 'FREE NATIONWIDE CASH ON DELIVERY ON ALL ORDERS ABOVE PKR {amount}',
     estimatedDeliveryDays: '2 - 4 Working Days (Nationwide)',
     codEnabled: true,
     bankTransferEnabled: true,

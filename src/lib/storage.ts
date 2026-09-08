@@ -100,11 +100,33 @@ export const StorageService = {
       ) {
         list = INITIAL_CATEGORIES;
         localStorage.setItem(KEYS.CATEGORIES, JSON.stringify(list));
+      } else {
+        // Ensure visibleInNav and visibleOnHomepage exist
+        let changed = false;
+        list = list.map(c => {
+          if (c.visibleInNav === undefined || c.visibleOnHomepage === undefined) {
+            changed = true;
+            return {
+              ...c,
+              visibleInNav: c.visibleInNav !== undefined ? c.visibleInNav : (c.slug === 'unstitched-stitched' || c.slug === 'stitched'),
+              visibleOnHomepage: c.visibleOnHomepage !== undefined ? c.visibleOnHomepage : (c.slug === 'unstitched-stitched' || c.slug === 'stitched')
+            };
+          }
+          return c;
+        });
+        if (changed) {
+          localStorage.setItem(KEYS.CATEGORIES, JSON.stringify(list));
+        }
       }
       return list;
     } catch {
       return INITIAL_CATEGORIES;
     }
+  },
+
+  saveCategories(categories: Category[]): void {
+    localStorage.setItem(KEYS.CATEGORIES, JSON.stringify(categories));
+    notifyChange('categories');
   },
 
   saveCategory(category: Category): void {
@@ -268,8 +290,22 @@ export const StorageService = {
       const data = localStorage.getItem(KEYS.SETTINGS);
       if (!data) return INITIAL_SETTINGS;
       const settings: SiteSettings = JSON.parse(data);
+      let changed = false;
       if (settings.shipping?.bankDetails?.includes('8489999')) {
         settings.shipping.bankDetails = settings.shipping.bankDetails.replace('+92 321 8489999', 'our WhatsApp Concierge');
+        changed = true;
+      }
+      if (settings.shipping) {
+        if (settings.shipping.freeCodEnabled === undefined) {
+          settings.shipping.freeCodEnabled = true;
+          changed = true;
+        }
+        if (!settings.shipping.codAnnouncementText) {
+          settings.shipping.codAnnouncementText = 'FREE NATIONWIDE CASH ON DELIVERY ON ALL ORDERS ABOVE PKR {amount}';
+          changed = true;
+        }
+      }
+      if (changed) {
         localStorage.setItem(KEYS.SETTINGS, JSON.stringify(settings));
       }
       return settings;
