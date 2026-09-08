@@ -284,17 +284,6 @@ export const Header: React.FC<HeaderProps> = ({
                 BAG
               </span>
             </button>
-
-            {/* Admin Portal Panel Button */}
-            <button
-              id="header-admin-btn"
-              onClick={() => onNavigate('admin')}
-              className="hidden sm:flex items-center gap-1 text-[10px] font-medium uppercase tracking-widest text-stone-500 hover:text-black py-1.5 px-2.5 border border-stone-200 hover:border-stone-800 transition-all ml-1"
-              title="Admin Portal Panel"
-            >
-              <User className="w-3 h-3" />
-              <span>Admin Portal Panel</span>
-            </button>
           </div>
 
         </div>
@@ -392,14 +381,6 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                   <Truck className="w-3.5 h-3.5 text-stone-500" />
                   <span>Track My Order</span>
-                </button>
-                <button
-                  id="mobile-nav-admin"
-                  onClick={() => { onNavigate('admin'); setMobileMenuOpen(false); }}
-                  className="text-left text-[11px] uppercase tracking-widest font-medium text-stone-400 hover:text-stone-700 pt-3 flex items-center gap-1.5 cursor-pointer"
-                >
-                  <User className="w-3 h-3" />
-                  <span>Admin Portal</span>
                 </button>
               </nav>
             </div>

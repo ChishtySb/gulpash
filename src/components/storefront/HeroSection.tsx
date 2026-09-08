@@ -33,7 +33,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ config, onNavigate }) 
       onNavigate('collection', slug);
     } else if (config.buttonUrl?.startsWith('/categories/')) {
       const slug = config.buttonUrl.replace('/categories/', '');
-      onNavigate('category', slug);
+      onNavigate('collection', slug);
     } else {
       onNavigate('collection', 'best-selling');
     }
@@ -45,7 +45,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ config, onNavigate }) 
       onNavigate('collection', slug);
     } else if (config.secondaryButtonUrl?.startsWith('/categories/')) {
       const slug = config.secondaryButtonUrl.replace('/categories/', '');
-      onNavigate('category', slug);
+      onNavigate('collection', slug);
     } else {
       onNavigate('shop');
     }

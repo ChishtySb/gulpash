@@ -64,13 +64,13 @@ export const WishlistModal: React.FC<WishlistModalProps> = ({
                     className="w-14 h-18 object-cover border border-[#e8e3dc] rounded-xs shrink-0"
                   />
                   <div className="min-w-0">
-                    <span className="text-[10px] text-[#aa814d] uppercase font-bold tracking-wider block">
-                      {p.category}
+                    <span className="text-[10px] text-stone-500 uppercase font-medium tracking-wider block">
+                      {p.collectionNames?.[0] || 'GulPash Haute Couture'}
                     </span>
-                    <h4 className="text-xs font-semibold text-[#111] group-hover:text-[#c59b66] transition-colors truncate">
+                    <h4 className="text-xs font-semibold text-[#111] group-hover:text-black transition-colors truncate">
                       {p.title}
                     </h4>
-                    <span className="text-xs font-bold text-[#111] mt-1 block">
+                    <span className="text-xs font-sans not-italic font-semibold text-[#111] mt-1 block price-display">
                       {formatPrice(p.price, currency)}
                     </span>
                   </div>

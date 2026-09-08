@@ -166,11 +166,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     </div>
 
                     <div className="text-right">
-                      <span className="text-xs font-serif italic font-semibold text-[#1A1A1A]">
+                      <span className="text-xs font-sans not-italic font-semibold text-[#1A1A1A] price-display">
                         {formatPrice(item.price * item.quantity, currency)}
                       </span>
                       {item.quantity > 1 && (
-                        <span className="block text-[10px] text-stone-400 font-serif italic">
+                        <span className="block text-[10px] text-stone-500 font-sans not-italic">
                           ({formatPrice(item.price, currency)} each)
                         </span>
                       )}
@@ -188,13 +188,13 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
             <div className="space-y-1.5 text-xs">
               <div className="flex items-center justify-between text-stone-600">
                 <span>Subtotal:</span>
-                <span className="font-serif italic font-semibold text-[#1A1A1A]">
+                <span className="font-sans not-italic font-semibold text-[#1A1A1A] price-display">
                   {formatPrice(subtotal, currency)}
                 </span>
               </div>
               <div className="flex items-center justify-between text-stone-600">
                 <span>Shipping across Pakistan:</span>
-                <span>
+                <span className="font-sans not-italic">
                   {isQualifiedForFree ? (
                     <span className="text-emerald-700 font-medium uppercase text-[10px] tracking-wider">FREE</span>
                   ) : (
@@ -204,7 +204,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
               </div>
               <div className="flex items-center justify-between text-sm font-medium text-[#1A1A1A] pt-2 border-t border-stone-200">
                 <span>Estimated Total:</span>
-                <span className="text-base font-serif italic font-semibold text-[#1A1A1A]">
+                <span className="text-base font-sans not-italic font-semibold text-[#1A1A1A] price-display">
                   {formatPrice(
                     subtotal + (isQualifiedForFree ? 0 : settings.shipping.standardFee),
                     currency

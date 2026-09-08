@@ -67,7 +67,27 @@ export const ShopPage: React.FC<ShopPageProps> = ({
       if (idxB !== -1) return 1;
       return (a.order || 0) - (b.order || 0);
     });
-  const collections = StorageService.getCollections().filter(c => c.isVisible);
+  const collectionOrder = [
+    'new-arrivals',
+    'best-selling',
+    'trending',
+    'winter-collection',
+    'co-ords',
+    'short-length-article',
+    'short-length',
+    'all'
+  ];
+
+  const collections = StorageService.getCollections()
+    .filter(c => c.isVisible)
+    .sort((a, b) => {
+      const idxA = collectionOrder.indexOf(a.slug);
+      const idxB = collectionOrder.indexOf(b.slug);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return (a.order || 0) - (b.order || 0);
+    });
   const allProducts = StorageService.getProducts(false);
 
   // Extract unique fabrics
@@ -241,42 +261,10 @@ export const ShopPage: React.FC<ShopPageProps> = ({
               </button>
             </div>
 
-            {/* Categories */}
-            <div>
-              <h3 className="text-[11px] uppercase font-medium tracking-widest text-stone-900 mb-3">
-                Categories
-              </h3>
-              <div className="space-y-1.5">
-                <button
-                  onClick={() => setSelectedCategory('all')}
-                  className={`w-full text-left text-xs py-1 transition-colors cursor-pointer flex items-center justify-between ${
-                    selectedCategory === 'all' ? 'font-semibold text-stone-900' : 'text-stone-500 hover:text-stone-900'
-                  }`}
-                >
-                  <span>All Categories</span>
-                  <span className="text-[10px] text-stone-400">({allProducts.length})</span>
-                </button>
-                {categories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setSelectedCategory(cat.slug)}
-                    className={`w-full text-left text-xs py-1 transition-colors cursor-pointer flex items-center justify-between ${
-                      selectedCategory === cat.slug ? 'font-semibold text-stone-900' : 'text-stone-500 hover:text-stone-900'
-                    }`}
-                  >
-                    <span>{cat.name}</span>
-                    <span className="text-[10px] text-stone-400">
-                      ({allProducts.filter(p => p.category === cat.name).length})
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* Collections */}
             <div>
               <h3 className="text-[11px] uppercase font-medium tracking-widest text-stone-900 mb-3">
-                Signature Collections
+                Collections
               </h3>
               <div className="space-y-1.5">
                 {collections.map((col) => {
@@ -337,7 +325,7 @@ export const ShopPage: React.FC<ShopPageProps> = ({
                 <h3 className="text-[11px] uppercase font-medium tracking-widest text-stone-900">
                   Max Price
                 </h3>
-                <span className="text-xs font-serif italic text-stone-900 font-semibold">Rs. {priceMax.toLocaleString()}</span>
+                <span className="text-xs font-sans not-italic text-stone-900 font-semibold">Rs. {priceMax.toLocaleString()}</span>
               </div>
               <input
                 type="range"
@@ -429,28 +417,6 @@ export const ShopPage: React.FC<ShopPageProps> = ({
                 <button onClick={() => setMobileFiltersOpen(false)} className="cursor-pointer">
                   <X className="w-5 h-5 text-stone-500" />
                 </button>
-              </div>
-
-              {/* Categories */}
-              <div>
-                <h4 className="text-[11px] font-medium uppercase tracking-wider text-stone-900 mb-2">Category</h4>
-                <div className="space-y-1">
-                  <button
-                    onClick={() => setSelectedCategory('all')}
-                    className={`block w-full text-left text-xs py-1 ${selectedCategory === 'all' ? 'font-semibold text-stone-900' : 'text-stone-600'}`}
-                  >
-                    All Categories
-                  </button>
-                  {categories.map(c => (
-                    <button
-                      key={c.id}
-                      onClick={() => setSelectedCategory(c.slug)}
-                      className={`block w-full text-left text-xs py-1 ${selectedCategory === c.slug ? 'font-semibold text-stone-900' : 'text-stone-600'}`}
-                    >
-                      {c.name}
-                    </button>
-                  ))}
-                </div>
               </div>
 
               {/* Collections */}

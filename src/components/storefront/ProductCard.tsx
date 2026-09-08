@@ -218,11 +218,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         <div className="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between gap-1">
           <div className="flex flex-col min-w-0">
             <div className="flex items-baseline gap-1.5 flex-wrap">
-              <span className="text-xs sm:text-sm font-serif italic font-semibold text-[#1A1A1A] whitespace-nowrap">
+              <span className="text-xs sm:text-sm font-sans not-italic font-semibold text-[#1A1A1A] whitespace-nowrap price-display">
                 {formatPrice(product.price, currency)}
               </span>
               {product.compareAtPrice && product.compareAtPrice > product.price && (
-                <span className="text-[10px] sm:text-[11px] text-stone-400 line-through font-serif italic whitespace-nowrap">
+                <span className="text-[10px] sm:text-[11px] text-stone-400 line-through font-sans not-italic whitespace-nowrap">
                   {formatPrice(product.compareAtPrice, currency)}
                 </span>
               )}

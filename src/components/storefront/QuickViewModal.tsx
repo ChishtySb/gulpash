@@ -137,11 +137,11 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
 
             {/* Price */}
             <div className="mt-2.5 flex items-baseline gap-3">
-              <span className="text-xl font-bold text-[#111]">
+              <span className="text-xl font-sans not-italic font-semibold text-[#111] price-display">
                 {formatPrice(product.price, currency)}
               </span>
               {product.compareAtPrice && product.compareAtPrice > product.price && (
-                <span className="text-sm text-[#999] line-through">
+                <span className="text-sm font-sans not-italic text-[#999] line-through">
                   {formatPrice(product.compareAtPrice, currency)}
                 </span>
               )}

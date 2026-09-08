@@ -166,8 +166,8 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
           <ChevronRight className="w-3 h-3 text-stone-300" />
           <button onClick={() => onNavigate('shop')} className="hover:text-black cursor-pointer">Shop</button>
           <ChevronRight className="w-3 h-3 text-stone-300" />
-          <button onClick={() => onNavigate('category', product.category.toLowerCase().replace(/\s+/g, '-'))} className="hover:text-black truncate cursor-pointer">
-            {product.category}
+          <button onClick={() => onNavigate('collection', 'all')} className="hover:text-black truncate cursor-pointer">
+            {product.collectionNames?.[0] || 'All Ensembles'}
           </button>
           <ChevronRight className="w-3 h-3 text-stone-300" />
           <span className="text-stone-900 font-medium truncate max-w-[200px]">{product.title}</span>
@@ -293,11 +293,11 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
             <div className="p-4 bg-white border border-stone-200 flex items-center justify-between">
               <div>
                 <div className="flex items-baseline gap-3">
-                  <span className="font-serif italic font-semibold text-2xl sm:text-3xl text-[#1A1A1A]">
+                  <span className="font-sans not-italic font-semibold text-2xl sm:text-3xl text-[#1A1A1A] price-display">
                     {formatPrice(product.price, currency)}
                   </span>
                   {product.compareAtPrice && product.compareAtPrice > product.price && (
-                    <span className="text-sm font-serif italic text-stone-400 line-through">
+                    <span className="text-sm font-sans not-italic text-stone-400 line-through">
                       {formatPrice(product.compareAtPrice, currency)}
                     </span>
                   )}

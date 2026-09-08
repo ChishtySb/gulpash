@@ -237,10 +237,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenTrackOrder }) 
               </li>
               <li>
                 <button 
+                  id="footer-admin-portal-btn"
                   onClick={() => onNavigate('admin')}
                   className="hover:text-white transition-colors text-stone-500 cursor-pointer"
                 >
-                  Staff / Admin Login
+                  Admin Portal
                 </button>
               </li>
             </ul>
@@ -283,27 +284,6 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenTrackOrder }) 
                 </span>
               </form>
             )}
-
-            {/* Payment badges */}
-            <div className="pt-6">
-              <span className="text-[10px] uppercase tracking-widest text-stone-500 block mb-2 font-medium">
-                Payment Options
-              </span>
-              <div className="flex flex-wrap items-center gap-2 text-[10px] text-stone-400">
-                <span className="bg-stone-900 border border-stone-800 px-2 py-1 font-medium text-stone-200">
-                  Cash on Delivery
-                </span>
-                <span className="bg-stone-900 border border-stone-800 px-2 py-1">
-                  Meezan Bank
-                </span>
-                <span className="bg-stone-900 border border-stone-800 px-2 py-1">
-                  HBL
-                </span>
-                <span className="bg-stone-900 border border-stone-800 px-2 py-1">
-                  Visa / Mastercard
-                </span>
-              </div>
-            </div>
           </div>
 
         </div>

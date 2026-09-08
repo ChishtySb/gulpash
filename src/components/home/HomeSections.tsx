@@ -34,25 +34,69 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
   onToggleWishlist,
   onNavigate
 }) => {
-  const [selectedCategoryTab, setSelectedCategoryTab] = useState<string>('all');
+  const [selectedCollectionTab, setSelectedCollectionTab] = useState<string>('all');
   const [openFaqIdx, setOpenFaqIdx] = useState<number | null>(0);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSuccess, setNewsletterSuccess] = useState(false);
 
-  // Category Visibility on Homepage:
-  // When a category has: Visible on Homepage = NO, do NOT show it in homepage category sections.
-  // When Display Order changed, display categories in the specified order.
-  const sortedCategories = useMemo(() => {
-    return [...categories]
-      .filter(c => c.isVisible && c.visibleOnHomepage !== false)
-      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-  }, [categories]);
+  // 5 Signature Curated Collections for Homepage Row
+  const curatedCollections = useMemo(() => {
+    const desiredOrder = [
+      { slug: 'new-arrivals', label: 'NEW ARRIVALS' },
+      { slug: 'best-selling', label: 'TRENDING' },
+      { slug: 'winter-collection', label: 'WINTER COLLECTION' },
+      { slug: 'co-ords', label: 'CO-ORDS' },
+      { slug: 'short-length-article', label: 'SHORT LENGTH' },
+    ];
+    return desiredOrder.map(item => {
+      const found = collections.find(c => c.slug === item.slug);
+      return {
+        slug: item.slug,
+        name: found?.name || item.label,
+        count: found?.productCount || (found?.productIds?.length ?? 0),
+        id: found?.id || item.slug,
+        image: found?.image
+      };
+    });
+  }, [collections]);
 
-  // Filter products by selected category (using authentic categories)
-  const displayProducts = products.filter(p => {
-    if (selectedCategoryTab === 'all') return true;
-    return p.category === selectedCategoryTab;
-  }).slice(0, 8);
+  // Helper to retrieve authentic product cover for a collection
+  const getCollectionCover = (colSlug: string) => {
+    const foundCol = collections.find(c => c.slug === colSlug);
+    if (foundCol?.image) return foundCol.image;
+    const match = products.find(p => {
+      if (colSlug === 'best-selling') return p.isBestSeller || p.collectionNames?.includes('BEST SELLING') || p.collection === 'BEST SELLING';
+      if (colSlug === 'new-arrivals') return p.isNewArrival || p.collectionNames?.includes('NEW ARRIVALS') || p.collection === 'NEW ARRIVALS';
+      if (colSlug === 'winter-collection') return p.collectionNames?.includes('WINTER COLLECTION') || p.fabric?.toLowerCase().includes('winter') || p.fabric?.toLowerCase().includes('velvet');
+      if (colSlug === 'co-ords') return p.collectionNames?.includes('CO-ORDS') || p.title?.toLowerCase().includes('co-ord') || p.title?.toLowerCase().includes('coord');
+      if (colSlug === 'short-length-article') return p.collectionNames?.includes('SHORT LENGTH') || p.title?.toLowerCase().includes('short');
+      return false;
+    });
+    return match?.images?.[0] || products[0]?.images?.[0] || '';
+  };
+
+  // Filter products by selected collection tab
+  const displayProducts = useMemo(() => {
+    if (selectedCollectionTab === 'all') return products.slice(0, 8);
+    return products.filter(p => {
+      if (selectedCollectionTab === 'best-selling') {
+        return p.isBestSeller || p.collectionNames?.includes('BEST SELLING') || p.collectionNames?.includes('TRENDING') || p.collection === 'BEST SELLING';
+      }
+      if (selectedCollectionTab === 'new-arrivals') {
+        return p.isNewArrival || p.collectionNames?.includes('NEW ARRIVALS') || p.collection === 'NEW ARRIVALS';
+      }
+      if (selectedCollectionTab === 'winter-collection') {
+        return p.collectionNames?.includes('WINTER COLLECTION') || p.fabric?.toLowerCase().includes('winter') || p.fabric?.toLowerCase().includes('velvet');
+      }
+      if (selectedCollectionTab === 'co-ords') {
+        return p.collectionNames?.includes('CO-ORDS') || p.title?.toLowerCase().includes('co-ord') || p.title?.toLowerCase().includes('coord');
+      }
+      if (selectedCollectionTab === 'short-length-article') {
+        return p.collectionNames?.includes('SHORT LENGTH') || p.title?.toLowerCase().includes('short');
+      }
+      return true;
+    }).slice(0, 8);
+  }, [products, selectedCollectionTab]);
 
   // Customer-facing TRENDING products (from BEST SELLING collection)
   const trendingProducts = useMemo(() => {
@@ -126,8 +170,8 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
   return (
     <div className="space-y-20 sm:space-y-28 font-sans pb-20">
       
-      {/* 1. CURATED CATEGORIES ROW (Respects visibleOnHomepage) */}
-      {sortedCategories.length > 0 && (
+      {/* 1. CURATED COLLECTIONS ROW */}
+      {curatedCollections.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-16">
           <div className="text-center mb-8 sm:mb-12">
             <span className="text-[10px] uppercase tracking-[0.3em] text-stone-500 font-medium block">
@@ -139,21 +183,62 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
             <div className="w-10 h-px bg-stone-300 mx-auto mt-3" />
           </div>
 
-          <div className={`grid grid-cols-2 ${
-            sortedCategories.length <= 2 
-              ? 'sm:grid-cols-2 max-w-2xl mx-auto' 
-              : sortedCategories.length <= 4 
-                ? 'sm:grid-cols-3 lg:grid-cols-4' 
-                : 'sm:grid-cols-3 lg:grid-cols-5'
-          } gap-3.5 sm:gap-6`}>
-            {sortedCategories.map((cat) => (
-              <CategoryCard
-                key={cat.id}
-                category={cat}
-                products={products}
-                onNavigate={onNavigate}
-              />
-            ))}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-6">
+            {curatedCollections.map((col) => {
+              const coverImg = getCollectionCover(col.slug);
+              return (
+                <div
+                  key={col.slug}
+                  onClick={() => onNavigate('collection', col.slug)}
+                  className="group cursor-pointer flex flex-col items-center text-center space-y-2.5 sm:space-y-3 w-full"
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onNavigate('collection', col.slug);
+                    }
+                  }}
+                >
+                  <div className="relative w-full aspect-[4/5] overflow-hidden border border-stone-200 group-hover:border-stone-500 bg-[#FAF9F6] transition-all duration-300">
+                    {coverImg ? (
+                      <>
+                        <img
+                          src={coverImg}
+                          alt={col.name}
+                          loading="lazy"
+                          className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent opacity-80 group-hover:opacity-65 transition-opacity duration-300 pointer-events-none" />
+                      </>
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-[#F5F3EF] border border-stone-200 text-center">
+                        <Sparkles className="w-5 h-5 text-stone-400 mb-2" />
+                        <span className="text-[9px] uppercase tracking-[0.25em] text-stone-500 font-medium">
+                          GulPash Atelier
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="absolute bottom-2.5 sm:bottom-3.5 inset-x-2 sm:inset-x-3 text-center pointer-events-none z-10">
+                      <span className="text-white text-[11px] sm:text-xs font-medium uppercase tracking-widest drop-shadow-md line-clamp-1 block">
+                        {col.name}
+                      </span>
+                      {col.count ? (
+                        <span className="text-stone-300 text-[9px] uppercase tracking-wider block mt-0.5 opacity-90">
+                          {col.count} Ensembles
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  <span className="text-[10px] uppercase tracking-[0.2em] font-medium text-stone-500 group-hover:text-black transition-colors flex items-center gap-1 border-b border-transparent group-hover:border-stone-400 pb-0.5">
+                    <span>View Collection</span>
+                    <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </section>
       )}
@@ -170,25 +255,24 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
             </h2>
           </div>
 
-          {/* Filter Tabs */}
+          {/* Filter Tabs - Customer-facing Merchandising Collections */}
           <div className="flex flex-wrap gap-2 sm:gap-3">
-            <button
-              onClick={() => setSelectedCategoryTab('all')}
-              className={`text-[10px] uppercase tracking-[0.2em] font-medium px-4 py-1.5 transition-colors cursor-pointer ${
-                selectedCategoryTab === 'all' ? 'bg-stone-900 text-white' : 'text-stone-600 hover:text-black bg-white border border-stone-200'
-              }`}
-            >
-              All Drops
-            </button>
-            {sortedCategories.map(cat => (
+            {[
+              { slug: 'all', label: 'ALL ENSEMBLES' },
+              { slug: 'new-arrivals', label: 'NEW ARRIVALS' },
+              { slug: 'best-selling', label: 'TRENDING' },
+              { slug: 'winter-collection', label: 'WINTER COLLECTION' },
+              { slug: 'co-ords', label: 'CO-ORDS' },
+              { slug: 'short-length-article', label: 'SHORT LENGTH' },
+            ].map(tab => (
               <button
-                key={cat.id}
-                onClick={() => setSelectedCategoryTab(cat.name)}
+                key={tab.slug}
+                onClick={() => setSelectedCollectionTab(tab.slug)}
                 className={`text-[10px] uppercase tracking-[0.2em] font-medium px-4 py-1.5 transition-colors cursor-pointer ${
-                  selectedCategoryTab === cat.name ? 'bg-stone-900 text-white' : 'text-stone-600 hover:text-black bg-white border border-stone-200'
+                  selectedCollectionTab === tab.slug ? 'bg-stone-900 text-white' : 'text-stone-600 hover:text-black bg-white border border-stone-200'
                 }`}
               >
-                {cat.name}
+                {tab.label}
               </button>
             ))}
           </div>

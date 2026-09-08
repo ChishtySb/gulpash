@@ -47,6 +47,13 @@
   }
 }
 
+/* Storefront Price Typography - Strictly Clean Normal (Non-Italic) Sans-Serif */
+.price-display,
+[data-price] {
+  font-family: var(--font-sans) !important;
+  font-style: normal !important;
+}
+
 /* Editorial crisp scrollbar */
 ::-webkit-scrollbar {
   width: 5px;

@@ -163,7 +163,7 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
                 <div className="text-xs text-[#555] space-y-1.5 pt-2">
                   <p><strong>Customer:</strong> {order.customer.fullName} ({order.customer.city})</p>
                   <p><strong>Courier:</strong> TCS Express / Leopards (Dispatch from Lahore Atelier)</p>
-                  <p><strong>Payment:</strong> {order.paymentMethod} &bull; Total: <strong>{formatPrice(order.total, currency)}</strong></p>
+                  <p><strong>Payment:</strong> {order.paymentMethod} &bull; Total: <span className="font-sans not-italic font-semibold text-stone-900 price-display">{formatPrice(order.total, currency)}</span></p>
                 </div>
               </div>
             )}

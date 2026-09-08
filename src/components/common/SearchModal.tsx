@@ -112,7 +112,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
             {results.length === 0 ? (
               <div className="text-center py-12 text-stone-500 font-light">
                 <p className="text-sm">No products found matching &ldquo;{query}&rdquo;</p>
-                <p className="text-xs text-stone-400 mt-1">Try searching by category such as Unstitched, Stitched, Embroidered, or 3 Pieces.</p>
+                <p className="text-xs text-stone-400 mt-1">Try searching by collection such as New Arrivals, Trending, Winter Collection, or Co-Ords.</p>
               </div>
             ) : (
               results.map(product => (
@@ -132,18 +132,18 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                     />
                     <div>
                       <span className="text-[10px] uppercase font-medium tracking-wider text-stone-500 block">
-                        {product.category} • GulPash
+                        {product.collectionNames?.[0] || 'GulPash Haute Couture'}
                       </span>
                       <h4 className="text-xs sm:text-sm font-medium text-stone-900 group-hover:text-black transition-colors line-clamp-1">
                         {product.title}
                       </h4>
                       <p className="text-[11px] text-stone-500 mt-0.5 font-light">{product.fabric}</p>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs font-serif italic font-semibold text-stone-900">
+                        <span className="text-xs font-sans not-italic font-semibold text-stone-900 price-display">
                           {formatPrice(product.price, currency)}
                         </span>
                         {product.compareAtPrice && product.compareAtPrice > product.price && (
-                          <span className="text-[11px] text-stone-400 line-through">
+                          <span className="text-[11px] text-stone-400 line-through font-sans not-italic">
                             {formatPrice(product.compareAtPrice, currency)}
                           </span>
                         )}

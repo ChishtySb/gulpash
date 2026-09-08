@@ -189,7 +189,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
             </div>
             <div className="flex justify-between pt-2 border-t border-stone-200 text-sm font-medium">
               <span>Total Payable:</span>
-              <span className="font-serif italic font-semibold text-[#1A1A1A]">{formatPrice(placedOrder.total, currency)}</span>
+              <span className="font-sans not-italic font-semibold text-[#1A1A1A] price-display">{formatPrice(placedOrder.total, currency)}</span>
             </div>
           </div>
 
@@ -567,7 +567,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                       <div className="text-[11px] text-stone-500 mt-0.5 font-light">
                         Size: <span className="font-medium text-stone-800">{item.size}</span> &bull; Qty: {item.quantity}
                       </div>
-                      <div className="mt-1 font-serif italic font-semibold text-stone-900">
+                      <div className="mt-1 font-sans not-italic font-semibold text-stone-900 price-display">
                         {formatPrice(item.price * item.quantity, currency)}
                       </div>
                     </div>
@@ -603,11 +603,11 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
               <div className="space-y-2 pt-3 border-t border-stone-200 text-xs font-light">
                 <div className="flex justify-between text-stone-600">
                   <span>Subtotal</span>
-                  <span className="font-serif italic font-medium text-stone-900">{formatPrice(subtotal, currency)}</span>
+                  <span className="font-sans not-italic font-medium text-stone-900 price-display">{formatPrice(subtotal, currency)}</span>
                 </div>
                 <div className="flex justify-between text-stone-600">
                   <span>Nationwide Shipping</span>
-                  <span>
+                  <span className="font-sans not-italic">
                     {isFreeShipping ? (
                       <span className="text-emerald-700 font-medium uppercase text-[11px] tracking-wider">FREE</span>
                     ) : (
@@ -616,14 +616,14 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   </span>
                 </div>
                 {appliedDiscount > 0 && (
-                  <div className="flex justify-between text-emerald-700 font-medium">
+                  <div className="flex justify-between text-emerald-700 font-medium font-sans not-italic">
                     <span>Discount Coupon</span>
                     <span>- {formatPrice(appliedDiscount, currency)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-base font-medium text-stone-900 pt-3 border-t border-stone-200">
                   <span>Total Amount</span>
-                  <span className="font-serif italic font-semibold text-lg text-[#1A1A1A]">{formatPrice(total, currency)}</span>
+                  <span className="font-sans not-italic font-semibold text-lg text-[#1A1A1A] price-display">{formatPrice(total, currency)}</span>
                 </div>
               </div>
 
