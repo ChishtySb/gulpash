@@ -132,7 +132,7 @@ export const SearchModal: React.FC<SearchModalProps> = ({
                     />
                     <div>
                       <span className="text-[10px] uppercase font-medium tracking-wider text-stone-500 block">
-                        {product.category}
+                        {product.category} • GulPash
                       </span>
                       <h4 className="text-xs sm:text-sm font-medium text-stone-900 group-hover:text-black transition-colors line-clamp-1">
                         {product.title}

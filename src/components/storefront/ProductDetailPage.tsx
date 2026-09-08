@@ -272,6 +272,11 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 {product.title}
               </h1>
 
+              {/* Brand Name */}
+              <div className="text-xs uppercase tracking-widest text-stone-500 font-medium mt-1">
+                GulPash
+              </div>
+
               {/* Rating and review counter */}
               <div className="flex items-center gap-2 mt-2 text-xs">
                 <div className="flex text-amber-500">

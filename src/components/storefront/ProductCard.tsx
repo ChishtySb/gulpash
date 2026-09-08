@@ -216,10 +216,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             {product.title}
           </h3>
 
-          {/* Fabric Specification */}
-          <p className="text-[11px] text-stone-500 mt-1 line-clamp-1 italic font-serif">
-            {product.fabric}
-          </p>
+          {/* Brand Name */}
+          <div className="text-[10px] sm:text-[11px] font-medium text-stone-500 uppercase tracking-widest mt-1">
+            GulPash
+          </div>
         </div>
 
         {/* Pricing & Add to Cart Action */}
