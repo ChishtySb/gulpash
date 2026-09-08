@@ -202,14 +202,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {/* Product Title */}
           <h3 
             onClick={() => onSelect(product.slug)}
-            className="font-rush-driver text-xs sm:text-[13px] font-bold text-[#1A1A1A] hover:text-stone-600 transition-colors line-clamp-2 leading-snug cursor-pointer min-h-[34px]"
+            className="font-rush-driver text-[16px] sm:text-[18px] font-normal text-[#1A1A1A] hover:text-stone-600 transition-colors line-clamp-2 leading-snug cursor-pointer min-h-[46px] tracking-normal"
             title={product.title}
           >
             {product.title}
           </h3>
 
           {/* Brand Name */}
-          <div className="font-zaslia text-[10px] sm:text-[11px] font-medium text-stone-500 uppercase tracking-widest mt-1">
+          <div className="font-zaslia text-[11px] sm:text-[12px] font-normal text-stone-500 uppercase tracking-[0.2em] mt-1">
             GulPash
           </div>
         </div>

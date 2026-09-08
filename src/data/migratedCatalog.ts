@@ -16,16 +16,21 @@ export const MIGRATED_CATEGORIES: Category[] = (migratedCategoriesJson as unknow
   visibleOnHomepage: c.slug === 'unstitched-stitched' || c.slug === 'stitched'
 }));
 
-// Authoritative Collections from Source: Map customer-facing display name BEST SELLING -> TRENDING while preserving IDs, handles, and underlying product relationships
+// Authoritative Collections from Source: Aligned with reference storefront (gulpash-eight.vercel.app)
 export const MIGRATED_COLLECTIONS: Collection[] = (migratedCollectionsJson as unknown as Collection[]).map(c => {
-  const col = {
+  let name = c.name;
+  if (c.slug === 'best-selling') name = 'TRENDING';
+  if (c.slug === 'short-length-article') name = 'SHORT LENGTH';
+  if (c.slug === 'all') name = 'ALL ENSEMBLES';
+  if (c.slug === 'new-arrivals') name = 'NEW ARRIVALS';
+  if (c.slug === 'winter-collection') name = 'WINTER COLLECTION';
+  if (c.slug === 'co-ords') name = 'CO-ORDS';
+
+  return {
     ...c,
-    imageUrl: c.imageUrl,
-    image: c.imageUrl
+    name,
+    imageUrl: c.imageUrl || c.image,
+    image: c.imageUrl || c.image
   };
-  if (c.slug === 'best-selling' || c.name === 'BEST SELLING') {
-    return { ...col, name: 'TRENDING' };
-  }
-  return col;
 });
 

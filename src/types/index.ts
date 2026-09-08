@@ -126,6 +126,10 @@ export interface Collection {
   imageUrl?: string;
   image?: string;
   bannerUrl?: string;
+  productCount?: number;
+  productIds?: string[];
+  productSlugs?: string[];
+  productSourceIds?: (string | number)[];
   isVisible: boolean;
   order: number;
 }

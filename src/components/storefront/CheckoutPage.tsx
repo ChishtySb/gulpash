@@ -60,7 +60,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
   // Calculations
   const subtotal = items.reduce((acc, i) => acc + (i.price * i.quantity), 0);
-  const freeCodEnabled = settings.shipping.freeCodEnabled !== false;
+  const freeCodEnabled = settings.shipping.freeCodEnabled === true;
   const isFreeShipping = freeCodEnabled && (subtotal >= (settings.shipping.freeShippingThreshold || 5000));
   const shippingFee = isFreeShipping ? 0 : (settings.shipping.standardFee || 250);
   const total = Math.max(0, subtotal + shippingFee - appliedDiscount);

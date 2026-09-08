@@ -50,6 +50,70 @@ export default function App() {
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
+  // URL Routing Helper
+  const resolveRouteFromPath = (path: string): { view: 'home' | 'shop' | 'product' | 'checkout' | 'admin' | 'policy'; param?: string } => {
+    const cleanPath = path.trim().replace(/\/$/, '') || '/';
+    if (cleanPath === '/' || cleanPath === '') {
+      return { view: 'home' };
+    }
+    if (cleanPath === '/checkout') {
+      return { view: 'checkout' };
+    }
+    if (cleanPath === '/admin') {
+      return { view: 'admin' };
+    }
+    if (cleanPath === '/shop') {
+      return { view: 'shop', param: 'all' };
+    }
+    if (cleanPath.startsWith('/collections/')) {
+      const slug = cleanPath.replace('/collections/', '');
+      const normalizedSlug = slug === 'trending' ? 'best-selling' : (slug === 'short-length' ? 'short-length-article' : (slug === 'ready-to-wear' ? 'all' : slug));
+      return { view: 'shop', param: normalizedSlug };
+    }
+    if (cleanPath.startsWith('/categories/')) {
+      const slug = cleanPath.replace('/categories/', '');
+      return { view: 'shop', param: slug };
+    }
+    if (cleanPath.startsWith('/products/')) {
+      const slug = cleanPath.replace('/products/', '');
+      return { view: 'product', param: slug };
+    }
+    const policyMatch = ['shipping-policy', 'exchange-policy', 'privacy-policy', 'about'].find(p => cleanPath === `/${p}` || cleanPath === `/policies/${p}`);
+    if (policyMatch) {
+      return { view: 'policy', param: policyMatch };
+    }
+    return { view: 'home' };
+  };
+
+  // Synchronize initial URL & popstate
+  useEffect(() => {
+    try {
+      const route = resolveRouteFromPath(window.location.pathname);
+      if (route.view === 'admin' && !StorageService.isAdminAuthenticated()) {
+        setIsAdminAuthModalOpen(true);
+        setCurrentView('home');
+      } else {
+        setCurrentView(route.view);
+        setViewParam(route.param);
+      }
+    } catch {
+      // Ignore if window.location isn't readable
+    }
+
+    const handlePopState = () => {
+      try {
+        const popRoute = resolveRouteFromPath(window.location.pathname);
+        setCurrentView(popRoute.view);
+        setViewParam(popRoute.param);
+      } catch {
+        // Fallback
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   // Reactive state listener for storage changes
   useEffect(() => {
     const handleStorageUpdate = () => {
@@ -63,27 +127,37 @@ export default function App() {
     return () => window.removeEventListener('gulpash_data_changed', handleStorageUpdate);
   }, []);
 
-  // Navigation helper
+  // Navigation helper with history pushState
   const navigate = (view: string, param?: string) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    let newPath = '/';
     if (view === 'home') {
       setCurrentView('home');
       setViewParam(undefined);
+      newPath = '/';
     } else if (view === 'shop') {
       setCurrentView('shop');
-      setViewParam(undefined);
+      setViewParam('all');
+      newPath = '/collections/all';
     } else if (view === 'category') {
       setCurrentView('shop');
       setViewParam(param);
+      newPath = param ? `/categories/${param}` : '/collections/all';
     } else if (view === 'collection') {
+      const normalizedParam = param === 'trending' 
+        ? 'best-selling' 
+        : (param === 'short-length' ? 'short-length-article' : (param === 'ready-to-wear' ? 'all' : (param || 'all')));
       setCurrentView('shop');
-      setViewParam(param);
+      setViewParam(normalizedParam);
+      newPath = `/collections/${normalizedParam}`;
     } else if (view === 'product') {
       setCurrentView('product');
       setViewParam(param);
+      newPath = `/products/${param}`;
     } else if (view === 'checkout') {
       setCurrentView('checkout');
       setViewParam(undefined);
+      newPath = '/checkout';
     } else if (view === 'admin') {
       if (!StorageService.isAdminAuthenticated()) {
         setIsAdminAuthModalOpen(true);
@@ -91,12 +165,23 @@ export default function App() {
       }
       setCurrentView('admin');
       setViewParam(undefined);
+      newPath = '/admin';
     } else if (['shipping-policy', 'exchange-policy', 'privacy-policy', 'about'].includes(view)) {
       setCurrentView('policy');
       setViewParam(view);
+      newPath = `/policies/${view}`;
     } else {
       setCurrentView('home');
       setViewParam(undefined);
+      newPath = '/';
+    }
+
+    try {
+      if (window.location.pathname !== newPath) {
+        window.history.pushState(null, '', newPath);
+      }
+    } catch {
+      // pushState may be restricted in sandbox iframe; state-based navigation still succeeds
     }
   };
 
@@ -231,7 +316,15 @@ export default function App() {
         {currentView === 'shop' && (
           <ShopPage
             initialCategory={categories.some(c => c.slug === viewParam) ? viewParam : undefined}
-            initialCollection={collections.some(c => c.slug === viewParam) ? viewParam : undefined}
+            initialCollection={
+              collections.some(c => c.slug === viewParam)
+                ? viewParam
+                : (viewParam === 'trending'
+                    ? 'best-selling'
+                    : (viewParam === 'short-length'
+                        ? 'short-length-article'
+                        : (viewParam === 'ready-to-wear' || viewParam === 'all' ? 'all' : undefined)))
+            }
             currency={currency}
             onSelectProduct={(slug) => navigate('product', slug)}
             onQuickView={(p) => setQuickViewProduct(p)}

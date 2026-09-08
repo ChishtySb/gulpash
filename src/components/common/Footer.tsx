@@ -160,30 +160,29 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenTrackOrder }) 
             </div>
           </div>
 
-          {/* Quick Categories */}
+          {/* Quick Collections */}
           <div>
             <h4 className="text-white text-xs uppercase tracking-[0.2em] mb-4 font-medium">
               Collections
             </h4>
             <ul className="space-y-2.5 text-xs text-stone-400">
-              {categories.slice(0, 5).map(cat => (
-                <li key={cat.id}>
+              {[
+                { label: 'New Arrivals', slug: 'new-arrivals' },
+                { label: 'Trending', slug: 'best-selling' },
+                { label: 'Winter Collection', slug: 'winter-collection' },
+                { label: 'Co-Ords', slug: 'co-ords' },
+                { label: 'Short Length', slug: 'short-length-article' },
+                { label: 'All Ensembles', slug: 'all' }
+              ].map(col => (
+                <li key={col.slug}>
                   <button 
-                    onClick={() => onNavigate('category', cat.slug)}
+                    onClick={() => onNavigate('collection', col.slug)}
                     className="hover:text-white transition-colors cursor-pointer text-left"
                   >
-                    {cat.name}
+                    {col.label}
                   </button>
                 </li>
               ))}
-              <li>
-                <button 
-                  onClick={() => onNavigate('shop')}
-                  className="hover:text-white transition-colors text-stone-300 font-medium"
-                >
-                  &rarr; View All Designs
-                </button>
-              </li>
             </ul>
           </div>
 

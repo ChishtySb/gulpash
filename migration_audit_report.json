@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-06T12:16:04.963Z",
+  "timestamp": "2026-09-08T10:14:29.104Z",
   "sourceUrl": "https://tawakalcloset.com/",
   "targetUrl": "https://gulpash.pk/",
   "overallStatus": "PASS",
@@ -74,45 +74,51 @@
   ],
   "collectionsAudit": [
     {
-      "name": "BEST SELLING",
-      "slug": "best-selling",
+      "name": "NEW ARRIVALS",
+      "slug": "new-arrivals",
+      "customerFacingLabel": "NEW ARRIVALS",
       "productCount": 47,
       "sourceProductCount": 47,
       "status": "PASS"
     },
     {
-      "name": "Co-Ords",
-      "slug": "co-ords",
-      "productCount": 10,
-      "sourceProductCount": 10,
-      "status": "PASS"
-    },
-    {
-      "name": "Home",
-      "slug": "home",
-      "productCount": 57,
-      "sourceProductCount": 57,
-      "status": "PASS"
-    },
-    {
-      "name": "NEW ARRIVALS",
-      "slug": "new-arrivals",
-      "productCount": 45,
-      "sourceProductCount": 45,
-      "status": "PASS"
-    },
-    {
-      "name": "Trending Designs",
-      "slug": "short-length-article",
-      "productCount": 14,
-      "sourceProductCount": 14,
+      "name": "TRENDING",
+      "slug": "best-selling",
+      "customerFacingLabel": "TRENDING",
+      "productCount": 47,
+      "sourceProductCount": 47,
       "status": "PASS"
     },
     {
       "name": "WINTER COLLECTION",
       "slug": "winter-collection",
-      "productCount": 17,
-      "sourceProductCount": 17,
+      "customerFacingLabel": "WINTER COLLECTION",
+      "productCount": 18,
+      "sourceProductCount": 18,
+      "status": "PASS"
+    },
+    {
+      "name": "CO-ORDS",
+      "slug": "co-ords",
+      "customerFacingLabel": "CO-ORDS",
+      "productCount": 10,
+      "sourceProductCount": 10,
+      "status": "PASS"
+    },
+    {
+      "name": "SHORT LENGTH",
+      "slug": "short-length-article",
+      "customerFacingLabel": "SHORT LENGTH",
+      "productCount": 14,
+      "sourceProductCount": 14,
+      "status": "PASS"
+    },
+    {
+      "name": "ALL ENSEMBLES",
+      "slug": "all",
+      "customerFacingLabel": "ALL ENSEMBLES",
+      "productCount": 68,
+      "sourceProductCount": 68,
       "status": "PASS"
     }
   ],
@@ -130,10 +136,12 @@
       "sourceImagesCount": 5,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/17_22ba13c3-6eda-4dde-a515-e01030c718f6.png?v=1787217341",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "Trending Designs"
+        "TRENDING",
+        "BEST SELLING",
+        "SHORT LENGTH",
+        "Trending Designs",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -152,7 +160,9 @@
       "sourceImagesCount": 7,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/rn-image_picker_lib_temp_ad02dec1-398e-422d-83dd-795d0f8b888d.jpg?v=1785345921",
       "collections": [
-        "BEST SELLING"
+        "TRENDING",
+        "BEST SELLING",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -171,7 +181,9 @@
       "sourceImagesCount": 4,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/rn-image_picker_lib_temp_2464a6e2-8a9a-422c-9cda-21adbf389488.jpg?v=1785345449",
       "collections": [
-        "BEST SELLING"
+        "TRENDING",
+        "BEST SELLING",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -190,7 +202,9 @@
       "sourceImagesCount": 3,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/rn-image_picker_lib_temp_5d4c42f9-505f-45d3-957e-0e5ade3063b9.jpg?v=1785345447",
       "collections": [
-        "BEST SELLING"
+        "TRENDING",
+        "BEST SELLING",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -209,10 +223,12 @@
       "sourceImagesCount": 5,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/657949007_18519088627073967_8926792540500625221_n_jpg.jpg?v=1782742886",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "Trending Designs"
+        "TRENDING",
+        "BEST SELLING",
+        "SHORT LENGTH",
+        "Trending Designs",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -231,10 +247,12 @@
       "sourceImagesCount": 5,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/1782741729121_publer_com_jpg.jpg?v=1782742613",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "Trending Designs"
+        "TRENDING",
+        "BEST SELLING",
+        "SHORT LENGTH",
+        "Trending Designs",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -253,10 +271,12 @@
       "sourceImagesCount": 5,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/1_534918c3-fb63-4a81-b54c-260716f7d770_1.png?v=1782742247",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "Trending Designs"
+        "TRENDING",
+        "BEST SELLING",
+        "SHORT LENGTH",
+        "Trending Designs",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -275,10 +295,11 @@
       "sourceImagesCount": 9,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Mirana11thoct-1502_1000x_jpg.jpg?v=1767786202",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "WINTER COLLECTION"
+        "TRENDING",
+        "BEST SELLING",
+        "WINTER COLLECTION",
+        "ALL ENSEMBLES"
       ],
       "category": "Stitched",
       "available": true,
@@ -297,10 +318,12 @@
       "sourceImagesCount": 4,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/D87B454F-1D7A-4DEB-810F-30353E10D055_jpg.jpg?v=1780940232",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "Trending Designs"
+        "TRENDING",
+        "BEST SELLING",
+        "SHORT LENGTH",
+        "Trending Designs",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -319,10 +342,12 @@
       "sourceImagesCount": 8,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/35A9176_1.webp?v=1780752552",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "Trending Designs"
+        "TRENDING",
+        "BEST SELLING",
+        "SHORT LENGTH",
+        "Trending Designs",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": false,
@@ -341,10 +366,12 @@
       "sourceImagesCount": 4,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Jul9_2026_07_53_28PM.png?v=1783609114",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "Trending Designs"
+        "TRENDING",
+        "BEST SELLING",
+        "SHORT LENGTH",
+        "Trending Designs",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -363,10 +390,12 @@
       "sourceImagesCount": 7,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/DSC01957.webp?v=1780416886",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "Trending Designs"
+        "TRENDING",
+        "BEST SELLING",
+        "SHORT LENGTH",
+        "Trending Designs",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -385,10 +414,12 @@
       "sourceImagesCount": 4,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/83EA3D67-ED6D-4C10-A329-0E32A3C3ABBC.webp?v=1778593068",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "Trending Designs"
+        "TRENDING",
+        "BEST SELLING",
+        "SHORT LENGTH",
+        "Trending Designs",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -407,7 +438,8 @@
       "sourceImagesCount": 4,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/20260211171210-2e07735c8a854412-media_image-5903f828fedc451aa9c3c56dea342cef.webp?v=1778330126",
       "collections": [
-        "NEW ARRIVALS"
+        "NEW ARRIVALS",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -426,7 +458,8 @@
       "sourceImagesCount": 6,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/cropped_image-173745718973721_b50029fa-91b9-4a18-9da2-baceeec436b9.webp?v=1778329842",
       "collections": [
-        "NEW ARRIVALS"
+        "NEW ARRIVALS",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": false,
@@ -445,7 +478,8 @@
       "sourceImagesCount": 3,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/pixelcut-export_1_-174428980325467_ad8c94af-0090-4f9f-89dd-1c4a93c04274.webp?v=1778328922",
       "collections": [
-        "NEW ARRIVALS"
+        "NEW ARRIVALS",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -464,10 +498,11 @@
       "sourceImagesCount": 4,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/IMG_2687_JPG_4dc21aa4-35f1-47d2-9fe7-123e330d107a.png?v=1769775422",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "WINTER COLLECTION"
+        "TRENDING",
+        "BEST SELLING",
+        "WINTER COLLECTION",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -486,9 +521,10 @@
       "sourceImagesCount": 8,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/MaaheZrmny-2623_jpg_1.png?v=1777640850",
       "collections": [
+        "NEW ARRIVALS",
+        "TRENDING",
         "BEST SELLING",
-        "Home",
-        "NEW ARRIVALS"
+        "ALL ENSEMBLES"
       ],
       "category": "woman",
       "available": true,
@@ -507,9 +543,10 @@
       "sourceImagesCount": 7,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Ava_5__jpg.jpg?v=1777640217",
       "collections": [
+        "NEW ARRIVALS",
+        "TRENDING",
         "BEST SELLING",
-        "Home",
-        "NEW ARRIVALS"
+        "ALL ENSEMBLES"
       ],
       "category": "woman",
       "available": true,
@@ -528,10 +565,12 @@
       "sourceImagesCount": 4,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/imgi_96_MSS-5751_3_fe45d47b-39a0-4cfb-8c50-73b86c82f29a_jpg.jpg?v=1777546756",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "Trending Designs"
+        "TRENDING",
+        "BEST SELLING",
+        "SHORT LENGTH",
+        "Trending Designs",
+        "ALL ENSEMBLES"
       ],
       "category": "Clothing",
       "available": true,
@@ -550,9 +589,10 @@
       "sourceImagesCount": 4,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Untitled-1_0097_DSC02955.jpg?v=1777378910",
       "collections": [
+        "NEW ARRIVALS",
+        "TRENDING",
         "BEST SELLING",
-        "Home",
-        "NEW ARRIVALS"
+        "ALL ENSEMBLES"
       ],
       "category": "woman",
       "available": true,
@@ -571,10 +611,12 @@
       "sourceImagesCount": 5,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/E3F1B20A-11C9-489B-9A39-FCB111246529.webp?v=1776789610",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "Trending Designs"
+        "TRENDING",
+        "BEST SELLING",
+        "SHORT LENGTH",
+        "Trending Designs",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -593,10 +635,12 @@
       "sourceImagesCount": 7,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/DSC07527_jpg.jpg?v=1776437150",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "Trending Designs"
+        "TRENDING",
+        "BEST SELLING",
+        "SHORT LENGTH",
+        "Trending Designs",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -615,9 +659,10 @@
       "sourceImagesCount": 4,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Thefirstofmany_simpleyetmodern-amusthaveforyouriftaarevents_Staytunedforthela_3.jpg?v=1775923770",
       "collections": [
+        "NEW ARRIVALS",
+        "TRENDING",
         "BEST SELLING",
-        "Home",
-        "NEW ARRIVALS"
+        "ALL ENSEMBLES"
       ],
       "category": "woman",
       "available": true,
@@ -636,9 +681,10 @@
       "sourceImagesCount": 7,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/050A7010_1.jpg?v=1775662680",
       "collections": [
+        "NEW ARRIVALS",
+        "TRENDING",
         "BEST SELLING",
-        "Home",
-        "NEW ARRIVALS"
+        "ALL ENSEMBLES"
       ],
       "category": "woman",
       "available": true,
@@ -657,9 +703,10 @@
       "sourceImagesCount": 11,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Vintage23rdDec-302_1.jpg?v=1774870997",
       "collections": [
+        "NEW ARRIVALS",
+        "TRENDING",
         "BEST SELLING",
-        "Home",
-        "NEW ARRIVALS"
+        "ALL ENSEMBLES"
       ],
       "category": "woman",
       "available": true,
@@ -678,9 +725,10 @@
       "sourceImagesCount": 6,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/1_e908f076-38a6-4c33-a784-da13a142a343.png?v=1774535145",
       "collections": [
+        "NEW ARRIVALS",
+        "TRENDING",
         "BEST SELLING",
-        "Home",
-        "NEW ARRIVALS"
+        "ALL ENSEMBLES"
       ],
       "category": "woman",
       "available": true,
@@ -699,9 +747,11 @@
       "sourceImagesCount": 5,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/EidcollectionisavailablenowZimalbyModernmilaapGoandshoponlinefromwebsite_1.jpg?v=1771952830",
       "collections": [
+        "TRENDING",
         "BEST SELLING",
+        "CO-ORDS",
         "Co-Ords",
-        "Home"
+        "ALL ENSEMBLES"
       ],
       "category": "Clothing",
       "available": true,
@@ -720,9 +770,10 @@
       "sourceImagesCount": 7,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/eidshoot_s_z_a_-3027_jpg.jpg?v=1771846601",
       "collections": [
+        "NEW ARRIVALS",
+        "TRENDING",
         "BEST SELLING",
-        "Home",
-        "NEW ARRIVALS"
+        "ALL ENSEMBLES"
       ],
       "category": "woman",
       "available": true,
@@ -741,8 +792,9 @@
       "sourceImagesCount": 5,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/WhatsApp_Image_2025-11-20_at_8.39.38_PM.jpg?v=1772031408",
       "collections": [
+        "CO-ORDS",
         "Co-Ords",
-        "Home"
+        "ALL ENSEMBLES"
       ],
       "category": "Clothing",
       "available": true,
@@ -761,8 +813,9 @@
       "sourceImagesCount": 5,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/493667759_122138684192408152_3231786512462453256_n.jpg?v=1771670075",
       "collections": [
+        "CO-ORDS",
         "Co-Ords",
-        "Home"
+        "ALL ENSEMBLES"
       ],
       "category": "Clothing",
       "available": true,
@@ -781,9 +834,10 @@
       "sourceImagesCount": 4,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Gemini_Generated_Image_8cxrw78cxrw78cxr.png?v=1771001914",
       "collections": [
+        "NEW ARRIVALS",
+        "TRENDING",
         "BEST SELLING",
-        "Home",
-        "NEW ARRIVALS"
+        "ALL ENSEMBLES"
       ],
       "category": "woman",
       "available": true,
@@ -802,10 +856,11 @@
       "sourceImagesCount": 5,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/5.png?v=1772298010",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "WINTER COLLECTION"
+        "TRENDING",
+        "BEST SELLING",
+        "WINTER COLLECTION",
+        "ALL ENSEMBLES"
       ],
       "category": "Stitched",
       "available": true,
@@ -824,9 +879,10 @@
       "sourceImagesCount": 5,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/5_0f2902da-8b93-4f00-98b3-69de90fec358_jpg.jpg?v=1769455006",
       "collections": [
+        "NEW ARRIVALS",
+        "TRENDING",
         "BEST SELLING",
-        "Home",
-        "NEW ARRIVALS"
+        "ALL ENSEMBLES"
       ],
       "category": "Stitched",
       "available": true,
@@ -844,7 +900,10 @@
       "imagesCount": 5,
       "sourceImagesCount": 5,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/IMG_20251101_002112_7ab25f69-918d-43f5-9ada-78b2ca914dfc_1.jpg?v=1769455005",
-      "collections": [],
+      "collections": [
+        "WINTER COLLECTION",
+        "ALL ENSEMBLES"
+      ],
       "category": "3 Pieces",
       "available": true,
       "status": "PASS"
@@ -862,10 +921,11 @@
       "sourceImagesCount": 6,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/POV-off-whiteisyourfavouritecolor_TobookstudioappointmentspleasereachouttousonWha_4.jpg?v=1769454490",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "WINTER COLLECTION"
+        "TRENDING",
+        "BEST SELLING",
+        "WINTER COLLECTION",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -884,9 +944,10 @@
       "sourceImagesCount": 5,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/VDCPF25-Nisha-5.jpg?v=1768915843",
       "collections": [
+        "NEW ARRIVALS",
+        "TRENDING",
         "BEST SELLING",
-        "Home",
-        "NEW ARRIVALS"
+        "ALL ENSEMBLES"
       ],
       "category": "woman",
       "available": true,
@@ -905,10 +966,11 @@
       "sourceImagesCount": 10,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Mirana18JULY-84.jpg?v=1766162560",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "WINTER COLLECTION"
+        "TRENDING",
+        "BEST SELLING",
+        "WINTER COLLECTION",
+        "ALL ENSEMBLES"
       ],
       "category": "Stitched",
       "available": true,
@@ -927,10 +989,11 @@
       "sourceImagesCount": 6,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/IMG-7792.jpg?v=1765614695",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "WINTER COLLECTION"
+        "TRENDING",
+        "BEST SELLING",
+        "WINTER COLLECTION",
+        "ALL ENSEMBLES"
       ],
       "category": "Stitched",
       "available": true,
@@ -949,11 +1012,13 @@
       "sourceImagesCount": 11,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/IMG_3341.jpg?v=1765233649",
       "collections": [
-        "BEST SELLING",
-        "Co-Ords",
-        "Home",
         "NEW ARRIVALS",
-        "WINTER COLLECTION"
+        "TRENDING",
+        "BEST SELLING",
+        "WINTER COLLECTION",
+        "CO-ORDS",
+        "Co-Ords",
+        "ALL ENSEMBLES"
       ],
       "category": "Stitched",
       "available": true,
@@ -972,9 +1037,11 @@
       "sourceImagesCount": 5,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/SnapInsta_imgupscaler.ai_v1_Fast__4K_4.png?v=1764692220",
       "collections": [
-        "BEST SELLING",
         "NEW ARRIVALS",
-        "WINTER COLLECTION"
+        "TRENDING",
+        "BEST SELLING",
+        "WINTER COLLECTION",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": false,
@@ -993,9 +1060,11 @@
       "sourceImagesCount": 10,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/eidshoot_s_z_a_-1902_jpg.jpg?v=1762781175",
       "collections": [
-        "BEST SELLING",
         "NEW ARRIVALS",
-        "WINTER COLLECTION"
+        "TRENDING",
+        "BEST SELLING",
+        "WINTER COLLECTION",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1014,10 +1083,11 @@
       "sourceImagesCount": 8,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/WhatsAppImage2025-10-18at21.35.30_2.jpg?v=1760981349",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "WINTER COLLECTION"
+        "TRENDING",
+        "BEST SELLING",
+        "WINTER COLLECTION",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1036,9 +1106,9 @@
       "sourceImagesCount": 4,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/undefined_change_pose_3_1.png?v=1759926490",
       "collections": [
-        "Home",
         "NEW ARRIVALS",
-        "WINTER COLLECTION"
+        "WINTER COLLECTION",
+        "ALL ENSEMBLES"
       ],
       "category": "Clothing",
       "available": false,
@@ -1057,7 +1127,9 @@
       "sourceImagesCount": 8,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/RedReverie6.webp?v=1759595664",
       "collections": [
-        "BEST SELLING"
+        "TRENDING",
+        "BEST SELLING",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1076,8 +1148,10 @@
       "sourceImagesCount": 4,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/alishaweb2.jpg?v=1759595663",
       "collections": [
+        "TRENDING",
         "BEST SELLING",
-        "WINTER COLLECTION"
+        "WINTER COLLECTION",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1096,10 +1170,12 @@
       "sourceImagesCount": 7,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/rn-image_picker_lib_temp_d4bcc5c1-d0c6-4e11-afab-3d022473a9f4.jpg?v=1759167756",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "Trending Designs"
+        "TRENDING",
+        "BEST SELLING",
+        "SHORT LENGTH",
+        "Trending Designs",
+        "ALL ENSEMBLES"
       ],
       "category": "Clothing",
       "available": true,
@@ -1118,8 +1194,9 @@
       "sourceImagesCount": 6,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/rn-image_picker_lib_temp_3f6c3247-be8f-43f1-b342-b8194a86c6e6.jpg?v=1759167755",
       "collections": [
+        "CO-ORDS",
         "Co-Ords",
-        "Home"
+        "ALL ENSEMBLES"
       ],
       "category": "Clothing",
       "available": true,
@@ -1138,9 +1215,11 @@
       "sourceImagesCount": 4,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/1_1.png?v=1759167751",
       "collections": [
+        "CO-ORDS",
         "Co-Ords",
-        "Home",
-        "Trending Designs"
+        "SHORT LENGTH",
+        "Trending Designs",
+        "ALL ENSEMBLES"
       ],
       "category": "Clothing",
       "available": false,
@@ -1159,7 +1238,8 @@
       "sourceImagesCount": 6,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/pink4.jpg?v=1759167749",
       "collections": [
-        "Home"
+        "NEW ARRIVALS",
+        "ALL ENSEMBLES"
       ],
       "category": "Clothing",
       "available": false,
@@ -1178,8 +1258,9 @@
       "sourceImagesCount": 8,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/WhatsAppImage2025-06-18at21.27.46_11d7006e.jpg?v=1759167748",
       "collections": [
+        "CO-ORDS",
         "Co-Ords",
-        "Home"
+        "ALL ENSEMBLES"
       ],
       "category": "Clothing",
       "available": true,
@@ -1198,8 +1279,9 @@
       "sourceImagesCount": 4,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/insta-save.net_InstagramPost_amna_tahir_3512798734632368079.jpg?v=1759167747",
       "collections": [
+        "CO-ORDS",
         "Co-Ords",
-        "Home"
+        "ALL ENSEMBLES"
       ],
       "category": "Clothing",
       "available": true,
@@ -1218,7 +1300,8 @@
       "sourceImagesCount": 6,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/navyblue1.webp?v=1759167736",
       "collections": [
-        "Home"
+        "NEW ARRIVALS",
+        "ALL ENSEMBLES"
       ],
       "category": "Clothing",
       "available": false,
@@ -1237,7 +1320,7 @@
       "sourceImagesCount": 6,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/JSP00478_1_1.jpg?v=1759167732",
       "collections": [
-        "Home"
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1256,8 +1339,9 @@
       "sourceImagesCount": 3,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/MaroonMirana_1_1.jpg?v=1759594902",
       "collections": [
+        "TRENDING",
         "BEST SELLING",
-        "Home"
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1276,8 +1360,9 @@
       "sourceImagesCount": 4,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/greenshort2pcs_2_1.jpg?v=1759167728",
       "collections": [
+        "CO-ORDS",
         "Co-Ords",
-        "Home"
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1296,7 +1381,7 @@
       "sourceImagesCount": 4,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/DSC00367-174540333032158_82a9eeff-92ed-4317-9935-d4ac05cea3a3.jpg?v=1778070815",
       "collections": [
-        "Home"
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1315,8 +1400,8 @@
       "sourceImagesCount": 7,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/BlackIris1.jpg?v=1759167722",
       "collections": [
-        "Home",
-        "WINTER COLLECTION"
+        "WINTER COLLECTION",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1335,7 +1420,7 @@
       "sourceImagesCount": 8,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Gajri1.jpg?v=1759167720",
       "collections": [
-        "Home"
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1354,8 +1439,8 @@
       "sourceImagesCount": 7,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/LNF-41-GOLDEN.1_700x_fd684c0a-a5a2-4a8c-a72a-85f0c7815dec.jpg?v=1759167718",
       "collections": [
-        "Home",
-        "NEW ARRIVALS"
+        "NEW ARRIVALS",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1374,8 +1459,8 @@
       "sourceImagesCount": 8,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/LNF-22-MEHNDI_1_700x_jpg.jpg?v=1759167710",
       "collections": [
-        "Home",
-        "NEW ARRIVALS"
+        "NEW ARRIVALS",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1394,10 +1479,11 @@
       "sourceImagesCount": 4,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/get.jpg?v=1759167706",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "WINTER COLLECTION"
+        "TRENDING",
+        "BEST SELLING",
+        "WINTER COLLECTION",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1416,9 +1502,10 @@
       "sourceImagesCount": 7,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/6.jpg?v=1784994988",
       "collections": [
+        "TRENDING",
         "BEST SELLING",
-        "Home",
-        "WINTER COLLECTION"
+        "WINTER COLLECTION",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1437,10 +1524,11 @@
       "sourceImagesCount": 7,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Vintage21stJuly-369_jpg_jpg.jpg?v=1759167700",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "WINTER COLLECTION"
+        "TRENDING",
+        "BEST SELLING",
+        "WINTER COLLECTION",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1459,9 +1547,10 @@
       "sourceImagesCount": 8,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Mirana18JULY-636_720x_9a40962a-ef57-4ecd-aa9c-99dc08de713c_webp_jpg.jpg?v=1759167698",
       "collections": [
+        "NEW ARRIVALS",
+        "TRENDING",
         "BEST SELLING",
-        "Home",
-        "NEW ARRIVALS"
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1480,10 +1569,11 @@
       "sourceImagesCount": 7,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Mirana18JULY-1255_720x_cec48211-056f-4a61-b34a-4874d065cae3_webp_jpg.jpg?v=1759167697",
       "collections": [
-        "BEST SELLING",
-        "Home",
         "NEW ARRIVALS",
-        "WINTER COLLECTION"
+        "TRENDING",
+        "BEST SELLING",
+        "WINTER COLLECTION",
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1502,8 +1592,9 @@
       "sourceImagesCount": 3,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/W.SS25.516.T-1.jpg?v=1759167695",
       "collections": [
+        "CO-ORDS",
         "Co-Ords",
-        "Home"
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,
@@ -1522,9 +1613,10 @@
       "sourceImagesCount": 5,
       "primaryImage": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/neww2.webp?v=1759167695",
       "collections": [
+        "NEW ARRIVALS",
+        "TRENDING",
         "BEST SELLING",
-        "Home",
-        "NEW ARRIVALS"
+        "ALL ENSEMBLES"
       ],
       "category": "Unstitched / Stitched",
       "available": true,

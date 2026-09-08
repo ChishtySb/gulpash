@@ -268,12 +268,12 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 <span className="font-mono text-stone-400">SKU: {product.sku}</span>
               </div>
 
-              <h1 className="font-rush-driver text-2xl sm:text-3xl lg:text-[34px] font-bold text-[#1A1A1A] leading-tight">
+              <h1 className="font-rush-driver text-2xl sm:text-3xl lg:text-[34px] font-normal text-[#1A1A1A] leading-tight">
                 {product.title}
               </h1>
 
               {/* Brand Name */}
-              <div className="font-zaslia text-sm tracking-[0.2em] uppercase text-stone-500 font-semibold mt-1">
+              <div className="font-zaslia text-sm tracking-[0.2em] uppercase text-stone-500 font-normal mt-1">
                 GulPash
               </div>
 
@@ -303,7 +303,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   )}
                 </div>
                 <span className="text-[11px] text-stone-500 mt-0.5 block font-light">
-                  Inclusive of all taxes. {settings.shipping?.freeCodEnabled !== false 
+                  Inclusive of all taxes. {settings.shipping?.freeCodEnabled === true 
                     ? `Free shipping on orders above Rs. ${(settings.shipping?.freeShippingThreshold || 5000).toLocaleString()}.` 
                     : 'Nationwide delivery across Pakistan.'}
                 </span>
@@ -325,6 +325,23 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 <span className="italic font-serif">{product.fabric}</span>
               </div>
             </div>
+
+            {/* Authentic Product Description Snapshot */}
+            {product.description && (
+              <div className="p-4 bg-stone-50 border border-stone-200 text-xs text-stone-700 space-y-2">
+                <span className="font-semibold text-stone-900 uppercase tracking-wider text-[11px] block">
+                  Authentic Product Details:
+                </span>
+                {product.description.includes('<') ? (
+                  <div 
+                    className="prose prose-stone max-w-none text-xs leading-relaxed text-stone-700 [&_p]:mb-1.5 [&_strong]:text-stone-900 [&_strong]:font-medium [&_ul]:list-disc [&_ul]:pl-4"
+                    dangerouslySetInnerHTML={{ __html: product.description }} 
+                  />
+                ) : (
+                  <p className="leading-relaxed">{product.description}</p>
+                )}
+              </div>
+            )}
 
             {/* Size Picker */}
             <div>

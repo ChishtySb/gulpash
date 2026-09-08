@@ -9,18 +9,23 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "ac6105c8-44f9-4e59-85ab-8896de893627"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "ac6105c8-44f9-4e59-85ab-8896de893627",
+      "col-short-length",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "Trending Designs"
+      "TRENDING",
+      "BEST SELLING",
+      "SHORT LENGTH",
+      "Trending Designs",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 5499,
     "compareAtPrice": 6899,
     "costPrice": 3024,
@@ -222,12 +227,16 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513"
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING"
+      "TRENDING",
+      "BEST SELLING",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "TRENDING",
     "price": 5499,
     "compareAtPrice": null,
     "costPrice": 3024,
@@ -449,12 +458,16 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513"
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING"
+      "TRENDING",
+      "BEST SELLING",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "TRENDING",
     "price": 5499,
     "compareAtPrice": null,
     "costPrice": 3024,
@@ -634,12 +647,16 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513"
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING"
+      "TRENDING",
+      "BEST SELLING",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "TRENDING",
     "price": 4999,
     "compareAtPrice": null,
     "costPrice": 2749,
@@ -805,18 +822,23 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "ac6105c8-44f9-4e59-85ab-8896de893627"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "ac6105c8-44f9-4e59-85ab-8896de893627",
+      "col-short-length",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "Trending Designs"
+      "TRENDING",
+      "BEST SELLING",
+      "SHORT LENGTH",
+      "Trending Designs",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 5499,
     "compareAtPrice": 6899,
     "costPrice": 3024,
@@ -1018,18 +1040,23 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "ac6105c8-44f9-4e59-85ab-8896de893627"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "ac6105c8-44f9-4e59-85ab-8896de893627",
+      "col-short-length",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "Trending Designs"
+      "TRENDING",
+      "BEST SELLING",
+      "SHORT LENGTH",
+      "Trending Designs",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 4999,
     "compareAtPrice": 6899,
     "costPrice": 2749,
@@ -1231,18 +1258,23 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "ac6105c8-44f9-4e59-85ab-8896de893627"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "ac6105c8-44f9-4e59-85ab-8896de893627",
+      "col-short-length",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "Trending Designs"
+      "TRENDING",
+      "BEST SELLING",
+      "SHORT LENGTH",
+      "Trending Designs",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 5499,
     "compareAtPrice": 6899,
     "costPrice": 3024,
@@ -1444,18 +1476,22 @@
     "categoryId": "b6f45e57-efe5-4094-8c75-91ca5cde1f1e",
     "category": "Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "e627afcf-c6cf-4c7e-809d-d2582a64ab48"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "WINTER COLLECTION"
+      "TRENDING",
+      "BEST SELLING",
+      "WINTER COLLECTION",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 6499,
     "compareAtPrice": 19000,
     "costPrice": 3574,
@@ -1702,18 +1738,23 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "ac6105c8-44f9-4e59-85ab-8896de893627"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "ac6105c8-44f9-4e59-85ab-8896de893627",
+      "col-short-length",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "Trending Designs"
+      "TRENDING",
+      "BEST SELLING",
+      "SHORT LENGTH",
+      "Trending Designs",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 4999,
     "compareAtPrice": 6899,
     "costPrice": 2749,
@@ -1898,18 +1939,23 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "ac6105c8-44f9-4e59-85ab-8896de893627"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "ac6105c8-44f9-4e59-85ab-8896de893627",
+      "col-short-length",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "Trending Designs"
+      "TRENDING",
+      "BEST SELLING",
+      "SHORT LENGTH",
+      "Trending Designs",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 4699,
     "compareAtPrice": 5999,
     "costPrice": 2584,
@@ -2150,18 +2196,23 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "ac6105c8-44f9-4e59-85ab-8896de893627"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "ac6105c8-44f9-4e59-85ab-8896de893627",
+      "col-short-length",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "Trending Designs"
+      "TRENDING",
+      "BEST SELLING",
+      "SHORT LENGTH",
+      "Trending Designs",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 4999,
     "compareAtPrice": 6500,
     "costPrice": 2749,
@@ -2347,18 +2398,23 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "ac6105c8-44f9-4e59-85ab-8896de893627"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "ac6105c8-44f9-4e59-85ab-8896de893627",
+      "col-short-length",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "Trending Designs"
+      "TRENDING",
+      "BEST SELLING",
+      "SHORT LENGTH",
+      "Trending Designs",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 3199,
     "compareAtPrice": 7500,
     "costPrice": 1759,
@@ -2585,18 +2641,23 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "ac6105c8-44f9-4e59-85ab-8896de893627"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "ac6105c8-44f9-4e59-85ab-8896de893627",
+      "col-short-length",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "Trending Designs"
+      "TRENDING",
+      "BEST SELLING",
+      "SHORT LENGTH",
+      "Trending Designs",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 4999,
     "compareAtPrice": 6299,
     "costPrice": 2749,
@@ -2781,10 +2842,13 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
+      "col-all"
     ],
     "collectionNames": [
-      "NEW ARRIVALS"
+      "NEW ARRIVALS",
+      "ALL ENSEMBLES"
     ],
     "collection": "NEW ARRIVALS",
     "price": 4500,
@@ -2969,10 +3033,13 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
+      "col-all"
     ],
     "collectionNames": [
-      "NEW ARRIVALS"
+      "NEW ARRIVALS",
+      "ALL ENSEMBLES"
     ],
     "collection": "NEW ARRIVALS",
     "price": 2989,
@@ -3185,10 +3252,13 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
+      "col-all"
     ],
     "collectionNames": [
-      "NEW ARRIVALS"
+      "NEW ARRIVALS",
+      "ALL ENSEMBLES"
     ],
     "collection": "NEW ARRIVALS",
     "price": 5145,
@@ -3358,18 +3428,22 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "e627afcf-c6cf-4c7e-809d-d2582a64ab48"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "WINTER COLLECTION"
+      "TRENDING",
+      "BEST SELLING",
+      "WINTER COLLECTION",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 5999,
     "compareAtPrice": 7950,
     "costPrice": 3299,
@@ -3548,16 +3622,19 @@
     "categoryId": "eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e",
     "category": "woman",
     "collectionIds": [
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
       "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
+      "NEW ARRIVALS",
+      "TRENDING",
       "BEST SELLING",
-      "Home",
-      "NEW ARRIVALS"
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 6499,
     "compareAtPrice": 8860,
     "costPrice": 3574,
@@ -3793,16 +3870,19 @@
     "categoryId": "eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e",
     "category": "woman",
     "collectionIds": [
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
       "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
+      "NEW ARRIVALS",
+      "TRENDING",
       "BEST SELLING",
-      "Home",
-      "NEW ARRIVALS"
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 6499,
     "compareAtPrice": 8860,
     "costPrice": 3574,
@@ -4024,18 +4104,23 @@
     "categoryId": "238b9607-7157-468b-82ad-49fd47f535f7",
     "category": "Clothing",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "ac6105c8-44f9-4e59-85ab-8896de893627"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "ac6105c8-44f9-4e59-85ab-8896de893627",
+      "col-short-length",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "Trending Designs"
+      "TRENDING",
+      "BEST SELLING",
+      "SHORT LENGTH",
+      "Trending Designs",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 4999,
     "compareAtPrice": 8199,
     "costPrice": 2749,
@@ -4220,16 +4305,19 @@
     "categoryId": "eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e",
     "category": "woman",
     "collectionIds": [
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
       "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
+      "NEW ARRIVALS",
+      "TRENDING",
       "BEST SELLING",
-      "Home",
-      "NEW ARRIVALS"
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 6499,
     "compareAtPrice": 8860,
     "costPrice": 3574,
@@ -4409,18 +4497,23 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "ac6105c8-44f9-4e59-85ab-8896de893627"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "ac6105c8-44f9-4e59-85ab-8896de893627",
+      "col-short-length",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "Trending Designs"
+      "TRENDING",
+      "BEST SELLING",
+      "SHORT LENGTH",
+      "Trending Designs",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 3999,
     "compareAtPrice": 6199,
     "costPrice": 2199,
@@ -4611,18 +4704,23 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "ac6105c8-44f9-4e59-85ab-8896de893627"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "ac6105c8-44f9-4e59-85ab-8896de893627",
+      "col-short-length",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "Trending Designs"
+      "TRENDING",
+      "BEST SELLING",
+      "SHORT LENGTH",
+      "Trending Designs",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 4499,
     "compareAtPrice": 8000,
     "costPrice": 2474,
@@ -4850,16 +4948,19 @@
     "categoryId": "eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e",
     "category": "woman",
     "collectionIds": [
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
       "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
+      "NEW ARRIVALS",
+      "TRENDING",
       "BEST SELLING",
-      "Home",
-      "NEW ARRIVALS"
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 6499,
     "compareAtPrice": 8550,
     "costPrice": 3574,
@@ -5039,16 +5140,19 @@
     "categoryId": "eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e",
     "category": "woman",
     "collectionIds": [
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
       "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
+      "NEW ARRIVALS",
+      "TRENDING",
       "BEST SELLING",
-      "Home",
-      "NEW ARRIVALS"
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 7499,
     "compareAtPrice": 8860,
     "costPrice": 4124,
@@ -5270,16 +5374,19 @@
     "categoryId": "eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e",
     "category": "woman",
     "collectionIds": [
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
       "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
+      "NEW ARRIVALS",
+      "TRENDING",
       "BEST SELLING",
-      "Home",
-      "NEW ARRIVALS"
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 6499,
     "compareAtPrice": 8299,
     "costPrice": 3574,
@@ -5641,16 +5748,19 @@
     "categoryId": "eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e",
     "category": "woman",
     "collectionIds": [
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
       "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
+      "NEW ARRIVALS",
+      "TRENDING",
       "BEST SELLING",
-      "Home",
-      "NEW ARRIVALS"
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 6499,
     "compareAtPrice": 8250,
     "costPrice": 3574,
@@ -5859,15 +5969,19 @@
     "category": "Clothing",
     "collectionIds": [
       "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
       "d12a9e3b-e23b-4a89-80d5-6c2478bbfe89",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8"
+      "col-co-ords",
+      "col-all"
     ],
     "collectionNames": [
+      "TRENDING",
       "BEST SELLING",
+      "CO-ORDS",
       "Co-Ords",
-      "Home"
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "TRENDING",
     "price": 3999,
     "compareAtPrice": 5500,
     "costPrice": 2199,
@@ -6073,16 +6187,19 @@
     "categoryId": "eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e",
     "category": "woman",
     "collectionIds": [
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
       "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
+      "NEW ARRIVALS",
+      "TRENDING",
       "BEST SELLING",
-      "Home",
-      "NEW ARRIVALS"
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 5999,
     "compareAtPrice": 7950,
     "costPrice": 3299,
@@ -6302,13 +6419,15 @@
     "category": "Clothing",
     "collectionIds": [
       "d12a9e3b-e23b-4a89-80d5-6c2478bbfe89",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8"
+      "col-co-ords",
+      "col-all"
     ],
     "collectionNames": [
+      "CO-ORDS",
       "Co-Ords",
-      "Home"
+      "ALL ENSEMBLES"
     ],
-    "collection": "Co-Ords",
+    "collection": "CO-ORDS",
     "price": 2850,
     "compareAtPrice": 4500,
     "costPrice": 1568,
@@ -6505,13 +6624,15 @@
     "category": "Clothing",
     "collectionIds": [
       "d12a9e3b-e23b-4a89-80d5-6c2478bbfe89",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8"
+      "col-co-ords",
+      "col-all"
     ],
     "collectionNames": [
+      "CO-ORDS",
       "Co-Ords",
-      "Home"
+      "ALL ENSEMBLES"
     ],
-    "collection": "Co-Ords",
+    "collection": "CO-ORDS",
     "price": 2850,
     "compareAtPrice": 4500,
     "costPrice": 1568,
@@ -6707,16 +6828,19 @@
     "categoryId": "eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e",
     "category": "woman",
     "collectionIds": [
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
       "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
+      "NEW ARRIVALS",
+      "TRENDING",
       "BEST SELLING",
-      "Home",
-      "NEW ARRIVALS"
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 6499,
     "compareAtPrice": 8750,
     "costPrice": 3574,
@@ -6894,18 +7018,22 @@
     "categoryId": "b6f45e57-efe5-4094-8c75-91ca5cde1f1e",
     "category": "Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "e627afcf-c6cf-4c7e-809d-d2582a64ab48"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "WINTER COLLECTION"
+      "TRENDING",
+      "BEST SELLING",
+      "WINTER COLLECTION",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 6499,
     "compareAtPrice": 8750,
     "costPrice": 3574,
@@ -7102,16 +7230,19 @@
     "categoryId": "b6f45e57-efe5-4094-8c75-91ca5cde1f1e",
     "category": "Stitched",
     "collectionIds": [
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
       "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
+      "NEW ARRIVALS",
+      "TRENDING",
       "BEST SELLING",
-      "Home",
-      "NEW ARRIVALS"
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 6199,
     "compareAtPrice": 7990,
     "costPrice": 3409,
@@ -7307,8 +7438,15 @@
     "sku": "GP-10275293888827-50942227743035",
     "categoryId": "182c6be1-75c0-406c-826f-770ab3725133",
     "category": "3 Pieces",
-    "collectionIds": [],
-    "collectionNames": [],
+    "collectionIds": [
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "col-all"
+    ],
+    "collectionNames": [
+      "WINTER COLLECTION",
+      "ALL ENSEMBLES"
+    ],
     "price": 5999,
     "compareAtPrice": 7830,
     "costPrice": 3299,
@@ -7496,7 +7634,8 @@
     "sourceSlug": "chiku-embroidery-3pcs",
     "migrationStatus": "verified",
     "createdAt": "2026-01-27T00:16:42+05:00",
-    "updatedAt": "2026-09-06T16:25:16+05:00"
+    "updatedAt": "2026-09-06T16:25:16+05:00",
+    "collection": "WINTER COLLECTION"
   },
   {
     "id": "a9c529e1-e76d-430c-804c-bdda76d34e12",
@@ -7508,18 +7647,22 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "e627afcf-c6cf-4c7e-809d-d2582a64ab48"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "WINTER COLLECTION"
+      "TRENDING",
+      "BEST SELLING",
+      "WINTER COLLECTION",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 6499,
     "compareAtPrice": 8150,
     "costPrice": 3574,
@@ -7724,16 +7867,19 @@
     "categoryId": "eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e",
     "category": "woman",
     "collectionIds": [
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
       "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
+      "NEW ARRIVALS",
+      "TRENDING",
       "BEST SELLING",
-      "Home",
-      "NEW ARRIVALS"
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 6499,
     "compareAtPrice": 8750,
     "costPrice": 3574,
@@ -7928,18 +8074,22 @@
     "categoryId": "b6f45e57-efe5-4094-8c75-91ca5cde1f1e",
     "category": "Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "e627afcf-c6cf-4c7e-809d-d2582a64ab48"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "WINTER COLLECTION"
+      "TRENDING",
+      "BEST SELLING",
+      "WINTER COLLECTION",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 6491,
     "compareAtPrice": 8250,
     "costPrice": 3570,
@@ -8206,18 +8356,22 @@
     "categoryId": "b6f45e57-efe5-4094-8c75-91ca5cde1f1e",
     "category": "Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "e627afcf-c6cf-4c7e-809d-d2582a64ab48"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "WINTER COLLECTION"
+      "TRENDING",
+      "BEST SELLING",
+      "WINTER COLLECTION",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 6499,
     "compareAtPrice": 7650,
     "costPrice": 3574,
@@ -8427,20 +8581,26 @@
     "categoryId": "b6f45e57-efe5-4094-8c75-91ca5cde1f1e",
     "category": "Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "d12a9e3b-e23b-4a89-80d5-6c2478bbfe89",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "e627afcf-c6cf-4c7e-809d-d2582a64ab48"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "d12a9e3b-e23b-4a89-80d5-6c2478bbfe89",
+      "col-co-ords",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Co-Ords",
-      "Home",
       "NEW ARRIVALS",
-      "WINTER COLLECTION"
+      "TRENDING",
+      "BEST SELLING",
+      "WINTER COLLECTION",
+      "CO-ORDS",
+      "Co-Ords",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 6499,
     "compareAtPrice": 8450,
     "costPrice": 3574,
@@ -8715,16 +8875,22 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "e627afcf-c6cf-4c7e-809d-d2582a64ab48"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
       "NEW ARRIVALS",
-      "WINTER COLLECTION"
+      "TRENDING",
+      "BEST SELLING",
+      "WINTER COLLECTION",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 6499,
     "compareAtPrice": 8150,
     "costPrice": 3574,
@@ -8921,16 +9087,22 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "e627afcf-c6cf-4c7e-809d-d2582a64ab48"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
       "NEW ARRIVALS",
-      "WINTER COLLECTION"
+      "TRENDING",
+      "BEST SELLING",
+      "WINTER COLLECTION",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 6499,
     "compareAtPrice": 8460,
     "costPrice": 3574,
@@ -9191,18 +9363,22 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "e627afcf-c6cf-4c7e-809d-d2582a64ab48"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "WINTER COLLECTION"
+      "TRENDING",
+      "BEST SELLING",
+      "WINTER COLLECTION",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 5580,
     "compareAtPrice": 8500,
     "costPrice": 3069,
@@ -9435,16 +9611,18 @@
     "categoryId": "238b9607-7157-468b-82ad-49fd47f535f7",
     "category": "Clothing",
     "collectionIds": [
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "e627afcf-c6cf-4c7e-809d-d2582a64ab48"
+      "col-new-arrivals",
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "col-all"
     ],
     "collectionNames": [
-      "Home",
       "NEW ARRIVALS",
-      "WINTER COLLECTION"
+      "WINTER COLLECTION",
+      "ALL ENSEMBLES"
     ],
-    "collection": "Home",
+    "collection": "NEW ARRIVALS",
     "price": 3999,
     "compareAtPrice": 7500,
     "costPrice": 2199,
@@ -9607,12 +9785,16 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513"
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING"
+      "TRENDING",
+      "BEST SELLING",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "TRENDING",
     "price": 6499,
     "compareAtPrice": 8250,
     "costPrice": 3574,
@@ -9846,13 +10028,18 @@
     "category": "Unstitched / Stitched",
     "collectionIds": [
       "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "e627afcf-c6cf-4c7e-809d-d2582a64ab48"
+      "col-best-selling",
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "col-all"
     ],
     "collectionNames": [
+      "TRENDING",
       "BEST SELLING",
-      "WINTER COLLECTION"
+      "WINTER COLLECTION",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "TRENDING",
     "price": 6499,
     "compareAtPrice": 8350,
     "costPrice": 3574,
@@ -10029,18 +10216,23 @@
     "categoryId": "238b9607-7157-468b-82ad-49fd47f535f7",
     "category": "Clothing",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "ac6105c8-44f9-4e59-85ab-8896de893627"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "ac6105c8-44f9-4e59-85ab-8896de893627",
+      "col-short-length",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "Trending Designs"
+      "TRENDING",
+      "BEST SELLING",
+      "SHORT LENGTH",
+      "Trending Designs",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 4999,
     "compareAtPrice": 8199,
     "costPrice": 2749,
@@ -10272,13 +10464,15 @@
     "category": "Clothing",
     "collectionIds": [
       "d12a9e3b-e23b-4a89-80d5-6c2478bbfe89",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8"
+      "col-co-ords",
+      "col-all"
     ],
     "collectionNames": [
+      "CO-ORDS",
       "Co-Ords",
-      "Home"
+      "ALL ENSEMBLES"
     ],
-    "collection": "Co-Ords",
+    "collection": "CO-ORDS",
     "price": 3999,
     "compareAtPrice": 5400,
     "costPrice": 2199,
@@ -10473,15 +10667,19 @@
     "category": "Clothing",
     "collectionIds": [
       "d12a9e3b-e23b-4a89-80d5-6c2478bbfe89",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "ac6105c8-44f9-4e59-85ab-8896de893627"
+      "col-co-ords",
+      "ac6105c8-44f9-4e59-85ab-8896de893627",
+      "col-short-length",
+      "col-all"
     ],
     "collectionNames": [
+      "CO-ORDS",
       "Co-Ords",
-      "Home",
-      "Trending Designs"
+      "SHORT LENGTH",
+      "Trending Designs",
+      "ALL ENSEMBLES"
     ],
-    "collection": "Co-Ords",
+    "collection": "CO-ORDS",
     "price": 4599,
     "compareAtPrice": 6200,
     "costPrice": 2529,
@@ -10663,12 +10861,15 @@
     "categoryId": "238b9607-7157-468b-82ad-49fd47f535f7",
     "category": "Clothing",
     "collectionIds": [
-      "f743b288-d90c-42ad-882a-94a1df7a90b8"
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
+      "col-all"
     ],
     "collectionNames": [
-      "Home"
+      "NEW ARRIVALS",
+      "ALL ENSEMBLES"
     ],
-    "collection": "Home",
+    "collection": "NEW ARRIVALS",
     "price": 3050,
     "compareAtPrice": 5200,
     "costPrice": 1678,
@@ -10853,7 +11054,7 @@
     "isVisible": true,
     "isFeatured": true,
     "isBestSeller": false,
-    "isNewArrival": false,
+    "isNewArrival": true,
     "isSoldOut": true,
     "rating": 0,
     "reviewCount": 0,
@@ -10879,13 +11080,15 @@
     "category": "Clothing",
     "collectionIds": [
       "d12a9e3b-e23b-4a89-80d5-6c2478bbfe89",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8"
+      "col-co-ords",
+      "col-all"
     ],
     "collectionNames": [
+      "CO-ORDS",
       "Co-Ords",
-      "Home"
+      "ALL ENSEMBLES"
     ],
-    "collection": "Co-Ords",
+    "collection": "CO-ORDS",
     "price": 4999,
     "compareAtPrice": 5800,
     "costPrice": 2749,
@@ -11124,13 +11327,15 @@
     "category": "Clothing",
     "collectionIds": [
       "d12a9e3b-e23b-4a89-80d5-6c2478bbfe89",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8"
+      "col-co-ords",
+      "col-all"
     ],
     "collectionNames": [
+      "CO-ORDS",
       "Co-Ords",
-      "Home"
+      "ALL ENSEMBLES"
     ],
-    "collection": "Co-Ords",
+    "collection": "CO-ORDS",
     "price": 2850,
     "compareAtPrice": 4500,
     "costPrice": 1568,
@@ -11293,12 +11498,15 @@
     "categoryId": "238b9607-7157-468b-82ad-49fd47f535f7",
     "category": "Clothing",
     "collectionIds": [
-      "f743b288-d90c-42ad-882a-94a1df7a90b8"
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
+      "col-all"
     ],
     "collectionNames": [
-      "Home"
+      "NEW ARRIVALS",
+      "ALL ENSEMBLES"
     ],
-    "collection": "Home",
+    "collection": "NEW ARRIVALS",
     "price": 4399,
     "compareAtPrice": 7400,
     "costPrice": 2419,
@@ -11446,7 +11654,7 @@
     "isVisible": true,
     "isFeatured": true,
     "isBestSeller": false,
-    "isNewArrival": false,
+    "isNewArrival": true,
     "isSoldOut": true,
     "rating": 0,
     "reviewCount": 0,
@@ -11471,12 +11679,12 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "f743b288-d90c-42ad-882a-94a1df7a90b8"
+      "col-all"
     ],
     "collectionNames": [
-      "Home"
+      "ALL ENSEMBLES"
     ],
-    "collection": "Home",
+    "collection": "ALL ENSEMBLES",
     "price": 3120,
     "compareAtPrice": 6500,
     "costPrice": 1716,
@@ -11682,13 +11890,15 @@
     "category": "Unstitched / Stitched",
     "collectionIds": [
       "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8"
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
+      "TRENDING",
       "BEST SELLING",
-      "Home"
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "TRENDING",
     "price": 5800,
     "compareAtPrice": 7250,
     "costPrice": 3190,
@@ -11860,13 +12070,15 @@
     "category": "Unstitched / Stitched",
     "collectionIds": [
       "d12a9e3b-e23b-4a89-80d5-6c2478bbfe89",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8"
+      "col-co-ords",
+      "col-all"
     ],
     "collectionNames": [
+      "CO-ORDS",
       "Co-Ords",
-      "Home"
+      "ALL ENSEMBLES"
     ],
-    "collection": "Co-Ords",
+    "collection": "CO-ORDS",
     "price": 3000,
     "compareAtPrice": 5500,
     "costPrice": 1650,
@@ -12043,12 +12255,12 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "f743b288-d90c-42ad-882a-94a1df7a90b8"
+      "col-all"
     ],
     "collectionNames": [
-      "Home"
+      "ALL ENSEMBLES"
     ],
-    "collection": "Home",
+    "collection": "ALL ENSEMBLES",
     "price": 3360,
     "compareAtPrice": 6500,
     "costPrice": 1848,
@@ -12225,14 +12437,15 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "e627afcf-c6cf-4c7e-809d-d2582a64ab48"
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "col-all"
     ],
     "collectionNames": [
-      "Home",
-      "WINTER COLLECTION"
+      "WINTER COLLECTION",
+      "ALL ENSEMBLES"
     ],
-    "collection": "Home",
+    "collection": "WINTER COLLECTION",
     "price": 3150,
     "compareAtPrice": 6000,
     "costPrice": 1733,
@@ -12451,12 +12664,12 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "f743b288-d90c-42ad-882a-94a1df7a90b8"
+      "col-all"
     ],
     "collectionNames": [
-      "Home"
+      "ALL ENSEMBLES"
     ],
-    "collection": "Home",
+    "collection": "ALL ENSEMBLES",
     "price": 2999,
     "compareAtPrice": 6000,
     "costPrice": 1649,
@@ -12689,14 +12902,15 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
+      "col-all"
     ],
     "collectionNames": [
-      "Home",
-      "NEW ARRIVALS"
+      "NEW ARRIVALS",
+      "ALL ENSEMBLES"
     ],
-    "collection": "Home",
+    "collection": "NEW ARRIVALS",
     "price": 5499,
     "compareAtPrice": 7000,
     "costPrice": 3024,
@@ -12921,14 +13135,15 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
+      "col-all"
     ],
     "collectionNames": [
-      "Home",
-      "NEW ARRIVALS"
+      "NEW ARRIVALS",
+      "ALL ENSEMBLES"
     ],
-    "collection": "Home",
+    "collection": "NEW ARRIVALS",
     "price": 5499,
     "compareAtPrice": 7000,
     "costPrice": 3024,
@@ -13166,18 +13381,22 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "e627afcf-c6cf-4c7e-809d-d2582a64ab48"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "WINTER COLLECTION"
+      "TRENDING",
+      "BEST SELLING",
+      "WINTER COLLECTION",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 5999,
     "compareAtPrice": 8650,
     "costPrice": 3299,
@@ -13355,15 +13574,18 @@
     "category": "Unstitched / Stitched",
     "collectionIds": [
       "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "e627afcf-c6cf-4c7e-809d-d2582a64ab48"
+      "col-best-selling",
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "col-all"
     ],
     "collectionNames": [
+      "TRENDING",
       "BEST SELLING",
-      "Home",
-      "WINTER COLLECTION"
+      "WINTER COLLECTION",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "TRENDING",
     "price": 4999,
     "compareAtPrice": 6350,
     "costPrice": 2749,
@@ -13599,18 +13821,22 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "e627afcf-c6cf-4c7e-809d-d2582a64ab48"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "WINTER COLLECTION"
+      "TRENDING",
+      "BEST SELLING",
+      "WINTER COLLECTION",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 5999,
     "compareAtPrice": 7399,
     "costPrice": 3299,
@@ -13833,16 +14059,19 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
       "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
+      "NEW ARRIVALS",
+      "TRENDING",
       "BEST SELLING",
-      "Home",
-      "NEW ARRIVALS"
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 4320,
     "compareAtPrice": 6450,
     "costPrice": 2376,
@@ -14080,18 +14309,22 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
-      "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
       "4ab60e51-dddb-433c-880c-d30909bcbcb3",
-      "e627afcf-c6cf-4c7e-809d-d2582a64ab48"
+      "col-new-arrivals",
+      "4ca893b6-3d59-4256-86b9-81b25057c513",
+      "col-best-selling",
+      "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+      "col-winter",
+      "col-all"
     ],
     "collectionNames": [
-      "BEST SELLING",
-      "Home",
       "NEW ARRIVALS",
-      "WINTER COLLECTION"
+      "TRENDING",
+      "BEST SELLING",
+      "WINTER COLLECTION",
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 5999,
     "compareAtPrice": 7399,
     "costPrice": 3299,
@@ -14317,13 +14550,15 @@
     "category": "Unstitched / Stitched",
     "collectionIds": [
       "d12a9e3b-e23b-4a89-80d5-6c2478bbfe89",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8"
+      "col-co-ords",
+      "col-all"
     ],
     "collectionNames": [
+      "CO-ORDS",
       "Co-Ords",
-      "Home"
+      "ALL ENSEMBLES"
     ],
-    "collection": "Co-Ords",
+    "collection": "CO-ORDS",
     "price": 2850,
     "compareAtPrice": 7000,
     "costPrice": 1568,
@@ -14451,16 +14686,19 @@
     "categoryId": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
     "category": "Unstitched / Stitched",
     "collectionIds": [
+      "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+      "col-new-arrivals",
       "4ca893b6-3d59-4256-86b9-81b25057c513",
-      "f743b288-d90c-42ad-882a-94a1df7a90b8",
-      "4ab60e51-dddb-433c-880c-d30909bcbcb3"
+      "col-best-selling",
+      "col-all"
     ],
     "collectionNames": [
+      "NEW ARRIVALS",
+      "TRENDING",
       "BEST SELLING",
-      "Home",
-      "NEW ARRIVALS"
+      "ALL ENSEMBLES"
     ],
-    "collection": "BEST SELLING",
+    "collection": "NEW ARRIVALS",
     "price": 5999,
     "compareAtPrice": 7450,
     "costPrice": 3299,

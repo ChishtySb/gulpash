@@ -8,9 +8,9 @@ import {
 } from '../data/initialData';
 
 const KEYS = {
-  PRODUCTS: 'gulpash_products_v2_migrated',
+  PRODUCTS: 'gulpash_products_v3_ref_aligned',
   CATEGORIES: 'gulpash_categories_v2_migrated',
-  COLLECTIONS: 'gulpash_collections_v2_migrated',
+  COLLECTIONS: 'gulpash_collections_v3_ref_aligned',
   ORDERS: 'gulpash_orders_v2_migrated',
   REVIEWS: 'gulpash_reviews_v2_migrated',
   CMS: 'gulpash_cms_v2_migrated',
@@ -152,11 +152,12 @@ export const StorageService = {
     try {
       const data = localStorage.getItem(KEYS.COLLECTIONS);
       let list: Collection[] = data ? JSON.parse(data) : INITIAL_COLLECTIONS;
-      // Auto-heal if collections count doesn't match 6 or customer-facing display name BEST SELLING hasn't been updated to TRENDING
+      const requiredSlugs = ['new-arrivals', 'best-selling', 'winter-collection', 'co-ords', 'short-length-article', 'all'];
+      // Auto-heal if collections count doesn't match 6 or slugs/images don't align with reference
       if (
         !list || 
         list.length !== 6 || 
-        list.some(c => c.name === 'BEST SELLING') || 
+        !requiredSlugs.every(slug => list.some(c => c.slug === slug)) ||
         list.some(c => (!c.imageUrl && !c.image))
       ) {
         list = INITIAL_COLLECTIONS;
@@ -261,6 +262,10 @@ export const StorageService = {
         cms.hero.secondaryButtonUrl = '/shop';
         changed = true;
       }
+      if (cms.hero?.heading === 'GulPash Haute Couture') {
+        cms.hero.heading = 'GulPash Luxury Collection';
+        changed = true;
+      }
       if (cms.announcements) {
         cms.announcements = cms.announcements.map(a => {
           if (a.text.includes('8489999')) {
@@ -297,7 +302,7 @@ export const StorageService = {
       }
       if (settings.shipping) {
         if (settings.shipping.freeCodEnabled === undefined) {
-          settings.shipping.freeCodEnabled = true;
+          settings.shipping.freeCodEnabled = false;
           changed = true;
         }
         if (!settings.shipping.codAnnouncementText) {

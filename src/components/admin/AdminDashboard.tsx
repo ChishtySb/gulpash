@@ -26,8 +26,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
   const [cms, setCms] = useState<CMSConfig>(StorageService.getCMS());
   const [settings, setSettings] = useState<SiteSettings>(StorageService.getSettings());
   const [categories, setCategories] = useState<Category[]>(StorageService.getCategories());
-  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [isNewCategory, setIsNewCategory] = useState(false);
+  const [hasUnsavedCategoryChanges, setHasUnsavedCategoryChanges] = useState(false);
 
   // Search & Filters
   const [productSearch, setProductSearch] = useState('');
@@ -66,26 +65,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
     setTimeout(() => setSaveSuccessNotice(null), 3000);
   };
 
-  // Category management handlers
-  const handleToggleCategoryStore = (catId: string) => {
-    const updated = categories.map(c => c.id === catId ? { ...c, isVisible: !c.isVisible } : c);
-    setCategories(updated);
-    StorageService.saveCategories(updated);
-    triggerNotice('Category storefront visibility updated');
-  };
-
+  // Category Presentation Settings Handlers (Taxonomy editing permanently disabled)
   const handleToggleCategoryNav = (catId: string) => {
     const updated = categories.map(c => c.id === catId ? { ...c, visibleInNav: c.visibleInNav === false ? true : false } : c);
     setCategories(updated);
-    StorageService.saveCategories(updated);
-    triggerNotice('Header Navigation visibility updated');
+    setHasUnsavedCategoryChanges(true);
   };
 
   const handleToggleCategoryHome = (catId: string) => {
     const updated = categories.map(c => c.id === catId ? { ...c, visibleOnHomepage: c.visibleOnHomepage === false ? true : false } : c);
     setCategories(updated);
-    StorageService.saveCategories(updated);
-    triggerNotice('Homepage visibility updated');
+    setHasUnsavedCategoryChanges(true);
+  };
+
+  const handleCategoryOrderChange = (catId: string, newOrder: number) => {
+    const updated = categories.map(c => c.id === catId ? { ...c, order: newOrder } : c);
+    setCategories(updated);
+    setHasUnsavedCategoryChanges(true);
   };
 
   const handleMoveCategory = (idx: number, direction: 'up' | 'down') => {
@@ -97,50 +93,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
     clone[targetIdx] = item;
     const updated = clone.map((c, i) => ({ ...c, order: i + 1 }));
     setCategories(updated);
-    StorageService.saveCategories(updated);
-    triggerNotice('Category display order updated');
+    setHasUnsavedCategoryChanges(true);
   };
 
-  const handleSaveCategory = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingCategory || !editingCategory.name.trim()) return;
-    let updated: Category[];
-    if (isNewCategory) {
-      const newCat: Category = {
-        ...editingCategory,
-        id: editingCategory.id || `cat-${Date.now()}`,
-        name: editingCategory.name.trim(),
-        slug: editingCategory.slug?.trim() || editingCategory.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-'),
-        order: categories.length + 1,
-        isVisible: true,
-        visibleInNav: true,
-        visibleOnHomepage: true
-      };
-      updated = [...categories, newCat];
-    } else {
-      updated = categories.map(c => c.id === editingCategory.id ? {
-        ...editingCategory,
-        name: editingCategory.name.trim(),
-        slug: editingCategory.slug?.trim() || editingCategory.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-')
-      } : c);
-    }
-    setCategories(updated);
-    StorageService.saveCategories(updated);
-    setEditingCategory(null);
-    setIsNewCategory(false);
-    triggerNotice('Category updated successfully');
-  };
-
-  const handleDeleteCategory = (catId: string) => {
-    if (categories.length <= 1) {
-      alert('The store must keep at least one category.');
-      return;
-    }
-    if (!confirm('Are you sure you want to delete this category? Products assigned to it will remain in catalog.')) return;
-    const updated = categories.filter(c => c.id !== catId);
-    setCategories(updated);
-    StorageService.saveCategories(updated);
-    triggerNotice('Category deleted');
+  const handleSaveCategoryPresentation = () => {
+    const sorted = [...categories].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    setCategories(sorted);
+    StorageService.saveCategories(sorted);
+    setHasUnsavedCategoryChanges(false);
+    triggerNotice('Navigation & Category presentation settings saved to storefront');
   };
 
   // 1. CALCULATE ANALYTICS
@@ -426,7 +387,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
             }`}
           >
             <Layers className="w-4 h-4 text-[#c59b66]" />
-            <span>Categories & Nav ({categories.length})</span>
+            <span>Navigation & Categories ({categories.length})</span>
+            {hasUnsavedCategoryChanges && (
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" title="Unsaved presentation changes" />
+            )}
           </button>
 
           <button
@@ -1106,83 +1070,88 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
           </div>
         )}
 
-        {/* 5. CATEGORIES & NAVIGATION TAB */}
+        {/* 5. NAVIGATION & CATEGORIES PRESENTATION TAB */}
         {activeTab === 'categories' && (
           <div className="space-y-6 animate-in fade-in">
             <div className="bg-white p-6 sm:p-8 rounded-sm border border-[#e8e3dc] space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#eee] pb-5">
                 <div>
                   <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-[#aa814d] block">
-                    TAXONOMY & NAVIGATION HIERARCHY
+                    STOREFRONT PRESENTATION SETTINGS
                   </span>
                   <h2 className="font-serif text-2xl font-bold text-[#111] mt-1">
-                    Store Categories & Navigation Visibility
+                    Navigation & Categories
                   </h2>
                   <p className="text-xs text-[#777] mt-1">
-                    Manage collection order, header navigation menu links, and homepage showcase rows.
+                    Configure presentation visibility for the top Header Navigation bar, Homepage collections showcase, and display ordering.
                   </p>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingCategory({
-                      id: `cat-${Date.now()}`,
-                      name: '',
-                      slug: '',
-                      description: '',
-                      imageUrl: '',
-                      order: categories.length + 1,
-                      isVisible: true,
-                      visibleInNav: true,
-                      visibleOnHomepage: true
-                    });
-                    setIsNewCategory(true);
-                  }}
-                  className="bg-[#181818] hover:bg-[#c59b66] text-white text-xs font-bold uppercase tracking-wider py-2.5 px-4 rounded-sm flex items-center gap-2 self-start cursor-pointer transition-colors shadow-sm"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Add New Category</span>
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleSaveCategoryPresentation}
+                    className={`text-xs font-bold uppercase tracking-wider py-2.5 px-5 rounded-sm flex items-center gap-2 cursor-pointer transition-all shadow-sm ${
+                      hasUnsavedCategoryChanges
+                        ? 'bg-amber-600 hover:bg-amber-700 text-white animate-pulse'
+                        : 'bg-[#181818] hover:bg-[#333] text-white'
+                    }`}
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>Save Changes</span>
+                  </button>
+                </div>
               </div>
 
-              {/* Quick Summary Cards */}
+              {/* Taxonomy Protection Notice */}
+              <div className="p-3.5 bg-stone-50 border border-stone-200 rounded-sm flex items-start gap-3">
+                <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+                <div className="text-xs text-stone-600 space-y-0.5">
+                  <span className="font-bold text-stone-900 block">
+                    Catalog Taxonomy Locked & Protected
+                  </span>
+                  <p className="font-light leading-relaxed">
+                    Category creation, deletion, renaming, and slug alteration are permanently restricted in this module to protect catalog integrity and ensure all 68 authentic products remain mapped.
+                  </p>
+                </div>
+              </div>
+
+              {/* Quick Summary Metrics */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="bg-stone-50 border border-stone-200 p-4 rounded-xs">
-                  <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider block">Total Categories</span>
+                  <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider block">Authentic Categories</span>
                   <span className="text-2xl font-serif font-bold text-stone-900 mt-1 block">{categories.length}</span>
-                  <span className="text-[10px] text-stone-400 mt-0.5 block">Configured in store catalog</span>
+                  <span className="text-[10px] text-stone-400 mt-0.5 block">Catalog database records</span>
                 </div>
 
                 <div className="bg-stone-50 border border-stone-200 p-4 rounded-xs">
-                  <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider block">Visible in Nav Bar</span>
+                  <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider block">Header Nav Visibility</span>
                   <span className="text-2xl font-serif font-bold text-emerald-800 mt-1 block">
-                    {categories.filter(c => c.isVisible && c.visibleInNav !== false).length}
+                    {categories.filter(c => c.visibleInNav !== false).length}
                   </span>
-                  <span className="text-[10px] text-stone-400 mt-0.5 block">Shown in top navigation header</span>
+                  <span className="text-[10px] text-stone-400 mt-0.5 block">Shown in storefront header row</span>
                 </div>
 
                 <div className="bg-stone-50 border border-stone-200 p-4 rounded-xs">
-                  <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider block">Visible on Homepage</span>
+                  <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider block">Homepage Showcase</span>
                   <span className="text-2xl font-serif font-bold text-stone-900 mt-1 block">
-                    {categories.filter(c => c.isVisible && c.visibleOnHomepage !== false).length}
+                    {categories.filter(c => c.visibleOnHomepage !== false).length}
                   </span>
-                  <span className="text-[10px] text-stone-400 mt-0.5 block">Curated collections showcase</span>
+                  <span className="text-[10px] text-stone-400 mt-0.5 block">Curated collections carousel</span>
                 </div>
               </div>
 
-              {/* Category Table */}
+              {/* Presentation Controls Table */}
               <div className="overflow-x-auto border border-stone-200 rounded-sm">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-[#f9f8f6] border-b border-stone-200 text-[#555] uppercase text-[10px] tracking-wider font-semibold">
                     <tr>
-                      <th className="py-3 px-4 w-20">Order</th>
-                      <th className="py-3 px-4">Category</th>
+                      <th className="py-3 px-4 w-32">Display Order</th>
+                      <th className="py-3 px-4">Category Name</th>
+                      <th className="py-3 px-4">Catalog Slug</th>
                       <th className="py-3 px-4 text-center">Products</th>
-                      <th className="py-3 px-4 text-center">Storefront</th>
                       <th className="py-3 px-4 text-center">Header Nav</th>
                       <th className="py-3 px-4 text-center">Homepage</th>
-                      <th className="py-3 px-4 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-stone-100">
@@ -1193,17 +1162,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                         const productCount = products.filter(p => p.category?.toLowerCase() === cat.name.toLowerCase()).length;
                         return (
                           <tr key={cat.id} className="hover:bg-stone-50/60 transition-colors">
-                            {/* Order & Move buttons */}
-                            <td className="py-3 px-4">
-                              <div className="flex items-center gap-1">
-                                <span className="font-mono text-stone-400 text-xs w-5 font-medium">#{cat.order ?? idx + 1}</span>
+                            {/* Display Order: Numeric input + Up/Down buttons */}
+                            <td className="py-3.5 px-4">
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="number"
+                                  min="1"
+                                  max="99"
+                                  value={cat.order ?? idx + 1}
+                                  onChange={(e) => handleCategoryOrderChange(cat.id, Number(e.target.value))}
+                                  className="w-12 py-1 px-2 text-center text-xs font-mono font-semibold border border-stone-300 rounded-xs bg-white focus:outline-hidden focus:border-stone-900"
+                                />
                                 <div className="flex flex-col gap-0.5">
                                   <button
                                     type="button"
                                     disabled={idx === 0}
                                     onClick={() => handleMoveCategory(idx, 'up')}
-                                    className="p-0.5 hover:bg-stone-200 rounded disabled:opacity-20 text-stone-600 cursor-pointer"
-                                    title="Move Up"
+                                    className="p-1 hover:bg-stone-200 rounded disabled:opacity-20 text-stone-600 cursor-pointer"
+                                    title="Move Up in sequence"
                                   >
                                     <ArrowUp className="w-3 h-3" />
                                   </button>
@@ -1211,8 +1187,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                                     type="button"
                                     disabled={idx === categories.length - 1}
                                     onClick={() => handleMoveCategory(idx, 'down')}
-                                    className="p-0.5 hover:bg-stone-200 rounded disabled:opacity-20 text-stone-600 cursor-pointer"
-                                    title="Move Down"
+                                    className="p-1 hover:bg-stone-200 rounded disabled:opacity-20 text-stone-600 cursor-pointer"
+                                    title="Move Down in sequence"
                                   >
                                     <ArrowDown className="w-3 h-3" />
                                   </button>
@@ -1220,10 +1196,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                               </div>
                             </td>
 
-                            {/* Category info & thumbnail */}
-                            <td className="py-3 px-4">
+                            {/* Category Name (Authentic Read-Only) */}
+                            <td className="py-3.5 px-4">
                               <div className="flex items-center gap-3">
-                                <div className="w-10 h-12 bg-stone-100 border border-stone-200 rounded-xs overflow-hidden shrink-0">
+                                <div className="w-9 h-11 bg-stone-100 border border-stone-200 rounded-xs overflow-hidden shrink-0">
                                   {cat.imageUrl ? (
                                     <img src={cat.imageUrl} alt={cat.name} className="w-full h-full object-cover" />
                                   ) : (
@@ -1234,7 +1210,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                                 </div>
                                 <div>
                                   <span className="font-semibold text-stone-900 block text-xs">{cat.name}</span>
-                                  <span className="text-[10px] text-stone-400 font-mono block">/{cat.slug}</span>
                                   {cat.description && (
                                     <span className="text-[10px] text-stone-500 line-clamp-1 mt-0.5">{cat.description}</span>
                                   )}
@@ -1242,87 +1217,70 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                               </div>
                             </td>
 
-                            {/* Product count */}
-                            <td className="py-3 px-4 text-center">
-                              <span className="px-2 py-0.5 bg-stone-100 border border-stone-200 rounded text-[10px] font-mono text-stone-700">
-                                {productCount} items
+                            {/* Catalog Slug (Authentic Read-Only) */}
+                            <td className="py-3.5 px-4 font-mono text-[11px] text-stone-500">
+                              /{cat.slug}
+                            </td>
+
+                            {/* Product Count */}
+                            <td className="py-3.5 px-4 text-center">
+                              <span className="px-2.5 py-0.5 bg-stone-100 border border-stone-200 rounded-xs text-[10px] font-mono text-stone-700">
+                                {productCount} products
                               </span>
                             </td>
 
-                            {/* Storefront Active Toggle */}
-                            <td className="py-3 px-4 text-center">
-                              <button
-                                type="button"
-                                onClick={() => handleToggleCategoryStore(cat.id)}
-                                className={`px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wider transition-colors cursor-pointer ${
-                                  cat.isVisible
-                                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-                                    : 'bg-stone-100 text-stone-400 border border-stone-200'
-                                }`}
-                              >
-                                {cat.isVisible ? 'Active' : 'Hidden'}
-                              </button>
-                            </td>
-
-                            {/* Header Nav Toggle */}
-                            <td className="py-3 px-4 text-center">
+                            {/* Header Nav Toggle: ON / OFF */}
+                            <td className="py-3.5 px-4 text-center">
                               <button
                                 type="button"
                                 onClick={() => handleToggleCategoryNav(cat.id)}
-                                className={`px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wider transition-colors cursor-pointer ${
-                                  cat.visibleInNav !== false && cat.isVisible
-                                    ? 'bg-stone-900 text-white'
-                                    : 'bg-stone-100 text-stone-400 border border-stone-200'
+                                className={`px-3 py-1 text-[10px] font-bold rounded-xs uppercase tracking-wider transition-colors cursor-pointer ${
+                                  cat.visibleInNav !== false
+                                    ? 'bg-stone-900 text-white hover:bg-stone-800'
+                                    : 'bg-stone-200 text-stone-600 hover:bg-stone-300'
                                 }`}
                               >
-                                {cat.visibleInNav !== false ? 'Shown' : 'Off'}
+                                {cat.visibleInNav !== false ? 'ON' : 'OFF'}
                               </button>
                             </td>
 
-                            {/* Homepage Showcase Toggle */}
-                            <td className="py-3 px-4 text-center">
+                            {/* Homepage Toggle: ON / OFF */}
+                            <td className="py-3.5 px-4 text-center">
                               <button
                                 type="button"
                                 onClick={() => handleToggleCategoryHome(cat.id)}
-                                className={`px-2.5 py-1 text-[10px] font-bold rounded uppercase tracking-wider transition-colors cursor-pointer ${
-                                  cat.visibleOnHomepage !== false && cat.isVisible
-                                    ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                                    : 'bg-stone-100 text-stone-400 border border-stone-200'
+                                className={`px-3 py-1 text-[10px] font-bold rounded-xs uppercase tracking-wider transition-colors cursor-pointer ${
+                                  cat.visibleOnHomepage !== false
+                                    ? 'bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200'
+                                    : 'bg-stone-200 text-stone-600 hover:bg-stone-300'
                                 }`}
                               >
-                                {cat.visibleOnHomepage !== false ? 'Featured' : 'Off'}
+                                {cat.visibleOnHomepage !== false ? 'ON' : 'OFF'}
                               </button>
-                            </td>
-
-                            {/* Actions */}
-                            <td className="py-3 px-4 text-right">
-                              <div className="flex items-center justify-end gap-1">
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setEditingCategory({ ...cat });
-                                    setIsNewCategory(false);
-                                  }}
-                                  className="p-1.5 hover:bg-stone-100 text-stone-700 hover:text-black rounded transition-colors cursor-pointer"
-                                  title="Edit Category"
-                                >
-                                  <Edit className="w-3.5 h-3.5" />
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleDeleteCategory(cat.id)}
-                                  className="p-1.5 hover:bg-red-50 text-stone-400 hover:text-red-700 rounded transition-colors cursor-pointer"
-                                  title="Delete Category"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
-                              </div>
                             </td>
                           </tr>
                         );
                       })}
                   </tbody>
                 </table>
+              </div>
+
+              {/* Bottom Action Footer */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+                <span className="text-[11px] text-stone-500">
+                  {hasUnsavedCategoryChanges
+                    ? '⚠️ You have unsaved presentation adjustments.'
+                    : 'All presentation settings are synced with storefront.'}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={handleSaveCategoryPresentation}
+                  className="bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold uppercase tracking-wider py-2.5 px-6 rounded-xs flex items-center gap-2 cursor-pointer transition-colors shadow-sm"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>Save Changes</span>
+                </button>
               </div>
             </div>
           </div>
@@ -1346,6 +1304,149 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
 
               <form onSubmit={handleSaveSettings} className="space-y-6">
                 
+                {/* 1. ANNOUNCEMENT & SHIPPING (COD CONTROLS) */}
+                <div className="p-5 bg-stone-50 border border-stone-200 rounded-sm space-y-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-200 pb-4">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-[#aa814d] block">
+                        STOREFRONT PROMOTION & LOGISTICS
+                      </span>
+                      <h3 className="font-serif text-lg font-bold text-stone-900 mt-0.5 flex items-center gap-2">
+                        <Truck className="w-5 h-5 text-[#aa814d]" />
+                        Announcement & Shipping
+                      </h3>
+                      <p className="text-xs text-stone-500 mt-0.5">
+                        Configure nationwide delivery policies, Cash on Delivery (COD) eligibility, and top announcement banner copy.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="submit"
+                        className="bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold uppercase tracking-wider py-2 px-4 rounded-xs flex items-center gap-1.5 cursor-pointer transition-colors shadow-xs"
+                      >
+                        <Save className="w-3.5 h-3.5" />
+                        <span>Save Changes</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Free Nationwide Cash on Delivery Toggle */}
+                    <div className="sm:col-span-2 p-3 bg-white border border-stone-200 rounded-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div>
+                        <span className="text-xs font-bold text-stone-900 block">
+                          Free Nationwide Cash on Delivery
+                        </span>
+                        <p className="text-[11px] text-stone-500 mt-0.5">
+                          When ON, orders reaching or exceeding the threshold receive 100% free delivery nationwide. Default state is OFF.
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-xs font-mono font-bold text-stone-600">
+                          Status:
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setSettings({
+                            ...settings,
+                            shipping: {
+                              ...settings.shipping,
+                              freeCodEnabled: settings.shipping.freeCodEnabled === true ? false : true
+                            }
+                          })}
+                          className={`px-4 py-1.5 rounded-xs text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                            settings.shipping.freeCodEnabled === true
+                              ? 'bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs'
+                              : 'bg-stone-300 hover:bg-stone-400 text-stone-800'
+                          }`}
+                        >
+                          {settings.shipping.freeCodEnabled === true ? 'ON' : 'OFF'}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Minimum Order Amount for Free COD */}
+                    <div>
+                      <label className="block text-xs font-bold text-[#333] mb-1">
+                        Minimum Order Amount for Free COD (PKR)
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        step="100"
+                        value={settings.shipping.freeShippingThreshold}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          shipping: { ...settings.shipping, freeShippingThreshold: Number(e.target.value) }
+                        })}
+                        className="w-full border border-stone-300 bg-white p-2.5 text-xs rounded-xs font-mono font-semibold focus:outline-hidden focus:border-stone-900"
+                      />
+                      <span className="text-[10px] text-stone-500 mt-1 block">
+                        Threshold required for free shipping when Free COD is enabled.
+                      </span>
+                    </div>
+
+                    {/* Standard Shipping Fee */}
+                    <div>
+                      <label className="block text-xs font-bold text-[#333] mb-1">
+                        Standard Nationwide Shipping Fee (PKR)
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        step="50"
+                        value={settings.shipping.standardFee}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          shipping: { ...settings.shipping, standardFee: Number(e.target.value) }
+                        })}
+                        className="w-full border border-stone-300 bg-white p-2.5 text-xs rounded-xs font-mono font-semibold focus:outline-hidden focus:border-stone-900"
+                      />
+                      <span className="text-[10px] text-stone-500 mt-1 block">
+                        Flat courier fee applied across Pakistan for orders below threshold or when free COD is OFF.
+                      </span>
+                    </div>
+
+                    {/* Announcement Text */}
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-bold text-[#333] mb-1">
+                        Announcement Text
+                      </label>
+                      <input
+                        type="text"
+                        value={settings.shipping.codAnnouncementText || '✨ FREE NATIONWIDE CASH ON DELIVERY ON ALL ORDERS ABOVE PKR {amount} ✨'}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          shipping: { ...settings.shipping, codAnnouncementText: e.target.value }
+                        })}
+                        placeholder="✨ FREE NATIONWIDE CASH ON DELIVERY ON ALL ORDERS ABOVE PKR {amount} ✨"
+                        className="w-full border border-stone-300 bg-white p-2.5 text-xs rounded-xs focus:outline-hidden focus:border-stone-900"
+                      />
+                      <span className="text-[10px] text-stone-500 mt-1 block">
+                        Supports dynamic placeholder <code className="bg-stone-200 px-1 py-0.5 text-[9px] rounded font-mono font-bold">{"{amount}"}</code> which automatically interpolates the formatted PKR threshold.
+                      </span>
+                    </div>
+
+                    {/* Bank Details */}
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-bold text-[#333] mb-1">
+                        Bank Transfer Instructions & IBAN
+                      </label>
+                      <textarea
+                        rows={3}
+                        value={settings.shipping.bankDetails || ''}
+                        onChange={(e) => setSettings({
+                          ...settings,
+                          shipping: { ...settings.shipping, bankDetails: e.target.value }
+                        })}
+                        className="w-full border border-stone-300 bg-white p-2.5 text-xs rounded-xs font-mono focus:outline-hidden focus:border-stone-900"
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 {/* Brand and Domain */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -1436,111 +1537,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                         value={settings.whatsappDefaultMessage}
                         onChange={(e) => setSettings({ ...settings, whatsappDefaultMessage: e.target.value })}
                         className="w-full border border-[#ddd] bg-white p-2.5 text-xs rounded-xs focus:outline-hidden"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Shipping & Delivery */}
-                <div className="p-4 bg-stone-50 border border-stone-200 rounded-sm space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-200 pb-3">
-                    <div>
-                      <h3 className="font-bold text-xs uppercase tracking-wider text-stone-900 flex items-center gap-1.5">
-                        <Truck className="w-4 h-4 text-[#aa814d]" />
-                        Nationwide Shipping & Cash on Delivery (COD)
-                      </h3>
-                      <p className="text-[11px] text-stone-500 mt-0.5">
-                        Configure courier rates across Pakistan, free COD promotion threshold, and announcement banner text.
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-stone-700">Free COD Promo:</span>
-                      <button
-                        type="button"
-                        onClick={() => setSettings({
-                          ...settings,
-                          shipping: {
-                            ...settings.shipping,
-                            freeCodEnabled: settings.shipping.freeCodEnabled === false ? true : false
-                          }
-                        })}
-                        className={`px-3 py-1 rounded-xs text-[11px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${
-                          settings.shipping.freeCodEnabled !== false
-                            ? 'bg-emerald-700 text-white'
-                            : 'bg-stone-300 text-stone-700'
-                        }`}
-                      >
-                        {settings.shipping.freeCodEnabled !== false ? 'ENABLED' : 'DISABLED'}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-bold text-[#333] mb-1">
-                        Standard Nationwide Shipping Fee (PKR)
-                      </label>
-                      <input
-                        type="number"
-                        value={settings.shipping.standardFee}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          shipping: { ...settings.shipping, standardFee: Number(e.target.value) }
-                        })}
-                        className="w-full border border-[#ddd] bg-white p-2.5 text-xs rounded-xs focus:outline-hidden"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-[#333] mb-1">
-                        Free Nationwide COD Threshold (PKR)
-                      </label>
-                      <input
-                        type="number"
-                        value={settings.shipping.freeShippingThreshold}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          shipping: { ...settings.shipping, freeShippingThreshold: Number(e.target.value) }
-                        })}
-                        className="w-full border border-[#ddd] bg-white p-2.5 text-xs rounded-xs focus:outline-hidden"
-                      />
-                      <span className="text-[10px] text-stone-500 mt-0.5 block">
-                        Orders at or above this amount qualify for 100% free delivery nationwide.
-                      </span>
-                    </div>
-
-                    <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold text-[#333] mb-1">
-                        Free COD Announcement Bar Text Template
-                      </label>
-                      <input
-                        type="text"
-                        value={settings.shipping.codAnnouncementText || '✨ FREE NATIONWIDE CASH ON DELIVERY ON ALL ORDERS ABOVE PKR {amount} ✨'}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          shipping: { ...settings.shipping, codAnnouncementText: e.target.value }
-                        })}
-                        placeholder="✨ FREE NATIONWIDE CASH ON DELIVERY ON ALL ORDERS ABOVE PKR {amount} ✨"
-                        className="w-full border border-[#ddd] bg-white p-2.5 text-xs rounded-xs focus:outline-hidden"
-                      />
-                      <span className="text-[10px] text-stone-500 mt-0.5 block">
-                        Use <code className="bg-stone-200 px-1 py-0.5 text-[9px] rounded font-mono font-bold">{"{amount}"}</code> to automatically insert the formatted threshold (e.g. PKR 5,000).
-                      </span>
-                    </div>
-
-                    <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold text-[#333] mb-1">
-                        Bank Transfer Instructions & IBAN
-                      </label>
-                      <textarea
-                        rows={3}
-                        value={settings.shipping.bankDetails || ''}
-                        onChange={(e) => setSettings({
-                          ...settings,
-                          shipping: { ...settings.shipping, bankDetails: e.target.value }
-                        })}
-                        className="w-full border border-[#ddd] bg-white p-2.5 text-xs rounded-xs font-mono focus:outline-hidden"
                       />
                     </div>
                   </div>
@@ -1655,130 +1651,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
 
       </div>
 
-      {/* CATEGORY ADD / EDIT MODAL */}
-      {editingCategory && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 font-sans">
-          <div className="fixed inset-0 bg-black/70 backdrop-blur-xs" onClick={() => setEditingCategory(null)} />
-          <div className="relative w-full max-w-lg bg-white rounded-lg shadow-2xl p-6 border border-[#e8e3dc] z-10 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-[#eee]">
-              <h3 className="font-serif text-xl font-bold text-[#111]">
-                {isNewCategory ? 'Create New Category' : `Edit: ${editingCategory.name}`}
-              </h3>
-              <button onClick={() => setEditingCategory(null)} className="p-1 text-[#888] hover:text-black cursor-pointer">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
 
-            <form onSubmit={handleSaveCategory} className="mt-4 space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-[#333] mb-1">Category Title *</label>
-                <input
-                  type="text"
-                  required
-                  value={editingCategory.name}
-                  onChange={(e) => {
-                    const name = e.target.value;
-                    const slug = isNewCategory ? name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-') : editingCategory.slug;
-                    setEditingCategory({ ...editingCategory, name, slug });
-                  }}
-                  placeholder="e.g. Luxury Pret, Chiffon, Lawn"
-                  className="w-full border border-[#ddd] p-2.5 text-xs rounded-xs focus:outline-hidden"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-[#333] mb-1">URL Slug</label>
-                <input
-                  type="text"
-                  required
-                  value={editingCategory.slug}
-                  onChange={(e) => setEditingCategory({ ...editingCategory, slug: e.target.value })}
-                  placeholder="e.g. luxury-pret"
-                  className="w-full border border-[#ddd] p-2.5 text-xs rounded-xs font-mono focus:outline-hidden"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-[#333] mb-1">Description (Optional)</label>
-                <textarea
-                  rows={2}
-                  value={editingCategory.description || ''}
-                  onChange={(e) => setEditingCategory({ ...editingCategory, description: e.target.value })}
-                  placeholder="Short editorial summary of this collection"
-                  className="w-full border border-[#ddd] p-2.5 text-xs rounded-xs focus:outline-hidden"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-[#333] mb-1">Category Showcase Image URL (Optional)</label>
-                <input
-                  type="url"
-                  value={editingCategory.imageUrl || ''}
-                  onChange={(e) => setEditingCategory({ ...editingCategory, imageUrl: e.target.value })}
-                  placeholder="https://..."
-                  className="w-full border border-[#ddd] p-2.5 text-xs rounded-xs font-mono focus:outline-hidden"
-                />
-                {editingCategory.imageUrl && (
-                  <div className="mt-2 w-20 h-24 border border-stone-200 rounded overflow-hidden">
-                    <img src={editingCategory.imageUrl} alt="" className="w-full h-full object-cover" />
-                  </div>
-                )}
-              </div>
-
-              <div className="p-3 bg-stone-50 border border-stone-200 rounded text-xs space-y-2">
-                <span className="font-semibold text-stone-800 block text-[11px] uppercase tracking-wider">Visibility Options</span>
-                <div className="flex flex-col gap-2">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={editingCategory.isVisible}
-                      onChange={(e) => setEditingCategory({ ...editingCategory, isVisible: e.target.checked })}
-                      className="accent-stone-900"
-                    />
-                    <span className="text-stone-700">Active in Storefront Catalog</span>
-                  </label>
-
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={editingCategory.visibleInNav !== false}
-                      onChange={(e) => setEditingCategory({ ...editingCategory, visibleInNav: e.target.checked })}
-                      className="accent-stone-900"
-                    />
-                    <span className="text-stone-700">Show in Top Navigation Header</span>
-                  </label>
-
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={editingCategory.visibleOnHomepage !== false}
-                      onChange={(e) => setEditingCategory({ ...editingCategory, visibleOnHomepage: e.target.checked })}
-                      className="accent-stone-900"
-                    />
-                    <span className="text-stone-700">Show in Homepage Curated Collections Row</span>
-                  </label>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-3 border-t border-[#eee]">
-                <button
-                  type="button"
-                  onClick={() => setEditingCategory(null)}
-                  className="px-4 py-2 border border-[#ddd] text-xs font-medium rounded-xs text-[#555] hover:text-black cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-[#181818] hover:bg-[#c59b66] text-white text-xs font-bold uppercase tracking-wider rounded-xs cursor-pointer shadow-md transition-colors"
-                >
-                  Save Category
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* PRODUCT ADD / EDIT MODAL */}
       {editingProduct && (

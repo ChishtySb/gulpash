@@ -59,7 +59,7 @@ export const INITIAL_REVIEWS: Review[] = [];
 export const INITIAL_CMS: HomepageCMS = {
   hero: {
     type: 'image', // toggleable between 'video' and 'image' by admin
-    heading: 'GulPash Haute Couture',
+    heading: 'GulPash Luxury Collection',
     subheading: 'Discover the pinnacle of Pakistani craftsmanship, hand-embroidered silhouettes & signature formals',
     badge: 'GULPASH COUTURE 2026',
     buttonText: 'EXPLORE TRENDING',
@@ -77,18 +77,12 @@ export const INITIAL_CMS: HomepageCMS = {
   announcements: [
     {
       id: 'ann-1',
-      text: '✨ FREE NATIONWIDE CASH ON DELIVERY ON ALL ORDERS ABOVE PKR 5,000 ✨',
-      link: '/shop',
-      isActive: true
-    },
-    {
-      id: 'ann-2',
       text: 'FAST DISPATCH WITHIN 24-48 HOURS • EASY EXCHANGE POLICY',
       link: '/shipping-policy',
       isActive: true
     },
     {
-      id: 'ann-3',
+      id: 'ann-2',
       text: 'NEED SIZING ASSISTANCE? CHAT WITH OUR LUXURY STYLISTS',
       link: '/shop',
       isActive: true
@@ -135,7 +129,7 @@ export const INITIAL_SETTINGS: SiteSettings = {
   shipping: {
     standardFee: 250,
     freeShippingThreshold: 5000,
-    freeCodEnabled: true,
+    freeCodEnabled: false,
     codAnnouncementText: 'FREE NATIONWIDE CASH ON DELIVERY ON ALL ORDERS ABOVE PKR {amount}',
     estimatedDeliveryDays: '2 - 4 Working Days (Nationwide)',
     codEnabled: true,

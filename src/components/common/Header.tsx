@@ -63,25 +63,40 @@ export const Header: React.FC<HeaderProps> = ({
 
   // Dynamic announcement list respecting Admin Announcement & Shipping settings
   const rawAnnouncements = cms.announcements.filter(a => a.isActive);
-  const isFreeCodOn = settings.shipping?.freeCodEnabled !== false;
+  const isFreeCodOn = settings.shipping?.freeCodEnabled === true;
   const freeShippingThreshold = settings.shipping?.freeShippingThreshold || 5000;
   const formattedThreshold = freeShippingThreshold.toLocaleString();
-  const configuredCodText = settings.shipping?.codAnnouncementText || '✨ FREE NATIONWIDE CASH ON DELIVERY ON ALL ORDERS ABOVE PKR {amount} ✨';
+  const configuredCodText = settings.shipping?.codAnnouncementText || 'FREE NATIONWIDE CASH ON DELIVERY ON ALL ORDERS ABOVE PKR {amount}';
   const resolvedCodText = configuredCodText.replace('{amount}', `PKR ${formattedThreshold}`).replace('PKR PKR', 'PKR');
 
-  let activeAnnouncements = rawAnnouncements
-    .map(a => {
-      const isCodClaim = a.text.includes('CASH ON DELIVERY') || a.text.includes('FREE NATIONWIDE') || a.text.includes('DELIVERY ON ALL ORDERS');
-      if (isCodClaim) {
-        if (!isFreeCodOn) return null; // Do NOT display free COD promotional claim if turned OFF
-        return {
-          ...a,
-          text: resolvedCodText
-        };
-      }
-      return a;
-    })
-    .filter((a): a is { id: string; text: string; link?: string; isActive: boolean } => a !== null);
+  // Filter out any hardcoded COD claim if turned OFF
+  let filteredAnnouncements = rawAnnouncements.filter(a => {
+    const isCodClaim = a.text.includes('CASH ON DELIVERY') || a.text.includes('FREE NATIONWIDE') || a.text.includes('DELIVERY ON ALL ORDERS');
+    return isFreeCodOn ? true : !isCodClaim;
+  });
+
+  // If enabled, ensure the configured COD announcement is included
+  let activeAnnouncements: { id: string; text: string; link?: string; isActive: boolean }[] = [];
+  if (isFreeCodOn) {
+    const hasCod = filteredAnnouncements.some(a => a.text.includes('CASH ON DELIVERY') || a.text.includes('FREE NATIONWIDE'));
+    if (!hasCod) {
+      activeAnnouncements.push({
+        id: 'cod-announcement',
+        text: resolvedCodText,
+        link: '/shop',
+        isActive: true
+      });
+    }
+    activeAnnouncements = [
+      ...activeAnnouncements,
+      ...filteredAnnouncements.map(a => {
+        const isCodClaim = a.text.includes('CASH ON DELIVERY') || a.text.includes('FREE NATIONWIDE') || a.text.includes('DELIVERY ON ALL ORDERS');
+        return isCodClaim ? { ...a, text: resolvedCodText } : a;
+      })
+    ];
+  } else {
+    activeAnnouncements = filteredAnnouncements;
+  }
 
   if (activeAnnouncements.length === 0) {
     activeAnnouncements = [
@@ -287,64 +302,34 @@ export const Header: React.FC<HeaderProps> = ({
         {/* 3. PRIMARY DESKTOP NAVIGATION BAR */}
         <div className="hidden lg:block border-t border-stone-200 bg-[#FAF9F6]">
           <div className="max-w-7xl mx-auto px-4 flex items-center justify-center space-x-8 xl:space-x-10 h-11">
-            <button
-              id="desktop-nav-home"
-              onClick={() => onNavigate('home')}
-              className={`text-[11px] uppercase tracking-[0.22em] font-medium transition-colors hover:text-black shrink-0 relative py-2.5 cursor-pointer ${
-                currentView === 'home' ? 'text-black font-semibold' : 'text-stone-600'
-              }`}
-            >
-              <span>HOME</span>
-              {currentView === 'home' && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900" />
-              )}
-            </button>
-            <button
-              id="desktop-nav-shop-all"
-              onClick={() => onNavigate('shop')}
-              className={`text-[11px] uppercase tracking-[0.22em] font-medium transition-colors hover:text-black shrink-0 relative py-2.5 cursor-pointer ${
-                currentView === 'shop' && !currentParam ? 'text-black font-semibold' : 'text-stone-600'
-              }`}
-            >
-              <span>SHOP ALL</span>
-              {currentView === 'shop' && !currentParam && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900" />
-              )}
-            </button>
-            <button
-              id="desktop-nav-trending"
-              onClick={() => onNavigate('collection', 'best-selling')}
-              className={`text-[11px] uppercase tracking-[0.22em] font-medium transition-colors hover:text-black shrink-0 relative py-2.5 cursor-pointer ${
-                currentView === 'shop' && currentParam === 'best-selling' ? 'text-black font-semibold' : 'text-stone-700'
-              }`}
-            >
-              <span>TRENDING</span>
-              {currentView === 'shop' && currentParam === 'best-selling' && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900" />
-              )}
-            </button>
-            {navCategories.map(cat => (
-              <button
-                key={cat.id}
-                id={`desktop-nav-${cat.slug}`}
-                onClick={() => onNavigate('category', cat.slug)}
-                className={`text-[11px] uppercase tracking-[0.22em] font-medium transition-colors hover:text-black shrink-0 relative py-2.5 cursor-pointer ${
-                  currentView === 'shop' && currentParam === cat.slug ? 'text-black font-semibold' : 'text-stone-600'
-                }`}
-              >
-                <span>{cat.name.toUpperCase()}</span>
-                {currentView === 'shop' && currentParam === cat.slug && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900" />
-                )}
-              </button>
-            ))}
-            <button
-              id="desktop-nav-track-order"
-              onClick={onOpenTrackOrder}
-              className="text-[11px] uppercase tracking-[0.22em] font-medium text-stone-600 hover:text-black transition-colors shrink-0 py-2.5 cursor-pointer"
-            >
-              <span>TRACK MY ORDER</span>
-            </button>
+            {[
+              { label: 'NEW ARRIVALS', slug: 'new-arrivals', id: 'new-arrivals' },
+              { label: 'TRENDING', slug: 'best-selling', id: 'trending' },
+              { label: 'WINTER COLLECTION', slug: 'winter-collection', id: 'winter-collection' },
+              { label: 'CO-ORDS', slug: 'co-ords', id: 'co-ords' },
+              { label: 'SHORT LENGTH', slug: 'short-length-article', id: 'short-length' },
+              { label: 'ALL ENSEMBLES', slug: 'all', id: 'all-ensembles' }
+            ].map(item => {
+              const isActive = currentView === 'shop' && (
+                currentParam === item.slug || 
+                (item.slug === 'all' && (!currentParam || currentParam === 'all' || currentParam === 'ready-to-wear'))
+              );
+              return (
+                <button
+                  key={item.slug}
+                  id={`desktop-nav-${item.id}`}
+                  onClick={() => onNavigate('collection', item.slug)}
+                  className={`text-[11px] uppercase tracking-[0.22em] font-medium transition-colors hover:text-black shrink-0 relative py-2.5 cursor-pointer ${
+                    isActive ? 'text-black font-semibold' : 'text-stone-700'
+                  }`}
+                >
+                  <span>{item.label}</span>
+                  {isActive && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900" />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -359,7 +344,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="relative w-4/5 max-w-sm bg-[#FAF9F6] h-full shadow-2xl flex flex-col justify-between overflow-y-auto border-r border-stone-200 p-6 z-10">
             <div>
               <div className="flex items-center justify-between pb-6 border-b border-stone-200">
-                <div>
+                <div onClick={() => { onNavigate('home'); setMobileMenuOpen(false); }} className="cursor-pointer">
                   <span className="font-serif text-2xl font-light italic tracking-[0.15em] text-[#1A1A1A]">
                     GULPASH
                   </span>
@@ -375,46 +360,31 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
 
               <nav className="mt-6 flex flex-col space-y-2">
-                <button
-                  id="mobile-nav-home"
-                  onClick={() => { onNavigate('home'); setMobileMenuOpen(false); }}
-                  className={`text-left text-xs uppercase tracking-[0.18em] font-medium py-3 border-b border-stone-200 transition-colors cursor-pointer ${
-                    currentView === 'home' ? 'text-stone-950 font-semibold pl-2 border-l-2 border-l-stone-900' : 'text-stone-700 hover:text-black'
-                  }`}
-                >
-                  Home
-                </button>
-                <button
-                  id="mobile-nav-shop-all"
-                  onClick={() => { onNavigate('shop'); setMobileMenuOpen(false); }}
-                  className={`text-left text-xs uppercase tracking-[0.18em] font-medium py-3 border-b border-stone-200 transition-colors cursor-pointer ${
-                    currentView === 'shop' && !currentParam ? 'text-stone-950 font-semibold pl-2 border-l-2 border-l-stone-900' : 'text-stone-700 hover:text-black'
-                  }`}
-                >
-                  Shop All
-                </button>
-                <button
-                  id="mobile-nav-trending"
-                  onClick={() => { onNavigate('collection', 'best-selling'); setMobileMenuOpen(false); }}
-                  className={`text-left text-xs uppercase tracking-[0.18em] font-medium py-3 border-b border-stone-200 flex items-center justify-between transition-colors cursor-pointer ${
-                    currentView === 'shop' && currentParam === 'best-selling' ? 'text-stone-950 font-semibold pl-2 border-l-2 border-l-stone-900' : 'text-stone-800 hover:text-black'
-                  }`}
-                >
-                  <span>Trending</span>
-                  <span className="text-[9px] bg-stone-900 text-white px-2 py-0.5 tracking-wider font-semibold">POPULAR</span>
-                </button>
-                {navCategories.map(cat => (
-                  <button
-                    key={cat.id}
-                    id={`mobile-nav-${cat.slug}`}
-                    onClick={() => { onNavigate('category', cat.slug); setMobileMenuOpen(false); }}
-                    className={`text-left text-xs uppercase tracking-[0.18em] font-medium py-3 border-b border-stone-200 transition-colors cursor-pointer ${
-                      currentView === 'shop' && currentParam === cat.slug ? 'text-stone-950 font-semibold pl-2 border-l-2 border-l-stone-900' : 'text-stone-700 hover:text-black'
-                    }`}
-                  >
-                    {cat.name}
-                  </button>
-                ))}
+                {[
+                  { label: 'NEW ARRIVALS', slug: 'new-arrivals', id: 'new-arrivals' },
+                  { label: 'TRENDING', slug: 'best-selling', id: 'trending' },
+                  { label: 'WINTER COLLECTION', slug: 'winter-collection', id: 'winter-collection' },
+                  { label: 'CO-ORDS', slug: 'co-ords', id: 'co-ords' },
+                  { label: 'SHORT LENGTH', slug: 'short-length-article', id: 'short-length' },
+                  { label: 'ALL ENSEMBLES', slug: 'all', id: 'all-ensembles' }
+                ].map(item => {
+                  const isActive = currentView === 'shop' && (
+                    currentParam === item.slug || 
+                    (item.slug === 'all' && (!currentParam || currentParam === 'all' || currentParam === 'ready-to-wear'))
+                  );
+                  return (
+                    <button
+                      key={item.slug}
+                      id={`mobile-nav-${item.id}`}
+                      onClick={() => { onNavigate('collection', item.slug); setMobileMenuOpen(false); }}
+                      className={`text-left text-xs uppercase tracking-[0.18em] font-medium py-3 border-b border-stone-200 transition-colors cursor-pointer ${
+                        isActive ? 'text-stone-950 font-semibold pl-2 border-l-2 border-l-stone-900' : 'text-stone-700 hover:text-black'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  );
+                })}
                 <button
                   id="mobile-nav-track-order"
                   onClick={() => { onOpenTrackOrder(); setMobileMenuOpen(false); }}
