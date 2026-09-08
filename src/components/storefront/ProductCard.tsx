@@ -199,14 +199,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       {/* 2. PRODUCT INFO & DETAILS */}
       <div className="p-2.5 sm:p-4 flex flex-col flex-1 justify-between bg-white">
         <div>
-          {/* Category / Fabric Subtitle */}
-          <div className="flex items-center justify-between text-[10px] uppercase font-medium text-stone-400 tracking-widest mb-1">
-            <span className="truncate">{product.category}</span>
-            {product.stock <= 5 && product.stock > 0 && (
-              <span className="text-stone-800 font-medium tracking-normal shrink-0">Only {product.stock} left</span>
-            )}
-          </div>
-
           {/* Product Title */}
           <h3 
             onClick={() => onSelect(product.slug)}

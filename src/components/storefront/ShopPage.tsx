@@ -49,7 +49,24 @@ export const ShopPage: React.FC<ShopPageProps> = ({
   const [onlySale, setOnlySale] = useState<boolean>(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  const categories = StorageService.getCategories().filter(c => c.isVisible);
+  const authenticCategoryOrder = [
+    'Unstitched / Stitched',
+    'Stitched',
+    'woman',
+    'Clothing',
+    '3 Pieces'
+  ];
+
+  const categories = StorageService.getCategories()
+    .filter(c => c.isVisible)
+    .sort((a, b) => {
+      const idxA = authenticCategoryOrder.indexOf(a.name);
+      const idxB = authenticCategoryOrder.indexOf(b.name);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return (a.order || 0) - (b.order || 0);
+    });
   const collections = StorageService.getCollections().filter(c => c.isVisible);
   const allProducts = StorageService.getProducts(false);
 

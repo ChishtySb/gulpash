@@ -30,7 +30,24 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenTrackOrder }) 
     setTimeout(() => setSubscribed(false), 5000);
   };
 
-  const categories = StorageService.getCategories();
+  const authenticCategoryOrder = [
+    'Unstitched / Stitched',
+    'Stitched',
+    'woman',
+    'Clothing',
+    '3 Pieces'
+  ];
+
+  const categories = StorageService.getCategories()
+    .filter(c => c.isVisible)
+    .sort((a, b) => {
+      const idxA = authenticCategoryOrder.indexOf(a.name);
+      const idxB = authenticCategoryOrder.indexOf(b.name);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return (a.order || 0) - (b.order || 0);
+    });
 
   return (
     <footer className="bg-[#1A1A1A] text-stone-300 border-t border-stone-800 pt-16 pb-12 font-sans">

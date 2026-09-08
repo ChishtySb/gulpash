@@ -127,7 +127,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
         <div className="w-full md:w-1/2 p-6 overflow-y-auto flex flex-col justify-between space-y-5">
           <div>
             <div className="flex items-center justify-between text-xs text-[#888] uppercase tracking-wider mb-1">
-              <span>{product.category}</span>
+              <span className="font-medium text-stone-500">GulPash Luxury Couture</span>
               <span className="text-[11px] font-mono text-[#aaa]">SKU: {product.sku}</span>
             </div>
 

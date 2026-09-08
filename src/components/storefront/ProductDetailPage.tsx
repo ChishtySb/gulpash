@@ -264,7 +264,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
             {/* Header info */}
             <div>
               <div className="flex items-center justify-between text-xs text-stone-500 uppercase tracking-wider mb-1.5">
-                <span className="font-medium text-stone-600">{product.category}</span>
+                <span className="font-medium text-stone-500">GulPash Haute Couture</span>
                 <span className="font-mono text-stone-400">SKU: {product.sku}</span>
               </div>
 

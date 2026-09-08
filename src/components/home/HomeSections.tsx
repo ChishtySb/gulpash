@@ -39,6 +39,28 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSuccess, setNewsletterSuccess] = useState(false);
 
+  // Authentic category order
+  const authenticCategoryOrder = [
+    'Unstitched / Stitched',
+    'Stitched',
+    'woman',
+    'Clothing',
+    '3 Pieces'
+  ];
+
+  const sortedCategories = useMemo(() => {
+    return [...categories]
+      .filter(c => c.isVisible)
+      .sort((a, b) => {
+        const idxA = authenticCategoryOrder.indexOf(a.name);
+        const idxB = authenticCategoryOrder.indexOf(b.name);
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return (a.order || 0) - (b.order || 0);
+      });
+  }, [categories]);
+
   // Filter products by selected category (using authentic categories)
   const displayProducts = products.filter(p => {
     if (selectedCategoryTab === 'all') return true;
@@ -130,7 +152,7 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-6">
-          {categories.filter(c => c.isVisible).map((cat) => (
+          {sortedCategories.map((cat) => (
             <CategoryCard
               key={cat.id}
               category={cat}
@@ -163,7 +185,7 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
             >
               All Drops
             </button>
-            {categories.filter(c => c.isVisible).map(cat => (
+            {sortedCategories.map(cat => (
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategoryTab(cat.name)}

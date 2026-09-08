@@ -62,10 +62,10 @@ export const INITIAL_CMS: HomepageCMS = {
     heading: 'GulPash Luxury Collection',
     subheading: 'Timeless Pakistani Craftsmanship, Hand-Embroidered Silhouettes & Signature Formals',
     badge: 'GULPASH COUTURE 2026',
-    buttonText: 'EXPLORE BEST SELLERS',
+    buttonText: 'EXPLORE TRENDING',
     buttonUrl: '/collections/best-selling',
-    secondaryButtonText: 'NEW ARRIVALS',
-    secondaryButtonUrl: '/collections/new-arrivals',
+    secondaryButtonText: 'SHOP ALL',
+    secondaryButtonUrl: '/shop',
     desktopImageUrl: MIGRATED_PRODUCTS[0]?.images[0] || 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/17_22ba13c3-6eda-4dde-a515-e01030c718f6.png?v=1787217341',
     mobileImageUrl: MIGRATED_PRODUCTS[0]?.images[0] || 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/17_22ba13c3-6eda-4dde-a515-e01030c718f6.png?v=1787217341',
     videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-fashion-model-in-an-outdoors-photoshoot-42643-large.mp4',
@@ -89,8 +89,8 @@ export const INITIAL_CMS: HomepageCMS = {
     },
     {
       id: 'ann-3',
-      text: 'NEED SIZING ASSISTANCE? CHAT ON WHATSAPP +92 321 8489999',
-      link: 'https://wa.me/923218489999',
+      text: 'NEED SIZING ASSISTANCE? CHAT WITH OUR LUXURY STYLISTS',
+      link: '/shop',
       isActive: true
     }
   ],
@@ -138,7 +138,7 @@ export const INITIAL_SETTINGS: SiteSettings = {
     estimatedDeliveryDays: '2 - 4 Working Days (Nationwide)',
     codEnabled: true,
     bankTransferEnabled: true,
-    bankDetails: 'Bank: Meezan Bank Ltd\nAccount Title: GulPash Luxury Apparel\nIBAN: PK45MEZN0001892019283746\nBranch: Gulberg Lahore\n(Please send transfer receipt screenshot to WhatsApp +92 321 8489999)'
+    bankDetails: 'Bank: Meezan Bank Ltd\nAccount Title: GulPash Luxury Apparel\nIBAN: PK45MEZN0001892019283746\nBranch: Gulberg Lahore\n(Please send transfer receipt screenshot to our WhatsApp Concierge)'
   },
   seo: {
     siteTitle: 'GulPash | Luxury Pakistani Fashion | Unstitched & Stitched Ensembles',

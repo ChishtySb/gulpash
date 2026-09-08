@@ -229,7 +229,29 @@ export const StorageService = {
   getCMS(): HomepageCMS {
     try {
       const data = localStorage.getItem(KEYS.CMS);
-      return data ? JSON.parse(data) : INITIAL_CMS;
+      if (!data) return INITIAL_CMS;
+      const cms: HomepageCMS = JSON.parse(data);
+      let changed = false;
+      if (cms.hero?.buttonText === 'EXPLORE BEST SELLERS') {
+        cms.hero.buttonText = 'EXPLORE TRENDING';
+        cms.hero.buttonUrl = '/collections/best-selling';
+        cms.hero.secondaryButtonText = 'SHOP ALL';
+        cms.hero.secondaryButtonUrl = '/shop';
+        changed = true;
+      }
+      if (cms.announcements) {
+        cms.announcements = cms.announcements.map(a => {
+          if (a.text.includes('8489999')) {
+            changed = true;
+            return { ...a, text: 'NEED SIZING ASSISTANCE? CHAT WITH OUR LUXURY STYLISTS', link: '/shop' };
+          }
+          return a;
+        });
+      }
+      if (changed) {
+        localStorage.setItem(KEYS.CMS, JSON.stringify(cms));
+      }
+      return cms;
     } catch {
       return INITIAL_CMS;
     }
@@ -244,7 +266,13 @@ export const StorageService = {
   getSettings(): SiteSettings {
     try {
       const data = localStorage.getItem(KEYS.SETTINGS);
-      return data ? JSON.parse(data) : INITIAL_SETTINGS;
+      if (!data) return INITIAL_SETTINGS;
+      const settings: SiteSettings = JSON.parse(data);
+      if (settings.shipping?.bankDetails?.includes('8489999')) {
+        settings.shipping.bankDetails = settings.shipping.bankDetails.replace('+92 321 8489999', 'our WhatsApp Concierge');
+        localStorage.setItem(KEYS.SETTINGS, JSON.stringify(settings));
+      }
+      return settings;
     } catch {
       return INITIAL_SETTINGS;
     }

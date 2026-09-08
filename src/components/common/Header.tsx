@@ -9,6 +9,7 @@ import { CURRENCY_RATES } from '../../lib/currency';
 
 interface HeaderProps {
   currentView: string;
+  currentParam?: string;
   onNavigate: (view: string, param?: string) => void;
   currency: CurrencyCode;
   onCurrencyChange: (c: CurrencyCode) => void;
@@ -22,6 +23,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({
   currentView,
+  currentParam,
   onNavigate,
   currency,
   onCurrencyChange,
@@ -67,7 +69,25 @@ export const Header: React.FC<HeaderProps> = ({
     return () => clearInterval(interval);
   }, [activeAnnouncements.length]);
 
-  const categories = StorageService.getCategories().filter(c => c.isVisible);
+  // Authentic categories ordered exactly as required
+  const authenticCategoryOrder = [
+    'Unstitched / Stitched',
+    'Stitched',
+    'woman',
+    'Clothing',
+    '3 Pieces'
+  ];
+
+  const categories = StorageService.getCategories()
+    .filter(c => c.isVisible)
+    .sort((a, b) => {
+      const idxA = authenticCategoryOrder.indexOf(a.name);
+      const idxB = authenticCategoryOrder.indexOf(b.name);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return (a.order || 0) - (b.order || 0);
+    });
 
   return (
     <header className="sticky top-0 z-40 w-full transition-all duration-300">
@@ -163,33 +183,6 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               )}
             </div>
-
-            {/* Quick Desktop Category Links */}
-            <nav className="hidden lg:flex items-center gap-6 ml-4">
-              <button
-                id="nav-link-shop"
-                onClick={() => onNavigate('shop')}
-                className={`text-[11px] uppercase tracking-widest font-medium transition-colors ${
-                  currentView === 'shop' ? 'text-[#1A1A1A] border-b border-black pb-0.5' : 'text-stone-600 hover:text-black'
-                }`}
-              >
-                Shop All
-              </button>
-              <button
-                id="nav-link-trending"
-                onClick={() => onNavigate('collection', 'best-selling')}
-                className="text-[11px] uppercase tracking-widest font-medium text-stone-600 hover:text-black transition-colors"
-              >
-                Trending
-              </button>
-              <button
-                id="nav-link-unstitched-stitched"
-                onClick={() => onNavigate('category', 'unstitched-stitched')}
-                className="text-[11px] uppercase tracking-widest font-medium text-stone-600 hover:text-black transition-colors"
-              >
-                Unstitched / Stitched
-              </button>
-            </nav>
           </div>
 
           {/* Center: BRAND LOGO */}
@@ -259,51 +252,89 @@ export const Header: React.FC<HeaderProps> = ({
               </span>
             </button>
 
-            {/* Admin Portal Portal Button */}
+            {/* Admin Portal Panel Button */}
             <button
               id="header-admin-btn"
               onClick={() => onNavigate('admin')}
               className="hidden sm:flex items-center gap-1 text-[10px] font-medium uppercase tracking-widest text-stone-500 hover:text-black py-1.5 px-2.5 border border-stone-200 hover:border-stone-800 transition-all ml-1"
-              title="Admin Portal"
+              title="Admin Portal Panel"
             >
               <User className="w-3 h-3" />
-              <span>Admin</span>
+              <span>Admin Portal Panel</span>
             </button>
           </div>
 
         </div>
 
-        {/* 3. DESKTOP SECONDARY NAVIGATION STRIP */}
+        {/* 3. PRIMARY DESKTOP NAVIGATION BAR */}
         <div className="hidden lg:block border-t border-stone-200 bg-[#FAF9F6]">
-          <div className="max-w-7xl mx-auto px-4 flex items-center justify-center space-x-10 h-10">
+          <div className="max-w-7xl mx-auto px-4 flex items-center justify-center space-x-8 xl:space-x-10 h-11">
             <button
+              id="desktop-nav-home"
               onClick={() => onNavigate('home')}
-              className={`text-[10px] uppercase tracking-[0.25em] font-medium transition-colors hover:text-black ${
-                currentView === 'home' ? 'text-black border-b border-black py-2 font-semibold' : 'text-stone-600'
+              className={`text-[11px] uppercase tracking-[0.22em] font-medium transition-colors hover:text-black shrink-0 relative py-2.5 cursor-pointer ${
+                currentView === 'home' ? 'text-black font-semibold' : 'text-stone-600'
               }`}
             >
-              Home
+              <span>HOME</span>
+              {currentView === 'home' && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900" />
+              )}
             </button>
             <button
+              id="desktop-nav-shop-all"
+              onClick={() => onNavigate('shop')}
+              className={`text-[11px] uppercase tracking-[0.22em] font-medium transition-colors hover:text-black shrink-0 relative py-2.5 cursor-pointer ${
+                currentView === 'shop' && !currentParam ? 'text-black font-semibold' : 'text-stone-600'
+              }`}
+            >
+              <span>SHOP ALL</span>
+              {currentView === 'shop' && !currentParam && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900" />
+              )}
+            </button>
+            <button
+              id="desktop-nav-trending"
               onClick={() => onNavigate('collection', 'best-selling')}
-              className="text-[10px] uppercase tracking-[0.25em] font-medium text-stone-800 hover:text-black flex items-center gap-1 transition-colors"
+              className={`text-[11px] uppercase tracking-[0.22em] font-medium transition-colors hover:text-black shrink-0 relative py-2.5 cursor-pointer ${
+                currentView === 'shop' && currentParam === 'best-selling' ? 'text-black font-semibold' : 'text-stone-700'
+              }`}
             >
-              <Sparkles className="w-3 h-3 text-stone-500" /> Trending
+              <span>TRENDING</span>
+              {currentView === 'shop' && currentParam === 'best-selling' && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900" />
+              )}
             </button>
-            {categories.map(cat => (
-              <button
-                key={cat.id}
-                onClick={() => onNavigate('category', cat.slug)}
-                className="text-[10px] uppercase tracking-[0.25em] font-medium text-stone-600 hover:text-black transition-colors"
-              >
-                {cat.name}
-              </button>
-            ))}
             <button
-              onClick={() => onNavigate('shop', 'sale')}
-              className="text-[10px] uppercase tracking-[0.25em] font-medium text-stone-800 hover:text-black transition-colors border-b border-transparent hover:border-stone-400"
+              id="desktop-nav-unstitched-stitched"
+              onClick={() => onNavigate('category', 'unstitched-stitched')}
+              className={`text-[11px] uppercase tracking-[0.22em] font-medium transition-colors hover:text-black shrink-0 relative py-2.5 cursor-pointer ${
+                currentView === 'shop' && currentParam === 'unstitched-stitched' ? 'text-black font-semibold' : 'text-stone-600'
+              }`}
             >
-              Special Offers
+              <span>UNSTITCHED / STITCHED</span>
+              {currentView === 'shop' && currentParam === 'unstitched-stitched' && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900" />
+              )}
+            </button>
+            <button
+              id="desktop-nav-stitched"
+              onClick={() => onNavigate('category', 'stitched')}
+              className={`text-[11px] uppercase tracking-[0.22em] font-medium transition-colors hover:text-black shrink-0 relative py-2.5 cursor-pointer ${
+                currentView === 'shop' && currentParam === 'stitched' ? 'text-black font-semibold' : 'text-stone-600'
+              }`}
+            >
+              <span>STITCHED</span>
+              {currentView === 'shop' && currentParam === 'stitched' && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-900" />
+              )}
+            </button>
+            <button
+              id="desktop-nav-track-order"
+              onClick={onOpenTrackOrder}
+              className="text-[11px] uppercase tracking-[0.22em] font-medium text-stone-600 hover:text-black transition-colors shrink-0 py-2.5 cursor-pointer"
+            >
+              <span>TRACK MY ORDER</span>
             </button>
           </div>
         </div>
@@ -327,55 +358,75 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
                 <button 
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-2 text-stone-500 hover:text-black"
+                  className="p-2 text-stone-500 hover:text-black cursor-pointer"
+                  aria-label="Close navigation menu"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <nav className="mt-6 flex flex-col space-y-4">
+              <nav className="mt-6 flex flex-col space-y-2">
                 <button
+                  id="mobile-nav-home"
                   onClick={() => { onNavigate('home'); setMobileMenuOpen(false); }}
-                  className="text-left text-xs uppercase tracking-widest font-medium text-stone-800 hover:text-black py-2 border-b border-stone-200"
+                  className={`text-left text-xs uppercase tracking-[0.18em] font-medium py-3 border-b border-stone-200 transition-colors cursor-pointer ${
+                    currentView === 'home' ? 'text-stone-950 font-semibold pl-2 border-l-2 border-l-stone-900' : 'text-stone-700 hover:text-black'
+                  }`}
                 >
                   Home
                 </button>
                 <button
+                  id="mobile-nav-shop-all"
                   onClick={() => { onNavigate('shop'); setMobileMenuOpen(false); }}
-                  className="text-left text-xs uppercase tracking-widest font-medium text-stone-800 hover:text-black py-2 border-b border-stone-200"
+                  className={`text-left text-xs uppercase tracking-[0.18em] font-medium py-3 border-b border-stone-200 transition-colors cursor-pointer ${
+                    currentView === 'shop' && !currentParam ? 'text-stone-950 font-semibold pl-2 border-l-2 border-l-stone-900' : 'text-stone-700 hover:text-black'
+                  }`}
                 >
-                  Shop All Products
+                  Shop All
                 </button>
                 <button
+                  id="mobile-nav-trending"
                   onClick={() => { onNavigate('collection', 'best-selling'); setMobileMenuOpen(false); }}
-                  className="text-left text-xs uppercase tracking-widest font-medium text-stone-900 flex items-center justify-between py-2 border-b border-stone-200"
+                  className={`text-left text-xs uppercase tracking-[0.18em] font-medium py-3 border-b border-stone-200 flex items-center justify-between transition-colors cursor-pointer ${
+                    currentView === 'shop' && currentParam === 'best-selling' ? 'text-stone-950 font-semibold pl-2 border-l-2 border-l-stone-900' : 'text-stone-800 hover:text-black'
+                  }`}
                 >
                   <span>Trending</span>
-                  <span className="text-[9px] bg-stone-900 text-white px-2 py-0.5 tracking-wider">POPULAR</span>
+                  <span className="text-[9px] bg-stone-900 text-white px-2 py-0.5 tracking-wider font-semibold">POPULAR</span>
                 </button>
-
-                {categories.map(cat => (
-                  <button
-                    key={cat.id}
-                    onClick={() => { onNavigate('category', cat.slug); setMobileMenuOpen(false); }}
-                    className="text-left text-xs uppercase tracking-widest font-medium text-stone-600 hover:text-black py-2 border-b border-stone-200"
-                  >
-                    {cat.name}
-                  </button>
-                ))}
-
                 <button
+                  id="mobile-nav-unstitched-stitched"
+                  onClick={() => { onNavigate('category', 'unstitched-stitched'); setMobileMenuOpen(false); }}
+                  className={`text-left text-xs uppercase tracking-[0.18em] font-medium py-3 border-b border-stone-200 transition-colors cursor-pointer ${
+                    currentView === 'shop' && currentParam === 'unstitched-stitched' ? 'text-stone-950 font-semibold pl-2 border-l-2 border-l-stone-900' : 'text-stone-700 hover:text-black'
+                  }`}
+                >
+                  Unstitched / Stitched
+                </button>
+                <button
+                  id="mobile-nav-stitched"
+                  onClick={() => { onNavigate('category', 'stitched'); setMobileMenuOpen(false); }}
+                  className={`text-left text-xs uppercase tracking-[0.18em] font-medium py-3 border-b border-stone-200 transition-colors cursor-pointer ${
+                    currentView === 'shop' && currentParam === 'stitched' ? 'text-stone-950 font-semibold pl-2 border-l-2 border-l-stone-900' : 'text-stone-700 hover:text-black'
+                  }`}
+                >
+                  Stitched
+                </button>
+                <button
+                  id="mobile-nav-track-order"
                   onClick={() => { onOpenTrackOrder(); setMobileMenuOpen(false); }}
-                  className="text-left text-xs uppercase tracking-widest font-medium text-stone-700 hover:text-black py-2 border-b border-stone-200"
+                  className="text-left text-xs uppercase tracking-[0.18em] font-medium text-stone-700 hover:text-black py-3 border-b border-stone-200 flex items-center gap-2 cursor-pointer"
                 >
-                  Track My Order
+                  <Truck className="w-3.5 h-3.5 text-stone-500" />
+                  <span>Track My Order</span>
                 </button>
-
                 <button
+                  id="mobile-nav-admin"
                   onClick={() => { onNavigate('admin'); setMobileMenuOpen(false); }}
-                  className="text-left text-xs uppercase tracking-widest font-medium text-stone-500 py-2"
+                  className="text-left text-[11px] uppercase tracking-widest font-medium text-stone-400 hover:text-stone-700 pt-3 flex items-center gap-1.5 cursor-pointer"
                 >
-                  Admin Portal Login
+                  <User className="w-3 h-3" />
+                  <span>Admin Portal</span>
                 </button>
               </nav>
             </div>

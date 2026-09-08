@@ -1353,14 +1353,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                     onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value })}
                     className="w-full border border-[#ddd] p-2 rounded-xs bg-white focus:outline-hidden text-xs"
                   >
-                    <option value="Unstitched / Stitched">Unstitched / Stitched (Source Verified)</option>
-                    <option value="Stitched">Stitched (Source Verified)</option>
-                    <option value="woman">woman (Source Verified)</option>
-                    <option value="Clothing">Clothing (Source Verified)</option>
-                    <option value="3 Pieces">3 Pieces (Source Verified)</option>
-                    <option value="Unstitched Luxury Lawn">Unstitched Luxury Lawn</option>
-                    <option value="Luxury Pret">Luxury Pret</option>
-                    <option value="Festive Formals">Festive Formals</option>
+                    <option value="Unstitched / Stitched">Unstitched / Stitched</option>
+                    <option value="Stitched">Stitched</option>
+                    <option value="woman">woman</option>
+                    <option value="Clothing">Clothing</option>
+                    <option value="3 Pieces">3 Pieces</option>
                   </select>
                 </div>
 

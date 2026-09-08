@@ -186,6 +186,8 @@ export default function App() {
       
       {/* 1. SITE HEADER & NAVIGATION */}
       <Header
+        currentView={currentView}
+        currentParam={viewParam}
         currency={currency}
         onCurrencyChange={setCurrency}
         cartCount={cartItems.reduce((acc, i) => acc + i.quantity, 0)}

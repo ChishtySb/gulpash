@@ -28,25 +28,33 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ config, onNavigate }) 
   };
 
   const handlePrimaryClick = () => {
-    if (config.buttonUrl.startsWith('/collections/')) {
+    if (config.buttonUrl?.startsWith('/collections/')) {
       const slug = config.buttonUrl.replace('/collections/', '');
       onNavigate('collection', slug);
-    } else if (config.buttonUrl.startsWith('/categories/')) {
+    } else if (config.buttonUrl?.startsWith('/categories/')) {
       const slug = config.buttonUrl.replace('/categories/', '');
       onNavigate('category', slug);
     } else {
-      onNavigate('shop');
+      onNavigate('collection', 'best-selling');
     }
   };
 
   const handleSecondaryClick = () => {
-    if (config.secondaryButtonUrl?.startsWith('/categories/')) {
+    if (config.secondaryButtonUrl?.startsWith('/collections/')) {
+      const slug = config.secondaryButtonUrl.replace('/collections/', '');
+      onNavigate('collection', slug);
+    } else if (config.secondaryButtonUrl?.startsWith('/categories/')) {
       const slug = config.secondaryButtonUrl.replace('/categories/', '');
       onNavigate('category', slug);
     } else {
       onNavigate('shop');
     }
   };
+
+  const primaryButtonLabel = config.buttonText === 'EXPLORE BEST SELLERS' 
+    ? 'EXPLORE TRENDING' 
+    : (config.buttonText || 'EXPLORE TRENDING');
+  const secondaryButtonLabel = config.secondaryButtonText || 'SHOP ALL';
 
   return (
     <section className="relative w-full h-[75vh] sm:h-[85vh] lg:h-[90vh] overflow-hidden bg-[#181818] flex items-center justify-center font-sans">
@@ -139,17 +147,17 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ config, onNavigate }) 
             onClick={handlePrimaryClick}
             className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white text-[11px] uppercase tracking-[0.25em] font-medium py-3.5 px-8 border border-stone-700 shadow-md transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>{config.buttonText || 'EXPLORE COLLECTION'}</span>
+            <span>{primaryButtonLabel}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
 
-          {config.secondaryButtonText && (
+          {secondaryButtonLabel && (
             <button
               id="hero-secondary-cta"
               onClick={handleSecondaryClick}
               className="w-full sm:w-auto bg-transparent hover:bg-white/10 text-white border border-white/40 hover:border-white text-[11px] uppercase tracking-[0.25em] font-medium py-3.5 px-8 backdrop-blur-xs transition-all duration-200 cursor-pointer"
             >
-              {config.secondaryButtonText}
+              {secondaryButtonLabel}
             </button>
           )}
         </div>
