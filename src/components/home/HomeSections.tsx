@@ -63,7 +63,7 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
   // Helper to retrieve authentic product cover for a collection
   const getCollectionCover = (colSlug: string) => {
     const foundCol = collections.find(c => c.slug === colSlug);
-    if (foundCol?.image) return foundCol.image;
+    if (foundCol?.image && !foundCol.image.includes('1/0740/5784/2939')) return foundCol.image;
     const match = products.find(p => {
       if (colSlug === 'best-selling') return p.isBestSeller || p.collectionNames?.includes('BEST SELLING') || p.collection === 'BEST SELLING';
       if (colSlug === 'new-arrivals') return p.isNewArrival || p.collectionNames?.includes('NEW ARRIVALS') || p.collection === 'NEW ARRIVALS';

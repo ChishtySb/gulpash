@@ -7,7 +7,7 @@ import {
   Database, ExternalLink, ArrowUp, ArrowDown, Video, Layers, Globe, LogOut, Upload, Loader2,
   Clock, Check, Copy, CheckCircle, XCircle, CreditCard, Smartphone, Building2, MessageCircle
 } from 'lucide-react';
-import { Product, Order, CMSConfig, SiteSettings, ProductSize, OrderStatus, ProductVariantDetailed, Category } from '../../types';
+import { Product, Order, CMSConfig, SiteSettings, ProductSize, OrderStatus, ProductVariantDetailed, Category, Collection } from '../../types';
 import { StorageService } from '../../lib/storage';
 import { formatPrice } from '../../lib/currency';
 import { MigrationReportView } from './MigrationReportView';
@@ -27,7 +27,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
   const [cms, setCms] = useState<CMSConfig>(StorageService.getCMS());
   const [settings, setSettings] = useState<SiteSettings>(StorageService.getSettings());
   const [categories, setCategories] = useState<Category[]>(StorageService.getCategories());
+  const [collections, setCollections] = useState<Collection[]>(StorageService.getCollections());
   const [hasUnsavedCategoryChanges, setHasUnsavedCategoryChanges] = useState(false);
+  const [hasUnsavedCollectionChanges, setHasUnsavedCollectionChanges] = useState(false);
+  const [editingPresentationCollection, setEditingPresentationCollection] = useState<Collection | null>(null);
 
   // Search & Filters
   const [productSearch, setProductSearch] = useState('');
@@ -58,6 +61,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
       setCms(StorageService.getCMS());
       setSettings(StorageService.getSettings());
       setCategories(StorageService.getCategories());
+      setCollections(StorageService.getCollections());
     };
     window.addEventListener('gulpash_data_changed', handleSync);
     return () => window.removeEventListener('gulpash_data_changed', handleSync);
@@ -66,6 +70,92 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
   const triggerNotice = (msg: string) => {
     setSaveSuccessNotice(msg);
     setTimeout(() => setSaveSuccessNotice(null), 3000);
+  };
+
+  // Helper to get active collection slugs for a product
+  const getProductCollectionSlugs = (p?: Product | null): string[] => {
+    if (!p) return [];
+    const slugs: string[] = [];
+    const names = p.collectionNames || [];
+    if (names.includes('NEW ARRIVALS') || p.isNewArrival || p.collection === 'NEW ARRIVALS' || p.tags?.includes('new-arrivals')) slugs.push('new-arrivals');
+    if (names.includes('BEST SELLING') || names.includes('TRENDING') || p.isBestSeller || p.collection === 'BEST SELLING' || p.tags?.includes('best-selling')) slugs.push('best-selling');
+    if (names.includes('WINTER COLLECTION') || p.fabric?.toLowerCase().includes('winter') || p.fabric?.toLowerCase().includes('velvet') || p.tags?.includes('winter-collection')) slugs.push('winter-collection');
+    if (names.includes('CO-ORDS') || p.title?.toLowerCase().includes('co-ord') || p.title?.toLowerCase().includes('coord') || p.tags?.includes('co-ords')) slugs.push('co-ords');
+    if (names.includes('SHORT LENGTH') || p.title?.toLowerCase().includes('short') || p.tags?.includes('short-length-article')) slugs.push('short-length-article');
+    return slugs;
+  };
+
+  const handleToggleProductCollectionMembership = (colSlug: string) => {
+    if (!editingProduct) return;
+    const current = getProductCollectionSlugs(editingProduct);
+    const exists = current.includes(colSlug);
+    const updatedSlugs = exists ? current.filter(s => s !== colSlug) : [...current, colSlug];
+    
+    const slugToNameMap: Record<string, string> = {
+      'new-arrivals': 'NEW ARRIVALS',
+      'best-selling': 'TRENDING',
+      'winter-collection': 'WINTER COLLECTION',
+      'co-ords': 'CO-ORDS',
+      'short-length-article': 'SHORT LENGTH'
+    };
+    const updatedNames = updatedSlugs.map(s => slugToNameMap[s] || s);
+
+    setEditingProduct({
+      ...editingProduct,
+      collectionNames: updatedNames,
+      isNewArrival: updatedSlugs.includes('new-arrivals'),
+      isBestSeller: updatedSlugs.includes('best-selling'),
+      collection: updatedNames[0] || 'NEW ARRIVALS',
+      collectionSlug: updatedSlugs[0] || 'new-arrivals',
+      tags: Array.from(new Set([...editingProduct.tags.filter(t => !Object.keys(slugToNameMap).includes(t)), ...updatedSlugs]))
+    });
+  };
+
+  // Storefront Collections Presentation Handlers
+  const handleToggleCollectionNav = (colId: string) => {
+    const updated = collections.map(c => c.id === colId ? { ...c, visibleInNav: c.visibleInNav === false ? true : false } : c);
+    setCollections(updated);
+    setHasUnsavedCollectionChanges(true);
+  };
+
+  const handleToggleCollectionHome = (colId: string) => {
+    const updated = collections.map(c => c.id === colId ? { ...c, visibleOnHomepage: c.visibleOnHomepage === false ? true : false } : c);
+    setCollections(updated);
+    setHasUnsavedCollectionChanges(true);
+  };
+
+  const handleCollectionOrderChange = (colId: string, newOrder: number) => {
+    const updated = collections.map(c => c.id === colId ? { ...c, order: newOrder } : c);
+    setCollections(updated);
+    setHasUnsavedCollectionChanges(true);
+  };
+
+  const handleMoveCollection = (idx: number, direction: 'up' | 'down') => {
+    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= collections.length) return;
+    const clone = [...collections];
+    const item = clone[idx];
+    clone[idx] = clone[targetIdx];
+    clone[targetIdx] = item;
+    const updated = clone.map((c, i) => ({ ...c, order: i + 1 }));
+    setCollections(updated);
+    setHasUnsavedCollectionChanges(true);
+  };
+
+  const handleSaveCollectionPresentation = () => {
+    const sorted = [...collections].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    setCollections(sorted);
+    StorageService.saveCollections(sorted);
+    setHasUnsavedCollectionChanges(false);
+    triggerNotice('Storefront collections presentation saved successfully!');
+  };
+
+  const handleSavePresentationModal = (updatedCol: Collection) => {
+    const updated = collections.map(c => c.id === updatedCol.id ? updatedCol : c);
+    setCollections(updated);
+    StorageService.saveCollection(updatedCol);
+    setEditingPresentationCollection(null);
+    triggerNotice(`Presentation settings for ${updatedCol.name} updated!`);
   };
 
   // Category Presentation Settings Handlers (Taxonomy editing permanently disabled)
@@ -153,6 +243,41 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
     };
     setEditingProduct(fresh);
     setIsNewProduct(true);
+  };
+
+  const handleToggleProductCollection = (slug: string) => {
+    if (!editingProduct) return;
+    const currentSlugs = getProductCollectionSlugs(editingProduct);
+    const exists = currentSlugs.includes(slug);
+    
+    let newTags = [...(editingProduct.tags || [])];
+    let isNew = editingProduct.isNewArrival ?? false;
+    let isBest = editingProduct.isBestSeller ?? false;
+
+    if (exists) {
+      if (slug === 'new-arrivals') isNew = false;
+      if (slug === 'best-selling') isBest = false;
+      newTags = newTags.filter(t => t.toLowerCase() !== slug.toLowerCase() && t.toLowerCase() !== slug.replace(/-/g, ' '));
+    } else {
+      if (slug === 'new-arrivals') isNew = true;
+      if (slug === 'best-selling') isBest = true;
+      if (slug !== 'new-arrivals' && slug !== 'best-selling') {
+        if (!newTags.some(t => t.toLowerCase() === slug.toLowerCase())) {
+          newTags.push(slug);
+        }
+      }
+    }
+
+    const remaining = exists ? currentSlugs.filter(s => s !== slug) : [...currentSlugs, slug];
+    const primaryCol = remaining.find(s => s !== 'all') || 'all';
+
+    setEditingProduct({
+      ...editingProduct,
+      isNewArrival: isNew,
+      isBestSeller: isBest,
+      tags: newTags,
+      collectionSlug: primaryCol
+    });
   };
 
   const handleSaveProduct = (e: React.FormEvent) => {
@@ -416,8 +541,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
             }`}
           >
             <Layers className="w-4 h-4 text-[#c59b66]" />
-            <span>Navigation & Categories ({categories.length})</span>
-            {hasUnsavedCategoryChanges && (
+            <span>Storefront Collections ({collections.length})</span>
+            {hasUnsavedCollectionChanges && (
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" title="Unsaved presentation changes" />
             )}
           </button>
@@ -631,6 +756,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                     <tr>
                       <th className="py-3 px-4">Item</th>
                       <th className="py-3 px-3">Category</th>
+                      <th className="py-3 px-3">Collections</th>
                       <th className="py-3 px-3">Fabric</th>
                       <th className="py-3 px-3">Price</th>
                       <th className="py-3 px-3">Stock</th>
@@ -656,6 +782,24 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                         </td>
 
                         <td className="py-3 px-3 text-[#555] font-medium">{p.category}</td>
+                        <td className="py-3 px-3">
+                          <div className="flex flex-wrap gap-1 max-w-[160px]">
+                            {getProductCollectionSlugs(p).map(s => {
+                              const labelMap: Record<string, string> = {
+                                'new-arrivals': 'NEW',
+                                'best-selling': 'TRENDING',
+                                'winter-collection': 'WINTER',
+                                'co-ords': 'CO-ORDS',
+                                'short-length-article': 'SHORT'
+                              };
+                              return (
+                                <span key={s} className="px-1.5 py-0.5 bg-stone-100 text-stone-800 border border-stone-200 rounded-xs text-[9px] font-bold uppercase tracking-wider">
+                                  {labelMap[s] || s}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </td>
                         <td className="py-3 px-3 text-[#666] italic font-serif">{p.fabric}</td>
                         <td className="py-3 px-3 font-bold text-[#111]">{formatPrice(p.price, 'PKR')}</td>
                         
@@ -1169,29 +1313,29 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
           </div>
         )}
 
-        {/* 5. NAVIGATION & CATEGORIES PRESENTATION TAB */}
+        {/* 5. STOREFRONT COLLECTIONS PRESENTATION TAB */}
         {activeTab === 'categories' && (
           <div className="space-y-6 animate-in fade-in">
             <div className="bg-white p-6 sm:p-8 rounded-sm border border-[#e8e3dc] space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#eee] pb-5">
                 <div>
                   <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-[#aa814d] block">
-                    STOREFRONT PRESENTATION SETTINGS
+                    STOREFRONT PRESENTATION & MERCHANDISING
                   </span>
                   <h2 className="font-serif text-2xl font-bold text-[#111] mt-1">
-                    Navigation & Categories
+                    Storefront Collections
                   </h2>
                   <p className="text-xs text-[#777] mt-1">
-                    Configure presentation visibility for the top Header Navigation bar, Homepage collections showcase, and display ordering.
+                    Manage the 6 customer-facing collections: display ordering, header navigation, homepage showcase, card media, and collection page banners.
                   </p>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={handleSaveCategoryPresentation}
+                    onClick={handleSaveCollectionPresentation}
                     className={`text-xs font-bold uppercase tracking-wider py-2.5 px-5 rounded-sm flex items-center gap-2 cursor-pointer transition-all shadow-sm ${
-                      hasUnsavedCategoryChanges
+                      hasUnsavedCollectionChanges
                         ? 'bg-amber-600 hover:bg-amber-700 text-white animate-pulse'
                         : 'bg-[#181818] hover:bg-[#333] text-white'
                     }`}
@@ -1202,65 +1346,59 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                 </div>
               </div>
 
-              {/* Taxonomy Protection Notice */}
-              <div className="p-3.5 bg-stone-50 border border-stone-200 rounded-sm flex items-start gap-3">
-                <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
-                <div className="text-xs text-stone-600 space-y-0.5">
-                  <span className="font-bold text-stone-900 block">
-                    Catalog Taxonomy Locked & Protected
-                  </span>
-                  <p className="font-light leading-relaxed">
-                    Category creation, deletion, renaming, and slug alteration are permanently restricted in this module to protect catalog integrity and ensure all 68 authentic products remain mapped.
-                  </p>
-                </div>
-              </div>
-
               {/* Quick Summary Metrics */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="bg-stone-50 border border-stone-200 p-4 rounded-xs">
-                  <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider block">Authentic Categories</span>
-                  <span className="text-2xl font-serif font-bold text-stone-900 mt-1 block">{categories.length}</span>
-                  <span className="text-[10px] text-stone-400 mt-0.5 block">Catalog database records</span>
+                  <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider block">Storefront Collections</span>
+                  <span className="text-2xl font-serif font-bold text-stone-900 mt-1 block">{collections.length}</span>
+                  <span className="text-[10px] text-stone-400 mt-0.5 block">Active merchandising collections</span>
                 </div>
 
                 <div className="bg-stone-50 border border-stone-200 p-4 rounded-xs">
                   <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider block">Header Nav Visibility</span>
                   <span className="text-2xl font-serif font-bold text-emerald-800 mt-1 block">
-                    {categories.filter(c => c.visibleInNav !== false).length}
+                    {collections.filter(c => c.visibleInNav !== false).length}
                   </span>
-                  <span className="text-[10px] text-stone-400 mt-0.5 block">Shown in storefront header row</span>
+                  <span className="text-[10px] text-stone-400 mt-0.5 block">Shown in storefront header navigation</span>
                 </div>
 
                 <div className="bg-stone-50 border border-stone-200 p-4 rounded-xs">
                   <span className="text-[11px] font-semibold text-stone-500 uppercase tracking-wider block">Homepage Showcase</span>
                   <span className="text-2xl font-serif font-bold text-stone-900 mt-1 block">
-                    {categories.filter(c => c.visibleOnHomepage !== false).length}
+                    {collections.filter(c => c.visibleOnHomepage !== false).length}
                   </span>
-                  <span className="text-[10px] text-stone-400 mt-0.5 block">Curated collections carousel</span>
+                  <span className="text-[10px] text-stone-400 mt-0.5 block">Featured on explore collections carousel</span>
                 </div>
               </div>
 
-              {/* Presentation Controls Table */}
+              {/* Collections Presentation Controls Table */}
               <div className="overflow-x-auto border border-stone-200 rounded-sm">
                 <table className="w-full text-left text-xs">
                   <thead className="bg-[#f9f8f6] border-b border-stone-200 text-[#555] uppercase text-[10px] tracking-wider font-semibold">
                     <tr>
                       <th className="py-3 px-4 w-32">Display Order</th>
-                      <th className="py-3 px-4">Category Name</th>
+                      <th className="py-3 px-4">Collection Name</th>
                       <th className="py-3 px-4">Catalog Slug</th>
-                      <th className="py-3 px-4 text-center">Products</th>
+                      <th className="py-3 px-4 text-center">Active Products</th>
                       <th className="py-3 px-4 text-center">Header Nav</th>
                       <th className="py-3 px-4 text-center">Homepage</th>
+                      <th className="py-3 px-4 text-right">Media & Banners</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-stone-100">
-                    {categories
+                    {collections
                       .slice()
                       .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-                      .map((cat, idx) => {
-                        const productCount = products.filter(p => p.category?.toLowerCase() === cat.name.toLowerCase()).length;
+                      .map((col, idx) => {
+                        const productCount = col.slug === 'all'
+                          ? products.length
+                          : products.filter(p => {
+                              const slugs = getProductCollectionSlugs(p);
+                              return slugs.includes(col.slug);
+                            }).length;
+
                         return (
-                          <tr key={cat.id} className="hover:bg-stone-50/60 transition-colors">
+                          <tr key={col.id} className="hover:bg-stone-50/60 transition-colors">
                             {/* Display Order: Numeric input + Up/Down buttons */}
                             <td className="py-3.5 px-4">
                               <div className="flex items-center gap-2">
@@ -1268,15 +1406,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                                   type="number"
                                   min="1"
                                   max="99"
-                                  value={cat.order ?? idx + 1}
-                                  onChange={(e) => handleCategoryOrderChange(cat.id, Number(e.target.value))}
+                                  value={col.order ?? idx + 1}
+                                  onChange={(e) => handleCollectionOrderChange(col.id, Number(e.target.value))}
                                   className="w-12 py-1 px-2 text-center text-xs font-mono font-semibold border border-stone-300 rounded-xs bg-white focus:outline-hidden focus:border-stone-900"
                                 />
                                 <div className="flex flex-col gap-0.5">
                                   <button
                                     type="button"
                                     disabled={idx === 0}
-                                    onClick={() => handleMoveCategory(idx, 'up')}
+                                    onClick={() => handleMoveCollection(idx, 'up')}
                                     className="p-1 hover:bg-stone-200 rounded disabled:opacity-20 text-stone-600 cursor-pointer"
                                     title="Move Up in sequence"
                                   >
@@ -1284,8 +1422,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                                   </button>
                                   <button
                                     type="button"
-                                    disabled={idx === categories.length - 1}
-                                    onClick={() => handleMoveCategory(idx, 'down')}
+                                    disabled={idx === collections.length - 1}
+                                    onClick={() => handleMoveCollection(idx, 'down')}
                                     className="p-1 hover:bg-stone-200 rounded disabled:opacity-20 text-stone-600 cursor-pointer"
                                     title="Move Down in sequence"
                                   >
@@ -1295,12 +1433,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                               </div>
                             </td>
 
-                            {/* Category Name (Authentic Read-Only) */}
+                            {/* Collection Name & Thumbnail */}
                             <td className="py-3.5 px-4">
                               <div className="flex items-center gap-3">
-                                <div className="w-9 h-11 bg-stone-100 border border-stone-200 rounded-xs overflow-hidden shrink-0">
-                                  {cat.imageUrl ? (
-                                    <img src={cat.imageUrl} alt={cat.name} className="w-full h-full object-cover" />
+                                <div className="w-10 h-13 bg-stone-100 border border-stone-200 rounded-xs overflow-hidden shrink-0">
+                                  {col.imageUrl || col.image ? (
+                                    <img 
+                                      src={col.imageUrl || col.image} 
+                                      alt={col.name} 
+                                      className="w-full h-full object-cover" 
+                                      referrerPolicy="no-referrer"
+                                    />
                                   ) : (
                                     <div className="w-full h-full flex items-center justify-center text-stone-400 text-[9px] font-medium">
                                       N/A
@@ -1308,17 +1451,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                                   )}
                                 </div>
                                 <div>
-                                  <span className="font-semibold text-stone-900 block text-xs">{cat.name}</span>
-                                  {cat.description && (
-                                    <span className="text-[10px] text-stone-500 line-clamp-1 mt-0.5">{cat.description}</span>
-                                  )}
+                                  <span className="font-bold text-stone-900 block text-xs tracking-wide">{col.name}</span>
+                                  <span className="text-[10px] text-stone-500 line-clamp-1 mt-0.5">
+                                    {col.description || 'Storefront Merchandising Collection'}
+                                  </span>
                                 </div>
                               </div>
                             </td>
 
-                            {/* Catalog Slug (Authentic Read-Only) */}
+                            {/* Catalog Slug */}
                             <td className="py-3.5 px-4 font-mono text-[11px] text-stone-500">
-                              /{cat.slug}
+                              /{col.slug}
                             </td>
 
                             {/* Product Count */}
@@ -1332,14 +1475,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                             <td className="py-3.5 px-4 text-center">
                               <button
                                 type="button"
-                                onClick={() => handleToggleCategoryNav(cat.id)}
+                                onClick={() => handleToggleCollectionNav(col.id)}
                                 className={`px-3 py-1 text-[10px] font-bold rounded-xs uppercase tracking-wider transition-colors cursor-pointer ${
-                                  cat.visibleInNav !== false
+                                  col.visibleInNav !== false
                                     ? 'bg-stone-900 text-white hover:bg-stone-800'
                                     : 'bg-stone-200 text-stone-600 hover:bg-stone-300'
                                 }`}
                               >
-                                {cat.visibleInNav !== false ? 'ON' : 'OFF'}
+                                {col.visibleInNav !== false ? 'ON' : 'OFF'}
                               </button>
                             </td>
 
@@ -1347,14 +1490,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                             <td className="py-3.5 px-4 text-center">
                               <button
                                 type="button"
-                                onClick={() => handleToggleCategoryHome(cat.id)}
+                                onClick={() => handleToggleCollectionHome(col.id)}
                                 className={`px-3 py-1 text-[10px] font-bold rounded-xs uppercase tracking-wider transition-colors cursor-pointer ${
-                                  cat.visibleOnHomepage !== false
+                                  col.visibleOnHomepage !== false
                                     ? 'bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200'
                                     : 'bg-stone-200 text-stone-600 hover:bg-stone-300'
                                 }`}
                               >
-                                {cat.visibleOnHomepage !== false ? 'ON' : 'OFF'}
+                                {col.visibleOnHomepage !== false ? 'ON' : 'OFF'}
+                              </button>
+                            </td>
+
+                            {/* Actions: Edit Presentation */}
+                            <td className="py-3.5 px-4 text-right">
+                              <button
+                                type="button"
+                                onClick={() => setEditingPresentationCollection({ ...col })}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-xs text-[11px] font-medium transition-colors cursor-pointer"
+                              >
+                                <Sliders className="w-3.5 h-3.5 text-[#aa814d]" />
+                                <span>Edit Media</span>
                               </button>
                             </td>
                           </tr>
@@ -1367,20 +1522,55 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
               {/* Bottom Action Footer */}
               <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
                 <span className="text-[11px] text-stone-500">
-                  {hasUnsavedCategoryChanges
+                  {hasUnsavedCollectionChanges
                     ? '⚠️ You have unsaved presentation adjustments.'
-                    : 'All presentation settings are synced with storefront.'}
+                    : 'All storefront collection presentation settings are synchronized.'}
                 </span>
 
                 <button
                   type="button"
-                  onClick={handleSaveCategoryPresentation}
+                  onClick={handleSaveCollectionPresentation}
                   className="bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold uppercase tracking-wider py-2.5 px-6 rounded-xs flex items-center gap-2 cursor-pointer transition-colors shadow-sm"
                 >
                   <Save className="w-4 h-4" />
                   <span>Save Changes</span>
                 </button>
               </div>
+
+              {/* Internal Database Taxonomy (Categories) Section */}
+              <div className="mt-10 pt-8 border-t border-stone-200 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-stone-400 block">
+                      INTERNAL DATABASE TAXONOMY
+                    </span>
+                    <h3 className="font-serif text-lg font-bold text-stone-800 mt-0.5">
+                      Backend Product Types (Categories)
+                    </h3>
+                  </div>
+                  <span className="px-2.5 py-1 bg-stone-100 border border-stone-200 text-stone-600 text-[10px] font-semibold uppercase tracking-wider rounded-xs">
+                    Read-Only Taxonomy
+                  </span>
+                </div>
+
+                <p className="text-xs text-stone-500 font-light leading-relaxed">
+                  The 5 authentic internal categories (Unstitched / Stitched, Stitched, woman, Clothing, 3 Pieces) remain preserved in the database for catalog taxonomy, migration compatibility, and product metadata. They are not used for customer-facing storefront presentation.
+                </p>
+
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
+                  {categories.map(cat => {
+                    const count = products.filter(p => p.category?.toLowerCase() === cat.name.toLowerCase()).length;
+                    return (
+                      <div key={cat.id} className="p-3 bg-stone-50 border border-stone-200 rounded-xs">
+                        <span className="font-semibold text-stone-800 text-xs block">{cat.name}</span>
+                        <span className="text-[10px] font-mono text-stone-500 block mt-1">{count} products</span>
+                        <span className="text-[9px] text-stone-400 font-mono block mt-0.5">/{cat.slug}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
             </div>
           </div>
         )}
@@ -2349,8 +2539,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-[#333] mb-1">Catalog Category (Product Type)</label>
+                <div className="sm:col-span-2">
+                  <label className="block font-bold text-[#333] mb-1">Catalog Category (Internal Database Taxonomy)</label>
                   <select
                     value={editingProduct.category}
                     onChange={(e) => setEditingProduct({ ...editingProduct, category: e.target.value })}
@@ -2362,26 +2552,58 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                     <option value="Clothing">Clothing</option>
                     <option value="3 Pieces">3 Pieces</option>
                   </select>
+                  <span className="text-[10px] text-stone-400 mt-0.5 block">Preserved for database catalog classification and migration compatibility.</span>
                 </div>
 
-                <div>
-                  <label className="block font-bold text-[#333] mb-1">Assigned Collection</label>
-                  <select
-                    value={editingProduct.collectionSlug || 'new-arrivals'}
-                    onChange={(e) => setEditingProduct({ 
-                      ...editingProduct, 
-                      collectionSlug: e.target.value,
-                      tags: Array.from(new Set([...editingProduct.tags, e.target.value]))
+                <div className="sm:col-span-2 bg-stone-50 border border-stone-200 p-3.5 rounded-xs space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-stone-800">
+                      Storefront Collection Membership (Multi-Select)
+                    </label>
+                    <span className="text-[10px] text-stone-500 font-mono">
+                      {getProductCollectionSlugs(editingProduct).length} collections assigned
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-stone-500 font-light">
+                    A product can belong to multiple storefront collections simultaneously. Check all collections where this item should appear:
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-1">
+                    {[
+                      { slug: 'new-arrivals', label: 'NEW ARRIVALS' },
+                      { slug: 'best-selling', label: 'TRENDING' },
+                      { slug: 'winter-collection', label: 'WINTER COLLECTION' },
+                      { slug: 'co-ords', label: 'CO-ORDS' },
+                      { slug: 'short-length-article', label: 'SHORT LENGTH' },
+                    ].map((col) => {
+                      const isSelected = getProductCollectionSlugs(editingProduct).includes(col.slug);
+                      return (
+                        <label
+                          key={col.slug}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleToggleProductCollection(col.slug);
+                          }}
+                          className={`flex items-center gap-2 p-2 rounded-xs border text-xs cursor-pointer select-none transition-colors ${
+                            isSelected 
+                              ? 'bg-amber-50/80 border-amber-400 text-stone-900 font-bold' 
+                              : 'bg-white border-stone-200 text-stone-600 hover:border-stone-300'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            readOnly
+                            className="w-3.5 h-3.5 accent-[#aa814d] rounded-xs cursor-pointer"
+                          />
+                          <span className="truncate">{col.label}</span>
+                        </label>
+                      );
                     })}
-                    className="w-full border border-[#ddd] p-2 rounded-xs bg-white focus:outline-hidden text-xs"
-                  >
-                    <option value="new-arrivals">NEW ARRIVALS (Source Verified)</option>
-                    <option value="best-selling">BEST SELLING (Source Verified)</option>
-                    <option value="winter-collection">WINTER COLLECTION (Source Verified)</option>
-                    <option value="trending-designs">Trending Designs (Source Verified)</option>
-                    <option value="co-ords">Co-Ords (Source Verified)</option>
-                    <option value="home">Home Featured (Source Verified)</option>
-                  </select>
+                    <div className="flex items-center gap-2 p-2 rounded-xs border border-stone-200 bg-stone-100/70 text-stone-500 text-xs select-none">
+                      <input type="checkbox" checked={true} disabled className="w-3.5 h-3.5" />
+                      <span className="truncate">ALL ENSEMBLES (Auto)</span>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="sm:col-span-2">
@@ -3015,6 +3237,344 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
               </button>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* COLLECTION MEDIA & BANNER EDIT MODAL */}
+      {editingPresentationCollection && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 font-sans bg-black/70 backdrop-blur-xs">
+          <div className="relative w-full max-w-2xl bg-white rounded-lg shadow-2xl p-6 border border-[#e8e3dc] max-h-[90vh] overflow-y-auto space-y-6 text-xs">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-[#eee]">
+              <div>
+                <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-[#aa814d] block">
+                  STOREFRONT COLLECTION MEDIA & MERCHANDISING
+                </span>
+                <h3 className="font-serif text-xl font-bold text-[#111] mt-0.5">
+                  {editingPresentationCollection.name}
+                </h3>
+                <span className="text-[11px] font-mono text-stone-500">
+                  Catalog Slug: /{editingPresentationCollection.slug}
+                </span>
+              </div>
+              <button
+                onClick={() => setEditingPresentationCollection(null)}
+                className="p-1 text-[#888] hover:text-black cursor-pointer rounded-xs"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* SECTION 1: HOMEPAGE COLLECTION CARD IMAGE */}
+            <div className="space-y-3 bg-stone-50 p-4 border border-stone-200 rounded-xs">
+              <div className="flex items-center justify-between">
+                <h4 className="font-bold text-stone-900 text-xs flex items-center gap-1.5 uppercase tracking-wider">
+                  <ImageIcon className="w-4 h-4 text-[#aa814d]" />
+                  Homepage Collection Card Image
+                </h4>
+                <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-xs">
+                  4:5 Aspect Ratio
+                </span>
+              </div>
+
+              <div className="p-2.5 bg-amber-50/70 border border-amber-200 rounded-xs text-[11px] text-amber-900">
+                <strong>Recommended Card Image Size:</strong> 1200 x 1500 px (4:5 aspect ratio), WebP format.
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-start">
+                {/* Image Preview */}
+                <div className="w-full aspect-[4/5] bg-stone-200 border border-stone-300 rounded-xs overflow-hidden flex items-center justify-center relative shadow-xs">
+                  {editingPresentationCollection.imageUrl || editingPresentationCollection.image ? (
+                    <img
+                      src={editingPresentationCollection.imageUrl || editingPresentationCollection.image}
+                      alt={editingPresentationCollection.name}
+                      className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="text-stone-400 text-center p-2">
+                      <ImageIcon className="w-6 h-6 mx-auto mb-1 opacity-50" />
+                      <span className="text-[10px]">No Card Image</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Image Inputs */}
+                <div className="sm:col-span-2 space-y-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                      Card Image URL
+                    </label>
+                    <input
+                      type="url"
+                      value={editingPresentationCollection.imageUrl || editingPresentationCollection.image || ''}
+                      onChange={(e) => setEditingPresentationCollection({
+                        ...editingPresentationCollection,
+                        imageUrl: e.target.value,
+                        image: e.target.value
+                      })}
+                      placeholder="https://..."
+                      className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs font-mono focus:outline-hidden focus:border-stone-900"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                      Upload Card Image File
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                          const dataUrl = event.target?.result as string;
+                          if (dataUrl) {
+                            setEditingPresentationCollection({
+                              ...editingPresentationCollection,
+                              imageUrl: dataUrl,
+                              image: dataUrl
+                            });
+                          }
+                        };
+                        reader.readAsDataURL(file);
+                      }}
+                      className="w-full text-xs text-stone-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-xs file:border-0 file:text-xs file:font-semibold file:bg-stone-900 file:text-white hover:file:bg-stone-800 cursor-pointer"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                      Collection Subtitle / Description
+                    </label>
+                    <input
+                      type="text"
+                      value={editingPresentationCollection.description || ''}
+                      onChange={(e) => setEditingPresentationCollection({
+                        ...editingPresentationCollection,
+                        description: e.target.value
+                      })}
+                      placeholder="e.g. Signature Handcrafted Festive Ensembles"
+                      className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs focus:outline-hidden focus:border-stone-900"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SECTION 2: COLLECTION PAGE BANNER */}
+            <div className="space-y-4 bg-stone-50 p-4 border border-stone-200 rounded-xs">
+              <div className="flex items-center justify-between">
+                <h4 className="font-bold text-stone-900 text-xs flex items-center gap-1.5 uppercase tracking-wider">
+                  <Layers className="w-4 h-4 text-[#aa814d]" />
+                  Collection Page Banner Configuration
+                </h4>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={editingPresentationCollection.bannerEnabled !== false}
+                    onChange={(e) => setEditingPresentationCollection({
+                      ...editingPresentationCollection,
+                      bannerEnabled: e.target.checked
+                    })}
+                    className="w-4 h-4 accent-stone-900 rounded-xs"
+                  />
+                  <span className="text-xs font-bold text-stone-800">Banner Enabled</span>
+                </label>
+              </div>
+
+              {editingPresentationCollection.bannerEnabled !== false && (
+                <div className="space-y-4 pt-2 border-t border-stone-200">
+                  {/* Banner Type Selection */}
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                      Banner Presentation Style
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { id: 'text', label: 'Text Banner' },
+                        { id: 'image', label: 'Image Banner' },
+                        { id: 'image_text', label: 'Image + Text' }
+                      ].map(type => (
+                        <button
+                          key={type.id}
+                          type="button"
+                          onClick={() => setEditingPresentationCollection({
+                            ...editingPresentationCollection,
+                            bannerType: type.id as any
+                          })}
+                          className={`py-2 px-3 text-xs font-bold rounded-xs border transition-colors cursor-pointer text-center ${
+                            (editingPresentationCollection.bannerType || 'image_text') === type.id
+                              ? 'bg-stone-900 text-white border-stone-900'
+                              : 'bg-white text-stone-700 border-stone-300 hover:border-stone-400'
+                          }`}
+                        >
+                          {type.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Image Specifications Guidance */}
+                  {(editingPresentationCollection.bannerType === 'image' || editingPresentationCollection.bannerType === 'image_text' || !editingPresentationCollection.bannerType) && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-white border border-stone-200 rounded-xs text-[11px]">
+                      <div>
+                        <span className="font-bold text-stone-900 block">Recommended Desktop Banner:</span>
+                        <span className="text-stone-600 font-mono">1920 x 600 px (16:5 aspect ratio)</span>
+                      </div>
+                      <div>
+                        <span className="font-bold text-stone-900 block">Recommended Mobile Banner:</span>
+                        <span className="text-stone-600 font-mono">1080 x 1350 px (4:5 aspect ratio)</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Desktop Banner Image */}
+                  {(editingPresentationCollection.bannerType === 'image' || editingPresentationCollection.bannerType === 'image_text' || !editingPresentationCollection.bannerType) && (
+                    <div className="space-y-2">
+                      <label className="block text-[11px] font-bold text-stone-700">
+                        Desktop Banner Image URL
+                      </label>
+                      <input
+                        type="url"
+                        value={editingPresentationCollection.bannerDesktopImage || ''}
+                        onChange={(e) => setEditingPresentationCollection({
+                          ...editingPresentationCollection,
+                          bannerDesktopImage: e.target.value
+                        })}
+                        placeholder="https://.../desktop-banner.webp"
+                        className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs font-mono focus:outline-hidden"
+                      />
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            const dataUrl = event.target?.result as string;
+                            if (dataUrl) {
+                              setEditingPresentationCollection({
+                                ...editingPresentationCollection,
+                                bannerDesktopImage: dataUrl
+                              });
+                            }
+                          };
+                          reader.readAsDataURL(file);
+                        }}
+                        className="w-full text-xs text-stone-600 file:mr-3 file:py-1 file:px-2.5 file:rounded-xs file:border-0 file:text-[11px] file:font-semibold file:bg-stone-200 file:text-stone-800 hover:file:bg-stone-300 cursor-pointer"
+                      />
+                    </div>
+                  )}
+
+                  {/* Mobile Banner Image */}
+                  {(editingPresentationCollection.bannerType === 'image' || editingPresentationCollection.bannerType === 'image_text' || !editingPresentationCollection.bannerType) && (
+                    <div className="space-y-2">
+                      <label className="block text-[11px] font-bold text-stone-700">
+                        Mobile Banner Image URL (Optional)
+                      </label>
+                      <input
+                        type="url"
+                        value={editingPresentationCollection.bannerMobileImage || ''}
+                        onChange={(e) => setEditingPresentationCollection({
+                          ...editingPresentationCollection,
+                          bannerMobileImage: e.target.value
+                        })}
+                        placeholder="https://.../mobile-banner.webp"
+                        className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs font-mono focus:outline-hidden"
+                      />
+                    </div>
+                  )}
+
+                  {/* Banner Heading & Description */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                        Banner Heading
+                      </label>
+                      <input
+                        type="text"
+                        value={editingPresentationCollection.bannerHeading ?? editingPresentationCollection.name}
+                        onChange={(e) => setEditingPresentationCollection({
+                          ...editingPresentationCollection,
+                          bannerHeading: e.target.value
+                        })}
+                        className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs focus:outline-hidden"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                        Text Alignment
+                      </label>
+                      <select
+                        value={editingPresentationCollection.bannerAlignment || 'center'}
+                        onChange={(e) => setEditingPresentationCollection({
+                          ...editingPresentationCollection,
+                          bannerAlignment: e.target.value as any
+                        })}
+                        className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs focus:outline-hidden"
+                      >
+                        <option value="center">Center</option>
+                        <option value="left">Left</option>
+                        <option value="right">Right</option>
+                      </select>
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                        Banner Description
+                      </label>
+                      <textarea
+                        rows={2}
+                        value={editingPresentationCollection.bannerDescription || ''}
+                        onChange={(e) => setEditingPresentationCollection({
+                          ...editingPresentationCollection,
+                          bannerDescription: e.target.value
+                        })}
+                        placeholder="Editorial narrative or seasonal showcase introduction..."
+                        className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs focus:outline-hidden"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* SECTION 3: VIDEO CANVAS SIZES REFERENCE */}
+            <div className="p-3 bg-stone-100 border border-stone-200 rounded-xs space-y-1">
+              <span className="font-bold text-stone-700 text-[11px] uppercase tracking-wider block">
+                Video Canvas Sizes Reference:
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[10px] text-stone-600 font-mono">
+                <div>Landscape: 1920x1080 (16:9)</div>
+                <div>Vertical/Reel: 1080x1920 (9:16)</div>
+                <div>Square: 1080x1080 (1:1)</div>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#eee]">
+              <button
+                type="button"
+                onClick={() => setEditingPresentationCollection(null)}
+                className="px-4 py-2 border border-stone-300 hover:bg-stone-100 rounded-xs text-stone-700 font-semibold cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSavePresentationModal(editingPresentationCollection)}
+                className="px-6 py-2 bg-stone-900 hover:bg-stone-800 text-white font-bold rounded-xs cursor-pointer flex items-center gap-2 shadow-xs"
+              >
+                <Save className="w-4 h-4" />
+                <span>Save Presentation</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -73,6 +73,7 @@ export const StorageService = {
 
     localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(products));
     notifyChange('products');
+    this.syncCollectionsWithProducts();
   },
 
   deleteProduct(id: string, softDelete = true): void {
@@ -178,6 +179,51 @@ export const StorageService = {
       collections.push(col);
     }
     localStorage.setItem(KEYS.COLLECTIONS, JSON.stringify(collections));
+    notifyChange('collections');
+  },
+
+  saveCollections(collections: Collection[]): void {
+    localStorage.setItem(KEYS.COLLECTIONS, JSON.stringify(collections));
+    notifyChange('collections');
+  },
+
+  syncCollectionsWithProducts(): void {
+    const products = this.getProducts(false);
+    const collections = this.getCollections();
+    const updated = collections.map(col => {
+      let count = 0;
+      let pIds: string[] = [];
+      if (col.slug === 'all') {
+        count = products.length;
+        pIds = products.map(p => p.id);
+      } else if (col.slug === 'new-arrivals') {
+        const matches = products.filter(p => p.isNewArrival || p.collectionNames?.includes('NEW ARRIVALS') || p.collection === 'NEW ARRIVALS');
+        count = matches.length;
+        pIds = matches.map(p => p.id);
+      } else if (col.slug === 'best-selling') {
+        const matches = products.filter(p => p.isBestSeller || p.collectionNames?.includes('BEST SELLING') || p.collectionNames?.includes('TRENDING') || p.collection === 'BEST SELLING');
+        count = matches.length;
+        pIds = matches.map(p => p.id);
+      } else if (col.slug === 'winter-collection') {
+        const matches = products.filter(p => p.collectionNames?.includes('WINTER COLLECTION') || p.fabric?.toLowerCase().includes('winter') || p.fabric?.toLowerCase().includes('velvet'));
+        count = matches.length;
+        pIds = matches.map(p => p.id);
+      } else if (col.slug === 'co-ords') {
+        const matches = products.filter(p => p.collectionNames?.includes('CO-ORDS') || p.title?.toLowerCase().includes('co-ord') || p.title?.toLowerCase().includes('coord'));
+        count = matches.length;
+        pIds = matches.map(p => p.id);
+      } else if (col.slug === 'short-length-article') {
+        const matches = products.filter(p => p.collectionNames?.includes('SHORT LENGTH') || p.title?.toLowerCase().includes('short'));
+        count = matches.length;
+        pIds = matches.map(p => p.id);
+      }
+      return {
+        ...col,
+        productCount: count,
+        productIds: pIds
+      };
+    });
+    localStorage.setItem(KEYS.COLLECTIONS, JSON.stringify(updated));
     notifyChange('collections');
   },
 

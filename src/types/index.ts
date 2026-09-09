@@ -131,7 +131,22 @@ export interface Collection {
   productSlugs?: string[];
   productSourceIds?: (string | number)[];
   isVisible: boolean;
+  visibleInNav?: boolean;
+  visibleOnHomepage?: boolean;
   order: number;
+  bannerEnabled?: boolean;
+  bannerType?: 'text' | 'image' | 'image_text';
+  bannerTitle?: string;
+  bannerSubtitle?: string;
+  bannerDesktopImage?: string;
+  bannerMobileImage?: string;
+  bannerBgColor?: string;
+  bannerTextColor?: string;
+  bannerAlignment?: 'left' | 'center' | 'right';
+  bannerOverlayStrength?: number;
+  bannerCtaText?: string;
+  bannerCtaLink?: string;
+  altText?: string;
 }
 
 export interface CartItem {
