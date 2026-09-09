@@ -197,6 +197,23 @@ export const StorageService = {
     }
   },
 
+  async fetchOrdersAsync(): Promise<Order[]> {
+    try {
+      const res = await fetch('/api/orders');
+      if (res.ok) {
+        const serverOrders = await res.json();
+        if (Array.isArray(serverOrders) && serverOrders.length > 0) {
+          localStorage.setItem(KEYS.ORDERS, JSON.stringify(serverOrders));
+          notifyChange('orders');
+          return serverOrders;
+        }
+      }
+    } catch (err) {
+      console.warn('Could not fetch server orders, using cached:', err);
+    }
+    return this.getOrders();
+  },
+
   getOrderByNumber(orderNumber: string): Order | undefined {
     const orders = this.getOrders();
     return orders.find(o => o.orderNumber.toUpperCase() === orderNumber.trim().toUpperCase());
@@ -218,6 +235,13 @@ export const StorageService = {
     }
     localStorage.setItem(KEYS.ORDERS, JSON.stringify(orders));
     notifyChange('orders');
+
+    // Sync with server persistent storage
+    fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(order)
+    }).catch(err => console.error('Failed to sync order with server:', err));
   },
 
   updateOrderStatus(orderId: string, status: OrderStatus): void {
@@ -228,6 +252,13 @@ export const StorageService = {
       orders[idx].updatedAt = new Date().toISOString();
       localStorage.setItem(KEYS.ORDERS, JSON.stringify(orders));
       notifyChange('orders');
+
+      // Sync with server
+      fetch(`/api/orders/${orderId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      }).catch(err => console.error('Failed to sync order status with server:', err));
     }
   },
 
@@ -235,16 +266,25 @@ export const StorageService = {
     const orders = this.getOrders();
     const idx = orders.findIndex(o => o.id === orderId);
     if (idx >= 0) {
+      // Verified payment moves to Ready to Dispatch (NOT Dispatched or Shipped!)
       orders[idx].status = 'Ready to Dispatch';
       orders[idx].paymentStatus = 'Paid';
       orders[idx].paymentProof = {
         ...(orders[idx].paymentProof || {}),
         verifiedAt: new Date().toISOString(),
-        verifiedBy
+        verifiedBy,
+        rejectionReason: undefined
       };
       orders[idx].updatedAt = new Date().toISOString();
       localStorage.setItem(KEYS.ORDERS, JSON.stringify(orders));
       notifyChange('orders');
+
+      // Sync with server
+      fetch(`/api/orders/${orderId}/verify`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ verifiedBy })
+      }).catch(err => console.error('Failed to sync verify payment with server:', err));
     }
   },
 
@@ -252,15 +292,24 @@ export const StorageService = {
     const orders = this.getOrders();
     const idx = orders.findIndex(o => o.id === orderId);
     if (idx >= 0) {
-      orders[idx].status = 'Cancelled';
+      // ORDER MUST NOT BE CANCELLED! (Req 1)
+      // Order status remains active with 'Payment Action Required'
+      orders[idx].status = 'Payment Action Required';
       orders[idx].paymentStatus = 'Rejected';
       orders[idx].paymentProof = {
         ...(orders[idx].paymentProof || {}),
-        rejectionReason: reason
+        rejectionReason: reason || 'Payment proof could not be verified'
       };
       orders[idx].updatedAt = new Date().toISOString();
       localStorage.setItem(KEYS.ORDERS, JSON.stringify(orders));
       notifyChange('orders');
+
+      // Sync with server
+      fetch(`/api/orders/${orderId}/reject`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason })
+      }).catch(err => console.error('Failed to sync reject payment with server:', err));
     }
   },
 
@@ -271,16 +320,61 @@ export const StorageService = {
       orders[idx].paymentProof = {
         ...(orders[idx].paymentProof || {}),
         ...proof,
-        submittedAt: proof.submittedAt || new Date().toISOString()
+        submittedAt: proof.submittedAt || new Date().toISOString(),
+        rejectionReason: undefined // Clear rejection reason on new submission
       };
+      // Returns to Under Verification and Payment Verification Pending
       orders[idx].paymentStatus = 'Under Verification';
-      if (orders[idx].status === 'Pending') {
-        orders[idx].status = 'Payment Verification Pending';
-      }
+      orders[idx].status = 'Payment Verification Pending';
       orders[idx].updatedAt = new Date().toISOString();
       localStorage.setItem(KEYS.ORDERS, JSON.stringify(orders));
       notifyChange('orders');
+
+      // Sync with server
+      fetch(`/api/orders/${orderId}/proof`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(proof)
+      }).catch(err => console.error('Failed to sync payment proof with server:', err));
     }
+  },
+
+  // Upload payment proof screenshot to server persistent storage (Req 3, 4)
+  async uploadPaymentProof(fileOrDataUrl: string | File): Promise<string> {
+    try {
+      let dataUrl: string;
+      if (typeof fileOrDataUrl !== 'string') {
+        dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(fileOrDataUrl);
+        });
+      } else {
+        dataUrl = fileOrDataUrl;
+      }
+
+      // If already a server URL, return as-is
+      if (dataUrl.startsWith('/api/payment-proof/')) {
+        return dataUrl;
+      }
+
+      const res = await fetch('/api/payment-proof/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: dataUrl })
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        if (json.url) {
+          return json.url;
+        }
+      }
+    } catch (err) {
+      console.error('Error uploading payment proof to server:', err);
+    }
+    return typeof fileOrDataUrl === 'string' ? fileOrDataUrl : '';
   },
 
   // REVIEWS
@@ -407,6 +501,23 @@ export const StorageService = {
     }
   },
 
+  async fetchSettingsAsync(): Promise<SiteSettings> {
+    try {
+      const res = await fetch('/api/settings');
+      if (res.ok) {
+        const serverSettings = await res.json();
+        if (serverSettings && serverSettings.payments) {
+          localStorage.setItem(KEYS.SETTINGS, JSON.stringify(serverSettings));
+          notifyChange('settings');
+          return serverSettings;
+        }
+      }
+    } catch (err) {
+      console.warn('Could not fetch server settings, using cached:', err);
+    }
+    return this.getSettings();
+  },
+
   saveSettings(settings: SiteSettings): void {
     if (settings.payments && settings.shipping) {
       settings.shipping.codEnabled = settings.payments.cod.enabled;
@@ -414,6 +525,13 @@ export const StorageService = {
     }
     localStorage.setItem(KEYS.SETTINGS, JSON.stringify(settings));
     notifyChange('settings');
+
+    // Sync with server persistent storage (Req 5, 14)
+    fetch('/api/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(settings)
+    }).catch(err => console.error('Failed to sync settings with server:', err));
   },
 
   // CART
@@ -551,3 +669,27 @@ export const StorageService = {
     }
   }
 };
+
+// Automatic background hydration from server to synchronize store-wide settings and orders
+if (typeof window !== 'undefined') {
+  fetch('/api/settings')
+    .then(r => r.ok ? r.json() : null)
+    .then(s => {
+      if (s && s.payments) {
+        localStorage.setItem(KEYS.SETTINGS, JSON.stringify(s));
+        notifyChange('settings');
+      }
+    })
+    .catch(() => {});
+
+  fetch('/api/orders')
+    .then(r => r.ok ? r.json() : null)
+    .then(o => {
+      if (Array.isArray(o) && o.length > 0) {
+        localStorage.setItem(KEYS.ORDERS, JSON.stringify(o));
+        notifyChange('orders');
+      }
+    })
+    .catch(() => {});
+}
+

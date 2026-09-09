@@ -826,12 +826,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                               className={`p-1 text-[11px] font-semibold rounded-xs border ${
                                 o.status === 'Payment Verification Pending'
                                   ? 'bg-amber-50 border-amber-300 text-amber-950 font-bold'
+                                  : o.status === 'Payment Action Required'
+                                  ? 'bg-rose-50 border-rose-300 text-rose-950 font-bold'
                                   : o.status === 'Ready to Dispatch'
                                   ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-bold'
                                   : 'bg-[#faf8f5] border-[#ddd] text-stone-800'
                               }`}
                             >
                               <option value="Payment Verification Pending">Payment Verification Pending</option>
+                              <option value="Payment Action Required">Payment Action Required</option>
                               <option value="Ready to Dispatch">Ready to Dispatch</option>
                               <option value="Pending">Pending</option>
                               <option value="Confirmed">Confirmed</option>
@@ -840,6 +843,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                               <option value="Delivered">Delivered</option>
                               <option value="Cancelled">Cancelled</option>
                             </select>
+
+                            {o.status === 'Payment Action Required' && (
+                              <div className="flex items-center gap-1 text-[10px] text-rose-700 font-bold">
+                                <AlertTriangle className="w-3 h-3" />
+                                <span>Action Required (Awaiting Customer)</span>
+                              </div>
+                            )}
 
                             {o.status === 'Payment Verification Pending' && (
                               <div className="flex items-center gap-1.5 flex-wrap">
@@ -2795,7 +2805,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                       ? 'bg-rose-100 text-rose-900 border border-rose-300'
                       : 'bg-stone-100 text-stone-700 border border-stone-300'
                   }`}>
-                    {selectedOrder.paymentStatus || 'Unpaid'}
+                    {selectedOrder.paymentStatus === 'Rejected' ? 'Rejected / Action Required' : (selectedOrder.paymentStatus || 'Unpaid')}
                   </span>
 
                   <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-xs ${
@@ -2803,6 +2813,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                       ? 'bg-emerald-600 text-white'
                       : selectedOrder.status === 'Payment Verification Pending'
                       ? 'bg-amber-600 text-white'
+                      : selectedOrder.status === 'Payment Action Required'
+                      ? 'bg-rose-700 text-white'
                       : 'bg-stone-800 text-white'
                   }`}>
                     {selectedOrder.status}
@@ -2906,11 +2918,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
 
                 {selectedOrder.paymentProof?.rejectionReason && (
                   <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-xs text-rose-900 text-xs flex items-center gap-2">
-                    <XCircle className="w-4 h-4 text-rose-700 shrink-0" />
+                    <AlertTriangle className="w-4 h-4 text-rose-700 shrink-0" />
                     <div>
-                      <p className="font-bold">Payment Rejected</p>
+                      <p className="font-bold">Payment Action Required / Proof Rejected (Order Remains Active)</p>
                       <p className="text-[10px] text-rose-700">
                         Reason: {selectedOrder.paymentProof.rejectionReason}
+                      </p>
+                      <p className="text-[10px] text-stone-600 mt-0.5">
+                        Customer can upload a replacement screenshot or updated TID via Order Tracking.
                       </p>
                     </div>
                   </div>
@@ -2919,7 +2934,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
 
               {/* ACTION BUTTONS: VERIFY / REJECT (Req 11, 12, 13) */}
               <div className="pt-2 border-t border-stone-200 flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   {selectedOrder.paymentStatus !== 'Paid' && (
                     <button
                       type="button"
@@ -2931,13 +2946,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                     </button>
                   )}
 
-                  {selectedOrder.paymentStatus !== 'Rejected' && selectedOrder.status !== 'Cancelled' && (
+                  {selectedOrder.status !== 'Cancelled' && (
                     <button
                       type="button"
                       onClick={() => setRejectionReasonModal({ orderId: selectedOrder.id, reason: '' })}
                       className="px-3 py-1.5 bg-white border border-rose-300 hover:bg-rose-50 text-rose-700 font-bold text-xs uppercase tracking-wider rounded-xs transition-colors cursor-pointer"
                     >
                       Reject Payment
+                    </button>
+                  )}
+
+                  {selectedOrder.status !== 'Cancelled' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (confirm(`Are you sure you want to cancel Order #${selectedOrder.orderNumber}?`)) {
+                          handleUpdateOrderStatus(selectedOrder.id, 'Cancelled');
+                        }
+                      }}
+                      className="px-3 py-1.5 bg-stone-100 hover:bg-rose-100 text-rose-800 border border-stone-300 font-bold text-xs uppercase tracking-wider rounded-xs transition-colors cursor-pointer"
+                    >
+                      Cancel Order
                     </button>
                   )}
                 </div>
@@ -2963,9 +2992,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
               <select
                 value={selectedOrder.status}
                 onChange={(e) => handleUpdateOrderStatus(selectedOrder.id, e.target.value as OrderStatus)}
-                className="border border-[#ddd] p-1.5 font-bold rounded"
+                className="border border-[#ddd] p-1.5 font-bold rounded text-xs"
               >
                 <option value="Payment Verification Pending">Payment Verification Pending</option>
+                <option value="Payment Action Required">Payment Action Required</option>
                 <option value="Ready to Dispatch">Ready to Dispatch</option>
                 <option value="Pending">Pending</option>
                 <option value="Confirmed">Confirmed</option>
@@ -3003,7 +3033,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
             </div>
 
             <p className="text-stone-600">
-              Please provide a reason for rejecting this payment proof. The order will be marked as Cancelled with Payment Rejected.
+              Please provide a reason for rejecting this payment proof. The order will remain active with status &ldquo;Payment Action Required&rdquo;, allowing the customer to submit a new receipt or update their Transaction ID.
             </p>
 
             <div>

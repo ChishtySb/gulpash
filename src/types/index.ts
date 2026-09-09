@@ -145,6 +145,7 @@ export interface CartItem {
 
 export type OrderStatus = 
   | 'Payment Verification Pending'
+  | 'Payment Action Required'
   | 'Ready to Dispatch'
   | 'Pending'
   | 'Confirmed'

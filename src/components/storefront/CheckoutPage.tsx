@@ -219,24 +219,39 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
     }
   };
 
-  const handleSavePostProof = (e: React.FormEvent) => {
+  const handleSavePostProof = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!placedOrder) return;
-    const proof = {
-      screenshotUrl: postReceiptImg || placedOrder.paymentProof?.screenshotUrl,
-      transactionReference: postTrxRef.trim() || placedOrder.paymentProof?.transactionReference,
-      submittedAt: new Date().toISOString()
-    };
-    StorageService.attachOrderPaymentProof(placedOrder.id, proof);
-    setPlacedOrder({
-      ...placedOrder,
-      paymentProof: proof,
-      paymentStatus: 'Under Verification',
-      status: 'Payment Verification Pending',
-      updatedAt: new Date().toISOString()
-    });
-    setPostUploadSuccess(true);
-    setTimeout(() => setPostUploadSuccess(false), 4000);
+    setPostUploading(true);
+
+    try {
+      let finalScreenshotUrl = postReceiptImg || placedOrder.paymentProof?.screenshotUrl;
+      if (postReceiptImg && postReceiptImg.startsWith('data:')) {
+        try {
+          finalScreenshotUrl = await StorageService.uploadPaymentProof(postReceiptImg);
+        } catch (err) {
+          console.error('Failed uploading proof to server:', err);
+        }
+      }
+
+      const proof = {
+        screenshotUrl: finalScreenshotUrl,
+        transactionReference: postTrxRef.trim() || placedOrder.paymentProof?.transactionReference,
+        submittedAt: new Date().toISOString()
+      };
+      StorageService.attachOrderPaymentProof(placedOrder.id, proof);
+      setPlacedOrder({
+        ...placedOrder,
+        paymentProof: proof,
+        paymentStatus: 'Under Verification',
+        status: 'Payment Verification Pending',
+        updatedAt: new Date().toISOString()
+      });
+      setPostUploadSuccess(true);
+      setTimeout(() => setPostUploadSuccess(false), 4000);
+    } finally {
+      setPostUploading(false);
+    }
   };
 
   // Calculations
@@ -263,7 +278,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
     }
   };
 
-  const handlePlaceOrder = (e: React.FormEvent) => {
+  const handlePlaceOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
 
@@ -278,6 +293,15 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
     // COD orders start at 'Pending'
     const status = isAdvancePayment ? 'Payment Verification Pending' : 'Pending';
     const paymentStatus = isAdvancePayment ? 'Under Verification' : 'Unpaid';
+
+    let finalScreenshotUrl = receiptImage || undefined;
+    if (finalScreenshotUrl && finalScreenshotUrl.startsWith('data:')) {
+      try {
+        finalScreenshotUrl = await StorageService.uploadPaymentProof(finalScreenshotUrl);
+      } catch (err) {
+        console.error('Failed uploading proof to server in checkout:', err);
+      }
+    }
 
     const newOrder: Order = {
       id: `ord-${Date.now()}`,
@@ -311,7 +335,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
       paymentStatus,
       status,
       paymentProof: isAdvancePayment ? {
-        screenshotUrl: receiptImage || undefined,
+        screenshotUrl: finalScreenshotUrl,
         transactionReference: transactionReference.trim() || undefined,
         submittedAt: new Date().toISOString()
       } : undefined,
@@ -365,17 +389,25 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
           <div>
             <span className={`text-[11px] uppercase font-bold tracking-[0.25em] px-3 py-1 rounded-xs inline-block ${
-              isPlacedAdvance 
+              placedOrder.status === 'Payment Action Required' || placedOrder.paymentStatus === 'Rejected'
+                ? 'bg-rose-100 text-rose-900 border border-rose-300'
+                : isPlacedAdvance 
                 ? 'bg-amber-100 text-amber-900 border border-amber-300' 
                 : 'bg-stone-100 text-stone-700'
             }`}>
-              {isPlacedAdvance ? 'PAYMENT VERIFICATION PENDING' : 'ORDER CONFIRMED'}
+              {placedOrder.status === 'Payment Action Required' || placedOrder.paymentStatus === 'Rejected'
+                ? 'PAYMENT ACTION REQUIRED'
+                : isPlacedAdvance ? 'PAYMENT VERIFICATION PENDING' : 'ORDER CONFIRMED'}
             </span>
             <h1 className="font-serif text-3xl sm:text-4xl font-light italic text-[#1A1A1A] mt-3">
               Shukriya, {placedOrder.customer.fullName}
             </h1>
             <p className="text-xs text-stone-600 mt-2 max-w-lg mx-auto font-light leading-relaxed">
-              {isPlacedAdvance ? (
+              {placedOrder.status === 'Payment Action Required' || placedOrder.paymentStatus === 'Rejected' ? (
+                <>
+                  Your order <strong>#{placedOrder.orderNumber}</strong> remains active. However, our accounts team noted: <em>&ldquo;{placedOrder.paymentProof?.rejectionReason || 'Transfer could not be verified'}&rdquo;</em>. Please provide an updated Transaction ID or replacement receipt below.
+                </>
+              ) : isPlacedAdvance ? (
                 <>
                   Your order <strong>#{placedOrder.orderNumber}</strong> is reserved. Our concierge and accounts team will verify your transfer and mark the parcel <strong>Ready to Dispatch</strong>.
                 </>
