@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Sparkles, ArrowRight, Star, CheckCircle, 
   Instagram, Heart, Shield, Award, Scissors, Truck,
@@ -22,6 +22,96 @@ interface HomeSectionsProps {
   onNavigate: (view: string, param?: string) => void;
 }
 
+// Resilient collection card component for homepage with image error handling and fallbacks
+const CuratedCollectionCard: React.FC<{
+  col: { id: string; slug: string; name: string; count: number; image?: string; bannerUrl?: string };
+  initialImg: string;
+  fallbackImg: string;
+  onNavigate: (view: string, param?: string) => void;
+}> = ({ col, initialImg, fallbackImg, onNavigate }) => {
+  const [currentSrc, setCurrentSrc] = useState<string>(initialImg);
+  const [hasError, setHasError] = useState<boolean>(!initialImg);
+  const [isLoaded, setIsLoaded] = useState<boolean>(false);
+
+  useEffect(() => {
+    setCurrentSrc(initialImg || fallbackImg);
+    setHasError(!initialImg && !fallbackImg);
+    setIsLoaded(false);
+  }, [initialImg, fallbackImg]);
+
+  const handleError = () => {
+    if (fallbackImg && currentSrc !== fallbackImg) {
+      setCurrentSrc(fallbackImg);
+    } else {
+      setHasError(true);
+    }
+  };
+
+  return (
+    <div
+      onClick={() => onNavigate('collection', col.slug)}
+      className="group cursor-pointer flex flex-col items-center text-center space-y-2.5 sm:space-y-3 w-full"
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onNavigate('collection', col.slug);
+        }
+      }}
+    >
+      <div className="relative w-full aspect-[4/5] overflow-hidden border border-stone-200 group-hover:border-stone-500 bg-[#FAF9F6] transition-all duration-300">
+        {!hasError && currentSrc ? (
+          <>
+            <img
+              src={currentSrc}
+              alt={col.name}
+              referrerPolicy="no-referrer"
+              loading="lazy"
+              onLoad={() => setIsLoaded(true)}
+              onError={handleError}
+              className={`w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105 ${
+                isLoaded ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+            {!isLoaded && (
+              <div className="absolute inset-0 bg-stone-100 animate-pulse flex items-center justify-center">
+                <span className="text-[10px] uppercase tracking-widest text-stone-400 font-medium">
+                  GulPash
+                </span>
+              </div>
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent opacity-80 group-hover:opacity-65 transition-opacity duration-300 pointer-events-none" />
+          </>
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-[#F5F3EF] border border-stone-200 text-center">
+            <Sparkles className="w-5 h-5 text-stone-400 mb-2" />
+            <span className="text-[9px] uppercase tracking-[0.25em] text-stone-500 font-medium">
+              GulPash Atelier
+            </span>
+          </div>
+        )}
+
+        <div className="absolute bottom-2.5 sm:bottom-3.5 inset-x-2 sm:inset-x-3 text-center pointer-events-none z-10">
+          <span className="text-white text-[11px] sm:text-xs font-medium uppercase tracking-widest drop-shadow-md line-clamp-1 block">
+            {col.name}
+          </span>
+          {col.count ? (
+            <span className="text-stone-300 text-[9px] uppercase tracking-wider block mt-0.5 opacity-90">
+              {col.count} Ensembles
+            </span>
+          ) : null}
+        </div>
+      </div>
+
+      <span className="text-[10px] uppercase tracking-[0.2em] font-medium text-stone-500 group-hover:text-black transition-colors flex items-center gap-1 border-b border-transparent group-hover:border-stone-400 pb-0.5">
+        <span>View Collection</span>
+        <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+      </span>
+    </div>
+  );
+};
+
 export const HomeSections: React.FC<HomeSectionsProps> = ({
   products,
   categories,
@@ -39,33 +129,51 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSuccess, setNewsletterSuccess] = useState(false);
 
-  // 5 Signature Curated Collections for Homepage Row
+  // Dynamic Curated Collections for Homepage Row from dynamic collections prop
   const curatedCollections = useMemo(() => {
-    const desiredOrder = [
-      { slug: 'new-arrivals', label: 'NEW ARRIVALS' },
-      { slug: 'best-selling', label: 'TRENDING' },
-      { slug: 'winter-collection', label: 'WINTER COLLECTION' },
-      { slug: 'co-ords', label: 'CO-ORDS' },
-      { slug: 'short-length-article', label: 'SHORT LENGTH' },
-    ];
-    return desiredOrder.map(item => {
-      const found = collections.find(c => c.slug === item.slug);
+    // Curated storefront collections (excluding 'all', respecting visibility and ordering)
+    const active = collections
+      .filter(c => c.slug !== 'all' && c.visibleOnHomepage !== false)
+      .sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+
+    const list = active.length > 0 ? active : collections.filter(c => c.slug !== 'all');
+
+    return list.map(item => {
+      // Recalculate dynamic count from catalog products
+      const count = products.filter(p => {
+        if (p.collectionIds?.includes(item.id)) return true;
+        if (p.collectionNames?.includes(item.name)) return true;
+        if (p.collection === item.name) return true;
+        if (p.collectionSlug === item.slug) return true;
+        if (item.slug === 'new-arrivals') return p.isNewArrival || p.tags?.includes('new-arrivals');
+        if (item.slug === 'best-selling') return p.isBestSeller || p.collectionNames?.includes('TRENDING') || p.tags?.includes('best-selling');
+        if (item.slug === 'winter-collection') return p.fabric?.toLowerCase().includes('winter') || p.fabric?.toLowerCase().includes('velvet') || p.tags?.includes('winter-collection');
+        if (item.slug === 'co-ords') return p.title?.toLowerCase().includes('co-ord') || p.title?.toLowerCase().includes('coord') || p.tags?.includes('co-ords');
+        if (item.slug === 'short-length-article') return p.title?.toLowerCase().includes('short') || p.tags?.includes('short-length-article');
+        return false;
+      }).length;
+
       return {
+        id: item.id,
         slug: item.slug,
-        name: found?.name || item.label,
-        count: found?.productCount || (found?.productIds?.length ?? 0),
-        id: found?.id || item.slug,
-        image: found?.image
+        name: item.name,
+        count: count || item.productCount || 0,
+        image: item.image || item.imageUrl,
+        bannerUrl: item.bannerUrl
       };
     });
-  }, [collections]);
+  }, [collections, products]);
 
-  // Helper to retrieve authentic product cover for a collection
+  // Verified authentic product cover fallback for a collection
   const getCollectionCover = (colSlug: string) => {
+    // 1. Direct collection image
     const foundCol = collections.find(c => c.slug === colSlug);
     if (foundCol?.image && !foundCol.image.includes('1/0740/5784/2939')) return foundCol.image;
+    if (foundCol?.imageUrl && !foundCol.imageUrl.includes('1/0740/5784/2939')) return foundCol.imageUrl;
+
+    // 2. Specific matching product
     const match = products.find(p => {
-      if (colSlug === 'best-selling') return p.isBestSeller || p.collectionNames?.includes('BEST SELLING') || p.collection === 'BEST SELLING';
+      if (colSlug === 'best-selling') return p.isBestSeller || p.collectionNames?.includes('BEST SELLING') || p.collectionNames?.includes('TRENDING') || p.collection === 'BEST SELLING';
       if (colSlug === 'new-arrivals') return p.isNewArrival || p.collectionNames?.includes('NEW ARRIVALS') || p.collection === 'NEW ARRIVALS';
       if (colSlug === 'winter-collection') return p.collectionNames?.includes('WINTER COLLECTION') || p.fabric?.toLowerCase().includes('winter') || p.fabric?.toLowerCase().includes('velvet');
       if (colSlug === 'co-ords') return p.collectionNames?.includes('CO-ORDS') || p.title?.toLowerCase().includes('co-ord') || p.title?.toLowerCase().includes('coord');
@@ -185,58 +293,16 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-6">
             {curatedCollections.map((col) => {
-              const coverImg = getCollectionCover(col.slug);
+              const coverImg = col.image || getCollectionCover(col.slug);
+              const fallback = products[0]?.images?.[0] || '';
               return (
-                <div
+                <CuratedCollectionCard
                   key={col.slug}
-                  onClick={() => onNavigate('collection', col.slug)}
-                  className="group cursor-pointer flex flex-col items-center text-center space-y-2.5 sm:space-y-3 w-full"
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      onNavigate('collection', col.slug);
-                    }
-                  }}
-                >
-                  <div className="relative w-full aspect-[4/5] overflow-hidden border border-stone-200 group-hover:border-stone-500 bg-[#FAF9F6] transition-all duration-300">
-                    {coverImg ? (
-                      <>
-                        <img
-                          src={coverImg}
-                          alt={col.name}
-                          loading="lazy"
-                          className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent opacity-80 group-hover:opacity-65 transition-opacity duration-300 pointer-events-none" />
-                      </>
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center p-4 bg-[#F5F3EF] border border-stone-200 text-center">
-                        <Sparkles className="w-5 h-5 text-stone-400 mb-2" />
-                        <span className="text-[9px] uppercase tracking-[0.25em] text-stone-500 font-medium">
-                          GulPash Atelier
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="absolute bottom-2.5 sm:bottom-3.5 inset-x-2 sm:inset-x-3 text-center pointer-events-none z-10">
-                      <span className="text-white text-[11px] sm:text-xs font-medium uppercase tracking-widest drop-shadow-md line-clamp-1 block">
-                        {col.name}
-                      </span>
-                      {col.count ? (
-                        <span className="text-stone-300 text-[9px] uppercase tracking-wider block mt-0.5 opacity-90">
-                          {col.count} Ensembles
-                        </span>
-                      ) : null}
-                    </div>
-                  </div>
-
-                  <span className="text-[10px] uppercase tracking-[0.2em] font-medium text-stone-500 group-hover:text-black transition-colors flex items-center gap-1 border-b border-transparent group-hover:border-stone-400 pb-0.5">
-                    <span>View Collection</span>
-                    <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </div>
+                  col={col}
+                  initialImg={coverImg}
+                  fallbackImg={fallback}
+                  onNavigate={onNavigate}
+                />
               );
             })}
           </div>

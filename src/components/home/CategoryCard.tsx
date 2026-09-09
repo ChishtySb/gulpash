@@ -63,6 +63,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
             <img
               src={currentSrc}
               alt={category.name}
+              referrerPolicy="no-referrer"
               loading="lazy"
               onLoad={() => setIsLoaded(true)}
               onError={handleImageError}

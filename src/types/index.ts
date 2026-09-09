@@ -65,6 +65,7 @@ export interface Product {
   category: string; // e.g. "Unstitched / Stitched", "Stitched", etc.
   categoryId?: string;
   collection?: string;
+  collectionSlug?: string;
   collectionIds?: string[];
   collectionNames?: string[];
   price: number; // in PKR

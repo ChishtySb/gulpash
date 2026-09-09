@@ -10,7 +10,7 @@ import {
 const KEYS = {
   PRODUCTS: 'gulpash_products_v3_ref_aligned',
   CATEGORIES: 'gulpash_categories_v2_migrated',
-  COLLECTIONS: 'gulpash_collections_v3_ref_aligned',
+  COLLECTIONS: 'gulpash_collections_v4_merchandised',
   ORDERS: 'gulpash_orders_v2_migrated',
   REVIEWS: 'gulpash_reviews_v2_migrated',
   CMS: 'gulpash_cms_v2_migrated',
@@ -197,23 +197,57 @@ export const StorageService = {
         count = products.length;
         pIds = products.map(p => p.id);
       } else if (col.slug === 'new-arrivals') {
-        const matches = products.filter(p => p.isNewArrival || p.collectionNames?.includes('NEW ARRIVALS') || p.collection === 'NEW ARRIVALS');
+        const matches = products.filter(p => 
+          p.isNewArrival || 
+          p.collectionNames?.includes('NEW ARRIVALS') || 
+          p.collection === 'NEW ARRIVALS' ||
+          p.collectionIds?.includes(col.id) ||
+          p.tags?.includes('new-arrivals')
+        );
         count = matches.length;
         pIds = matches.map(p => p.id);
       } else if (col.slug === 'best-selling') {
-        const matches = products.filter(p => p.isBestSeller || p.collectionNames?.includes('BEST SELLING') || p.collectionNames?.includes('TRENDING') || p.collection === 'BEST SELLING');
+        const matches = products.filter(p => 
+          p.isBestSeller || 
+          p.collectionNames?.includes('BEST SELLING') || 
+          p.collectionNames?.includes('TRENDING') || 
+          p.collection === 'BEST SELLING' ||
+          p.collection === 'TRENDING' ||
+          p.collectionIds?.includes(col.id) ||
+          p.tags?.includes('best-selling')
+        );
         count = matches.length;
         pIds = matches.map(p => p.id);
       } else if (col.slug === 'winter-collection') {
-        const matches = products.filter(p => p.collectionNames?.includes('WINTER COLLECTION') || p.fabric?.toLowerCase().includes('winter') || p.fabric?.toLowerCase().includes('velvet'));
+        const matches = products.filter(p => 
+          p.collectionNames?.includes('WINTER COLLECTION') || 
+          p.collection === 'WINTER COLLECTION' ||
+          p.collectionIds?.includes(col.id) ||
+          p.tags?.includes('winter-collection') ||
+          p.fabric?.toLowerCase().includes('winter') || 
+          p.fabric?.toLowerCase().includes('velvet')
+        );
         count = matches.length;
         pIds = matches.map(p => p.id);
       } else if (col.slug === 'co-ords') {
-        const matches = products.filter(p => p.collectionNames?.includes('CO-ORDS') || p.title?.toLowerCase().includes('co-ord') || p.title?.toLowerCase().includes('coord'));
+        const matches = products.filter(p => 
+          p.collectionNames?.includes('CO-ORDS') || 
+          p.collection === 'CO-ORDS' ||
+          p.collectionIds?.includes(col.id) ||
+          p.tags?.includes('co-ords') ||
+          p.title?.toLowerCase().includes('co-ord') || 
+          p.title?.toLowerCase().includes('coord')
+        );
         count = matches.length;
         pIds = matches.map(p => p.id);
       } else if (col.slug === 'short-length-article') {
-        const matches = products.filter(p => p.collectionNames?.includes('SHORT LENGTH') || p.title?.toLowerCase().includes('short'));
+        const matches = products.filter(p => 
+          p.collectionNames?.includes('SHORT LENGTH') || 
+          p.collection === 'SHORT LENGTH' ||
+          p.collectionIds?.includes(col.id) ||
+          p.tags?.includes('short-length-article') ||
+          p.title?.toLowerCase().includes('short')
+        );
         count = matches.length;
         pIds = matches.map(p => p.id);
       }

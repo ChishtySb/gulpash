@@ -77,38 +77,75 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
     if (!p) return [];
     const slugs: string[] = [];
     const names = p.collectionNames || [];
-    if (names.includes('NEW ARRIVALS') || p.isNewArrival || p.collection === 'NEW ARRIVALS' || p.tags?.includes('new-arrivals')) slugs.push('new-arrivals');
-    if (names.includes('BEST SELLING') || names.includes('TRENDING') || p.isBestSeller || p.collection === 'BEST SELLING' || p.tags?.includes('best-selling')) slugs.push('best-selling');
-    if (names.includes('WINTER COLLECTION') || p.fabric?.toLowerCase().includes('winter') || p.fabric?.toLowerCase().includes('velvet') || p.tags?.includes('winter-collection')) slugs.push('winter-collection');
-    if (names.includes('CO-ORDS') || p.title?.toLowerCase().includes('co-ord') || p.title?.toLowerCase().includes('coord') || p.tags?.includes('co-ords')) slugs.push('co-ords');
-    if (names.includes('SHORT LENGTH') || p.title?.toLowerCase().includes('short') || p.tags?.includes('short-length-article')) slugs.push('short-length-article');
-    return slugs;
-  };
+    const ids = p.collectionIds || [];
+    const tags = p.tags || [];
 
-  const handleToggleProductCollectionMembership = (colSlug: string) => {
-    if (!editingProduct) return;
-    const current = getProductCollectionSlugs(editingProduct);
-    const exists = current.includes(colSlug);
-    const updatedSlugs = exists ? current.filter(s => s !== colSlug) : [...current, colSlug];
-    
-    const slugToNameMap: Record<string, string> = {
-      'new-arrivals': 'NEW ARRIVALS',
-      'best-selling': 'TRENDING',
-      'winter-collection': 'WINTER COLLECTION',
-      'co-ords': 'CO-ORDS',
-      'short-length-article': 'SHORT LENGTH'
-    };
-    const updatedNames = updatedSlugs.map(s => slugToNameMap[s] || s);
+    // NEW ARRIVALS
+    if (
+      names.includes('NEW ARRIVALS') || 
+      ids.includes('4ab60e51-dddb-433c-880c-d30909bcbcb3') || 
+      p.isNewArrival || 
+      p.collection === 'NEW ARRIVALS' || 
+      p.collectionSlug === 'new-arrivals' || 
+      tags.includes('new-arrivals')
+    ) {
+      slugs.push('new-arrivals');
+    }
 
-    setEditingProduct({
-      ...editingProduct,
-      collectionNames: updatedNames,
-      isNewArrival: updatedSlugs.includes('new-arrivals'),
-      isBestSeller: updatedSlugs.includes('best-selling'),
-      collection: updatedNames[0] || 'NEW ARRIVALS',
-      collectionSlug: updatedSlugs[0] || 'new-arrivals',
-      tags: Array.from(new Set([...editingProduct.tags.filter(t => !Object.keys(slugToNameMap).includes(t)), ...updatedSlugs]))
-    });
+    // TRENDING
+    if (
+      names.includes('BEST SELLING') || 
+      names.includes('TRENDING') || 
+      ids.includes('4ca893b6-3d59-4256-86b9-81b25057c513') || 
+      p.isBestSeller || 
+      p.collection === 'BEST SELLING' || 
+      p.collection === 'TRENDING' || 
+      p.collectionSlug === 'best-selling' || 
+      tags.includes('best-selling')
+    ) {
+      slugs.push('best-selling');
+    }
+
+    // WINTER COLLECTION
+    if (
+      names.includes('WINTER COLLECTION') || 
+      ids.includes('e627afcf-c6cf-4c7e-809d-d2582a64ab48') || 
+      p.collection === 'WINTER COLLECTION' || 
+      p.collectionSlug === 'winter-collection' || 
+      tags.includes('winter-collection') || 
+      p.fabric?.toLowerCase().includes('winter') || 
+      p.fabric?.toLowerCase().includes('velvet')
+    ) {
+      slugs.push('winter-collection');
+    }
+
+    // CO-ORDS
+    if (
+      names.includes('CO-ORDS') || 
+      ids.includes('d12a9e3b-e23b-4a89-80d5-6c2478bbfe89') || 
+      p.collection === 'CO-ORDS' || 
+      p.collectionSlug === 'co-ords' || 
+      tags.includes('co-ords') || 
+      p.title?.toLowerCase().includes('co-ord') || 
+      p.title?.toLowerCase().includes('coord')
+    ) {
+      slugs.push('co-ords');
+    }
+
+    // SHORT LENGTH
+    if (
+      names.includes('SHORT LENGTH') || 
+      names.includes('Trending Designs') || 
+      ids.includes('ac6105c8-44f9-4e59-85ab-8896de893627') || 
+      p.collection === 'SHORT LENGTH' || 
+      p.collectionSlug === 'short-length-article' || 
+      tags.includes('short-length-article') || 
+      p.title?.toLowerCase().includes('short')
+    ) {
+      slugs.push('short-length-article');
+    }
+
+    return Array.from(new Set(slugs));
   };
 
   // Storefront Collections Presentation Handlers
@@ -215,7 +252,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
       price: 12500,
       compareAtPrice: 15000,
       category: 'Unstitched / Stitched',
-      collection: 'New Arrivals',
+      collection: 'NEW ARRIVALS',
+      collectionSlug: 'new-arrivals',
+      collectionNames: ['NEW ARRIVALS'],
+      collectionIds: ['4ab60e51-dddb-433c-880c-d30909bcbcb3'],
       fabric: 'Pure Lawn with Embroidered Chiffon Dupatta',
       shortDescription: '',
       description: '',
@@ -231,7 +271,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
       stock: 15,
       rating: 5.0,
       reviewCount: 0,
-      tags: ['New In', 'Pret', 'Silk'],
+      tags: ['new-arrivals', 'Pret', 'Silk'],
       details: {
         shirt: 'Raw silk with pearl buttons',
         dupatta: 'Pure silk digital dupatta',
@@ -249,34 +289,45 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
     if (!editingProduct) return;
     const currentSlugs = getProductCollectionSlugs(editingProduct);
     const exists = currentSlugs.includes(slug);
-    
-    let newTags = [...(editingProduct.tags || [])];
-    let isNew = editingProduct.isNewArrival ?? false;
-    let isBest = editingProduct.isBestSeller ?? false;
+    const updatedSlugs = exists ? currentSlugs.filter(s => s !== slug) : [...currentSlugs, slug];
 
-    if (exists) {
-      if (slug === 'new-arrivals') isNew = false;
-      if (slug === 'best-selling') isBest = false;
-      newTags = newTags.filter(t => t.toLowerCase() !== slug.toLowerCase() && t.toLowerCase() !== slug.replace(/-/g, ' '));
-    } else {
-      if (slug === 'new-arrivals') isNew = true;
-      if (slug === 'best-selling') isBest = true;
-      if (slug !== 'new-arrivals' && slug !== 'best-selling') {
-        if (!newTags.some(t => t.toLowerCase() === slug.toLowerCase())) {
-          newTags.push(slug);
-        }
-      }
-    }
+    const slugToNameMap: Record<string, string> = {
+      'new-arrivals': 'NEW ARRIVALS',
+      'best-selling': 'TRENDING',
+      'winter-collection': 'WINTER COLLECTION',
+      'co-ords': 'CO-ORDS',
+      'short-length-article': 'SHORT LENGTH'
+    };
 
-    const remaining = exists ? currentSlugs.filter(s => s !== slug) : [...currentSlugs, slug];
-    const primaryCol = remaining.find(s => s !== 'all') || 'all';
+    const slugToIdMap: Record<string, string> = {
+      'new-arrivals': '4ab60e51-dddb-433c-880c-d30909bcbcb3',
+      'best-selling': '4ca893b6-3d59-4256-86b9-81b25057c513',
+      'winter-collection': 'e627afcf-c6cf-4c7e-809d-d2582a64ab48',
+      'co-ords': 'd12a9e3b-e23b-4a89-80d5-6c2478bbfe89',
+      'short-length-article': 'ac6105c8-44f9-4e59-85ab-8896de893627'
+    };
+
+    const updatedNames = updatedSlugs.map(s => slugToNameMap[s]).filter(Boolean);
+    const updatedIds = updatedSlugs.map(s => slugToIdMap[s]).filter(Boolean);
+    const isNew = updatedSlugs.includes('new-arrivals');
+    const isBest = updatedSlugs.includes('best-selling');
+
+    // Clean existing slugs from tags and append active ones
+    const cleanTags = (editingProduct.tags || []).filter(
+      t => !Object.keys(slugToNameMap).includes(t.toLowerCase()) && 
+           !Object.values(slugToNameMap).some(n => n.toLowerCase() === t.toLowerCase())
+    );
+    const updatedTags = Array.from(new Set([...cleanTags, ...updatedSlugs]));
 
     setEditingProduct({
       ...editingProduct,
+      collectionIds: updatedIds,
+      collectionNames: updatedNames,
       isNewArrival: isNew,
       isBestSeller: isBest,
-      tags: newTags,
-      collectionSlug: primaryCol
+      collection: updatedNames[0] || 'NEW ARRIVALS',
+      collectionSlug: updatedSlugs[0] || 'new-arrivals',
+      tags: updatedTags
     });
   };
 
@@ -293,6 +344,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
     };
 
     StorageService.saveProduct(toSave);
+    setProducts(StorageService.getProducts(true));
+    setCollections(StorageService.getCollections());
     setEditingProduct(null);
     setIsNewProduct(false);
     triggerNotice('Product catalog saved successfully!');
@@ -1535,40 +1588,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                   <Save className="w-4 h-4" />
                   <span>Save Changes</span>
                 </button>
-              </div>
-
-              {/* Internal Database Taxonomy (Categories) Section */}
-              <div className="mt-10 pt-8 border-t border-stone-200 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-stone-400 block">
-                      INTERNAL DATABASE TAXONOMY
-                    </span>
-                    <h3 className="font-serif text-lg font-bold text-stone-800 mt-0.5">
-                      Backend Product Types (Categories)
-                    </h3>
-                  </div>
-                  <span className="px-2.5 py-1 bg-stone-100 border border-stone-200 text-stone-600 text-[10px] font-semibold uppercase tracking-wider rounded-xs">
-                    Read-Only Taxonomy
-                  </span>
-                </div>
-
-                <p className="text-xs text-stone-500 font-light leading-relaxed">
-                  The 5 authentic internal categories (Unstitched / Stitched, Stitched, woman, Clothing, 3 Pieces) remain preserved in the database for catalog taxonomy, migration compatibility, and product metadata. They are not used for customer-facing storefront presentation.
-                </p>
-
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
-                  {categories.map(cat => {
-                    const count = products.filter(p => p.category?.toLowerCase() === cat.name.toLowerCase()).length;
-                    return (
-                      <div key={cat.id} className="p-3 bg-stone-50 border border-stone-200 rounded-xs">
-                        <span className="font-semibold text-stone-800 text-xs block">{cat.name}</span>
-                        <span className="text-[10px] font-mono text-stone-500 block mt-1">{count} products</span>
-                        <span className="text-[9px] text-stone-400 font-mono block mt-0.5">/{cat.slug}</span>
-                      </div>
-                    );
-                  })}
-                </div>
               </div>
 
             </div>
