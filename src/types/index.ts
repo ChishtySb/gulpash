@@ -144,6 +144,8 @@ export interface CartItem {
 }
 
 export type OrderStatus = 
+  | 'Payment Verification Pending'
+  | 'Ready to Dispatch'
   | 'Pending'
   | 'Confirmed'
   | 'Processing'
@@ -152,7 +154,21 @@ export type OrderStatus =
   | 'Cancelled'
   | 'Returned';
 
-export type PaymentMethod = 'Cash on Delivery (COD)' | 'Direct Bank Transfer' | 'Card Payment';
+export type PaymentMethod = 
+  | 'Cash on Delivery (COD)' 
+  | 'JazzCash' 
+  | 'Easypaisa' 
+  | 'Direct Bank Transfer' 
+  | 'Card Payment';
+
+export interface OrderPaymentProof {
+  screenshotUrl?: string;
+  transactionReference?: string;
+  submittedAt?: string;
+  verifiedAt?: string;
+  verifiedBy?: string;
+  rejectionReason?: string;
+}
 
 export interface OrderItem {
   productId: string;
@@ -187,8 +203,9 @@ export interface Order {
   discount: number;
   total: number;
   paymentMethod: PaymentMethod;
-  paymentStatus: 'Unpaid' | 'Paid';
+  paymentStatus: 'Unpaid' | 'Paid' | 'Under Verification' | 'Rejected';
   status: OrderStatus;
+  paymentProof?: OrderPaymentProof;
   trackingNumber?: string;
   courierName?: string;
   createdAt: string;
@@ -264,6 +281,39 @@ export interface HomepageCMS {
 
 export type CMSConfig = HomepageCMS;
 
+export interface JazzCashSettings {
+  enabled: boolean;
+  accountTitle: string;
+  accountNumber: string;
+  instructions?: string;
+}
+
+export interface EasypaisaSettings {
+  enabled: boolean;
+  accountTitle: string;
+  accountNumber: string;
+  instructions?: string;
+}
+
+export interface BankTransferSettings {
+  enabled: boolean;
+  bankName: string;
+  accountTitle: string;
+  accountNumber: string;
+  iban: string;
+  branchName?: string;
+  instructions?: string;
+}
+
+export interface PaymentGatewaysConfig {
+  cod: {
+    enabled: boolean;
+  };
+  jazzCash: JazzCashSettings;
+  easypaisa: EasypaisaSettings;
+  bankTransfer: BankTransferSettings;
+}
+
 export interface SiteSettings {
   brandName: string;
   tagline: string;
@@ -294,6 +344,7 @@ export interface SiteSettings {
     bankTransferEnabled: boolean;
     bankDetails?: string;
   };
+  payments: PaymentGatewaysConfig;
   seo: {
     siteTitle: string;
     metaDescription: string;

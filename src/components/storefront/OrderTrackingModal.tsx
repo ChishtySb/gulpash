@@ -40,15 +40,17 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
   const steps = [
     { label: 'Order Placed', status: 'Pending', icon: Clock },
     { label: 'Confirmed', status: 'Confirmed', icon: CheckCircle2 },
-    { label: 'Stitched & Packed', status: 'Processing', icon: PackageCheck },
+    { label: 'Ready to Dispatch', status: 'Ready to Dispatch', icon: PackageCheck },
     { label: 'Out for Delivery (TCS)', status: 'Shipped', icon: Truck },
     { label: 'Delivered', status: 'Delivered', icon: CheckCircle2 }
   ];
 
   const getStepIndex = (status: string) => {
     switch (status) {
+      case 'Payment Verification Pending': return 0;
       case 'Pending': return 0;
       case 'Confirmed': return 1;
+      case 'Ready to Dispatch': return 2;
       case 'Processing': return 2;
       case 'Shipped': return 3;
       case 'Delivered': return 4;

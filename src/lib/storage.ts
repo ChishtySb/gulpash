@@ -1,5 +1,5 @@
 import { 
-  Product, Category, Collection, Order, OrderStatus, HomepageCMS, SiteSettings, 
+  Product, Category, Collection, Order, OrderStatus, OrderPaymentProof, HomepageCMS, SiteSettings, 
   CartItem, Review, CustomerSummary 
 } from '../types';
 import { 
@@ -231,6 +231,58 @@ export const StorageService = {
     }
   },
 
+  verifyOrderPayment(orderId: string, verifiedBy: string = 'Admin Concierge'): void {
+    const orders = this.getOrders();
+    const idx = orders.findIndex(o => o.id === orderId);
+    if (idx >= 0) {
+      orders[idx].status = 'Ready to Dispatch';
+      orders[idx].paymentStatus = 'Paid';
+      orders[idx].paymentProof = {
+        ...(orders[idx].paymentProof || {}),
+        verifiedAt: new Date().toISOString(),
+        verifiedBy
+      };
+      orders[idx].updatedAt = new Date().toISOString();
+      localStorage.setItem(KEYS.ORDERS, JSON.stringify(orders));
+      notifyChange('orders');
+    }
+  },
+
+  rejectOrderPayment(orderId: string, reason: string): void {
+    const orders = this.getOrders();
+    const idx = orders.findIndex(o => o.id === orderId);
+    if (idx >= 0) {
+      orders[idx].status = 'Cancelled';
+      orders[idx].paymentStatus = 'Rejected';
+      orders[idx].paymentProof = {
+        ...(orders[idx].paymentProof || {}),
+        rejectionReason: reason
+      };
+      orders[idx].updatedAt = new Date().toISOString();
+      localStorage.setItem(KEYS.ORDERS, JSON.stringify(orders));
+      notifyChange('orders');
+    }
+  },
+
+  attachOrderPaymentProof(orderId: string, proof: Partial<OrderPaymentProof>): void {
+    const orders = this.getOrders();
+    const idx = orders.findIndex(o => o.id === orderId);
+    if (idx >= 0) {
+      orders[idx].paymentProof = {
+        ...(orders[idx].paymentProof || {}),
+        ...proof,
+        submittedAt: proof.submittedAt || new Date().toISOString()
+      };
+      orders[idx].paymentStatus = 'Under Verification';
+      if (orders[idx].status === 'Pending') {
+        orders[idx].status = 'Payment Verification Pending';
+      }
+      orders[idx].updatedAt = new Date().toISOString();
+      localStorage.setItem(KEYS.ORDERS, JSON.stringify(orders));
+      notifyChange('orders');
+    }
+  },
+
   // REVIEWS
   getReviews(): Review[] {
     try {
@@ -310,6 +362,42 @@ export const StorageService = {
           changed = true;
         }
       }
+
+      // Ensure payment gateways settings exist and are fully populated
+      if (!settings.payments) {
+        settings.payments = INITIAL_SETTINGS.payments;
+        changed = true;
+      } else {
+        if (!settings.payments.cod) {
+          settings.payments.cod = { enabled: settings.shipping?.codEnabled !== undefined ? settings.shipping.codEnabled : true };
+          changed = true;
+        }
+        if (!settings.payments.jazzCash) {
+          settings.payments.jazzCash = INITIAL_SETTINGS.payments.jazzCash;
+          changed = true;
+        }
+        if (!settings.payments.easypaisa) {
+          settings.payments.easypaisa = INITIAL_SETTINGS.payments.easypaisa;
+          changed = true;
+        }
+        if (!settings.payments.bankTransfer) {
+          settings.payments.bankTransfer = INITIAL_SETTINGS.payments.bankTransfer;
+          changed = true;
+        }
+      }
+
+      // Sync codEnabled and bankTransferEnabled between shipping and payments
+      if (settings.shipping && settings.payments) {
+        if (settings.shipping.codEnabled !== settings.payments.cod.enabled) {
+          settings.shipping.codEnabled = settings.payments.cod.enabled;
+          changed = true;
+        }
+        if (settings.shipping.bankTransferEnabled !== settings.payments.bankTransfer.enabled) {
+          settings.shipping.bankTransferEnabled = settings.payments.bankTransfer.enabled;
+          changed = true;
+        }
+      }
+
       if (changed) {
         localStorage.setItem(KEYS.SETTINGS, JSON.stringify(settings));
       }
@@ -320,6 +408,10 @@ export const StorageService = {
   },
 
   saveSettings(settings: SiteSettings): void {
+    if (settings.payments && settings.shipping) {
+      settings.shipping.codEnabled = settings.payments.cod.enabled;
+      settings.shipping.bankTransferEnabled = settings.payments.bankTransfer.enabled;
+    }
     localStorage.setItem(KEYS.SETTINGS, JSON.stringify(settings));
     notifyChange('settings');
   },

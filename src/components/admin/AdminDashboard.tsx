@@ -4,7 +4,8 @@ import {
   TrendingUp, Users, Truck, CheckCircle2, AlertTriangle, 
   Plus, Edit, Trash2, Search, ArrowLeft, Save, Play, 
   Image as ImageIcon, RefreshCw, X, ShieldAlert, Eye, EyeOff,
-  Database, ExternalLink, ArrowUp, ArrowDown, Video, Layers, Globe, LogOut, Upload, Loader2
+  Database, ExternalLink, ArrowUp, ArrowDown, Video, Layers, Globe, LogOut, Upload, Loader2,
+  Clock, Check, Copy, CheckCircle, XCircle, CreditCard, Smartphone, Building2, MessageCircle
 } from 'lucide-react';
 import { Product, Order, CMSConfig, SiteSettings, ProductSize, OrderStatus, ProductVariantDetailed, Category } from '../../types';
 import { StorageService } from '../../lib/storage';
@@ -33,6 +34,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
   const [orderSearch, setOrderSearch] = useState('');
   const [orderStatusFilter, setOrderStatusFilter] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [rejectionReasonModal, setRejectionReasonModal] = useState<{ orderId: string; reason: string } | null>(null);
+  const [previewProofImage, setPreviewProofImage] = useState<string | null>(null);
 
   // Product Editing Modal state
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -270,10 +273,36 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
   // 3. ORDER ACTIONS
   const handleUpdateOrderStatus = (orderId: string, status: OrderStatus) => {
     StorageService.updateOrderStatus(orderId, status);
+    const updatedOrders = StorageService.getOrders();
+    setOrders(updatedOrders);
     if (selectedOrder && selectedOrder.id === orderId) {
-      setSelectedOrder({ ...selectedOrder, status, updatedAt: new Date().toISOString() });
+      const refreshed = updatedOrders.find(o => o.id === orderId);
+      if (refreshed) setSelectedOrder(refreshed);
     }
     triggerNotice(`Order status updated to ${status}`);
+  };
+
+  const handleVerifyOrderPayment = (orderId: string) => {
+    StorageService.verifyOrderPayment(orderId, 'Admin Concierge');
+    const updatedOrders = StorageService.getOrders();
+    setOrders(updatedOrders);
+    if (selectedOrder && selectedOrder.id === orderId) {
+      const refreshed = updatedOrders.find(o => o.id === orderId);
+      if (refreshed) setSelectedOrder(refreshed);
+    }
+    triggerNotice('Payment verified! Order marked "Ready to Dispatch".');
+  };
+
+  const handleRejectOrderPayment = (orderId: string, reason: string) => {
+    StorageService.rejectOrderPayment(orderId, reason);
+    const updatedOrders = StorageService.getOrders();
+    setOrders(updatedOrders);
+    if (selectedOrder && selectedOrder.id === orderId) {
+      const refreshed = updatedOrders.find(o => o.id === orderId);
+      if (refreshed) setSelectedOrder(refreshed);
+    }
+    setRejectionReasonModal(null);
+    triggerNotice('Payment rejected. Order marked "Cancelled".');
   };
 
   // 4. CMS ACTIONS (Hero Option A / Option B)
@@ -731,10 +760,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                 <select
                   value={orderStatusFilter}
                   onChange={(e) => setOrderStatusFilter(e.target.value)}
-                  className="border border-[#ddd] bg-white p-2 text-xs rounded-xs focus:outline-hidden"
+                  className="border border-[#ddd] bg-white p-2 text-xs rounded-xs focus:outline-hidden font-medium"
                 >
                   <option value="all">All Orders</option>
-                  <option value="Pending">Pending Verification</option>
+                  <option value="Payment Verification Pending">Payment Verification Pending</option>
+                  <option value="Ready to Dispatch">Ready to Dispatch</option>
+                  <option value="Pending">Pending (COD)</option>
                   <option value="Confirmed">Confirmed</option>
                   <option value="Processing">Processing / Tailoring</option>
                   <option value="Shipped">Shipped (TCS)</option>
@@ -770,32 +801,90 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                           <div className="text-[10px] text-[#888] font-mono">{o.customer.phone}</div>
                         </td>
                         <td className="py-3 px-3 text-[#555]">{o.customer.city}</td>
-                        <td className="py-3 px-3 text-[#666]">{o.paymentMethod}</td>
+                        <td className="py-3 px-3">
+                          <div className="font-medium text-[#444]">{o.paymentMethod}</div>
+                          <span className={`inline-block text-[9px] uppercase font-bold px-1.5 py-0.2 rounded-xs mt-0.5 ${
+                            o.paymentStatus === 'Paid' 
+                              ? 'bg-emerald-100 text-emerald-900' 
+                              : o.paymentStatus === 'Under Verification' 
+                              ? 'bg-amber-100 text-amber-900' 
+                              : o.paymentStatus === 'Rejected'
+                              ? 'bg-rose-100 text-rose-900'
+                              : 'bg-stone-100 text-stone-700'
+                          }`}>
+                            {o.paymentStatus || 'Unpaid'}
+                          </span>
+                        </td>
                         <td className="py-3 px-3 font-bold text-[#111]">{formatPrice(o.total, 'PKR')}</td>
                         
-                        {/* Status Select */}
+                        {/* Status Select & Quick Indicators */}
                         <td className="py-3 px-3">
-                          <select
-                            value={o.status}
-                            onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value as OrderStatus)}
-                            className="bg-[#faf8f5] border border-[#ddd] p-1 text-[11px] font-semibold rounded-xs"
-                          >
-                            <option value="Pending">Pending</option>
-                            <option value="Confirmed">Confirmed</option>
-                            <option value="Processing">Processing</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Delivered">Delivered</option>
-                            <option value="Cancelled">Cancelled</option>
-                          </select>
+                          <div className="space-y-1">
+                            <select
+                              value={o.status}
+                              onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value as OrderStatus)}
+                              className={`p-1 text-[11px] font-semibold rounded-xs border ${
+                                o.status === 'Payment Verification Pending'
+                                  ? 'bg-amber-50 border-amber-300 text-amber-950 font-bold'
+                                  : o.status === 'Ready to Dispatch'
+                                  ? 'bg-emerald-50 border-emerald-300 text-emerald-950 font-bold'
+                                  : 'bg-[#faf8f5] border-[#ddd] text-stone-800'
+                              }`}
+                            >
+                              <option value="Payment Verification Pending">Payment Verification Pending</option>
+                              <option value="Ready to Dispatch">Ready to Dispatch</option>
+                              <option value="Pending">Pending</option>
+                              <option value="Confirmed">Confirmed</option>
+                              <option value="Processing">Processing</option>
+                              <option value="Shipped">Shipped</option>
+                              <option value="Delivered">Delivered</option>
+                              <option value="Cancelled">Cancelled</option>
+                            </select>
+
+                            {o.status === 'Payment Verification Pending' && (
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                {o.paymentProof?.screenshotUrl ? (
+                                  <button
+                                    type="button"
+                                    onClick={() => setPreviewProofImage(o.paymentProof!.screenshotUrl!)}
+                                    className="text-[10px] text-emerald-700 hover:text-emerald-900 font-medium flex items-center gap-0.5 cursor-pointer"
+                                    title="Click to view payment receipt screenshot"
+                                  >
+                                    <ImageIcon className="w-3 h-3" /> Proof Attached
+                                  </button>
+                                ) : (
+                                  <span className="text-[10px] text-amber-700 font-medium">Awaiting Proof</span>
+                                )}
+                                {o.paymentProof?.transactionReference && (
+                                  <span className="text-[10px] text-stone-500 font-mono truncate max-w-[100px]" title={o.paymentProof.transactionReference}>
+                                    TID: {o.paymentProof.transactionReference}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </td>
 
                         <td className="py-3 px-4 text-right">
-                          <button
-                            onClick={() => setSelectedOrder(o)}
-                            className="px-2.5 py-1 bg-[#181818] hover:bg-[#c59b66] text-white text-[10px] font-bold uppercase rounded-xs transition-colors"
-                          >
-                            Inspect
-                          </button>
+                          <div className="flex items-center justify-end gap-1.5">
+                            {o.status === 'Payment Verification Pending' && (
+                              <button
+                                onClick={() => handleVerifyOrderPayment(o.id)}
+                                className="px-2 py-1 bg-emerald-700 hover:bg-emerald-800 text-white text-[10px] font-bold uppercase rounded-xs transition-colors shadow-2xs cursor-pointer flex items-center gap-1"
+                                title="Verify Payment and mark Ready to Dispatch"
+                              >
+                                <Check className="w-3 h-3" />
+                                <span>Verify</span>
+                              </button>
+                            )}
+
+                            <button
+                              onClick={() => setSelectedOrder(o)}
+                              className="px-2.5 py-1 bg-[#181818] hover:bg-[#c59b66] text-white text-[10px] font-bold uppercase rounded-xs transition-colors cursor-pointer"
+                            >
+                              Inspect
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -1443,6 +1532,542 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                         })}
                         className="w-full border border-stone-300 bg-white p-2.5 text-xs rounded-xs font-mono focus:outline-hidden focus:border-stone-900"
                       />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. PAYMENT METHODS & GATEWAYS (DOMESTIC & ADVANCE WORKFLOW - Req 1, 2, 3, 4, 14) */}
+                <div className="p-5 bg-stone-50 border border-stone-200 rounded-sm space-y-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-200 pb-4">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-[#aa814d] block">
+                        CHECKOUT & TREASURY CONFIGURATION
+                      </span>
+                      <h3 className="font-serif text-lg font-bold text-stone-900 mt-0.5 flex items-center gap-2">
+                        <CreditCard className="w-5 h-5 text-[#aa814d]" />
+                        Payment Gateways & Advance Payment
+                      </h3>
+                      <p className="text-xs text-stone-500 mt-0.5">
+                        Control Cash on Delivery and manage account credentials for JazzCash, Easypaisa, and Direct Bank Transfer.
+                      </p>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold uppercase tracking-wider py-2 px-4 rounded-xs flex items-center gap-1.5 cursor-pointer transition-colors shadow-xs shrink-0 self-start sm:self-auto"
+                    >
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Save Payment Settings</span>
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* 1. Cash on Delivery (COD) Control */}
+                    <div className="p-4 bg-white border border-stone-200 rounded-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <Truck className="w-4 h-4 text-stone-800" />
+                          <span className="text-xs font-bold text-stone-900">
+                            Cash on Delivery (COD)
+                          </span>
+                          <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-xs ${
+                            (settings.payments?.cod?.enabled ?? settings.shipping.codEnabled ?? true)
+                              ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                              : 'bg-stone-100 text-stone-600 border border-stone-300'
+                          }`}>
+                            {(settings.payments?.cod?.enabled ?? settings.shipping.codEnabled ?? true) ? 'Active' : 'Disabled'}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-stone-500 mt-1">
+                          {(settings.payments?.cod?.enabled ?? settings.shipping.codEnabled ?? true)
+                            ? 'Customers can pay cash to courier rider upon delivery.'
+                            : 'COD is OFF. Checkout enforces advance payment (JazzCash, Easypaisa, or Bank Transfer).'}
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const currentEnabled = settings.payments?.cod?.enabled ?? settings.shipping.codEnabled ?? true;
+                          const nextState = !currentEnabled;
+                          setSettings({
+                            ...settings,
+                            shipping: {
+                              ...settings.shipping,
+                              codEnabled: nextState
+                            },
+                            payments: {
+                              ...settings.payments,
+                              cod: {
+                                enabled: nextState
+                              }
+                            }
+                          });
+                        }}
+                        className={`px-4 py-1.5 rounded-xs text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer shrink-0 ${
+                          (settings.payments?.cod?.enabled ?? settings.shipping.codEnabled ?? true)
+                            ? 'bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs'
+                            : 'bg-stone-300 hover:bg-stone-400 text-stone-800'
+                        }`}
+                      >
+                        {(settings.payments?.cod?.enabled ?? settings.shipping.codEnabled ?? true) ? 'COD ON' : 'COD OFF'}
+                      </button>
+                    </div>
+
+                    {/* 2. JazzCash Gateway Control */}
+                    <div className="p-4 bg-white border border-stone-200 rounded-xs space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-100 pb-3">
+                        <div className="flex items-center gap-2">
+                          <Smartphone className="w-4 h-4 text-amber-600" />
+                          <span className="text-xs font-bold text-stone-900">
+                            JazzCash Mobile Account
+                          </span>
+                          <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-xs ${
+                            settings.payments?.jazzCash?.enabled
+                              ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                              : 'bg-stone-100 text-stone-600 border border-stone-300'
+                          }`}>
+                            {settings.payments?.jazzCash?.enabled ? 'Active' : 'Disabled'}
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const cur = settings.payments?.jazzCash?.enabled ?? true;
+                            setSettings({
+                              ...settings,
+                              payments: {
+                                ...settings.payments,
+                                jazzCash: {
+                                  ...settings.payments?.jazzCash,
+                                  accountTitle: settings.payments?.jazzCash?.accountTitle || 'GulPash Luxury Apparel',
+                                  accountNumber: settings.payments?.jazzCash?.accountNumber || '03218489999',
+                                  instructions: settings.payments?.jazzCash?.instructions || 'Send to JazzCash account and upload screenshot.',
+                                  enabled: !cur
+                                }
+                              }
+                            });
+                          }}
+                          className={`px-4 py-1.5 rounded-xs text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                            settings.payments?.jazzCash?.enabled
+                              ? 'bg-amber-700 hover:bg-amber-800 text-white shadow-xs'
+                              : 'bg-stone-300 hover:bg-stone-400 text-stone-800'
+                          }`}
+                        >
+                          {settings.payments?.jazzCash?.enabled ? 'JAZZCASH ON' : 'JAZZCASH OFF'}
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                        <div>
+                          <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                            JazzCash Account Title
+                          </label>
+                          <input
+                            type="text"
+                            value={settings.payments?.jazzCash?.accountTitle || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              payments: {
+                                ...settings.payments,
+                                jazzCash: {
+                                  ...settings.payments?.jazzCash,
+                                  enabled: settings.payments?.jazzCash?.enabled ?? true,
+                                  accountNumber: settings.payments?.jazzCash?.accountNumber || '',
+                                  accountTitle: e.target.value
+                                }
+                              }
+                            })}
+                            placeholder="e.g. GulPash Luxury Apparel"
+                            className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs focus:outline-hidden focus:border-stone-900"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                            JazzCash Account / Mobile Number
+                          </label>
+                          <input
+                            type="text"
+                            value={settings.payments?.jazzCash?.accountNumber || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              payments: {
+                                ...settings.payments,
+                                jazzCash: {
+                                  ...settings.payments?.jazzCash,
+                                  enabled: settings.payments?.jazzCash?.enabled ?? true,
+                                  accountTitle: settings.payments?.jazzCash?.accountTitle || '',
+                                  accountNumber: e.target.value
+                                }
+                              }
+                            })}
+                            placeholder="e.g. 0321 8489999"
+                            className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs font-mono focus:outline-hidden focus:border-stone-900"
+                          />
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                            JazzCash Customer Instructions
+                          </label>
+                          <input
+                            type="text"
+                            value={settings.payments?.jazzCash?.instructions || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              payments: {
+                                ...settings.payments,
+                                jazzCash: {
+                                  ...settings.payments?.jazzCash,
+                                  enabled: settings.payments?.jazzCash?.enabled ?? true,
+                                  accountTitle: settings.payments?.jazzCash?.accountTitle || '',
+                                  accountNumber: settings.payments?.jazzCash?.accountNumber || '',
+                                  instructions: e.target.value
+                                }
+                              }
+                            })}
+                            placeholder="Transfer via JazzCash app and enter Transaction ID (TID) or upload screenshot."
+                            className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs focus:outline-hidden focus:border-stone-900"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 3. Easypaisa Gateway Control */}
+                    <div className="p-4 bg-white border border-stone-200 rounded-xs space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-100 pb-3">
+                        <div className="flex items-center gap-2">
+                          <Smartphone className="w-4 h-4 text-emerald-600" />
+                          <span className="text-xs font-bold text-stone-900">
+                            Easypaisa Mobile Account
+                          </span>
+                          <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-xs ${
+                            settings.payments?.easypaisa?.enabled
+                              ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                              : 'bg-stone-100 text-stone-600 border border-stone-300'
+                          }`}>
+                            {settings.payments?.easypaisa?.enabled ? 'Active' : 'Disabled'}
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const cur = settings.payments?.easypaisa?.enabled ?? true;
+                            setSettings({
+                              ...settings,
+                              payments: {
+                                ...settings.payments,
+                                easypaisa: {
+                                  ...settings.payments?.easypaisa,
+                                  accountTitle: settings.payments?.easypaisa?.accountTitle || 'GulPash Apparel',
+                                  accountNumber: settings.payments?.easypaisa?.accountNumber || '03451234567',
+                                  instructions: settings.payments?.easypaisa?.instructions || 'Send to Easypaisa account and upload screenshot.',
+                                  enabled: !cur
+                                }
+                              }
+                            });
+                          }}
+                          className={`px-4 py-1.5 rounded-xs text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                            settings.payments?.easypaisa?.enabled
+                              ? 'bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs'
+                              : 'bg-stone-300 hover:bg-stone-400 text-stone-800'
+                          }`}
+                        >
+                          {settings.payments?.easypaisa?.enabled ? 'EASYPAISA ON' : 'EASYPAISA OFF'}
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                        <div>
+                          <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                            Easypaisa Account Title
+                          </label>
+                          <input
+                            type="text"
+                            value={settings.payments?.easypaisa?.accountTitle || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              payments: {
+                                ...settings.payments,
+                                easypaisa: {
+                                  ...settings.payments?.easypaisa,
+                                  enabled: settings.payments?.easypaisa?.enabled ?? true,
+                                  accountNumber: settings.payments?.easypaisa?.accountNumber || '',
+                                  accountTitle: e.target.value
+                                }
+                              }
+                            })}
+                            placeholder="e.g. GulPash Apparel"
+                            className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs focus:outline-hidden focus:border-stone-900"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                            Easypaisa Account / Mobile Number
+                          </label>
+                          <input
+                            type="text"
+                            value={settings.payments?.easypaisa?.accountNumber || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              payments: {
+                                ...settings.payments,
+                                easypaisa: {
+                                  ...settings.payments?.easypaisa,
+                                  enabled: settings.payments?.easypaisa?.enabled ?? true,
+                                  accountTitle: settings.payments?.easypaisa?.accountTitle || '',
+                                  accountNumber: e.target.value
+                                }
+                              }
+                            })}
+                            placeholder="e.g. 0345 1234567"
+                            className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs font-mono focus:outline-hidden focus:border-stone-900"
+                          />
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                            Easypaisa Customer Instructions
+                          </label>
+                          <input
+                            type="text"
+                            value={settings.payments?.easypaisa?.instructions || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              payments: {
+                                ...settings.payments,
+                                easypaisa: {
+                                  ...settings.payments?.easypaisa,
+                                  enabled: settings.payments?.easypaisa?.enabled ?? true,
+                                  accountTitle: settings.payments?.easypaisa?.accountTitle || '',
+                                  accountNumber: settings.payments?.easypaisa?.accountNumber || '',
+                                  instructions: e.target.value
+                                }
+                              }
+                            })}
+                            placeholder="Send via Easypaisa app and submit TRX ID or screenshot."
+                            className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs focus:outline-hidden focus:border-stone-900"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 4. Direct Bank Transfer Gateway Control */}
+                    <div className="p-4 bg-white border border-stone-200 rounded-xs space-y-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-100 pb-3">
+                        <div className="flex items-center gap-2">
+                          <Building2 className="w-4 h-4 text-stone-800" />
+                          <span className="text-xs font-bold text-stone-900">
+                            Direct Bank Transfer (IBAN)
+                          </span>
+                          <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-xs ${
+                            settings.payments?.bankTransfer?.enabled
+                              ? 'bg-stone-900 text-white'
+                              : 'bg-stone-100 text-stone-600 border border-stone-300'
+                          }`}>
+                            {settings.payments?.bankTransfer?.enabled ? 'Active' : 'Disabled'}
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const cur = settings.payments?.bankTransfer?.enabled ?? true;
+                            const next = !cur;
+                            setSettings({
+                              ...settings,
+                              shipping: {
+                                ...settings.shipping,
+                                bankTransferEnabled: next
+                              },
+                              payments: {
+                                ...settings.payments,
+                                bankTransfer: {
+                                  ...settings.payments?.bankTransfer,
+                                  bankName: settings.payments?.bankTransfer?.bankName || 'Meezan Bank Ltd',
+                                  accountTitle: settings.payments?.bankTransfer?.accountTitle || 'GulPash Luxury Apparel (Pvt) Ltd',
+                                  accountNumber: settings.payments?.bankTransfer?.accountNumber || '01080105829102',
+                                  iban: settings.payments?.bankTransfer?.iban || 'PK45MEZN0001080105829102',
+                                  branchName: settings.payments?.bankTransfer?.branchName || 'Gulberg III Branch, Lahore',
+                                  instructions: settings.payments?.bankTransfer?.instructions || 'Transfer funds via Online Banking or ATM and submit reference number or receipt screenshot.',
+                                  enabled: next
+                                }
+                              }
+                            });
+                          }}
+                          className={`px-4 py-1.5 rounded-xs text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                            settings.payments?.bankTransfer?.enabled
+                              ? 'bg-stone-900 hover:bg-stone-800 text-white shadow-xs'
+                              : 'bg-stone-300 hover:bg-stone-400 text-stone-800'
+                          }`}
+                        >
+                          {settings.payments?.bankTransfer?.enabled ? 'BANK TRANSFER ON' : 'BANK TRANSFER OFF'}
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                        <div>
+                          <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                            Bank Name
+                          </label>
+                          <input
+                            type="text"
+                            value={settings.payments?.bankTransfer?.bankName || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              payments: {
+                                ...settings.payments,
+                                bankTransfer: {
+                                  ...settings.payments?.bankTransfer,
+                                  enabled: settings.payments?.bankTransfer?.enabled ?? true,
+                                  accountTitle: settings.payments?.bankTransfer?.accountTitle || '',
+                                  accountNumber: settings.payments?.bankTransfer?.accountNumber || '',
+                                  iban: settings.payments?.bankTransfer?.iban || '',
+                                  bankName: e.target.value
+                                }
+                              }
+                            })}
+                            placeholder="Meezan Bank Ltd"
+                            className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs focus:outline-hidden focus:border-stone-900"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                            Account Title
+                          </label>
+                          <input
+                            type="text"
+                            value={settings.payments?.bankTransfer?.accountTitle || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              payments: {
+                                ...settings.payments,
+                                bankTransfer: {
+                                  ...settings.payments?.bankTransfer,
+                                  enabled: settings.payments?.bankTransfer?.enabled ?? true,
+                                  bankName: settings.payments?.bankTransfer?.bankName || '',
+                                  accountNumber: settings.payments?.bankTransfer?.accountNumber || '',
+                                  iban: settings.payments?.bankTransfer?.iban || '',
+                                  accountTitle: e.target.value
+                                }
+                              }
+                            })}
+                            placeholder="GulPash Luxury Apparel"
+                            className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs focus:outline-hidden focus:border-stone-900"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                            Branch Name
+                          </label>
+                          <input
+                            type="text"
+                            value={settings.payments?.bankTransfer?.branchName || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              payments: {
+                                ...settings.payments,
+                                bankTransfer: {
+                                  ...settings.payments?.bankTransfer,
+                                  enabled: settings.payments?.bankTransfer?.enabled ?? true,
+                                  bankName: settings.payments?.bankTransfer?.bankName || '',
+                                  accountTitle: settings.payments?.bankTransfer?.accountTitle || '',
+                                  accountNumber: settings.payments?.bankTransfer?.accountNumber || '',
+                                  iban: settings.payments?.bankTransfer?.iban || '',
+                                  branchName: e.target.value
+                                }
+                              }
+                            })}
+                            placeholder="Gulberg III, Lahore"
+                            className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs focus:outline-hidden focus:border-stone-900"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                            Account Number
+                          </label>
+                          <input
+                            type="text"
+                            value={settings.payments?.bankTransfer?.accountNumber || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              payments: {
+                                ...settings.payments,
+                                bankTransfer: {
+                                  ...settings.payments?.bankTransfer,
+                                  enabled: settings.payments?.bankTransfer?.enabled ?? true,
+                                  bankName: settings.payments?.bankTransfer?.bankName || '',
+                                  accountTitle: settings.payments?.bankTransfer?.accountTitle || '',
+                                  iban: settings.payments?.bankTransfer?.iban || '',
+                                  accountNumber: e.target.value
+                                }
+                              }
+                            })}
+                            placeholder="01080105829102"
+                            className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs font-mono focus:outline-hidden focus:border-stone-900"
+                          />
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                            IBAN (International Bank Account Number)
+                          </label>
+                          <input
+                            type="text"
+                            value={settings.payments?.bankTransfer?.iban || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              payments: {
+                                ...settings.payments,
+                                bankTransfer: {
+                                  ...settings.payments?.bankTransfer,
+                                  enabled: settings.payments?.bankTransfer?.enabled ?? true,
+                                  bankName: settings.payments?.bankTransfer?.bankName || '',
+                                  accountTitle: settings.payments?.bankTransfer?.accountTitle || '',
+                                  accountNumber: settings.payments?.bankTransfer?.accountNumber || '',
+                                  iban: e.target.value
+                                }
+                              }
+                            })}
+                            placeholder="PK45MEZN0001080105829102"
+                            className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs font-mono focus:outline-hidden focus:border-stone-900"
+                          />
+                        </div>
+
+                        <div className="sm:col-span-3">
+                          <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                            Instructions for Customer
+                          </label>
+                          <textarea
+                            rows={2}
+                            value={settings.payments?.bankTransfer?.instructions || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              payments: {
+                                ...settings.payments,
+                                bankTransfer: {
+                                  ...settings.payments?.bankTransfer,
+                                  enabled: settings.payments?.bankTransfer?.enabled ?? true,
+                                  bankName: settings.payments?.bankTransfer?.bankName || '',
+                                  accountTitle: settings.payments?.bankTransfer?.accountTitle || '',
+                                  accountNumber: settings.payments?.bankTransfer?.accountNumber || '',
+                                  iban: settings.payments?.bankTransfer?.iban || '',
+                                  instructions: e.target.value
+                                }
+                              }
+                            })}
+                            placeholder="Transfer funds and upload receipt screenshot or provide reference number."
+                            className="w-full border border-stone-300 bg-white p-2 text-xs rounded-xs focus:outline-hidden focus:border-stone-900"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2141,6 +2766,195 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                   </div>
                 ))}
               </div>
+              <div className="flex justify-between items-center pt-2 px-1 text-[11px] font-medium text-stone-600">
+                <span>Shipping: {selectedOrder.shippingFee === 0 ? 'FREE' : formatPrice(selectedOrder.shippingFee, 'PKR')}</span>
+                <span className="text-xs font-bold text-stone-900">Total: {formatPrice(selectedOrder.total, 'PKR')}</span>
+              </div>
+            </div>
+
+            {/* PAYMENT VERIFICATION & PROOF AUDIT PANEL (Req 9, 10, 11, 12, 13) */}
+            <div className="p-4 bg-stone-50 border border-stone-200 rounded-sm space-y-3">
+              <div className="flex items-center justify-between border-b border-stone-200 pb-2.5">
+                <div>
+                  <span className="text-[9px] uppercase font-bold tracking-widest text-[#aa814d] block">
+                    TREASURY & RECONCILIATION
+                  </span>
+                  <h4 className="font-bold text-stone-900 flex items-center gap-1.5 text-xs">
+                    <CreditCard className="w-4 h-4 text-[#aa814d]" />
+                    <span>Payment Method: {selectedOrder.paymentMethod}</span>
+                  </h4>
+                </div>
+                
+                <div className="flex items-center gap-1.5">
+                  <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-xs ${
+                    selectedOrder.paymentStatus === 'Paid'
+                      ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                      : selectedOrder.paymentStatus === 'Under Verification'
+                      ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                      : selectedOrder.paymentStatus === 'Rejected'
+                      ? 'bg-rose-100 text-rose-900 border border-rose-300'
+                      : 'bg-stone-100 text-stone-700 border border-stone-300'
+                  }`}>
+                    {selectedOrder.paymentStatus || 'Unpaid'}
+                  </span>
+
+                  <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-xs ${
+                    selectedOrder.status === 'Ready to Dispatch'
+                      ? 'bg-emerald-600 text-white'
+                      : selectedOrder.status === 'Payment Verification Pending'
+                      ? 'bg-amber-600 text-white'
+                      : 'bg-stone-800 text-white'
+                  }`}>
+                    {selectedOrder.status}
+                  </span>
+                </div>
+              </div>
+
+              {/* Transaction ID & Proof info */}
+              <div className="space-y-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 bg-white p-2.5 rounded-xs border border-stone-200">
+                  <div>
+                    <span className="text-[10px] text-stone-500 uppercase font-bold block">
+                      Transaction / Reference Number (TID)
+                    </span>
+                    <span className="font-mono text-xs font-bold text-stone-900 select-all">
+                      {selectedOrder.paymentProof?.transactionReference || 'Not Provided / N/A'}
+                    </span>
+                  </div>
+
+                  {selectedOrder.paymentProof?.transactionReference && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(selectedOrder.paymentProof!.transactionReference!);
+                        triggerNotice('Transaction reference copied to clipboard');
+                      }}
+                      className="text-[10px] font-semibold text-stone-600 hover:text-stone-900 flex items-center gap-1 cursor-pointer self-start sm:self-auto"
+                    >
+                      <Copy className="w-3 h-3" /> Copy TID
+                    </button>
+                  )}
+                </div>
+
+                {/* Receipt Screenshot Viewer */}
+                {selectedOrder.paymentProof?.screenshotUrl ? (
+                  <div className="bg-white p-3 rounded-xs border border-stone-200 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold text-stone-700 uppercase flex items-center gap-1">
+                        <ImageIcon className="w-3.5 h-3.5 text-emerald-700" />
+                        Uploaded Payment Receipt
+                      </span>
+                      <span className="text-[10px] text-stone-400 font-mono">
+                        {selectedOrder.paymentProof.uploadedAt 
+                          ? new Date(selectedOrder.paymentProof.uploadedAt).toLocaleString() 
+                          : 'Recent'}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div 
+                        onClick={() => setPreviewProofImage(selectedOrder.paymentProof!.screenshotUrl!)}
+                        className="relative group cursor-pointer border border-stone-300 rounded-xs overflow-hidden bg-stone-100 w-24 h-24 shrink-0"
+                        title="Click to view full size receipt screenshot"
+                      >
+                        <img 
+                          src={selectedOrder.paymentProof.screenshotUrl} 
+                          alt="Receipt Proof" 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform" 
+                        />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-[10px] font-bold">
+                          Zoom
+                        </div>
+                      </div>
+
+                      <div className="text-xs space-y-1">
+                        <p className="font-semibold text-stone-800">Payment Screenshot Attached</p>
+                        <p className="text-[11px] text-stone-500">
+                          Click image to view high-resolution proof and verify recipient bank/account number and timestamp.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setPreviewProofImage(selectedOrder.paymentProof!.screenshotUrl!)}
+                          className="text-[11px] text-[#aa814d] hover:underline font-bold inline-flex items-center gap-1 cursor-pointer"
+                        >
+                          <Eye className="w-3.5 h-3.5" /> Open Full-Size Lightbox
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  selectedOrder.paymentMethod !== 'Cash on Delivery (COD)' && (
+                    <div className="bg-amber-50 border border-amber-200 p-2.5 rounded-xs text-[11px] text-amber-800 flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-amber-600 shrink-0" />
+                      <span>Customer has placed this advance payment order without attaching a screenshot proof yet.</span>
+                    </div>
+                  )
+                )}
+
+                {/* Audit verification stamps */}
+                {selectedOrder.paymentProof?.verifiedBy && (
+                  <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xs text-emerald-900 text-xs flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
+                    <div>
+                      <p className="font-bold">Payment Verified & Approved</p>
+                      <p className="text-[10px] text-emerald-700 font-mono">
+                        By {selectedOrder.paymentProof.verifiedBy} &bull; {new Date(selectedOrder.paymentProof.verifiedAt || selectedOrder.updatedAt).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {selectedOrder.paymentProof?.rejectionReason && (
+                  <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-xs text-rose-900 text-xs flex items-center gap-2">
+                    <XCircle className="w-4 h-4 text-rose-700 shrink-0" />
+                    <div>
+                      <p className="font-bold">Payment Rejected</p>
+                      <p className="text-[10px] text-rose-700">
+                        Reason: {selectedOrder.paymentProof.rejectionReason}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* ACTION BUTTONS: VERIFY / REJECT (Req 11, 12, 13) */}
+              <div className="pt-2 border-t border-stone-200 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  {selectedOrder.paymentStatus !== 'Paid' && (
+                    <button
+                      type="button"
+                      onClick={() => handleVerifyOrderPayment(selectedOrder.id)}
+                      className="px-3.5 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs uppercase tracking-wider rounded-xs transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Check className="w-4 h-4" />
+                      <span>Verify Payment (Ready to Dispatch)</span>
+                    </button>
+                  )}
+
+                  {selectedOrder.paymentStatus !== 'Rejected' && selectedOrder.status !== 'Cancelled' && (
+                    <button
+                      type="button"
+                      onClick={() => setRejectionReasonModal({ orderId: selectedOrder.id, reason: '' })}
+                      className="px-3 py-1.5 bg-white border border-rose-300 hover:bg-rose-50 text-rose-700 font-bold text-xs uppercase tracking-wider rounded-xs transition-colors cursor-pointer"
+                    >
+                      Reject Payment
+                    </button>
+                  )}
+                </div>
+
+                {/* WhatsApp button for this specific order */}
+                <a
+                  href={`https://wa.me/${(selectedOrder.customer.whatsapp || selectedOrder.customer.phone).replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+                    `Assalam-o-Alaikum ${selectedOrder.customer.fullName},\n\nThis is GulPash Luxury Apparel regarding your Order #${selectedOrder.orderNumber}.\n\nTotal: PKR ${selectedOrder.total.toLocaleString()}\nStatus: ${selectedOrder.status}\nPayment: ${selectedOrder.paymentMethod} (${selectedOrder.paymentStatus || 'Pending'})\n${selectedOrder.paymentProof?.transactionReference ? `Transaction ID: ${selectedOrder.paymentProof.transactionReference}\n` : ''}\nPlease let us know if you need any assistance!`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xs flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  <span>WhatsApp Customer</span>
+                </a>
+              </div>
             </div>
 
             {/* Status change */}
@@ -2151,6 +2965,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                 onChange={(e) => handleUpdateOrderStatus(selectedOrder.id, e.target.value as OrderStatus)}
                 className="border border-[#ddd] p-1.5 font-bold rounded"
               >
+                <option value="Payment Verification Pending">Payment Verification Pending</option>
+                <option value="Ready to Dispatch">Ready to Dispatch</option>
                 <option value="Pending">Pending</option>
                 <option value="Confirmed">Confirmed</option>
                 <option value="Processing">Processing</option>
@@ -2163,12 +2979,108 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
             <div className="pt-3 border-t border-[#eee] flex justify-end">
               <button
                 onClick={() => window.print()}
-                className="px-4 py-2 border border-[#ccc] hover:border-black rounded text-xs font-semibold"
+                className="px-4 py-2 border border-[#ccc] hover:border-black rounded text-xs font-semibold cursor-pointer"
               >
                 Print Receipt
               </button>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* REJECTION REASON MODAL */}
+      {rejectionReasonModal && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 font-sans bg-black/70 backdrop-blur-xs">
+          <div className="relative w-full max-w-md bg-white rounded-lg shadow-2xl p-6 border border-stone-200 space-y-4 text-xs">
+            <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+              <h4 className="font-bold text-sm text-stone-900 flex items-center gap-1.5 text-rose-700">
+                <AlertTriangle className="w-4 h-4" /> Reject Payment Proof
+              </h4>
+              <button onClick={() => setRejectionReasonModal(null)} className="text-stone-400 hover:text-stone-800 p-1">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-stone-600">
+              Please provide a reason for rejecting this payment proof. The order will be marked as Cancelled with Payment Rejected.
+            </p>
+
+            <div>
+              <label className="block text-[11px] font-bold text-stone-700 mb-1">
+                Rejection Reason
+              </label>
+              <textarea
+                rows={3}
+                value={rejectionReasonModal.reason}
+                onChange={(e) => setRejectionReasonModal({ ...rejectionReasonModal, reason: e.target.value })}
+                placeholder="e.g. Transaction ID not found in bank statement, amount mismatch, or illegible screenshot."
+                className="w-full border border-stone-300 bg-stone-50 p-2.5 text-xs rounded-xs focus:outline-hidden focus:border-stone-900"
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-stone-200">
+              <button
+                type="button"
+                onClick={() => setRejectionReasonModal(null)}
+                className="px-3.5 py-1.5 border border-stone-300 hover:bg-stone-100 rounded-xs text-stone-700 font-semibold cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  handleRejectOrderPayment(
+                    rejectionReasonModal.orderId,
+                    rejectionReasonModal.reason || 'Payment could not be reconciled with bank record'
+                  );
+                }}
+                className="px-4 py-1.5 bg-rose-700 hover:bg-rose-800 text-white font-bold rounded-xs cursor-pointer"
+              >
+                Confirm Rejection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* FULL-SIZE PROOF LIGHTBOX */}
+      {previewProofImage && (
+        <div className="fixed inset-0 z-70 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm">
+          <div className="relative max-w-3xl max-h-[90vh] bg-white rounded-lg shadow-2xl p-4 flex flex-col items-center">
+            <div className="w-full flex items-center justify-between pb-2 border-b border-stone-200 mb-3 text-xs">
+              <span className="font-bold text-stone-800 flex items-center gap-1.5">
+                <ImageIcon className="w-4 h-4 text-emerald-700" />
+                Payment Receipt Proof (Original Resolution)
+              </span>
+              <button
+                onClick={() => setPreviewProofImage(null)}
+                className="p-1 rounded-xs bg-stone-100 hover:bg-stone-200 text-stone-700 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="overflow-auto max-h-[75vh] w-full flex justify-center bg-stone-100 p-2 rounded-xs border border-stone-200">
+              <img 
+                src={previewProofImage} 
+                alt="Full Resolution Proof" 
+                className="max-w-full max-h-[70vh] object-contain rounded-xs shadow-md"
+              />
+            </div>
+
+            <div className="w-full flex items-center justify-between pt-3 text-xs">
+              <span className="text-[11px] text-stone-500">
+                Inspect account holder name, timestamp, and transferred PKR amount against treasury statements.
+              </span>
+              <button
+                type="button"
+                onClick={() => setPreviewProofImage(null)}
+                className="px-4 py-1.5 bg-stone-900 text-white text-xs font-bold uppercase tracking-wider rounded-xs cursor-pointer"
+              >
+                Close Preview
+              </button>
+            </div>
           </div>
         </div>
       )}

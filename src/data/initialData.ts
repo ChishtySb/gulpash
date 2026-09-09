@@ -136,6 +136,32 @@ export const INITIAL_SETTINGS: SiteSettings = {
     bankTransferEnabled: true,
     bankDetails: 'Bank: Meezan Bank Ltd\nAccount Title: GulPash Luxury Apparel\nIBAN: PK45MEZN0001892019283746\nBranch: Gulberg Lahore\n(Please send transfer receipt screenshot to our WhatsApp Concierge)'
   },
+  payments: {
+    cod: {
+      enabled: true
+    },
+    jazzCash: {
+      enabled: true,
+      accountTitle: 'GulPash Luxury Apparel',
+      accountNumber: '03218489999',
+      instructions: 'Please transfer total order amount to our official JazzCash account. Enter the 12-digit TID and upload payment receipt screenshot.'
+    },
+    easypaisa: {
+      enabled: true,
+      accountTitle: 'GulPash Luxury Apparel',
+      accountNumber: '03218489999',
+      instructions: 'Please transfer total order amount to our official Easypaisa account. Enter the TRX ID and upload payment receipt screenshot.'
+    },
+    bankTransfer: {
+      enabled: true,
+      bankName: 'Meezan Bank Ltd',
+      accountTitle: 'GulPash Luxury Apparel',
+      accountNumber: '01082019283746',
+      iban: 'PK45MEZN0001892019283746',
+      branchName: 'Gulberg Lahore Branch (0108)',
+      instructions: 'Transfer through online banking app or ATM. Enter transfer reference number and upload receipt screenshot.'
+    }
+  },
   seo: {
     siteTitle: 'GulPash | Luxury Pakistani Fashion | Unstitched & Stitched Ensembles',
     metaDescription: 'Shop GulPash for authentic Pakistani luxury women fashion. Unstitched & Stitched collections delivered nationwide with Cash on Delivery.',
