@@ -81,6 +81,8 @@ export interface Product {
   productImages?: ProductImageDetailed[];
   variants?: ProductVariantDetailed[];
   videoUrl?: string; // MP4 or WebM video
+  videoPoster?: string;
+  status?: 'Draft' | 'Active' | 'Archived';
   isVisible: boolean;
   isFeatured?: boolean;
   isBestSeller?: boolean;
@@ -217,9 +219,12 @@ export interface Order {
   items: OrderItem[];
   subtotal: number;
   shippingFee: number;
+  shippingDiscount?: number;
+  shippingDiscountReason?: 'FULL_ADVANCE_PAYMENT' | 'FREE_SHIPPING_THRESHOLD' | 'PROMO_CODE' | string;
   discount: number;
   total: number;
   paymentMethod: PaymentMethod;
+  paymentType?: 'Full Advance' | 'Cash on Delivery';
   paymentStatus: 'Unpaid' | 'Paid' | 'Under Verification' | 'Rejected';
   status: OrderStatus;
   paymentProof?: OrderPaymentProof;
@@ -331,6 +336,67 @@ export interface PaymentGatewaysConfig {
   bankTransfer: BankTransferSettings;
 }
 
+export interface AdvanceFreeDeliverySettings {
+  enabled: boolean;
+  eligiblePaymentMethods: PaymentMethod[]; // e.g. ['JazzCash', 'Easypaisa', 'Direct Bank Transfer']
+  minimumOrderAmount: number; // 0 means any order qualifies
+  customerMessage: string; // e.g. "Pay full in advance & get FREE delivery nationwide!"
+}
+
+export interface AdminNotificationSettings {
+  soundEnabled: boolean;
+  browserNotificationsEnabled: boolean;
+  events: {
+    newOrder: boolean;
+    newPaymentProof: boolean;
+    paymentResubmitted: boolean;
+    paymentVerified: boolean;
+    paymentActionRequired: boolean;
+    readyToDispatch: boolean;
+    lowStock: boolean;
+  };
+  lowStockThreshold: number; // default 3
+}
+
+export type NotificationEventType = 
+  | 'NEW_ORDER'
+  | 'NEW_PAYMENT_PROOF'
+  | 'PAYMENT_PROOF_RESUBMITTED'
+  | 'PAYMENT_VERIFIED'
+  | 'PAYMENT_ACTION_REQUIRED'
+  | 'READY_TO_DISPATCH'
+  | 'LOW_STOCK';
+
+export interface AdminNotification {
+  id: string;
+  type: NotificationEventType;
+  title: string;
+  message: string;
+  timestamp: string;
+  read: boolean;
+  orderId?: string;
+  orderNumber?: string;
+  orderTotal?: number;
+  customerName?: string;
+  paymentMethod?: string;
+  productId?: string;
+  productTitle?: string;
+  stock?: number;
+}
+
+export interface MediaAsset {
+  id: string;
+  url: string;
+  fileName: string;
+  dimensions?: string; // e.g. "1200 × 1500 px"
+  aspectRatio?: string; // e.g. "4:5" or "16:9"
+  fileSize?: string; // e.g. "420 KB"
+  uploadedAt: string;
+  mediaType: 'image' | 'video';
+  category: 'product-image' | 'product-video' | 'collection-image' | 'collection-banner' | 'homepage-image' | 'homepage-video';
+  usedIn?: string[]; // e.g. ["TRENDING Collection Banner", "Product: Plum 3Piece"]
+}
+
 export interface SiteSettings {
   brandName: string;
   tagline: string;
@@ -360,8 +426,10 @@ export interface SiteSettings {
     codEnabled: boolean;
     bankTransferEnabled: boolean;
     bankDetails?: string;
+    advanceFreeDelivery?: AdvanceFreeDeliverySettings;
   };
   payments: PaymentGatewaysConfig;
+  notifications?: AdminNotificationSettings;
   seo: {
     siteTitle: string;
     metaDescription: string;

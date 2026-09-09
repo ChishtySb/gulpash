@@ -134,7 +134,13 @@ export const INITIAL_SETTINGS: SiteSettings = {
     estimatedDeliveryDays: '2 - 4 Working Days (Nationwide)',
     codEnabled: true,
     bankTransferEnabled: true,
-    bankDetails: 'Bank: Meezan Bank Ltd\nAccount Title: GulPash Luxury Apparel\nIBAN: PK45MEZN0001892019283746\nBranch: Gulberg Lahore\n(Please send transfer receipt screenshot to our WhatsApp Concierge)'
+    bankDetails: 'Bank: Meezan Bank Ltd\nAccount Title: GulPash Luxury Apparel\nIBAN: PK45MEZN0001892019283746\nBranch: Gulberg Lahore\n(Please send transfer receipt screenshot to our WhatsApp Concierge)',
+    advanceFreeDelivery: {
+      enabled: true,
+      eligiblePaymentMethods: ['JazzCash', 'Easypaisa', 'Direct Bank Transfer'],
+      minimumOrderAmount: 0,
+      customerMessage: 'Pay Full in Advance & Enjoy FREE Nationwide Delivery!'
+    }
   },
   payments: {
     cod: {
@@ -161,6 +167,20 @@ export const INITIAL_SETTINGS: SiteSettings = {
       branchName: 'Gulberg Lahore Branch (0108)',
       instructions: 'Transfer through online banking app or ATM. Enter transfer reference number and upload receipt screenshot.'
     }
+  },
+  notifications: {
+    soundEnabled: true,
+    browserNotificationsEnabled: true,
+    events: {
+      newOrder: true,
+      newPaymentProof: true,
+      paymentResubmitted: true,
+      paymentVerified: true,
+      paymentActionRequired: true,
+      readyToDispatch: true,
+      lowStock: true
+    },
+    lowStockThreshold: 3
   },
   seo: {
     siteTitle: 'GulPash | Luxury Pakistani Fashion | Unstitched & Stitched Ensembles',

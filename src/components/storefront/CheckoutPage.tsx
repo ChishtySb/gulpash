@@ -4,11 +4,12 @@ import {
   ShieldCheck, Truck, ArrowLeft, CheckCircle2, 
   MessageCircle, Printer, Tag, ShoppingBag, AlertCircle,
   Copy, Check, Upload, Image as ImageIcon, X, Clock,
-  CreditCard, Smartphone, Building2, ChevronRight
+  CreditCard, Smartphone, Building2, ChevronRight, Zap, Sparkles
 } from 'lucide-react';
 import { CartItem, CurrencyCode, Order, PaymentMethod, SiteSettings } from '../../types';
 import { StorageService } from '../../lib/storage';
 import { formatPrice } from '../../lib/currency';
+import { NotificationService } from '../../lib/notifications';
 
 interface CheckoutPageProps {
   items: CartItem[];
@@ -254,14 +255,34 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
     }
   };
 
-  // Calculations
+  // Calculations & Advance Payment Free Delivery (Req 35-44)
   const subtotal = items.reduce((acc, i) => acc + (i.price * i.quantity), 0);
+  const standardFee = settings.shipping.standardFee || 250;
   const freeCodEnabled = settings.shipping.freeCodEnabled === true;
-  const isFreeShipping = freeCodEnabled && (subtotal >= (settings.shipping.freeShippingThreshold || 5000));
-  const shippingFee = isFreeShipping ? 0 : (settings.shipping.standardFee || 250);
-  const total = Math.max(0, subtotal + shippingFee - appliedDiscount);
-
+  const isFreeCodThreshold = freeCodEnabled && (subtotal >= (settings.shipping.freeShippingThreshold || 5000));
+  
+  const advanceOffer = settings.shipping?.advanceFreeDelivery;
+  const eligibleAdvanceMethods = advanceOffer?.eligiblePaymentMethods || ['JazzCash', 'Easypaisa', 'Direct Bank Transfer'];
   const isAdvancePayment = paymentMethod !== 'Cash on Delivery (COD)';
+  const minAdvanceAmount = advanceOffer?.minimumOrderAmount || 0;
+  const isEligibleForAdvanceFree = (advanceOffer?.enabled !== false) && eligibleAdvanceMethods.includes(paymentMethod) && (subtotal >= minAdvanceAmount);
+
+  let shippingFee = standardFee;
+  let shippingDiscount = 0;
+  let shippingDiscountReason: string | undefined = undefined;
+
+  if (isEligibleForAdvanceFree) {
+    shippingFee = 0;
+    shippingDiscount = standardFee;
+    shippingDiscountReason = 'FULL_ADVANCE_PAYMENT';
+  } else if (isFreeCodThreshold) {
+    shippingFee = 0;
+    shippingDiscount = standardFee;
+    shippingDiscountReason = 'FREE_SHIPPING_THRESHOLD';
+  }
+
+  const isFreeShipping = shippingFee === 0;
+  const total = Math.max(0, subtotal + shippingFee - appliedDiscount);
 
   const handleApplyPromo = (e: React.FormEvent) => {
     e.preventDefault();
@@ -329,9 +350,12 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
       })),
       subtotal,
       shippingFee,
+      shippingDiscount,
+      shippingDiscountReason,
       discount: appliedDiscount,
       total,
       paymentMethod,
+      paymentType: isAdvancePayment ? 'Full Advance' : 'Cash on Delivery',
       paymentStatus,
       status,
       paymentProof: isAdvancePayment ? {
@@ -345,6 +369,19 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
     // Save to storage
     StorageService.saveOrder(newOrder);
+
+    // Trigger in-app notification and browser chime
+    NotificationService.notify({
+      type: 'NEW_ORDER',
+      title: `New Order Placed: #${newOrder.orderNumber}`,
+      message: `${newOrder.customer.fullName} placed an order of ${formatPrice(newOrder.total, currency)} via ${newOrder.paymentMethod}.`,
+      orderId: newOrder.id,
+      orderNumber: newOrder.orderNumber,
+      orderTotal: newOrder.total,
+      customerName: newOrder.customer.fullName,
+      paymentMethod: newOrder.paymentMethod
+    });
+
     onClearCart();
     setPlacedOrder(newOrder);
     setIsSubmitting(false);
@@ -825,6 +862,44 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   <span className="text-[11px] text-stone-400 font-light">100% Safe & Secure</span>
                 </div>
 
+                {/* ADVANCE PAYMENT FREE DELIVERY INCENTIVE BANNER (Req 35-44) */}
+                {advanceOffer?.enabled !== false && (
+                  <div>
+                    {isEligibleForAdvanceFree ? (
+                      <div className="p-3.5 bg-emerald-50 border border-emerald-300 text-emerald-950 text-xs flex items-center justify-between gap-3 rounded-xs shadow-xs">
+                        <div className="flex items-center gap-2.5">
+                          <Sparkles className="w-4 h-4 text-emerald-700 shrink-0" />
+                          <div>
+                            <span className="font-bold text-emerald-900 block text-xs">
+                              FREE Nationwide Delivery Applied!
+                            </span>
+                            <span className="text-[11px] text-emerald-800">
+                              You unlocked Rs. {standardFee} off shipping by choosing {paymentMethod}.
+                            </span>
+                          </div>
+                        </div>
+                        <span className="shrink-0 bg-emerald-800 text-white font-mono text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                          Saved Rs. {standardFee}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="p-3 bg-amber-50/80 border border-amber-200 text-amber-900 text-xs flex items-center justify-between gap-3 rounded-xs">
+                        <div className="flex items-center gap-2.5">
+                          <Zap className="w-4 h-4 text-amber-700 shrink-0" />
+                          <div>
+                            <span className="font-bold text-amber-900 block text-xs">
+                              Special Offer: 100% FREE Delivery Nationwide!
+                            </span>
+                            <span className="text-[11px] text-amber-800">
+                              Pay in full via JazzCash, Easypaisa, or Direct Bank Transfer to waive the Rs. {standardFee} delivery fee.
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* COD OFF Notice if Cash on Delivery is disabled */}
                 {!codEnabled && (
                   <div className="p-3.5 bg-amber-50 border border-amber-300 text-amber-900 text-xs flex items-start gap-2.5 rounded-xs">
@@ -1164,16 +1239,34 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   <span>Subtotal</span>
                   <span className="font-sans not-italic font-medium text-stone-900 price-display">{formatPrice(subtotal, currency)}</span>
                 </div>
-                <div className="flex justify-between text-stone-600">
-                  <span>Nationwide Shipping</span>
+                <div className="flex justify-between items-start text-stone-600">
+                  <div>
+                    <span>Nationwide Shipping</span>
+                    {isEligibleForAdvanceFree && (
+                      <span className="block text-[10px] text-emerald-800 font-medium">
+                        Full Advance Offer (-Rs. {standardFee})
+                      </span>
+                    )}
+                  </div>
                   <span className="font-sans not-italic">
                     {isFreeShipping ? (
-                      <span className="text-emerald-700 font-medium uppercase text-[11px] tracking-wider">FREE</span>
+                      <span className="text-emerald-700 font-medium uppercase text-[11px] tracking-wider flex items-center gap-1.5 justify-end">
+                        <span className="line-through text-stone-400 text-[10px] font-normal font-sans price-display">
+                          {formatPrice(standardFee, currency)}
+                        </span>
+                        FREE
+                      </span>
                     ) : (
                       formatPrice(shippingFee, currency)
                     )}
                   </span>
                 </div>
+                {!isAdvancePayment && advanceOffer?.enabled !== false && (
+                  <div className="p-2 bg-amber-50/90 border border-amber-200 text-amber-900 text-[11px] rounded-xs flex items-center gap-1.5">
+                    <Zap className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                    <span>Pay via JazzCash/Bank to get <strong>FREE delivery</strong>!</span>
+                  </div>
+                )}
                 {appliedDiscount > 0 && (
                   <div className="flex justify-between text-emerald-700 font-medium font-sans not-italic">
                     <span>Discount Coupon</span>

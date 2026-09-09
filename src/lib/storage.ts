@@ -1,11 +1,12 @@
 import { 
   Product, Category, Collection, Order, OrderStatus, OrderPaymentProof, HomepageCMS, SiteSettings, 
-  CartItem, Review, CustomerSummary 
+  CartItem, Review, CustomerSummary, MediaAsset 
 } from '../types';
 import { 
   INITIAL_CATEGORIES, INITIAL_COLLECTIONS, INITIAL_PRODUCTS, 
   INITIAL_ORDERS, INITIAL_REVIEWS, INITIAL_CMS, INITIAL_SETTINGS 
 } from '../data/initialData';
+import { NotificationService } from './notifications';
 
 const KEYS = {
   PRODUCTS: 'gulpash_products_v3_ref_aligned',
@@ -15,6 +16,7 @@ const KEYS = {
   REVIEWS: 'gulpash_reviews_v2_migrated',
   CMS: 'gulpash_cms_v2_migrated',
   SETTINGS: 'gulpash_settings_v2_migrated',
+  MEDIA_ASSETS: 'gulpash_media_assets_v1',
   CART: 'gulpash_cart_v2',
   WISHLIST: 'gulpash_wishlist_v2',
   ADMIN_AUTH: 'gulpash_admin_auth_v2',
@@ -86,6 +88,93 @@ export const StorageService = {
       localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(filtered));
     }
     notifyChange('products');
+  },
+
+  duplicateProduct(id: string): Product | null {
+    const products = this.getProducts(true);
+    const original = products.find(p => p.id === id);
+    if (!original) return null;
+
+    const newId = `gp-${Date.now()}`;
+    const randSuffix = Math.floor(100 + Math.random() * 900);
+    const newSlug = `${original.slug}-copy-${randSuffix}`;
+    const newSku = original.sku ? `${original.sku}-COPY-${randSuffix}` : `GP-COPY-${randSuffix}`;
+
+    const duplicated: Product = {
+      ...JSON.parse(JSON.stringify(original)),
+      id: newId,
+      title: `${original.title} (Copy)`,
+      slug: newSlug,
+      sku: newSku,
+      status: 'Draft',
+      isVisible: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    this.saveProduct(duplicated);
+    return duplicated;
+  },
+
+  bulkUpdateProductStatus(productIds: string[], status: 'Draft' | 'Active' | 'Archived', isVisible?: boolean): void {
+    const products = this.getProducts(true);
+    const updated = products.map(p => {
+      if (productIds.includes(p.id)) {
+        return {
+          ...p,
+          status,
+          isVisible: isVisible !== undefined ? isVisible : (status === 'Active'),
+          updatedAt: new Date().toISOString()
+        };
+      }
+      return p;
+    });
+    localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(updated));
+    notifyChange('products');
+    this.syncCollectionsWithProducts();
+  },
+
+  bulkUpdateCollections(productIds: string[], addCollectionSlugs: string[], removeCollectionSlugs: string[] = []): void {
+    const products = this.getProducts(true);
+    const allCollections = this.getCollections();
+    
+    // Map slugs to names
+    const slugToNameMap: Record<string, string> = {};
+    allCollections.forEach(c => {
+      slugToNameMap[c.slug] = c.name;
+    });
+
+    const updated = products.map(p => {
+      if (!productIds.includes(p.id)) return p;
+
+      let currentNames = Array.isArray(p.collectionNames) ? [...p.collectionNames] : [];
+      let currentTags = Array.isArray(p.tags) ? [...p.tags] : [];
+
+      // Add
+      addCollectionSlugs.forEach(slug => {
+        const name = slugToNameMap[slug] || slug.toUpperCase();
+        if (!currentNames.includes(name)) currentNames.push(name);
+        if (!currentTags.includes(slug)) currentTags.push(slug);
+      });
+
+      // Remove
+      removeCollectionSlugs.forEach(slug => {
+        const name = slugToNameMap[slug] || slug.toUpperCase();
+        currentNames = currentNames.filter(n => n !== name);
+        currentTags = currentTags.filter(t => t !== slug);
+      });
+
+      return {
+        ...p,
+        collectionNames: currentNames,
+        tags: currentTags,
+        updatedAt: new Date().toISOString()
+      };
+    });
+
+    localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(updated));
+    notifyChange('products');
+    this.syncCollectionsWithProducts();
   },
 
   // CATEGORIES
@@ -265,6 +354,16 @@ export const StorageService = {
     const collections = this.getCollections().filter(c => c.id !== id);
     localStorage.setItem(KEYS.COLLECTIONS, JSON.stringify(collections));
     notifyChange('collections');
+  },
+
+  updateCollection(id: string, updates: Partial<Collection>): void {
+    const collections = this.getCollections();
+    const idx = collections.findIndex(c => c.id === id);
+    if (idx >= 0) {
+      collections[idx] = { ...collections[idx], ...updates };
+      localStorage.setItem(KEYS.COLLECTIONS, JSON.stringify(collections));
+      notifyChange('collections');
+    }
   },
 
   // ORDERS
@@ -710,6 +809,195 @@ export const StorageService = {
     localStorage.removeItem(KEYS.CMS);
     localStorage.removeItem(KEYS.SETTINGS);
     notifyChange('all');
+  },
+
+  // MEDIA ASSETS (Req 9)
+  getMediaAssets(): MediaAsset[] {
+    try {
+      const data = localStorage.getItem(KEYS.MEDIA_ASSETS);
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch {}
+
+    // Seed default authentic media library from products and collections
+    const seedAssets: MediaAsset[] = [];
+    const products = this.getProducts(true);
+    const collections = this.getCollections();
+
+    // Add hero and collection banners
+    collections.forEach(c => {
+      if (c.imageUrl) {
+        seedAssets.push({
+          id: `media-col-${c.id}`,
+          url: c.imageUrl,
+          fileName: `${c.slug}-collection-card.jpg`,
+          dimensions: '800 × 1000 px',
+          aspectRatio: '4:5',
+          fileSize: '320 KB',
+          uploadedAt: new Date(Date.now() - 3600 * 1000 * 24 * 7).toISOString(),
+          mediaType: 'image',
+          category: 'collection-image',
+          usedIn: [`Collection Card: ${c.name}`]
+        });
+      }
+      if (c.bannerUrl) {
+        seedAssets.push({
+          id: `media-banner-${c.id}`,
+          url: c.bannerUrl,
+          fileName: `${c.slug}-collection-banner.jpg`,
+          dimensions: '1920 × 800 px',
+          aspectRatio: '16:9',
+          fileSize: '680 KB',
+          uploadedAt: new Date(Date.now() - 3600 * 1000 * 24 * 7).toISOString(),
+          mediaType: 'image',
+          category: 'collection-banner',
+          usedIn: [`Collection Header: ${c.name}`]
+        });
+      }
+    });
+
+    // Add top 15 product images and videos
+    products.slice(0, 15).forEach((p, idx) => {
+      if (p.images && p.images[0]) {
+        seedAssets.push({
+          id: `media-prod-${p.id}-1`,
+          url: p.images[0],
+          fileName: `${p.slug}-front.jpg`,
+          dimensions: '1200 × 1500 px',
+          aspectRatio: '4:5',
+          fileSize: '450 KB',
+          uploadedAt: new Date(Date.now() - 3600 * 1000 * 24 * (idx + 1)).toISOString(),
+          mediaType: 'image',
+          category: 'product-image',
+          usedIn: [`Product: ${p.title}`]
+        });
+      }
+      if (p.images && p.images[1]) {
+        seedAssets.push({
+          id: `media-prod-${p.id}-2`,
+          url: p.images[1],
+          fileName: `${p.slug}-detail.jpg`,
+          dimensions: '1200 × 1500 px',
+          aspectRatio: '4:5',
+          fileSize: '420 KB',
+          uploadedAt: new Date(Date.now() - 3600 * 1000 * 24 * (idx + 1)).toISOString(),
+          mediaType: 'image',
+          category: 'product-image',
+          usedIn: [`Product: ${p.title}`]
+        });
+      }
+      if (p.videoUrl) {
+        seedAssets.push({
+          id: `media-prod-vid-${p.id}`,
+          url: p.videoUrl,
+          fileName: `${p.slug}-runway-preview.mp4`,
+          dimensions: '1080 × 1350 px',
+          aspectRatio: '4:5',
+          fileSize: '2.4 MB',
+          uploadedAt: new Date(Date.now() - 3600 * 1000 * 24 * (idx + 1)).toISOString(),
+          mediaType: 'video',
+          category: 'product-video',
+          usedIn: [`Product Video: ${p.title}`]
+        });
+      }
+    });
+
+    try {
+      localStorage.setItem(KEYS.MEDIA_ASSETS, JSON.stringify(seedAssets));
+    } catch {}
+
+    return seedAssets;
+  },
+
+  saveMediaAsset(asset: MediaAsset): void {
+    const list = this.getMediaAssets();
+    const idx = list.findIndex(a => a.id === asset.id);
+    if (idx >= 0) {
+      list[idx] = asset;
+    } else {
+      list.unshift(asset);
+    }
+    try {
+      localStorage.setItem(KEYS.MEDIA_ASSETS, JSON.stringify(list));
+    } catch {}
+    notifyChange('media');
+  },
+
+  deleteMediaAsset(id: string): void {
+    const list = this.getMediaAssets().filter(a => a.id !== id);
+    try {
+      localStorage.setItem(KEYS.MEDIA_ASSETS, JSON.stringify(list));
+    } catch {}
+    notifyChange('media');
+
+    if (typeof fetch !== 'undefined') {
+      fetch(`/api/media/${id}`, { method: 'DELETE' }).catch(() => {});
+    }
+  },
+
+  async uploadMediaFile(
+    file: File, 
+    category: MediaAsset['category'] = 'product-image', 
+    usedIn: string[] = []
+  ): Promise<{ url: string; asset?: MediaAsset }> {
+    return new Promise((resolve, reject) => {
+      const isVideo = file.type.startsWith('video/') || file.name.endsWith('.mp4') || file.name.endsWith('.webm');
+      const reader = new FileReader();
+
+      reader.onload = async () => {
+        const base64Data = reader.result as string;
+        try {
+          const res = await fetch('/api/media/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              data: base64Data,
+              fileName: file.name,
+              category,
+              usedIn,
+              fileSize: `${Math.round(file.size / 1024)} KB`,
+              mediaType: isVideo ? 'video' : 'image',
+              dimensions: isVideo ? '1080 × 1350 px' : '1200 × 1500 px',
+              aspectRatio: '4:5'
+            })
+          });
+
+          if (res.ok) {
+            const json = await res.json();
+            if (json.asset) {
+              this.saveMediaAsset(json.asset);
+            }
+            resolve({ url: json.url || base64Data, asset: json.asset });
+            return;
+          }
+        } catch (e) {
+          console.warn('Server media upload failed, fallback to local storage:', e);
+        }
+
+        // Fallback to local Data URL
+        const localAsset: MediaAsset = {
+          id: `media_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`,
+          url: base64Data,
+          fileName: file.name,
+          dimensions: isVideo ? '1080 × 1350 px' : '1200 × 1500 px',
+          aspectRatio: '4:5',
+          fileSize: `${Math.round(file.size / 1024)} KB`,
+          uploadedAt: new Date().toISOString(),
+          mediaType: isVideo ? 'video' : 'image',
+          category,
+          usedIn
+        };
+        this.saveMediaAsset(localAsset);
+        resolve({ url: base64Data, asset: localAsset });
+      };
+
+      reader.onerror = () => reject(new Error('File reading error'));
+      reader.readAsDataURL(file);
+    });
   },
 
   // SUPABASE STORAGE UPLOADER

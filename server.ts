@@ -125,6 +125,63 @@ function writeOrders(orders: any[]) {
   fs.writeFileSync(ORDERS_FILE, JSON.stringify(orders, null, 2), 'utf-8');
 }
 
+// Media Assets management
+const MEDIA_DIR = path.join(DATA_DIR, 'media');
+const MEDIA_FILE = path.join(DATA_DIR, 'media_assets.json');
+const NOTIFICATIONS_FILE = path.join(DATA_DIR, 'notifications.json');
+
+if (!fs.existsSync(MEDIA_DIR)) {
+  fs.mkdirSync(MEDIA_DIR, { recursive: true });
+}
+
+function readMediaAssets(): any[] {
+  try {
+    if (fs.existsSync(MEDIA_FILE)) {
+      return JSON.parse(fs.readFileSync(MEDIA_FILE, 'utf-8'));
+    }
+  } catch (e) {}
+  return [];
+}
+
+function writeMediaAssets(assets: any[]) {
+  try {
+    fs.writeFileSync(MEDIA_FILE, JSON.stringify(assets, null, 2), 'utf-8');
+  } catch (e) {}
+}
+
+function readNotifications(): any[] {
+  try {
+    if (fs.existsSync(NOTIFICATIONS_FILE)) {
+      return JSON.parse(fs.readFileSync(NOTIFICATIONS_FILE, 'utf-8'));
+    }
+  } catch (e) {}
+  return [];
+}
+
+function writeNotifications(notifs: any[]) {
+  try {
+    fs.writeFileSync(NOTIFICATIONS_FILE, JSON.stringify(notifs.slice(0, 150), null, 2), 'utf-8');
+  } catch (e) {}
+}
+
+function addServerNotification(item: any) {
+  try {
+    const list = readNotifications();
+    const id = `notif-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const newNotif = {
+      id,
+      ...item,
+      timestamp: new Date().toISOString(),
+      read: false
+    };
+    list.unshift(newNotif);
+    writeNotifications(list);
+    return newNotif;
+  } catch (e) {
+    return null;
+  }
+}
+
 // ---------------- API ROUTES ----------------
 
 // Health check
@@ -149,7 +206,7 @@ app.put('/api/settings', (req, res) => {
   }
 });
 
-// Orders: Store-wide persistent orders
+// Orders: Store-wide persistent orders with authoritative shipping calculation
 app.get('/api/orders', (req, res) => {
   const orders = readOrders();
   res.json(orders);
@@ -162,6 +219,40 @@ app.post('/api/orders', (req, res) => {
     if (!newOrder.id) {
       newOrder.id = `ord-${Date.now()}`;
     }
+
+    // Authoritative Server-Side Shipping & Advance Payment Free Delivery Calculation (Req 35-44)
+    const settings = readSettings();
+    const subtotal = Number(newOrder.subtotal) || 0;
+    const standardFee = Number(settings.shipping?.standardFee) || 250;
+    const freeShippingThreshold = Number(settings.shipping?.freeShippingThreshold) || 5000;
+    const freeCodEnabled = settings.shipping?.freeCodEnabled === true;
+    const advanceOffer = settings.shipping?.advanceFreeDelivery;
+
+    const eligibleAdvanceMethods = advanceOffer?.eligiblePaymentMethods || ['JazzCash', 'Easypaisa', 'Direct Bank Transfer'];
+    const isEligibleAdvanceMethod = eligibleAdvanceMethods.includes(newOrder.paymentMethod);
+    const minAdvanceAmount = Number(advanceOffer?.minimumOrderAmount) || 0;
+    const qualifiesForAdvanceFree = (advanceOffer?.enabled !== false) && isEligibleAdvanceMethod && (subtotal >= minAdvanceAmount);
+    const qualifiesForCodFree = freeCodEnabled && (subtotal >= freeShippingThreshold);
+
+    if (qualifiesForAdvanceFree) {
+      newOrder.shippingFee = 0;
+      newOrder.shippingDiscount = standardFee;
+      newOrder.shippingDiscountReason = 'FULL_ADVANCE_PAYMENT';
+      newOrder.paymentType = 'Full Advance';
+    } else if (qualifiesForCodFree) {
+      newOrder.shippingFee = 0;
+      newOrder.shippingDiscount = standardFee;
+      newOrder.shippingDiscountReason = 'FREE_SHIPPING_THRESHOLD';
+      newOrder.paymentType = isEligibleAdvanceMethod ? 'Full Advance' : 'Cash on Delivery';
+    } else {
+      newOrder.shippingFee = standardFee;
+      newOrder.shippingDiscount = 0;
+      newOrder.paymentType = isEligibleAdvanceMethod ? 'Full Advance' : 'Cash on Delivery';
+    }
+
+    const discount = Number(newOrder.discount) || 0;
+    newOrder.total = Math.max(0, subtotal + newOrder.shippingFee - discount);
+
     const idx = orders.findIndex(o => o.id === newOrder.id || o.orderNumber === newOrder.orderNumber);
     if (idx >= 0) {
       orders[idx] = { ...orders[idx], ...newOrder, updatedAt: new Date().toISOString() };
@@ -171,8 +262,44 @@ app.post('/api/orders', (req, res) => {
         createdAt: newOrder.createdAt || new Date().toISOString(),
         updatedAt: new Date().toISOString()
       });
+      // Notify admin of new order
+      addServerNotification({
+        type: 'NEW_ORDER',
+        title: `New Order Placed: #${newOrder.orderNumber}`,
+        message: `${newOrder.customer?.fullName || 'Customer'} ordered ${newOrder.items?.length || 1} item(s) totaling PKR ${newOrder.total.toLocaleString()} via ${newOrder.paymentMethod}.`,
+        orderId: newOrder.id,
+        orderNumber: newOrder.orderNumber,
+        orderTotal: newOrder.total,
+        customerName: newOrder.customer?.fullName,
+        paymentMethod: newOrder.paymentMethod
+      });
     }
     writeOrders(orders);
+
+    // Synchronize asynchronously with Supabase Postgres
+    const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://alzqexevrhcmzcluvatc.supabase.co';
+    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+    if (supabaseKey) {
+      import('@supabase/supabase-js').then(({ createClient }) => {
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        supabase.from('orders').insert({
+          order_number: newOrder.orderNumber,
+          customer_name: newOrder.customer?.fullName || 'Customer',
+          customer_email: newOrder.customer?.email || 'care@gulpash.online',
+          customer_phone: newOrder.customer?.phone || '',
+          address: newOrder.customer?.address || '',
+          city: newOrder.customer?.city || 'Pakistan',
+          province: newOrder.customer?.province || 'Punjab',
+          subtotal: newOrder.subtotal,
+          shipping_fee: newOrder.shippingFee,
+          total: newOrder.total,
+          payment_method: newOrder.paymentMethod,
+          payment_status: newOrder.paymentStatus || 'Unpaid',
+          order_status: newOrder.status || 'Pending'
+        }).then(() => {}).catch(() => {});
+      }).catch(() => {});
+    }
+
     res.json({ success: true, order: idx >= 0 ? orders[idx] : orders[0] });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });
@@ -216,6 +343,18 @@ app.put('/api/orders/:id/verify', (req, res) => {
     };
     orders[idx].updatedAt = new Date().toISOString();
     writeOrders(orders);
+
+    addServerNotification({
+      type: 'PAYMENT_VERIFIED',
+      title: `Payment Verified: #${orders[idx].orderNumber}`,
+      message: `Payment confirmed by ${verifiedBy || 'Admin'}. Order marked Ready to Dispatch.`,
+      orderId: orders[idx].id,
+      orderNumber: orders[idx].orderNumber,
+      orderTotal: orders[idx].total,
+      customerName: orders[idx].customer?.fullName,
+      paymentMethod: orders[idx].paymentMethod
+    });
+
     res.json({ success: true, order: orders[idx] });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -240,6 +379,18 @@ app.put('/api/orders/:id/reject', (req, res) => {
     };
     orders[idx].updatedAt = new Date().toISOString();
     writeOrders(orders);
+
+    addServerNotification({
+      type: 'PAYMENT_ACTION_REQUIRED',
+      title: `Payment Action Required: #${orders[idx].orderNumber}`,
+      message: `Proof rejected: "${reason || 'Payment could not be verified'}". Order remains active.`,
+      orderId: orders[idx].id,
+      orderNumber: orders[idx].orderNumber,
+      orderTotal: orders[idx].total,
+      customerName: orders[idx].customer?.fullName,
+      paymentMethod: orders[idx].paymentMethod
+    });
+
     res.json({ success: true, order: orders[idx] });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -255,6 +406,7 @@ app.put('/api/orders/:id/proof', (req, res) => {
     if (idx === -1) {
       return res.status(404).json({ error: 'Order not found' });
     }
+    const hadProof = !!orders[idx].paymentProof?.submittedAt;
     orders[idx].paymentProof = {
       ...(orders[idx].paymentProof || {}),
       screenshotUrl: screenshotUrl || orders[idx].paymentProof?.screenshotUrl,
@@ -266,6 +418,18 @@ app.put('/api/orders/:id/proof', (req, res) => {
     orders[idx].status = 'Payment Verification Pending';
     orders[idx].updatedAt = new Date().toISOString();
     writeOrders(orders);
+
+    addServerNotification({
+      type: hadProof ? 'PAYMENT_PROOF_RESUBMITTED' : 'NEW_PAYMENT_PROOF',
+      title: hadProof ? `Proof Resubmitted: #${orders[idx].orderNumber}` : `New Payment Receipt: #${orders[idx].orderNumber}`,
+      message: `TID: ${transactionReference || 'Attached'}. Ready for merchant review.`,
+      orderId: orders[idx].id,
+      orderNumber: orders[idx].orderNumber,
+      orderTotal: orders[idx].total,
+      customerName: orders[idx].customer?.fullName,
+      paymentMethod: orders[idx].paymentMethod
+    });
+
     res.json({ success: true, order: orders[idx] });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -342,6 +506,141 @@ app.get('/api/payment-proof/:proofId', (req, res) => {
     fs.createReadStream(filePath).pipe(res);
   } catch (err: any) {
     res.status(500).json({ error: 'Failed retrieving payment proof' });
+  }
+});
+
+// ---------------- MEDIA LIBRARY ENDPOINTS (Req 9) ----------------
+app.get('/api/media/list', (req, res) => {
+  const assets = readMediaAssets();
+  res.json(assets);
+});
+
+app.post('/api/media/upload', (req, res) => {
+  try {
+    const { data, fileName, category, usedIn, dimensions, aspectRatio, fileSize, mediaType } = req.body;
+    if (!data) {
+      return res.status(400).json({ error: 'No media data provided' });
+    }
+
+    let base64Data = data;
+    let extension = mediaType === 'video' ? 'mp4' : 'jpg';
+
+    if (data.startsWith('data:')) {
+      const match = data.match(/^data:([a-zA-Z0-9/+-]+);base64,(.+)$/);
+      if (match) {
+        const mime = match[1];
+        base64Data = match[2];
+        if (mime.includes('png')) extension = 'png';
+        else if (mime.includes('webp')) extension = 'webp';
+        else if (mime.includes('mp4')) extension = 'mp4';
+        else if (mime.includes('webm')) extension = 'webm';
+        else extension = 'jpg';
+      }
+    }
+
+    const cleanBaseName = (fileName || 'media').replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
+    const mediaId = `media_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`;
+    const savedFilename = `${mediaId}_${cleanBaseName}.${extension}`;
+    const filePath = path.join(MEDIA_DIR, savedFilename);
+
+    fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+
+    const publicUrl = `/api/media/uploads/${savedFilename}`;
+    const isVid = mediaType === 'video' || extension === 'mp4' || extension === 'webm';
+    const asset = {
+      id: mediaId,
+      url: publicUrl,
+      fileName: fileName || savedFilename,
+      dimensions: dimensions || (isVid ? '1080 × 1350 px' : '1200 × 1500 px'),
+      aspectRatio: aspectRatio || (isVid ? '4:5' : '4:5'),
+      fileSize: fileSize || `${Math.round(base64Data.length * 0.75 / 1024)} KB`,
+      uploadedAt: new Date().toISOString(),
+      mediaType: isVid ? 'video' : 'image',
+      category: category || (isVid ? 'product-video' : 'product-image'),
+      usedIn: Array.isArray(usedIn) ? usedIn : []
+    };
+
+    const currentAssets = readMediaAssets();
+    currentAssets.unshift(asset);
+    writeMediaAssets(currentAssets);
+
+    res.json({ success: true, url: publicUrl, asset });
+  } catch (err: any) {
+    console.error('Failed media upload:', err);
+    res.status(500).json({ error: 'Failed to upload media asset' });
+  }
+});
+
+app.get('/api/media/uploads/:filename', (req, res) => {
+  try {
+    const { filename } = req.params;
+    if (!/^[a-zA-Z0-9_.-]+$/.test(filename)) {
+      return res.status(400).json({ error: 'Invalid filename' });
+    }
+    const filePath = path.join(MEDIA_DIR, filename);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: 'Media file not found' });
+    }
+
+    const ext = path.extname(filename).toLowerCase();
+    let contentType = 'application/octet-stream';
+    if (ext === '.jpg' || ext === '.jpeg') contentType = 'image/jpeg';
+    else if (ext === '.png') contentType = 'image/png';
+    else if (ext === '.webp') contentType = 'image/webp';
+    else if (ext === '.mp4') contentType = 'video/mp4';
+    else if (ext === '.webm') contentType = 'video/webm';
+
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    fs.createReadStream(filePath).pipe(res);
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed serving media' });
+  }
+});
+
+app.delete('/api/media/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const assets = readMediaAssets().filter(a => a.id !== id);
+    writeMediaAssets(assets);
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ---------------- NOTIFICATIONS ENDPOINTS (Req 26-34) ----------------
+app.get('/api/notifications', (req, res) => {
+  const notifs = readNotifications();
+  res.json(notifs);
+});
+
+app.post('/api/notifications', (req, res) => {
+  try {
+    const created = addServerNotification(req.body);
+    res.json({ success: true, notification: created });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/notifications/:id/read', (req, res) => {
+  try {
+    const notifs = readNotifications().map(n => n.id === req.params.id ? { ...n, read: true } : n);
+    writeNotifications(notifs);
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/notifications/read-all', (req, res) => {
+  try {
+    const notifs = readNotifications().map(n => ({ ...n, read: true }));
+    writeNotifications(notifs);
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
   }
 });
 
