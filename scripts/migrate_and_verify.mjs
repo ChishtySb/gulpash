@@ -228,12 +228,42 @@ export function runMigration() {
     // Determine sizes array
     const distinctSizes = Array.from(new Set(productVariants.map(v => v.size)));
 
-    // Clean legacy brand text in descriptions to maintain pristine GulPash brand identity
+    // Clean, sanitize, and normalize description ensuring customer-readable formatting
     let cleanDescription = p.body_html || `<p>${p.title}</p>`;
+    // 1. Un-escape if html was escaped
+    for (let k = 0; k < 3; k++) {
+      if (cleanDescription.includes('&lt;') || cleanDescription.includes('&gt;')) {
+        cleanDescription = cleanDescription.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+      }
+    }
+    // 2. Strip comments, script, style, iframe, images, divs, classes, styles
     cleanDescription = cleanDescription
-      .replace(/Tawakal Closet/gi, 'GulPash')
+      .replace(/<!--[\s\S]*?-->/g, '')
+      .replace(/<(script|style|iframe|object|embed|noscript)[\s\S]*?<\/\1>/gi, '')
+      .replace(/<img[^>]*>/gi, '')
+      .replace(/<div[^>]*>\s*<\/div>/gi, '')
+      .replace(/<\/?div[^>]*>/gi, '')
+      .replace(/\s*(?:data-[a-z0-9_-]+|style|class|id|width|height|color|align|valign|role|dir|tabindex)\s*=\s*(?:"[^"]*"|\x27[^\x27]*\x27|[^\s>]+)/gi, '')
+      .replace(/\s*on[a-z]+\s*=\s*(?:"[^"]*"|\x27[^\x27]*\x27|[^\s>]+)/gi, '')
+      .replace(/<ul>\s*<li>\s*<ul>/gi, '<ul>')
+      .replace(/<\/ul>\s*<\/li>\s*<\/ul>/gi, '</ul>')
+      .replace(/<li>\s*<p>(.*?)<\/p>\s*<\/li>/gi, '<li>$1</li>')
+      .replace(/<h[12356][^>]*>([\s\S]*?)<\/h[12356]>/gi, '<p><strong>$1</strong></p>')
+      .replace(/<h4[^>]*>([\s\S]*?)<\/h4>/gi, '<p><strong>$1</strong></p>')
+      .replace(/Tawakal\s*Closet/gi, 'GulPash')
       .replace(/#TawakalCloset/gi, '#GulPash')
-      .replace(/Tawakal/gi, 'GulPash');
+      .replace(/Anabya\s*Garments/gi, 'GulPash')
+      .replace(/#AnabyaGarments/gi, '#GulPash')
+      .replace(/Tawakal/gi, 'GulPash')
+      .replace(/&amp;/g, '&');
+    for (let k = 0; k < 3; k++) {
+      cleanDescription = cleanDescription.replace(/<span[^>]*>([\s\S]*?)<\/span>/gi, '$1');
+      cleanDescription = cleanDescription.replace(/<strong>\s*<strong>/gi, '<strong>').replace(/<\/strong>\s*<\/strong>/gi, '</strong>');
+      cleanDescription = cleanDescription.replace(/<p>\s*(?:<br\s*[\/]?>|\s|&nbsp;)*<\/p>/gi, '');
+      cleanDescription = cleanDescription.replace(/<strong>\s*<\/strong>/gi, '');
+      cleanDescription = cleanDescription.replace(/<li>\s*<\/li>/gi, '');
+    }
+    cleanDescription = cleanDescription.replace(/(?:<br\s*[\/]?>\s*){2,}/gi, '<br />').replace(/<p>\s*<\/p>/gi, '').trim();
 
     const normalizedProduct = {
       id: productId,

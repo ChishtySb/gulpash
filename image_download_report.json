@@ -1,0 +1,2551 @@
+{
+  "totalProducts": 38,
+  "totalImages": 220,
+  "downloadedCount": 220,
+  "verifiedCount": 220,
+  "failedCount": 0,
+  "products": [
+    {
+      "productTitle": "Alize 3Pcs",
+      "handle": "alize-3pcs",
+      "totalSourceImages": 9,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440049594601,
+          "filename": "01_49440049594601.jpg",
+          "relativePath": "/products/anabya/alize-3pcs/01_49440049594601.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 175465
+        },
+        {
+          "position": 2,
+          "id": 49440049627369,
+          "filename": "02_49440049627369.jpg",
+          "relativePath": "/products/anabya/alize-3pcs/02_49440049627369.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 160106
+        },
+        {
+          "position": 3,
+          "id": 49440049660137,
+          "filename": "03_49440049660137.jpg",
+          "relativePath": "/products/anabya/alize-3pcs/03_49440049660137.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 169552
+        },
+        {
+          "position": 4,
+          "id": 49440049692905,
+          "filename": "04_49440049692905.jpg",
+          "relativePath": "/products/anabya/alize-3pcs/04_49440049692905.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 170190
+        },
+        {
+          "position": 5,
+          "id": 49440049725673,
+          "filename": "05_49440049725673.jpg",
+          "relativePath": "/products/anabya/alize-3pcs/05_49440049725673.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 134146
+        },
+        {
+          "position": 6,
+          "id": 49440049758441,
+          "filename": "06_49440049758441.jpg",
+          "relativePath": "/products/anabya/alize-3pcs/06_49440049758441.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 165724
+        },
+        {
+          "position": 7,
+          "id": 49440049791209,
+          "filename": "07_49440049791209.jpg",
+          "relativePath": "/products/anabya/alize-3pcs/07_49440049791209.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 122747
+        },
+        {
+          "position": 8,
+          "id": 49440049823977,
+          "filename": "08_49440049823977.jpg",
+          "relativePath": "/products/anabya/alize-3pcs/08_49440049823977.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 141515
+        },
+        {
+          "position": 9,
+          "id": 49440049856745,
+          "filename": "09_49440049856745.jpg",
+          "relativePath": "/products/anabya/alize-3pcs/09_49440049856745.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 183800
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Zar-E-Sabz 3Piece",
+      "handle": "zar-e-sabz-3piece",
+      "totalSourceImages": 3,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 50358171500777,
+          "filename": "01_50358171500777.png",
+          "relativePath": "/products/anabya/zar-e-sabz-3piece/01_50358171500777.png",
+          "width": 1024,
+          "height": 1536,
+          "type": "png",
+          "bytes": 2584435
+        },
+        {
+          "position": 2,
+          "id": 50358171468009,
+          "filename": "02_50358171468009.png",
+          "relativePath": "/products/anabya/zar-e-sabz-3piece/02_50358171468009.png",
+          "width": 1024,
+          "height": 1536,
+          "type": "png",
+          "bytes": 2733908
+        },
+        {
+          "position": 3,
+          "id": 50358171435241,
+          "filename": "03_50358171435241.png",
+          "relativePath": "/products/anabya/zar-e-sabz-3piece/03_50358171435241.png",
+          "width": 1121,
+          "height": 1403,
+          "type": "png",
+          "bytes": 3029886
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Noor e Naz Luxury 3 Piece",
+      "handle": "noor-e-naz-luxury-3-piece",
+      "totalSourceImages": 4,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440045859049,
+          "filename": "01_49440045859049.jpg",
+          "relativePath": "/products/anabya/noor-e-naz-luxury-3-piece/01_49440045859049.jpg",
+          "width": 1200,
+          "height": 1800,
+          "type": "jpg",
+          "bytes": 258696
+        },
+        {
+          "position": 2,
+          "id": 49440045760745,
+          "filename": "02_49440045760745.jpg",
+          "relativePath": "/products/anabya/noor-e-naz-luxury-3-piece/02_49440045760745.jpg",
+          "width": 1200,
+          "height": 1800,
+          "type": "jpg",
+          "bytes": 190341
+        },
+        {
+          "position": 3,
+          "id": 49440045793513,
+          "filename": "03_49440045793513.jpg",
+          "relativePath": "/products/anabya/noor-e-naz-luxury-3-piece/03_49440045793513.jpg",
+          "width": 1200,
+          "height": 1800,
+          "type": "jpg",
+          "bytes": 246406
+        },
+        {
+          "position": 4,
+          "id": 49440045826281,
+          "filename": "04_49440045826281.jpg",
+          "relativePath": "/products/anabya/noor-e-naz-luxury-3-piece/04_49440045826281.jpg",
+          "width": 1200,
+          "height": 1800,
+          "type": "jpg",
+          "bytes": 204938
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Amber 3Piece",
+      "handle": "amber-3piece",
+      "totalSourceImages": 6,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49909420589289,
+          "filename": "01_49909420589289.jpg",
+          "relativePath": "/products/anabya/amber-3piece/01_49909420589289.jpg",
+          "width": 1383,
+          "height": 2074,
+          "type": "jpg",
+          "bytes": 188913
+        },
+        {
+          "position": 2,
+          "id": 49909420720361,
+          "filename": "02_49909420720361.jpg",
+          "relativePath": "/products/anabya/amber-3piece/02_49909420720361.jpg",
+          "width": 2305,
+          "height": 3457,
+          "type": "jpg",
+          "bytes": 486642
+        },
+        {
+          "position": 3,
+          "id": 49909420687593,
+          "filename": "03_49909420687593.jpg",
+          "relativePath": "/products/anabya/amber-3piece/03_49909420687593.jpg",
+          "width": 2305,
+          "height": 3457,
+          "type": "jpg",
+          "bytes": 642493
+        },
+        {
+          "position": 4,
+          "id": 49909420654825,
+          "filename": "04_49909420654825.jpg",
+          "relativePath": "/products/anabya/amber-3piece/04_49909420654825.jpg",
+          "width": 2305,
+          "height": 3457,
+          "type": "jpg",
+          "bytes": 273547
+        },
+        {
+          "position": 5,
+          "id": 49909420622057,
+          "filename": "05_49909420622057.jpg",
+          "relativePath": "/products/anabya/amber-3piece/05_49909420622057.jpg",
+          "width": 2305,
+          "height": 3457,
+          "type": "jpg",
+          "bytes": 260044
+        },
+        {
+          "position": 6,
+          "id": 49910324330729,
+          "filename": "06_49910324330729.png",
+          "relativePath": "/products/anabya/amber-3piece/06_49910324330729.png",
+          "width": 1536,
+          "height": 1024,
+          "type": "png",
+          "bytes": 1271158
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Aazure 3Piece",
+      "handle": "aazure-3piece",
+      "totalSourceImages": 6,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49909420425449,
+          "filename": "01_49909420425449.jpg",
+          "relativePath": "/products/anabya/aazure-3piece/01_49909420425449.jpg",
+          "width": 1383,
+          "height": 2074,
+          "type": "jpg",
+          "bytes": 212027
+        },
+        {
+          "position": 2,
+          "id": 49909420523753,
+          "filename": "02_49909420523753.jpg",
+          "relativePath": "/products/anabya/aazure-3piece/02_49909420523753.jpg",
+          "width": 2305,
+          "height": 3457,
+          "type": "jpg",
+          "bytes": 659343
+        },
+        {
+          "position": 3,
+          "id": 49909420556521,
+          "filename": "03_49909420556521.jpg",
+          "relativePath": "/products/anabya/aazure-3piece/03_49909420556521.jpg",
+          "width": 2305,
+          "height": 3457,
+          "type": "jpg",
+          "bytes": 866727
+        },
+        {
+          "position": 4,
+          "id": 49909420490985,
+          "filename": "04_49909420490985.jpg",
+          "relativePath": "/products/anabya/aazure-3piece/04_49909420490985.jpg",
+          "width": 2305,
+          "height": 3457,
+          "type": "jpg",
+          "bytes": 544500
+        },
+        {
+          "position": 5,
+          "id": 49909420458217,
+          "filename": "05_49909420458217.jpg",
+          "relativePath": "/products/anabya/aazure-3piece/05_49909420458217.jpg",
+          "width": 2305,
+          "height": 3457,
+          "type": "jpg",
+          "bytes": 368937
+        },
+        {
+          "position": 6,
+          "id": 49910324330729,
+          "filename": "06_49910324330729.png",
+          "relativePath": "/products/anabya/aazure-3piece/06_49910324330729.png",
+          "width": 1536,
+          "height": 1024,
+          "type": "png",
+          "bytes": 1271158
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Plum 3Piece",
+      "handle": "plum-3-piece",
+      "totalSourceImages": 6,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49847788830953,
+          "filename": "01_49847788830953.png",
+          "relativePath": "/products/anabya/plum-3-piece/01_49847788830953.png",
+          "width": 1024,
+          "height": 1536,
+          "type": "png",
+          "bytes": 2821640
+        },
+        {
+          "position": 2,
+          "id": 49847788929257,
+          "filename": "02_49847788929257.png",
+          "relativePath": "/products/anabya/plum-3-piece/02_49847788929257.png",
+          "width": 1024,
+          "height": 1536,
+          "type": "png",
+          "bytes": 2424043
+        },
+        {
+          "position": 3,
+          "id": 49847788863721,
+          "filename": "03_49847788863721.png",
+          "relativePath": "/products/anabya/plum-3-piece/03_49847788863721.png",
+          "width": 1024,
+          "height": 1536,
+          "type": "png",
+          "bytes": 2608035
+        },
+        {
+          "position": 4,
+          "id": 49847788896489,
+          "filename": "04_49847788896489.png",
+          "relativePath": "/products/anabya/plum-3-piece/04_49847788896489.png",
+          "width": 1024,
+          "height": 1536,
+          "type": "png",
+          "bytes": 2436302
+        },
+        {
+          "position": 5,
+          "id": 49847788962025,
+          "filename": "05_49847788962025.png",
+          "relativePath": "/products/anabya/plum-3-piece/05_49847788962025.png",
+          "width": 1024,
+          "height": 1536,
+          "type": "png",
+          "bytes": 2374301
+        },
+        {
+          "position": 6,
+          "id": 49871019507945,
+          "filename": "06_49871019507945.png",
+          "relativePath": "/products/anabya/plum-3-piece/06_49871019507945.png",
+          "width": 2091,
+          "height": 281,
+          "type": "png",
+          "bytes": 379099
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Azmeen 3 Piece",
+      "handle": "azmeen-3-piece",
+      "totalSourceImages": 7,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49815933812969,
+          "filename": "01_49815933812969.jpg",
+          "relativePath": "/products/anabya/azmeen-3-piece/01_49815933812969.jpg",
+          "width": 600,
+          "height": 800,
+          "type": "jpg",
+          "bytes": 46290
+        },
+        {
+          "position": 2,
+          "id": 49815933714665,
+          "filename": "02_49815933714665.jpg",
+          "relativePath": "/products/anabya/azmeen-3-piece/02_49815933714665.jpg",
+          "width": 600,
+          "height": 800,
+          "type": "jpg",
+          "bytes": 48991
+        },
+        {
+          "position": 3,
+          "id": 49815933747433,
+          "filename": "03_49815933747433.jpg",
+          "relativePath": "/products/anabya/azmeen-3-piece/03_49815933747433.jpg",
+          "width": 600,
+          "height": 800,
+          "type": "jpg",
+          "bytes": 72536
+        },
+        {
+          "position": 4,
+          "id": 49815933780201,
+          "filename": "04_49815933780201.jpg",
+          "relativePath": "/products/anabya/azmeen-3-piece/04_49815933780201.jpg",
+          "width": 600,
+          "height": 800,
+          "type": "jpg",
+          "bytes": 65236
+        },
+        {
+          "position": 5,
+          "id": 49815933616361,
+          "filename": "05_49815933616361.jpg",
+          "relativePath": "/products/anabya/azmeen-3-piece/05_49815933616361.jpg",
+          "width": 600,
+          "height": 800,
+          "type": "jpg",
+          "bytes": 77259
+        },
+        {
+          "position": 6,
+          "id": 49815933681897,
+          "filename": "06_49815933681897.jpg",
+          "relativePath": "/products/anabya/azmeen-3-piece/06_49815933681897.jpg",
+          "width": 600,
+          "height": 800,
+          "type": "jpg",
+          "bytes": 57079
+        },
+        {
+          "position": 7,
+          "id": 49815933649129,
+          "filename": "07_49815933649129.jpg",
+          "relativePath": "/products/anabya/azmeen-3-piece/07_49815933649129.jpg",
+          "width": 600,
+          "height": 800,
+          "type": "jpg",
+          "bytes": 60563
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Zohra 3 Piece",
+      "handle": "zohra-3-piece",
+      "totalSourceImages": 3,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49807210774761,
+          "filename": "01_49807210774761.jpg",
+          "relativePath": "/products/anabya/zohra-3-piece/01_49807210774761.jpg",
+          "width": 628,
+          "height": 887,
+          "type": "jpg",
+          "bytes": 104910
+        },
+        {
+          "position": 2,
+          "id": 49807210741993,
+          "filename": "02_49807210741993.jpg",
+          "relativePath": "/products/anabya/zohra-3-piece/02_49807210741993.jpg",
+          "width": 990,
+          "height": 1320,
+          "type": "jpg",
+          "bytes": 176206
+        },
+        {
+          "position": 3,
+          "id": 49807210709225,
+          "filename": "03_49807210709225.jpg",
+          "relativePath": "/products/anabya/zohra-3-piece/03_49807210709225.jpg",
+          "width": 990,
+          "height": 1320,
+          "type": "jpg",
+          "bytes": 189979
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Sunehri 3 Piece",
+      "handle": "sunehri-3-piece",
+      "totalSourceImages": 4,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49807210905833,
+          "filename": "01_49807210905833.jpg",
+          "relativePath": "/products/anabya/sunehri-3-piece/01_49807210905833.jpg",
+          "width": 990,
+          "height": 1320,
+          "type": "jpg",
+          "bytes": 236998
+        },
+        {
+          "position": 2,
+          "id": 49807210807529,
+          "filename": "02_49807210807529.jpg",
+          "relativePath": "/products/anabya/sunehri-3-piece/02_49807210807529.jpg",
+          "width": 990,
+          "height": 1320,
+          "type": "jpg",
+          "bytes": 246492
+        },
+        {
+          "position": 3,
+          "id": 49807210840297,
+          "filename": "03_49807210840297.jpg",
+          "relativePath": "/products/anabya/sunehri-3-piece/03_49807210840297.jpg",
+          "width": 990,
+          "height": 1320,
+          "type": "jpg",
+          "bytes": 290100
+        },
+        {
+          "position": 4,
+          "id": 49807210873065,
+          "filename": "04_49807210873065.jpg",
+          "relativePath": "/products/anabya/sunehri-3-piece/04_49807210873065.jpg",
+          "width": 990,
+          "height": 1320,
+          "type": "jpg",
+          "bytes": 314065
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Noor e Zard 3 Piece",
+      "handle": "noor-e-zard-3-piece",
+      "totalSourceImages": 3,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49800021770473,
+          "filename": "01_49800021770473.png",
+          "relativePath": "/products/anabya/noor-e-zard-3-piece/01_49800021770473.png",
+          "width": 990,
+          "height": 1386,
+          "type": "png",
+          "bytes": 1957240
+        },
+        {
+          "position": 2,
+          "id": 49800021737705,
+          "filename": "02_49800021737705.png",
+          "relativePath": "/products/anabya/noor-e-zard-3-piece/02_49800021737705.png",
+          "width": 990,
+          "height": 1401,
+          "type": "png",
+          "bytes": 2025035
+        },
+        {
+          "position": 3,
+          "id": 49800021704937,
+          "filename": "03_49800021704937.jpg",
+          "relativePath": "/products/anabya/noor-e-zard-3-piece/03_49800021704937.jpg",
+          "width": 720,
+          "height": 1005,
+          "type": "jpg",
+          "bytes": 148006
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Lemon Blossom 3-Piece",
+      "handle": "lemon-blossom-3-piece",
+      "totalSourceImages": 5,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440056377577,
+          "filename": "01_49440056377577.jpg",
+          "relativePath": "/products/anabya/lemon-blossom-3-piece/01_49440056377577.jpg",
+          "width": 1080,
+          "height": 1350,
+          "type": "jpg",
+          "bytes": 149055
+        },
+        {
+          "position": 2,
+          "id": 49440056574185,
+          "filename": "02_49440056574185.jpg",
+          "relativePath": "/products/anabya/lemon-blossom-3-piece/02_49440056574185.jpg",
+          "width": 1080,
+          "height": 1350,
+          "type": "jpg",
+          "bytes": 323858
+        },
+        {
+          "position": 3,
+          "id": 49440056475881,
+          "filename": "03_49440056475881.jpg",
+          "relativePath": "/products/anabya/lemon-blossom-3-piece/03_49440056475881.jpg",
+          "width": 1080,
+          "height": 1350,
+          "type": "jpg",
+          "bytes": 191763
+        },
+        {
+          "position": 4,
+          "id": 49440056410345,
+          "filename": "04_49440056410345.jpg",
+          "relativePath": "/products/anabya/lemon-blossom-3-piece/04_49440056410345.jpg",
+          "width": 1080,
+          "height": 1350,
+          "type": "jpg",
+          "bytes": 210914
+        },
+        {
+          "position": 5,
+          "id": 49440056508649,
+          "filename": "05_49440056508649.jpg",
+          "relativePath": "/products/anabya/lemon-blossom-3-piece/05_49440056508649.jpg",
+          "width": 1080,
+          "height": 1350,
+          "type": "jpg",
+          "bytes": 131274
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Mulberry Bloom 3 Piece",
+      "handle": "mulberry-bloom-3-piece",
+      "totalSourceImages": 3,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49800021836009,
+          "filename": "01_49800021836009.png",
+          "relativePath": "/products/anabya/mulberry-bloom-3-piece/01_49800021836009.png",
+          "width": 1166,
+          "height": 1349,
+          "type": "png",
+          "bytes": 2241814
+        },
+        {
+          "position": 2,
+          "id": 49800021803241,
+          "filename": "02_49800021803241.jpg",
+          "relativePath": "/products/anabya/mulberry-bloom-3-piece/02_49800021803241.jpg",
+          "width": 1920,
+          "height": 2400,
+          "type": "jpg",
+          "bytes": 519084
+        },
+        {
+          "position": 3,
+          "id": 49800021868777,
+          "filename": "03_49800021868777.png",
+          "relativePath": "/products/anabya/mulberry-bloom-3-piece/03_49800021868777.png",
+          "width": 1166,
+          "height": 1349,
+          "type": "png",
+          "bytes": 2301866
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Multi Flower 3 Piece",
+      "handle": "multi-flower-3-piece",
+      "totalSourceImages": 8,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49789236216041,
+          "filename": "01_49789236216041.jpg",
+          "relativePath": "/products/anabya/multi-flower-3-piece/01_49789236216041.jpg",
+          "width": 990,
+          "height": 1484,
+          "type": "jpg",
+          "bytes": 498573
+        },
+        {
+          "position": 2,
+          "id": 49789201023209,
+          "filename": "02_49789201023209.png",
+          "relativePath": "/products/anabya/multi-flower-3-piece/02_49789201023209.png",
+          "width": 600,
+          "height": 840,
+          "type": "png",
+          "bytes": 1014463
+        },
+        {
+          "position": 3,
+          "id": 49440046940393,
+          "filename": "03_49440046940393.jpg",
+          "relativePath": "/products/anabya/multi-flower-3-piece/03_49440046940393.jpg",
+          "width": 3335,
+          "height": 5000,
+          "type": "jpg",
+          "bytes": 2983991
+        },
+        {
+          "position": 4,
+          "id": 49789200990441,
+          "filename": "04_49789200990441.png",
+          "relativePath": "/products/anabya/multi-flower-3-piece/04_49789200990441.png",
+          "width": 600,
+          "height": 840,
+          "type": "png",
+          "bytes": 975391
+        },
+        {
+          "position": 5,
+          "id": 49440046973161,
+          "filename": "05_49440046973161.jpg",
+          "relativePath": "/products/anabya/multi-flower-3-piece/05_49440046973161.jpg",
+          "width": 3335,
+          "height": 5000,
+          "type": "jpg",
+          "bytes": 2795063
+        },
+        {
+          "position": 6,
+          "id": 49789236183273,
+          "filename": "06_49789236183273.jpg",
+          "relativePath": "/products/anabya/multi-flower-3-piece/06_49789236183273.jpg",
+          "width": 990,
+          "height": 1484,
+          "type": "jpg",
+          "bytes": 550602
+        },
+        {
+          "position": 7,
+          "id": 49440047005929,
+          "filename": "07_49440047005929.jpg",
+          "relativePath": "/products/anabya/multi-flower-3-piece/07_49440047005929.jpg",
+          "width": 3335,
+          "height": 5000,
+          "type": "jpg",
+          "bytes": 2428072
+        },
+        {
+          "position": 8,
+          "id": 49789201055977,
+          "filename": "08_49789201055977.png",
+          "relativePath": "/products/anabya/multi-flower-3-piece/08_49789201055977.png",
+          "width": 600,
+          "height": 840,
+          "type": "png",
+          "bytes": 959129
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Raniya 3 Piece",
+      "handle": "raniya-3-piece",
+      "totalSourceImages": 3,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49788894839017,
+          "filename": "01_49788894839017.jpg",
+          "relativePath": "/products/anabya/raniya-3-piece/01_49788894839017.jpg",
+          "width": 960,
+          "height": 1439,
+          "type": "jpg",
+          "bytes": 157788
+        },
+        {
+          "position": 2,
+          "id": 49788894806249,
+          "filename": "02_49788894806249.jpg",
+          "relativePath": "/products/anabya/raniya-3-piece/02_49788894806249.jpg",
+          "width": 990,
+          "height": 1485,
+          "type": "jpg",
+          "bytes": 162576
+        },
+        {
+          "position": 3,
+          "id": 49788894773481,
+          "filename": "03_49788894773481.jpg",
+          "relativePath": "/products/anabya/raniya-3-piece/03_49788894773481.jpg",
+          "width": 990,
+          "height": 1485,
+          "type": "jpg",
+          "bytes": 127236
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Rumi 3 Piece",
+      "handle": "rumi-3-piece",
+      "totalSourceImages": 2,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49789074440425,
+          "filename": "01_49789074440425.jpg",
+          "relativePath": "/products/anabya/rumi-3-piece/01_49789074440425.jpg",
+          "width": 990,
+          "height": 1276,
+          "type": "jpg",
+          "bytes": 167781
+        },
+        {
+          "position": 2,
+          "id": 49789074407657,
+          "filename": "02_49789074407657.jpg",
+          "relativePath": "/products/anabya/rumi-3-piece/02_49789074407657.jpg",
+          "width": 990,
+          "height": 1483,
+          "type": "jpg",
+          "bytes": 167631
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Pink Hearts 3 Piece",
+      "handle": "pink-hearts-3-piece",
+      "totalSourceImages": 4,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49788894970089,
+          "filename": "01_49788894970089.jpg",
+          "relativePath": "/products/anabya/pink-hearts-3-piece/01_49788894970089.jpg",
+          "width": 3328,
+          "height": 4160,
+          "type": "jpg",
+          "bytes": 746109
+        },
+        {
+          "position": 2,
+          "id": 49788894937321,
+          "filename": "02_49788894937321.jpg",
+          "relativePath": "/products/anabya/pink-hearts-3-piece/02_49788894937321.jpg",
+          "width": 3328,
+          "height": 4160,
+          "type": "jpg",
+          "bytes": 751178
+        },
+        {
+          "position": 3,
+          "id": 49788894871785,
+          "filename": "03_49788894871785.jpg",
+          "relativePath": "/products/anabya/pink-hearts-3-piece/03_49788894871785.jpg",
+          "width": 2778,
+          "height": 4160,
+          "type": "jpg",
+          "bytes": 456733
+        },
+        {
+          "position": 4,
+          "id": 49788894904553,
+          "filename": "04_49788894904553.jpg",
+          "relativePath": "/products/anabya/pink-hearts-3-piece/04_49788894904553.jpg",
+          "width": 3328,
+          "height": 4160,
+          "type": "jpg",
+          "bytes": 744292
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "SUMMER SALE | Sweet 3Piece",
+      "handle": "summer-sale-sweet-3piece",
+      "totalSourceImages": 4,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49856827687145,
+          "filename": "01_49856827687145.jpg",
+          "relativePath": "/products/anabya/summer-sale-sweet-3piece/01_49856827687145.jpg",
+          "width": 990,
+          "height": 1211,
+          "type": "jpg",
+          "bytes": 179647
+        },
+        {
+          "position": 2,
+          "id": 49856827719913,
+          "filename": "02_49856827719913.jpg",
+          "relativePath": "/products/anabya/summer-sale-sweet-3piece/02_49856827719913.jpg",
+          "width": 990,
+          "height": 1483,
+          "type": "jpg",
+          "bytes": 183222
+        },
+        {
+          "position": 3,
+          "id": 49856827752681,
+          "filename": "03_49856827752681.jpg",
+          "relativePath": "/products/anabya/summer-sale-sweet-3piece/03_49856827752681.jpg",
+          "width": 990,
+          "height": 1483,
+          "type": "jpg",
+          "bytes": 157949
+        },
+        {
+          "position": 4,
+          "id": 49856827785449,
+          "filename": "04_49856827785449.jpg",
+          "relativePath": "/products/anabya/summer-sale-sweet-3piece/04_49856827785449.jpg",
+          "width": 990,
+          "height": 1483,
+          "type": "jpg",
+          "bytes": 172331
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Ruby Grace 3 Piece",
+      "handle": "ruby-grace-3-piece",
+      "totalSourceImages": 4,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49788861677801,
+          "filename": "01_49788861677801.jpg",
+          "relativePath": "/products/anabya/ruby-grace-3-piece/01_49788861677801.jpg",
+          "width": 990,
+          "height": 1320,
+          "type": "jpg",
+          "bytes": 155874
+        },
+        {
+          "position": 2,
+          "id": 49788861645033,
+          "filename": "02_49788861645033.jpg",
+          "relativePath": "/products/anabya/ruby-grace-3-piece/02_49788861645033.jpg",
+          "width": 990,
+          "height": 1320,
+          "type": "jpg",
+          "bytes": 159455
+        },
+        {
+          "position": 3,
+          "id": 49788861612265,
+          "filename": "03_49788861612265.jpg",
+          "relativePath": "/products/anabya/ruby-grace-3-piece/03_49788861612265.jpg",
+          "width": 990,
+          "height": 1320,
+          "type": "jpg",
+          "bytes": 279965
+        },
+        {
+          "position": 4,
+          "id": 49788861579497,
+          "filename": "04_49788861579497.jpg",
+          "relativePath": "/products/anabya/ruby-grace-3-piece/04_49788861579497.jpg",
+          "width": 990,
+          "height": 1320,
+          "type": "jpg",
+          "bytes": 227992
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Sapphire Bloom 3 Piece",
+      "handle": "sapphire-bloom-3-piece",
+      "totalSourceImages": 6,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49872616259817,
+          "filename": "01_49872616259817.jpg",
+          "relativePath": "/products/anabya/sapphire-bloom-3-piece/01_49872616259817.jpg",
+          "width": 1024,
+          "height": 1024,
+          "type": "jpg",
+          "bytes": 223588
+        },
+        {
+          "position": 2,
+          "id": 49788531736809,
+          "filename": "02_49788531736809.jpg",
+          "relativePath": "/products/anabya/sapphire-bloom-3-piece/02_49788531736809.jpg",
+          "width": 990,
+          "height": 1485,
+          "type": "jpg",
+          "bytes": 330949
+        },
+        {
+          "position": 3,
+          "id": 49788531769577,
+          "filename": "03_49788531769577.png",
+          "relativePath": "/products/anabya/sapphire-bloom-3-piece/03_49788531769577.png",
+          "width": 990,
+          "height": 1485,
+          "type": "png",
+          "bytes": 2596895
+        },
+        {
+          "position": 4,
+          "id": 49788531704041,
+          "filename": "04_49788531704041.jpg",
+          "relativePath": "/products/anabya/sapphire-bloom-3-piece/04_49788531704041.jpg",
+          "width": 990,
+          "height": 1485,
+          "type": "jpg",
+          "bytes": 348254
+        },
+        {
+          "position": 5,
+          "id": 49788531671273,
+          "filename": "05_49788531671273.jpg",
+          "relativePath": "/products/anabya/sapphire-bloom-3-piece/05_49788531671273.jpg",
+          "width": 990,
+          "height": 1485,
+          "type": "jpg",
+          "bytes": 272841
+        },
+        {
+          "position": 6,
+          "id": 49872616194281,
+          "filename": "06_49872616194281.jpg",
+          "relativePath": "/products/anabya/sapphire-bloom-3-piece/06_49872616194281.jpg",
+          "width": 1024,
+          "height": 1024,
+          "type": "jpg",
+          "bytes": 241259
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Elsa Embroidery 3pcs",
+      "handle": "elsa-embroidery-3pcs",
+      "totalSourceImages": 7,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440070336745,
+          "filename": "01_49440070336745.jpg",
+          "relativePath": "/products/anabya/elsa-embroidery-3pcs/01_49440070336745.jpg",
+          "width": 720,
+          "height": 1080,
+          "type": "jpg",
+          "bytes": 105233
+        },
+        {
+          "position": 2,
+          "id": 49440070369513,
+          "filename": "02_49440070369513.jpg",
+          "relativePath": "/products/anabya/elsa-embroidery-3pcs/02_49440070369513.jpg",
+          "width": 720,
+          "height": 1080,
+          "type": "jpg",
+          "bytes": 107968
+        },
+        {
+          "position": 3,
+          "id": 49440070402281,
+          "filename": "03_49440070402281.jpg",
+          "relativePath": "/products/anabya/elsa-embroidery-3pcs/03_49440070402281.jpg",
+          "width": 720,
+          "height": 1080,
+          "type": "jpg",
+          "bytes": 101727
+        },
+        {
+          "position": 4,
+          "id": 49440070435049,
+          "filename": "04_49440070435049.jpg",
+          "relativePath": "/products/anabya/elsa-embroidery-3pcs/04_49440070435049.jpg",
+          "width": 720,
+          "height": 1080,
+          "type": "jpg",
+          "bytes": 105179
+        },
+        {
+          "position": 5,
+          "id": 49440070467817,
+          "filename": "05_49440070467817.jpg",
+          "relativePath": "/products/anabya/elsa-embroidery-3pcs/05_49440070467817.jpg",
+          "width": 720,
+          "height": 1080,
+          "type": "jpg",
+          "bytes": 109771
+        },
+        {
+          "position": 6,
+          "id": 49440070500585,
+          "filename": "06_49440070500585.jpg",
+          "relativePath": "/products/anabya/elsa-embroidery-3pcs/06_49440070500585.jpg",
+          "width": 720,
+          "height": 1080,
+          "type": "jpg",
+          "bytes": 117595
+        },
+        {
+          "position": 7,
+          "id": 49440070533353,
+          "filename": "07_49440070533353.jpg",
+          "relativePath": "/products/anabya/elsa-embroidery-3pcs/07_49440070533353.jpg",
+          "width": 720,
+          "height": 1080,
+          "type": "jpg",
+          "bytes": 125770
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Kaavya Emb 3pcs",
+      "handle": "kaavya-emb-3pcs",
+      "totalSourceImages": 7,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440069353705,
+          "filename": "01_49440069353705.jpg",
+          "relativePath": "/products/anabya/kaavya-emb-3pcs/01_49440069353705.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 234841
+        },
+        {
+          "position": 2,
+          "id": 49440069386473,
+          "filename": "02_49440069386473.jpg",
+          "relativePath": "/products/anabya/kaavya-emb-3pcs/02_49440069386473.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 234035
+        },
+        {
+          "position": 3,
+          "id": 49440069419241,
+          "filename": "03_49440069419241.jpg",
+          "relativePath": "/products/anabya/kaavya-emb-3pcs/03_49440069419241.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 251389
+        },
+        {
+          "position": 4,
+          "id": 49440069452009,
+          "filename": "04_49440069452009.jpg",
+          "relativePath": "/products/anabya/kaavya-emb-3pcs/04_49440069452009.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 294250
+        },
+        {
+          "position": 5,
+          "id": 49440069484777,
+          "filename": "05_49440069484777.jpg",
+          "relativePath": "/products/anabya/kaavya-emb-3pcs/05_49440069484777.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 219458
+        },
+        {
+          "position": 6,
+          "id": 49440069517545,
+          "filename": "06_49440069517545.jpg",
+          "relativePath": "/products/anabya/kaavya-emb-3pcs/06_49440069517545.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 323845
+        },
+        {
+          "position": 7,
+          "id": 49440069550313,
+          "filename": "07_49440069550313.jpg",
+          "relativePath": "/products/anabya/kaavya-emb-3pcs/07_49440069550313.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 175806
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Golden Grace",
+      "handle": "golden-grace",
+      "totalSourceImages": 7,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440065880297,
+          "filename": "01_49440065880297.jpg",
+          "relativePath": "/products/anabya/golden-grace/01_49440065880297.jpg",
+          "width": 700,
+          "height": 1147,
+          "type": "jpg",
+          "bytes": 165885
+        },
+        {
+          "position": 2,
+          "id": 49440065913065,
+          "filename": "02_49440065913065.jpg",
+          "relativePath": "/products/anabya/golden-grace/02_49440065913065.jpg",
+          "width": 700,
+          "height": 1119,
+          "type": "jpg",
+          "bytes": 150757
+        },
+        {
+          "position": 3,
+          "id": 49440065945833,
+          "filename": "03_49440065945833.jpg",
+          "relativePath": "/products/anabya/golden-grace/03_49440065945833.jpg",
+          "width": 700,
+          "height": 984,
+          "type": "jpg",
+          "bytes": 123387
+        },
+        {
+          "position": 4,
+          "id": 49440065978601,
+          "filename": "04_49440065978601.jpg",
+          "relativePath": "/products/anabya/golden-grace/04_49440065978601.jpg",
+          "width": 700,
+          "height": 1052,
+          "type": "jpg",
+          "bytes": 181084
+        },
+        {
+          "position": 5,
+          "id": 49440066011369,
+          "filename": "05_49440066011369.jpg",
+          "relativePath": "/products/anabya/golden-grace/05_49440066011369.jpg",
+          "width": 700,
+          "height": 1054,
+          "type": "jpg",
+          "bytes": 161373
+        },
+        {
+          "position": 6,
+          "id": 49440066044137,
+          "filename": "06_49440066044137.jpg",
+          "relativePath": "/products/anabya/golden-grace/06_49440066044137.jpg",
+          "width": 700,
+          "height": 849,
+          "type": "jpg",
+          "bytes": 153966
+        },
+        {
+          "position": 7,
+          "id": 49440066076905,
+          "filename": "07_49440066076905.jpg",
+          "relativePath": "/products/anabya/golden-grace/07_49440066076905.jpg",
+          "width": 700,
+          "height": 1001,
+          "type": "jpg",
+          "bytes": 159104
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Zeenat EMB – 3PCs",
+      "handle": "zeenat-emb-3pcs",
+      "totalSourceImages": 10,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440054640873,
+          "filename": "01_49440054640873.jpg",
+          "relativePath": "/products/anabya/zeenat-emb-3pcs/01_49440054640873.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 284189
+        },
+        {
+          "position": 2,
+          "id": 49440054673641,
+          "filename": "02_49440054673641.jpg",
+          "relativePath": "/products/anabya/zeenat-emb-3pcs/02_49440054673641.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 225202
+        },
+        {
+          "position": 3,
+          "id": 49440054706409,
+          "filename": "03_49440054706409.jpg",
+          "relativePath": "/products/anabya/zeenat-emb-3pcs/03_49440054706409.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 226853
+        },
+        {
+          "position": 4,
+          "id": 49440054739177,
+          "filename": "04_49440054739177.jpg",
+          "relativePath": "/products/anabya/zeenat-emb-3pcs/04_49440054739177.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 296558
+        },
+        {
+          "position": 5,
+          "id": 49440054771945,
+          "filename": "05_49440054771945.jpg",
+          "relativePath": "/products/anabya/zeenat-emb-3pcs/05_49440054771945.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 284189
+        },
+        {
+          "position": 6,
+          "id": 49440054804713,
+          "filename": "06_49440054804713.jpg",
+          "relativePath": "/products/anabya/zeenat-emb-3pcs/06_49440054804713.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 227221
+        },
+        {
+          "position": 7,
+          "id": 49440054837481,
+          "filename": "07_49440054837481.jpg",
+          "relativePath": "/products/anabya/zeenat-emb-3pcs/07_49440054837481.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 166042
+        },
+        {
+          "position": 8,
+          "id": 49440054870249,
+          "filename": "08_49440054870249.jpg",
+          "relativePath": "/products/anabya/zeenat-emb-3pcs/08_49440054870249.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 252546
+        },
+        {
+          "position": 9,
+          "id": 49440054903017,
+          "filename": "09_49440054903017.jpg",
+          "relativePath": "/products/anabya/zeenat-emb-3pcs/09_49440054903017.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 362361
+        },
+        {
+          "position": 10,
+          "id": 49440054935785,
+          "filename": "10_49440054935785.jpg",
+          "relativePath": "/products/anabya/zeenat-emb-3pcs/10_49440054935785.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 298872
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Blackish EMB 3PCS",
+      "handle": "blackish-emb-3pcs-1",
+      "totalSourceImages": 5,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440054116585,
+          "filename": "01_49440054116585.png",
+          "relativePath": "/products/anabya/blackish-emb-3pcs-1/01_49440054116585.png",
+          "width": 2880,
+          "height": 3840,
+          "type": "png",
+          "bytes": 8918785
+        },
+        {
+          "position": 2,
+          "id": 49440054149353,
+          "filename": "02_49440054149353.png",
+          "relativePath": "/products/anabya/blackish-emb-3pcs-1/02_49440054149353.png",
+          "width": 2880,
+          "height": 3840,
+          "type": "png",
+          "bytes": 9670550
+        },
+        {
+          "position": 3,
+          "id": 49440054182121,
+          "filename": "03_49440054182121.png",
+          "relativePath": "/products/anabya/blackish-emb-3pcs-1/03_49440054182121.png",
+          "width": 2880,
+          "height": 3840,
+          "type": "png",
+          "bytes": 9274935
+        },
+        {
+          "position": 4,
+          "id": 49440054214889,
+          "filename": "04_49440054214889.png",
+          "relativePath": "/products/anabya/blackish-emb-3pcs-1/04_49440054214889.png",
+          "width": 2880,
+          "height": 3840,
+          "type": "png",
+          "bytes": 9423165
+        },
+        {
+          "position": 5,
+          "id": 49440054247657,
+          "filename": "05_49440054247657.png",
+          "relativePath": "/products/anabya/blackish-emb-3pcs-1/05_49440054247657.png",
+          "width": 2880,
+          "height": 3840,
+          "type": "png",
+          "bytes": 8870733
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "NEW AYRA 3PCS",
+      "handle": "aria-stitched-3pc",
+      "totalSourceImages": 11,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440053526761,
+          "filename": "01_49440053526761.jpg",
+          "relativePath": "/products/anabya/aria-stitched-3pc/01_49440053526761.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 154650
+        },
+        {
+          "position": 2,
+          "id": 49440053559529,
+          "filename": "02_49440053559529.jpg",
+          "relativePath": "/products/anabya/aria-stitched-3pc/02_49440053559529.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 189742
+        },
+        {
+          "position": 3,
+          "id": 49440053592297,
+          "filename": "03_49440053592297.jpg",
+          "relativePath": "/products/anabya/aria-stitched-3pc/03_49440053592297.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 166839
+        },
+        {
+          "position": 4,
+          "id": 49440053625065,
+          "filename": "04_49440053625065.jpg",
+          "relativePath": "/products/anabya/aria-stitched-3pc/04_49440053625065.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 179672
+        },
+        {
+          "position": 5,
+          "id": 49440053657833,
+          "filename": "05_49440053657833.jpg",
+          "relativePath": "/products/anabya/aria-stitched-3pc/05_49440053657833.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 91084
+        },
+        {
+          "position": 6,
+          "id": 49440053690601,
+          "filename": "06_49440053690601.jpg",
+          "relativePath": "/products/anabya/aria-stitched-3pc/06_49440053690601.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 167410
+        },
+        {
+          "position": 7,
+          "id": 49440053723369,
+          "filename": "07_49440053723369.jpg",
+          "relativePath": "/products/anabya/aria-stitched-3pc/07_49440053723369.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 143190
+        },
+        {
+          "position": 8,
+          "id": 49440053756137,
+          "filename": "08_49440053756137.jpg",
+          "relativePath": "/products/anabya/aria-stitched-3pc/08_49440053756137.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 163702
+        },
+        {
+          "position": 9,
+          "id": 49440053788905,
+          "filename": "09_49440053788905.jpg",
+          "relativePath": "/products/anabya/aria-stitched-3pc/09_49440053788905.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 188447
+        },
+        {
+          "position": 10,
+          "id": 49440053821673,
+          "filename": "10_49440053821673.jpg",
+          "relativePath": "/products/anabya/aria-stitched-3pc/10_49440053821673.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 167461
+        },
+        {
+          "position": 11,
+          "id": 49440053854441,
+          "filename": "11_49440053854441.jpg",
+          "relativePath": "/products/anabya/aria-stitched-3pc/11_49440053854441.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 184599
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "NEW BROWNIE",
+      "handle": "brownish-3pc",
+      "totalSourceImages": 6,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440052642025,
+          "filename": "01_49440052642025.jpg",
+          "relativePath": "/products/anabya/brownish-3pc/01_49440052642025.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 172335
+        },
+        {
+          "position": 2,
+          "id": 49440052674793,
+          "filename": "02_49440052674793.jpg",
+          "relativePath": "/products/anabya/brownish-3pc/02_49440052674793.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 178285
+        },
+        {
+          "position": 3,
+          "id": 49440052707561,
+          "filename": "03_49440052707561.jpg",
+          "relativePath": "/products/anabya/brownish-3pc/03_49440052707561.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 172033
+        },
+        {
+          "position": 4,
+          "id": 49440052740329,
+          "filename": "04_49440052740329.jpg",
+          "relativePath": "/products/anabya/brownish-3pc/04_49440052740329.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 148787
+        },
+        {
+          "position": 5,
+          "id": 49440052773097,
+          "filename": "05_49440052773097.jpg",
+          "relativePath": "/products/anabya/brownish-3pc/05_49440052773097.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 197889
+        },
+        {
+          "position": 6,
+          "id": 49440052805865,
+          "filename": "06_49440052805865.jpg",
+          "relativePath": "/products/anabya/brownish-3pc/06_49440052805865.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 146517
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "pistiana 3pcs",
+      "handle": "pistachio-3pcs",
+      "totalSourceImages": 10,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440051986665,
+          "filename": "01_49440051986665.jpg",
+          "relativePath": "/products/anabya/pistachio-3pcs/01_49440051986665.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 215200
+        },
+        {
+          "position": 2,
+          "id": 49440052019433,
+          "filename": "02_49440052019433.jpg",
+          "relativePath": "/products/anabya/pistachio-3pcs/02_49440052019433.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 195853
+        },
+        {
+          "position": 3,
+          "id": 49440052052201,
+          "filename": "03_49440052052201.jpg",
+          "relativePath": "/products/anabya/pistachio-3pcs/03_49440052052201.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 201972
+        },
+        {
+          "position": 4,
+          "id": 49440052084969,
+          "filename": "04_49440052084969.jpg",
+          "relativePath": "/products/anabya/pistachio-3pcs/04_49440052084969.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 192908
+        },
+        {
+          "position": 5,
+          "id": 49440052117737,
+          "filename": "05_49440052117737.jpg",
+          "relativePath": "/products/anabya/pistachio-3pcs/05_49440052117737.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 241370
+        },
+        {
+          "position": 6,
+          "id": 49440052150505,
+          "filename": "06_49440052150505.jpg",
+          "relativePath": "/products/anabya/pistachio-3pcs/06_49440052150505.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 309105
+        },
+        {
+          "position": 7,
+          "id": 49440052183273,
+          "filename": "07_49440052183273.jpg",
+          "relativePath": "/products/anabya/pistachio-3pcs/07_49440052183273.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 195169
+        },
+        {
+          "position": 8,
+          "id": 49440052216041,
+          "filename": "08_49440052216041.jpg",
+          "relativePath": "/products/anabya/pistachio-3pcs/08_49440052216041.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 193056
+        },
+        {
+          "position": 9,
+          "id": 49440052248809,
+          "filename": "09_49440052248809.jpg",
+          "relativePath": "/products/anabya/pistachio-3pcs/09_49440052248809.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 199874
+        },
+        {
+          "position": 10,
+          "id": 49440052281577,
+          "filename": "10_49440052281577.jpg",
+          "relativePath": "/products/anabya/pistachio-3pcs/10_49440052281577.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 192368
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Mehndi Emb 3Pc Stitched",
+      "handle": "mehndi-emb-3pc-stitched",
+      "totalSourceImages": 9,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440051560681,
+          "filename": "01_49440051560681.jpg",
+          "relativePath": "/products/anabya/mehndi-emb-3pc-stitched/01_49440051560681.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 167193
+        },
+        {
+          "position": 2,
+          "id": 49440051593449,
+          "filename": "02_49440051593449.jpg",
+          "relativePath": "/products/anabya/mehndi-emb-3pc-stitched/02_49440051593449.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 130905
+        },
+        {
+          "position": 3,
+          "id": 49440051626217,
+          "filename": "03_49440051626217.jpg",
+          "relativePath": "/products/anabya/mehndi-emb-3pc-stitched/03_49440051626217.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 160202
+        },
+        {
+          "position": 4,
+          "id": 49440051658985,
+          "filename": "04_49440051658985.jpg",
+          "relativePath": "/products/anabya/mehndi-emb-3pc-stitched/04_49440051658985.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 185764
+        },
+        {
+          "position": 5,
+          "id": 49440051691753,
+          "filename": "05_49440051691753.jpg",
+          "relativePath": "/products/anabya/mehndi-emb-3pc-stitched/05_49440051691753.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 201570
+        },
+        {
+          "position": 6,
+          "id": 49440051724521,
+          "filename": "06_49440051724521.jpg",
+          "relativePath": "/products/anabya/mehndi-emb-3pc-stitched/06_49440051724521.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 162693
+        },
+        {
+          "position": 7,
+          "id": 49440051757289,
+          "filename": "07_49440051757289.jpg",
+          "relativePath": "/products/anabya/mehndi-emb-3pc-stitched/07_49440051757289.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 177286
+        },
+        {
+          "position": 8,
+          "id": 49440051790057,
+          "filename": "08_49440051790057.jpg",
+          "relativePath": "/products/anabya/mehndi-emb-3pc-stitched/08_49440051790057.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 170048
+        },
+        {
+          "position": 9,
+          "id": 49440051822825,
+          "filename": "09_49440051822825.jpg",
+          "relativePath": "/products/anabya/mehndi-emb-3pc-stitched/09_49440051822825.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 163767
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Multi Color 3Pcs Embroidery",
+      "handle": "multi-color-3pcs-embroidery",
+      "totalSourceImages": 5,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440051233001,
+          "filename": "01_49440051233001.jpg",
+          "relativePath": "/products/anabya/multi-color-3pcs-embroidery/01_49440051233001.jpg",
+          "width": 1080,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 207320
+        },
+        {
+          "position": 2,
+          "id": 49440051265769,
+          "filename": "02_49440051265769.jpg",
+          "relativePath": "/products/anabya/multi-color-3pcs-embroidery/02_49440051265769.jpg",
+          "width": 1080,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 148080
+        },
+        {
+          "position": 3,
+          "id": 49440051298537,
+          "filename": "03_49440051298537.jpg",
+          "relativePath": "/products/anabya/multi-color-3pcs-embroidery/03_49440051298537.jpg",
+          "width": 1080,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 170674
+        },
+        {
+          "position": 4,
+          "id": 49440051331305,
+          "filename": "04_49440051331305.jpg",
+          "relativePath": "/products/anabya/multi-color-3pcs-embroidery/04_49440051331305.jpg",
+          "width": 1080,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 178912
+        },
+        {
+          "position": 5,
+          "id": 49440051364073,
+          "filename": "05_49440051364073.jpg",
+          "relativePath": "/products/anabya/multi-color-3pcs-embroidery/05_49440051364073.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 201781
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Aleeeza Black 3pcs",
+      "handle": "alize-black-3pcs-embroidery",
+      "totalSourceImages": 5,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440049103081,
+          "filename": "01_49440049103081.png",
+          "relativePath": "/products/anabya/alize-black-3pcs-embroidery/01_49440049103081.png",
+          "width": 864,
+          "height": 1184,
+          "type": "png",
+          "bytes": 1139417
+        },
+        {
+          "position": 2,
+          "id": 49440049135849,
+          "filename": "02_49440049135849.png",
+          "relativePath": "/products/anabya/alize-black-3pcs-embroidery/02_49440049135849.png",
+          "width": 864,
+          "height": 1184,
+          "type": "png",
+          "bytes": 1214989
+        },
+        {
+          "position": 3,
+          "id": 49440049168617,
+          "filename": "03_49440049168617.png",
+          "relativePath": "/products/anabya/alize-black-3pcs-embroidery/03_49440049168617.png",
+          "width": 864,
+          "height": 1184,
+          "type": "png",
+          "bytes": 1164567
+        },
+        {
+          "position": 4,
+          "id": 49440049201385,
+          "filename": "04_49440049201385.png",
+          "relativePath": "/products/anabya/alize-black-3pcs-embroidery/04_49440049201385.png",
+          "width": 864,
+          "height": 1184,
+          "type": "png",
+          "bytes": 1100221
+        },
+        {
+          "position": 5,
+          "id": 49440049234153,
+          "filename": "05_49440049234153.png",
+          "relativePath": "/products/anabya/alize-black-3pcs-embroidery/05_49440049234153.png",
+          "width": 864,
+          "height": 1184,
+          "type": "png",
+          "bytes": 1490090
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Multi Color Black 3Pcs",
+      "handle": "multi-color-black-3pcs",
+      "totalSourceImages": 4,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440048906473,
+          "filename": "01_49440048906473.png",
+          "relativePath": "/products/anabya/multi-color-black-3pcs/01_49440048906473.png",
+          "width": 864,
+          "height": 1184,
+          "type": "png",
+          "bytes": 1227021
+        },
+        {
+          "position": 2,
+          "id": 49440048939241,
+          "filename": "02_49440048939241.png",
+          "relativePath": "/products/anabya/multi-color-black-3pcs/02_49440048939241.png",
+          "width": 864,
+          "height": 1184,
+          "type": "png",
+          "bytes": 1219326
+        },
+        {
+          "position": 3,
+          "id": 49440048972009,
+          "filename": "03_49440048972009.png",
+          "relativePath": "/products/anabya/multi-color-black-3pcs/03_49440048972009.png",
+          "width": 864,
+          "height": 1184,
+          "type": "png",
+          "bytes": 1161046
+        },
+        {
+          "position": 4,
+          "id": 49440049004777,
+          "filename": "04_49440049004777.png",
+          "relativePath": "/products/anabya/multi-color-black-3pcs/04_49440049004777.png",
+          "width": 864,
+          "height": 1184,
+          "type": "png",
+          "bytes": 1224363
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Sophie 3Pcs",
+      "handle": "sophie-3pcs",
+      "totalSourceImages": 7,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440047988969,
+          "filename": "01_49440047988969.jpg",
+          "relativePath": "/products/anabya/sophie-3pcs/01_49440047988969.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 275188
+        },
+        {
+          "position": 2,
+          "id": 49440048021737,
+          "filename": "02_49440048021737.jpg",
+          "relativePath": "/products/anabya/sophie-3pcs/02_49440048021737.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 260332
+        },
+        {
+          "position": 3,
+          "id": 49440048054505,
+          "filename": "03_49440048054505.jpg",
+          "relativePath": "/products/anabya/sophie-3pcs/03_49440048054505.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 215330
+        },
+        {
+          "position": 4,
+          "id": 49440048087273,
+          "filename": "04_49440048087273.jpg",
+          "relativePath": "/products/anabya/sophie-3pcs/04_49440048087273.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 233145
+        },
+        {
+          "position": 5,
+          "id": 49440048120041,
+          "filename": "05_49440048120041.jpg",
+          "relativePath": "/products/anabya/sophie-3pcs/05_49440048120041.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 233145
+        },
+        {
+          "position": 6,
+          "id": 49440048152809,
+          "filename": "06_49440048152809.jpg",
+          "relativePath": "/products/anabya/sophie-3pcs/06_49440048152809.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 185795
+        },
+        {
+          "position": 7,
+          "id": 49440048185577,
+          "filename": "07_49440048185577.jpg",
+          "relativePath": "/products/anabya/sophie-3pcs/07_49440048185577.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 240727
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Armeen 3pcs",
+      "handle": "armeen-3pcs",
+      "totalSourceImages": 6,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440047464681,
+          "filename": "01_49440047464681.png",
+          "relativePath": "/products/anabya/armeen-3pcs/01_49440047464681.png",
+          "width": 1842,
+          "height": 2304,
+          "type": "png",
+          "bytes": 4383990
+        },
+        {
+          "position": 2,
+          "id": 49440047497449,
+          "filename": "02_49440047497449.png",
+          "relativePath": "/products/anabya/armeen-3pcs/02_49440047497449.png",
+          "width": 1842,
+          "height": 2304,
+          "type": "png",
+          "bytes": 4531506
+        },
+        {
+          "position": 3,
+          "id": 49440047530217,
+          "filename": "03_49440047530217.png",
+          "relativePath": "/products/anabya/armeen-3pcs/03_49440047530217.png",
+          "width": 1842,
+          "height": 2304,
+          "type": "png",
+          "bytes": 4491487
+        },
+        {
+          "position": 4,
+          "id": 49440047562985,
+          "filename": "04_49440047562985.png",
+          "relativePath": "/products/anabya/armeen-3pcs/04_49440047562985.png",
+          "width": 1842,
+          "height": 2304,
+          "type": "png",
+          "bytes": 4296902
+        },
+        {
+          "position": 5,
+          "id": 49440047595753,
+          "filename": "05_49440047595753.jpg",
+          "relativePath": "/products/anabya/armeen-3pcs/05_49440047595753.jpg",
+          "width": 1170,
+          "height": 2080,
+          "type": "jpg",
+          "bytes": 358155
+        },
+        {
+          "position": 6,
+          "id": 49440047628521,
+          "filename": "06_49440047628521.png",
+          "relativePath": "/products/anabya/armeen-3pcs/06_49440047628521.png",
+          "width": 1842,
+          "height": 2304,
+          "type": "png",
+          "bytes": 4282695
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Meadow Grace  3 Piece",
+      "handle": "meadow-grace-3-piece",
+      "totalSourceImages": 6,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440047071465,
+          "filename": "01_49440047071465.jpg",
+          "relativePath": "/products/anabya/meadow-grace-3-piece/01_49440047071465.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 234367
+        },
+        {
+          "position": 2,
+          "id": 49440047202537,
+          "filename": "02_49440047202537.jpg",
+          "relativePath": "/products/anabya/meadow-grace-3-piece/02_49440047202537.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 232364
+        },
+        {
+          "position": 3,
+          "id": 49440047137001,
+          "filename": "03_49440047137001.jpg",
+          "relativePath": "/products/anabya/meadow-grace-3-piece/03_49440047137001.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 212855
+        },
+        {
+          "position": 4,
+          "id": 49440047268073,
+          "filename": "04_49440047268073.jpg",
+          "relativePath": "/products/anabya/meadow-grace-3-piece/04_49440047268073.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 261105
+        },
+        {
+          "position": 5,
+          "id": 49440047399145,
+          "filename": "05_49440047399145.jpg",
+          "relativePath": "/products/anabya/meadow-grace-3-piece/05_49440047399145.jpg",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 182083
+        },
+        {
+          "position": 6,
+          "id": 49910324330729,
+          "filename": "06_49910324330729.png",
+          "relativePath": "/products/anabya/meadow-grace-3-piece/06_49910324330729.png",
+          "width": 1536,
+          "height": 1024,
+          "type": "png",
+          "bytes": 1271158
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Rina",
+      "handle": "camel-brown-linen-3-piece",
+      "totalSourceImages": 4,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440046678249,
+          "filename": "01_49440046678249.jpg",
+          "relativePath": "/products/anabya/camel-brown-linen-3-piece/01_49440046678249.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 124377
+        },
+        {
+          "position": 2,
+          "id": 49440046711017,
+          "filename": "02_49440046711017.jpg",
+          "relativePath": "/products/anabya/camel-brown-linen-3-piece/02_49440046711017.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 133595
+        },
+        {
+          "position": 3,
+          "id": 49440046743785,
+          "filename": "03_49440046743785.jpg",
+          "relativePath": "/products/anabya/camel-brown-linen-3-piece/03_49440046743785.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 164031
+        },
+        {
+          "position": 4,
+          "id": 49440046776553,
+          "filename": "04_49440046776553.jpg",
+          "relativePath": "/products/anabya/camel-brown-linen-3-piece/04_49440046776553.jpg",
+          "width": 1080,
+          "height": 1440,
+          "type": "jpg",
+          "bytes": 148444
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "ZAARIF - COTTON 2 PC EMB",
+      "handle": "zaarif-cotton-3-pc-emb",
+      "totalSourceImages": 7,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440046285033,
+          "filename": "01_49440046285033.jpg",
+          "relativePath": "/products/anabya/zaarif-cotton-3-pc-emb/01_49440046285033.jpg",
+          "width": 1920,
+          "height": 2880,
+          "type": "jpg",
+          "bytes": 652427
+        },
+        {
+          "position": 2,
+          "id": 49440046317801,
+          "filename": "02_49440046317801.jpg",
+          "relativePath": "/products/anabya/zaarif-cotton-3-pc-emb/02_49440046317801.jpg",
+          "width": 1920,
+          "height": 2880,
+          "type": "jpg",
+          "bytes": 591948
+        },
+        {
+          "position": 3,
+          "id": 49440046350569,
+          "filename": "03_49440046350569.jpg",
+          "relativePath": "/products/anabya/zaarif-cotton-3-pc-emb/03_49440046350569.jpg",
+          "width": 1920,
+          "height": 2880,
+          "type": "jpg",
+          "bytes": 669097
+        },
+        {
+          "position": 4,
+          "id": 49440046383337,
+          "filename": "04_49440046383337.jpg",
+          "relativePath": "/products/anabya/zaarif-cotton-3-pc-emb/04_49440046383337.jpg",
+          "width": 1920,
+          "height": 2880,
+          "type": "jpg",
+          "bytes": 732780
+        },
+        {
+          "position": 5,
+          "id": 49440046416105,
+          "filename": "05_49440046416105.jpg",
+          "relativePath": "/products/anabya/zaarif-cotton-3-pc-emb/05_49440046416105.jpg",
+          "width": 1920,
+          "height": 2880,
+          "type": "jpg",
+          "bytes": 651238
+        },
+        {
+          "position": 6,
+          "id": 49440046448873,
+          "filename": "06_49440046448873.jpg",
+          "relativePath": "/products/anabya/zaarif-cotton-3-pc-emb/06_49440046448873.jpg",
+          "width": 1920,
+          "height": 2880,
+          "type": "jpg",
+          "bytes": 577884
+        },
+        {
+          "position": 7,
+          "id": 49440046481641,
+          "filename": "07_49440046481641.jpg",
+          "relativePath": "/products/anabya/zaarif-cotton-3-pc-emb/07_49440046481641.jpg",
+          "width": 1920,
+          "height": 2880,
+          "type": "jpg",
+          "bytes": 705051
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Parisa 3Pcs",
+      "handle": "parisa-3pcs",
+      "totalSourceImages": 7,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440045334761,
+          "filename": "01_49440045334761.jpg",
+          "relativePath": "/products/anabya/parisa-3pcs/01_49440045334761.jpg",
+          "width": 2048,
+          "height": 2560,
+          "type": "jpg",
+          "bytes": 201221
+        },
+        {
+          "position": 2,
+          "id": 49440045367529,
+          "filename": "02_49440045367529.jpg",
+          "relativePath": "/products/anabya/parisa-3pcs/02_49440045367529.jpg",
+          "width": 2048,
+          "height": 2560,
+          "type": "jpg",
+          "bytes": 217122
+        },
+        {
+          "position": 3,
+          "id": 49440045400297,
+          "filename": "03_49440045400297.jpg",
+          "relativePath": "/products/anabya/parisa-3pcs/03_49440045400297.jpg",
+          "width": 2048,
+          "height": 2560,
+          "type": "jpg",
+          "bytes": 168742
+        },
+        {
+          "position": 4,
+          "id": 49440045433065,
+          "filename": "04_49440045433065.jpg",
+          "relativePath": "/products/anabya/parisa-3pcs/04_49440045433065.jpg",
+          "width": 1646,
+          "height": 2058,
+          "type": "jpg",
+          "bytes": 277578
+        },
+        {
+          "position": 5,
+          "id": 49440045465833,
+          "filename": "05_49440045465833.jpg",
+          "relativePath": "/products/anabya/parisa-3pcs/05_49440045465833.jpg",
+          "width": 1646,
+          "height": 2058,
+          "type": "jpg",
+          "bytes": 325062
+        },
+        {
+          "position": 6,
+          "id": 49440045498601,
+          "filename": "06_49440045498601.jpg",
+          "relativePath": "/products/anabya/parisa-3pcs/06_49440045498601.jpg",
+          "width": 2048,
+          "height": 2560,
+          "type": "jpg",
+          "bytes": 284402
+        },
+        {
+          "position": 7,
+          "id": 49440045531369,
+          "filename": "07_49440045531369.jpg",
+          "relativePath": "/products/anabya/parisa-3pcs/07_49440045531369.jpg",
+          "width": 2048,
+          "height": 2560,
+          "type": "jpg",
+          "bytes": 198395
+        }
+      ],
+      "broken": [],
+      "missing": []
+    },
+    {
+      "productTitle": "Elara",
+      "handle": "elara",
+      "totalSourceImages": 7,
+      "downloaded": [
+        {
+          "position": 1,
+          "id": 49440043499753,
+          "filename": "01_49440043499753.webp",
+          "relativePath": "/products/anabya/elara/01_49440043499753.webp",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 211445
+        },
+        {
+          "position": 2,
+          "id": 49440043532521,
+          "filename": "02_49440043532521.webp",
+          "relativePath": "/products/anabya/elara/02_49440043532521.webp",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 174577
+        },
+        {
+          "position": 3,
+          "id": 49440043565289,
+          "filename": "03_49440043565289.webp",
+          "relativePath": "/products/anabya/elara/03_49440043565289.webp",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 184643
+        },
+        {
+          "position": 4,
+          "id": 49440043598057,
+          "filename": "04_49440043598057.webp",
+          "relativePath": "/products/anabya/elara/04_49440043598057.webp",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 210936
+        },
+        {
+          "position": 5,
+          "id": 49440043630825,
+          "filename": "05_49440043630825.webp",
+          "relativePath": "/products/anabya/elara/05_49440043630825.webp",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 167731
+        },
+        {
+          "position": 6,
+          "id": 49440043663593,
+          "filename": "06_49440043663593.webp",
+          "relativePath": "/products/anabya/elara/06_49440043663593.webp",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 238321
+        },
+        {
+          "position": 7,
+          "id": 49440043696361,
+          "filename": "07_49440043696361.webp",
+          "relativePath": "/products/anabya/elara/07_49440043696361.webp",
+          "width": 1000,
+          "height": 1500,
+          "type": "jpg",
+          "bytes": 210985
+        }
+      ],
+      "broken": [],
+      "missing": []
+    }
+  ]
+}

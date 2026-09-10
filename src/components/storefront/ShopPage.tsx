@@ -184,24 +184,70 @@ export const ShopPage: React.FC<ShopPageProps> = ({
     <div className="bg-[#FAF9F6] font-sans pb-24">
       
       {/* 1. EDITORIAL HEADER BANNER */}
-      <div className="bg-[#1A1A1A] text-white py-12 sm:py-16 px-4 text-center relative overflow-hidden border-b border-stone-800">
-        <div className="max-w-4xl mx-auto relative z-10">
-          <nav className="flex items-center justify-center gap-2 text-xs text-stone-400 mb-3 uppercase tracking-wider">
-            <button onClick={() => onNavigate('home')} className="hover:text-white cursor-pointer">Home</button>
-            <ChevronRight className="w-3 h-3 text-stone-500" />
-            <span className="text-stone-200">
-              {activeCollectionObj ? activeCollectionObj.name : (activeCategoryObj?.name || 'ALL ENSEMBLES')}
-            </span>
-          </nav>
-          
-          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light italic tracking-wide text-stone-100">
-            {activeCollectionObj ? activeCollectionObj.name : (activeCategoryObj?.name || 'All Ensembles')}
-          </h1>
-          <p className="mt-2 text-xs sm:text-sm text-stone-300 max-w-xl mx-auto font-light leading-relaxed">
-            {activeCollectionObj?.description || activeCategoryObj?.description || 'The entire universe of GULPASH luxury creations, festive wear, and prêt-à-porter.'}
-          </p>
-        </div>
-      </div>
+      {(() => {
+        const hasImage = Boolean(activeCollectionObj?.bannerDesktopImage || activeCollectionObj?.bannerUrl || activeCollectionObj?.bannerMobileImage);
+        const bannerType = activeCollectionObj?.bannerType || (hasImage ? 'image_text' : 'text');
+        const isEnabled = activeCollectionObj?.bannerEnabled ?? true;
+        const bannerImg = activeCollectionObj?.bannerDesktopImage || activeCollectionObj?.bannerUrl;
+        const mobileImg = activeCollectionObj?.bannerMobileImage || bannerImg;
+
+        if (!isEnabled || bannerType === 'text' || !bannerImg) {
+          return (
+            <div className="bg-[#1A1A1A] text-white py-12 sm:py-16 px-4 text-center relative overflow-hidden border-b border-stone-800">
+              <div className="max-w-4xl mx-auto relative z-10">
+                <nav className="flex items-center justify-center gap-2 text-xs text-stone-400 mb-3 uppercase tracking-wider">
+                  <button onClick={() => onNavigate('home')} className="hover:text-white cursor-pointer">Home</button>
+                  <ChevronRight className="w-3 h-3 text-stone-500" />
+                  <span className="text-stone-200">
+                    {activeCollectionObj ? activeCollectionObj.name : (activeCategoryObj?.name || 'ALL ENSEMBLES')}
+                  </span>
+                </nav>
+                
+                <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light italic tracking-wide text-stone-100">
+                  {activeCollectionObj?.bannerTitle || activeCollectionObj?.name || (activeCategoryObj?.name || 'All Ensembles')}
+                </h1>
+                <p className="mt-2 text-xs sm:text-sm text-stone-300 max-w-xl mx-auto font-light leading-relaxed">
+                  {activeCollectionObj?.bannerSubtitle || activeCollectionObj?.description || activeCategoryObj?.description || 'The entire universe of GULPASH luxury creations, festive wear, and prêt-à-porter.'}
+                </p>
+              </div>
+            </div>
+          );
+        }
+
+        // Image or Image+Text Banner
+        return (
+          <div className="relative w-full overflow-hidden bg-stone-900 border-b border-stone-800">
+            <picture>
+              {mobileImg && <source media="(max-width: 640px)" srcSet={mobileImg} />}
+              <img
+                src={bannerImg}
+                alt={activeCollectionObj?.name || 'Collection Banner'}
+                className="w-full h-56 sm:h-72 lg:h-80 object-cover"
+              />
+            </picture>
+
+            {bannerType !== 'image' && (
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/25 flex items-center justify-center text-center p-6">
+                <div className="max-w-3xl text-white space-y-2">
+                  <nav className="flex items-center justify-center gap-2 text-xs text-stone-300 mb-2 uppercase tracking-wider">
+                    <button onClick={() => onNavigate('home')} className="hover:text-white cursor-pointer">Home</button>
+                    <ChevronRight className="w-3 h-3 text-stone-400" />
+                    <span className="text-stone-200 font-medium">
+                      {activeCollectionObj ? activeCollectionObj.name : 'ALL ENSEMBLES'}
+                    </span>
+                  </nav>
+                  <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light italic tracking-wide text-white drop-shadow-sm">
+                    {activeCollectionObj?.bannerTitle || activeCollectionObj?.name}
+                  </h1>
+                  <p className="text-xs sm:text-sm text-stone-200 max-w-xl mx-auto font-light leading-relaxed drop-shadow-sm">
+                    {activeCollectionObj?.bannerSubtitle || activeCollectionObj?.description}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* 2. SUB-BAR (COUNT, FILTER TOGGLE, SORTING) */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 border-b border-stone-200 flex flex-wrap items-center justify-between gap-4">

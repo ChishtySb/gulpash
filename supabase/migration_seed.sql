@@ -12,752 +12,599 @@ TRUNCATE TABLE public.product_collections, public.product_categories, public.pro
 
 -- 1. Insert Categories
 INSERT INTO public.categories (id, name, slug, description, image_url, display_order, is_visible)
-VALUES ('93053437-9ec9-4242-a7b9-a99514548627', '3-Piece Ensembles', '3-piece-ensembles', 'Exquisite 3-piece designer ensembles complete with shirt, trouser, and dupatta.', '/products/anabya/aazure-3piece/01_49544837890281.jpg', 1, true)
+VALUES ('93053437-9ec9-4242-a7b9-a99514548627', '3-Piece Ensembles', '3-piece-ensembles', 'Exquisite 3-piece designer ensembles complete with shirt, trouser, and dupatta.', '/products/anabya/aazure-3piece/01_49909420425449.jpg', 1, true)
 ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, image_url = EXCLUDED.image_url;
 INSERT INTO public.categories (id, name, slug, description, image_url, display_order, is_visible)
-VALUES ('7138fe69-1731-41d8-ab8f-cad303d82089', '2-Piece Ensembles', '2-piece-ensembles', 'Versatile 2-piece shirts and trousers with contemporary tailoring and embroidery.', '/products/anabya/zaarif-cotton-2-pc-emb/01_49440049594601.jpg', 2, true)
+VALUES ('7138fe69-1731-41d8-ab8f-cad303d82089', '2-Piece Ensembles', '2-piece-ensembles', 'Versatile 2-piece shirts and trousers with contemporary tailoring and embroidery.', '/products/anabya/zaarif-cotton-3-pc-emb/01_49440046285033.jpg', 2, true)
 ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, image_url = EXCLUDED.image_url;
 INSERT INTO public.categories (id, name, slug, description, image_url, display_order, is_visible)
 VALUES ('d265519d-8ed1-4fdd-ad7c-a775c0a9f636', 'Stitched', 'stitched', 'GulPash luxury Stitched ready-to-wear ensembles. Master-crafted Pakistani tailoring and premium textiles.', '/products/anabya/alize-3pcs/01_49440049594601.jpg', 3, true)
 ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, image_url = EXCLUDED.image_url;
 INSERT INTO public.categories (id, name, slug, description, image_url, display_order, is_visible)
-VALUES ('3dbf3569-cf4c-40a5-a6a1-ac8f5a49a0a9', 'Luxury Pret', 'luxury-pret', 'Handcrafted festive pret with intricate embroidery and timeless silhouettes.', '/products/anabya/zar-e-sabz-3piece/01_49544837890281.jpg', 4, true)
+VALUES ('3dbf3569-cf4c-40a5-a6a1-ac8f5a49a0a9', 'Luxury Pret', 'luxury-pret', 'Handcrafted festive pret with intricate embroidery and timeless silhouettes.', '/products/anabya/zar-e-sabz-3piece/01_50358171500777.png', 4, true)
 ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, image_url = EXCLUDED.image_url;
 INSERT INTO public.categories (id, name, slug, description, image_url, display_order, is_visible)
-VALUES ('f4d58d48-6c5c-4add-a10b-df56f77b0663', 'Unstitched / Stitched', 'unstitched-stitched', 'GulPash signature collections crafted in premium lawn, chiffon, dhank, and linen.', '/products/anabya/amber-3piece/01_49544837890281.jpg', 5, true)
+VALUES ('f4d58d48-6c5c-4add-a10b-df56f77b0663', 'Unstitched / Stitched', 'unstitched-stitched', 'GulPash signature collections crafted in premium lawn, chiffon, dhank, and linen.', '/products/anabya/amber-3piece/01_49909420589289.jpg', 5, true)
 ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, image_url = EXCLUDED.image_url;
 
 -- 2. Insert Collections
 INSERT INTO public.collections (id, name, slug, description, image_url, banner_url, display_order, is_visible)
-VALUES ('66142d53-e454-45bb-aa46-f0ef5a46af98', 'ALL ENSEMBLES', 'all', 'Complete GulPash pret & couture catalog. Discover our master-crafted ready-to-wear silhouettes.', '/products/anabya/aazure-3piece/01_49544837890281.jpg', '/products/anabya/aazure-3piece/01_49544837890281.jpg', 1, true)
+VALUES ('a3237583-8df2-41df-a438-dd89a83e9b3f', 'NEW ARRIVALS', 'new-arrivals', 'The freshest silhouettes, hand-embellished luxury fabrics, and contemporary Pakistani couture cuts.', '/products/anabya/zeenat-emb-3pcs/01_49440054640873.jpg', '/products/anabya/zeenat-emb-3pcs/01_49440054640873.jpg', 1, true)
 ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, image_url = EXCLUDED.image_url, banner_url = EXCLUDED.banner_url;
 INSERT INTO public.collections (id, name, slug, description, image_url, banner_url, display_order, is_visible)
-VALUES ('46f715c2-0f7d-4ccc-ad6b-2a1110582e70', 'TRENDING', 'best-selling', 'Our most coveted, highest-demand artisanal Pakistani ready-to-wear ensembles.', '/products/anabya/zar-e-sabz-3piece/01_49544837890281.jpg', '/products/anabya/zar-e-sabz-3piece/01_49544837890281.jpg', 2, true)
+VALUES ('46f715c2-0f7d-4ccc-ad6b-2a1110582e70', 'TRENDING', 'best-selling', 'Our most coveted, highest-demand artisanal Pakistani ready-to-wear ensembles.', '/products/anabya/zar-e-sabz-3piece/01_50358171500777.png', '/products/anabya/zar-e-sabz-3piece/01_50358171500777.png', 2, true)
 ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, image_url = EXCLUDED.image_url, banner_url = EXCLUDED.banner_url;
 INSERT INTO public.collections (id, name, slug, description, image_url, banner_url, display_order, is_visible)
-VALUES ('a3237583-8df2-41df-a438-dd89a83e9b3f', 'NEW ARRIVALS', 'new-arrivals', 'The freshest silhouettes, hand-embellished luxury fabrics, and contemporary Pakistani couture cuts.', '/products/anabya/zaarif-cotton-2-pc-emb/01_49440049594601.jpg', '/products/anabya/zaarif-cotton-2-pc-emb/01_49440049594601.jpg', 3, true)
+VALUES ('6c19f56a-a756-4050-a710-e9296236afc4', 'WINTER COLLECTION', 'winter-collection', 'Rich winter textiles including premium Dhank, warm linen, and seasonal embroidery.', '/products/anabya/alize-3pcs/01_49440049594601.jpg', '/products/anabya/alize-3pcs/01_49440049594601.jpg', 3, true)
 ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, image_url = EXCLUDED.image_url, banner_url = EXCLUDED.banner_url;
 INSERT INTO public.collections (id, name, slug, description, image_url, banner_url, display_order, is_visible)
-VALUES ('3ea29e8b-052b-42d5-aefc-b8f2ecce1efe', 'CO-ORDS', 'co-ords', 'Chic matching separates and tailored 2-piece coords designed for effortless sophistication.', '/products/anabya/zaarif-cotton-2-pc-emb/01_49440049594601.jpg', '/products/anabya/zaarif-cotton-2-pc-emb/01_49440049594601.jpg', 4, true)
+VALUES ('3ea29e8b-052b-42d5-aefc-b8f2ecce1efe', 'CO-ORDS', 'co-ords', 'Chic matching separates and tailored 2-piece coords designed for effortless sophistication.', '/products/anabya/zaarif-cotton-3-pc-emb/01_49440046285033.jpg', '/products/anabya/zaarif-cotton-3-pc-emb/01_49440046285033.jpg', 4, true)
 ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, image_url = EXCLUDED.image_url, banner_url = EXCLUDED.banner_url;
 INSERT INTO public.collections (id, name, slug, description, image_url, banner_url, display_order, is_visible)
-VALUES ('6c19f56a-a756-4050-a710-e9296236afc4', 'WINTER COLLECTION', 'winter-collection', 'Rich winter textiles including premium Dhank, warm linen, and seasonal embroidery.', '/products/anabya/alize-3pcs/01_49440049594601.jpg', '/products/anabya/alize-3pcs/01_49440049594601.jpg', 5, true)
+VALUES ('219461da-e2c2-42a8-a78e-be4b2c944eca', 'SHORT LENGTH', 'short-length-article', 'Contemporary short tunic lengths paired with straight trousers or culottes.', '/products/anabya/elara/01_49440043499753.webp', '/products/anabya/elara/01_49440043499753.webp', 5, true)
 ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, image_url = EXCLUDED.image_url, banner_url = EXCLUDED.banner_url;
 INSERT INTO public.collections (id, name, slug, description, image_url, banner_url, display_order, is_visible)
-VALUES ('219461da-e2c2-42a8-a78e-be4b2c944eca', 'SHORT LENGTH', 'short-length-article', 'Contemporary short tunic lengths paired with straight trousers or culottes.', '/products/anabya/elara/01_49440049594601.jpg', '/products/anabya/elara/01_49440049594601.jpg', 6, true)
+VALUES ('66142d53-e454-45bb-aa46-f0ef5a46af98', 'ALL ENSEMBLES', 'all', 'Complete GulPash pret & couture catalog. Discover our master-crafted ready-to-wear silhouettes.', '/products/anabya/aazure-3piece/01_49909420425449.jpg', '/products/anabya/aazure-3piece/01_49909420425449.jpg', 6, true)
 ON CONFLICT (slug) DO UPDATE SET name = EXCLUDED.name, description = EXCLUDED.description, image_url = EXCLUDED.image_url, banner_url = EXCLUDED.banner_url;
 
 -- 3. Insert Products
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('4f1c277b-917f-47e6-a855-d5b2c493757d', 'Aazure 3Piece', 'aazure-3piece', '<h3><strong>Aazure 3-Piece</strong></h3>
-<p>A beautifully stitched cotton lawn outfit featuring an embroidered shirt, plain trouser, and a graceful chiffon dupatta—perfect for an elegant and comfortable look.</p>
+VALUES ('4f1c277b-917f-47e6-a855-d5b2c493757d', 'Aazure 3Piece', 'aazure-3piece', '<p>A beautifully stitched cotton lawn outfit featuring an embroidered shirt, plain trouser, and a graceful chiffon dupatta—perfect for an elegant and comfortable look.</p>
 <p><strong>Fabric Details</strong></p>
 <ul>
-<li>
-<p><strong>Fabric:</strong> Cotton Lawn</p>
-</li>
-<li>
-<p><strong>Shirt:</strong> Embroidered Shirt</p>
-</li>
-<li>
-<p><strong>Trouser:</strong> Plain Trouser</p>
-</li>
-<li>
-<p><strong>Dupatta:</strong> Chiffon Dupatta</p>
-</li>
-<li>
-<p><strong>Type:</strong> Stitched<br><br><img src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/44_to_45.png?v=1785787631" alt="" width="290" height="193"><br></p>
-</li>
+<li><strong>Fabric:</strong> Cotton Lawn</li>
+<li><strong>Shirt:</strong> Embroidered Shirt</li>
+<li><strong>Trouser:</strong> Plain Trouser</li>
+<li><strong>Dupatta:</strong> Chiffon Dupatta</li>
+<li><strong>Type:</strong> Stitched<br /></li>
 </ul>', 'Aazure 3Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9362127978729', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5999, 8250, 25, '{"Extra Large (XL)","Small (S)","Medium (M)","Large (L)"}', 'Cotton', true, true, true, false, 5, 0, 'Aazure 3Piece | GulPash Luxury Pret', 'Order Aazure 3Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('7d78784f-55b3-4997-ad84-b8f5a05f622c', 'Aleeeza Black 3pcs', 'alize-black-3pcs-embroidery', '<p><span style="color: rgb(0, 0, 0);"><!-- TRUST BADGES (LARGE + PREMIUM) --></span></p>
-<div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 14px; font-size: 14px;"></div>
-<p style="font-size: 13px; color: #888; margin-bottom: 8px;"><strong><span style="color: rgb(0, 0, 0);">Premium Linen Shirt &amp; Trouser • Chiffon Dupatta</span></strong></p>
-<p style="font-size: 14px; line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">A timeless black 3-piece ensemble designed with graceful embroidery and a refined silhouette. Crafted from premium linen and paired with a soft chiffon dupatta, Alize Black offers a perfect blend of modest elegance and modern sophistication.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Highlights</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Premium linen embroidered shirt</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Long-length design for a graceful fall</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Classic and modest silhouette</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Matching trouser for a complete look</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Soft chiffon dupatta with elegant flow</span></li>
+VALUES ('7d78784f-55b3-4997-ad84-b8f5a05f622c', 'Aleeeza Black 3pcs', 'alize-black-3pcs-embroidery', '<p><strong>Premium Linen Shirt & Trouser • Chiffon Dupatta</strong></p>
+<p>A timeless black 3-piece ensemble designed with graceful embroidery and a refined silhouette. Crafted from premium linen and paired with a soft chiffon dupatta, Alize Black offers a perfect blend of modest elegance and modern sophistication.</p>
+<p><strong>Product Highlights</strong></p>
+<ul>
+<li>Premium linen embroidered shirt</li>
+<li>Long-length design for a graceful fall</li>
+<li>Classic and modest silhouette</li>
+<li>Matching trouser for a complete look</li>
+<li>Soft chiffon dupatta with elegant flow</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Fabric &amp; Feel</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Made with breathable premium linen for comfort and structure, complemented by a lightweight chiffon dupatta that adds softness and movement.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Occasion</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Perfect for fall wear, evening gatherings, and semi-formal occasions — designed to deliver a polished and elegant look.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Details</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fabric: Premium Linen (Shirt &amp; Trouser)</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Dupatta: Soft Chiffon</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Style: Long-length shirt</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Silhouette: Classic &amp; modest</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Season: Fall Wear</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Sizes: Small, Medium, Large, XL</span></li>
+<p><strong>Fabric & Feel</strong></p>
+<p>Made with breathable premium linen for comfort and structure, complemented by a lightweight chiffon dupatta that adds softness and movement.</p>
+<p><strong>Occasion</strong></p>
+<p>Perfect for fall wear, evening gatherings, and semi-formal occasions — designed to deliver a polished and elegant look.</p>
+<p><strong>Product Details</strong></p>
+<ul>
+<li>Fabric: Premium Linen (Shirt & Trouser)</li>
+<li>Dupatta: Soft Chiffon</li>
+<li>Style: Long-length shirt</li>
+<li>Silhouette: Classic & modest</li>
+<li>Season: Fall Wear</li>
+<li>Sizes: Small, Medium, Large, XL</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Delivery &amp; Payment</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Cash on Delivery available nationwide</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fast shipping across Pakistan</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
+<p><strong>Delivery & Payment</strong></p>
+<ul>
+<li>Cash on Delivery available nationwide</li>
+<li>Fast shipping across Pakistan</li>
+<li>Carefully packed for quality assurance</li>
 </ul>
-<p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'Aleeeza Black 3pcs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217104617', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"s","m","l","xl"}', 'Premium Linen (Shirt & Trouser)', true, false, false, true, 5, 0, 'Aleeeza Black 3pcs | GulPash Luxury Pret', 'Order Aleeeza Black 3pcs online from GulPash. Handcrafted Pakistani pret, premium Premium Linen (Shirt & Trouser), fast delivery across Pakistan.')
+<p>Limited pieces available — restocks are not guaranteed.</p>', 'Aleeeza Black 3pcs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217104617', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"s","m","l","xl"}', 'Premium Linen (Shirt & Trouser)', true, false, false, true, 5, 0, 'Aleeeza Black 3pcs | GulPash Luxury Pret', 'Order Aleeeza Black 3pcs online from GulPash. Handcrafted Pakistani pret, premium Premium Linen (Shirt & Trouser), fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('7aa3b55d-255c-4d23-a44b-4edea63e374a', 'Alize 3Pcs', 'alize-3pcs', '<p><br><br></p>
-<p><span>Fabric: Dhank<br></span></p>
+VALUES ('7aa3b55d-255c-4d23-a44b-4edea63e374a', 'Alize 3Pcs', 'alize-3pcs', '<p>Fabric: Dhank</p>
 <ul>
-<li data-end="784" data-start="736">
-<p data-end="784" data-start="738"><strong data-end="782" data-start="738">3 Piece Suit (Shirt + Trouser + Dupatta )<br></strong></p>
-</li>
-<li data-end="1001" data-start="960">
-<p data-end="1001" data-start="962"><strong data-end="972" data-start="962">Style:</strong><span> </span>Long-length graceful shirt</p>
-</li>
-<li data-end="1001" data-start="960">
-<strong data-end="972" data-start="962"><strong data-end="1015" data-start="1004">Season:</strong><span> Winter<br><img src="https://cdn.shopify.com/s/files/1/0977/8429/9803/files/co_ord_48.png?v=1761008602"></span></strong><br>
+<li><strong>3 Piece Suit (Shirt + Trouser + Dupatta )<br></strong></li>
+<li><strong>Style:</strong> Long-length graceful shirt</li>
+<li>
+<strong>Season:</strong> Winter<br></strong><br>
 </li>
 </ul>', 'Alize 3Pcs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217170153', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"small","medium","large","xl"}', 'Dhank', true, false, false, true, 5, 0, 'Alize 3Pcs | GulPash Luxury Pret', 'Order Alize 3Pcs online from GulPash. Handcrafted Pakistani pret, premium Dhank, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('1137ec03-4d5c-4fc3-a86a-6171252552f0', 'Amber 3Piece', 'amber-3piece', '<p><strong>Amber 3-Piece</strong></p>
-<p>A beautifully stitched cotton lawn outfit featuring an embroidered shirt, plain trouser, and a graceful chiffon dupatta—perfect for a timeless and elegant look.</p>
+VALUES ('1137ec03-4d5c-4fc3-a86a-6171252552f0', 'Amber 3Piece', 'amber-3piece', '<p>A beautifully stitched cotton lawn outfit featuring an embroidered shirt, plain trouser, and a graceful chiffon dupatta—perfect for a timeless and elegant look.</p>
 <p><strong>Fabric Details</strong></p>
 <ul>
-<li>
-<p><strong>Fabric:</strong> Cotton Lawn</p>
-</li>
-<li>
-<p><strong>Shirt:</strong> Embroidered Shirt</p>
-</li>
-<li>
-<p><strong>Trouser:</strong> Embroidered Trouser</p>
-</li>
-<li>
-<p><strong>Dupatta:</strong> <span>Chiffon </span>Dupatta</p>
-</li>
-<li>
-<p><strong>Type:</strong> Stitched</p>
-</li>
-</ul>
-<p><br><br><img src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/44_to_45.png?v=1785787631" alt="" width="290" height="193"><br></p>', 'Amber 3Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9362138333417', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5999, 8250, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Amber 3Piece | GulPash Luxury Pret', 'Order Amber 3Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+<li><strong>Fabric:</strong> Cotton Lawn</li>
+<li><strong>Shirt:</strong> Embroidered Shirt</li>
+<li><strong>Trouser:</strong> Embroidered Trouser</li>
+<li><strong>Dupatta:</strong> Chiffon Dupatta</li>
+<li><strong>Type:</strong> Stitched</li>
+</ul>', 'Amber 3Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9362138333417', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5999, 8250, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Amber 3Piece | GulPash Luxury Pret', 'Order Amber 3Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('a020657f-4e8f-47c5-a90d-e129669dc324', 'Armeen 3pcs', 'armeen-3pcs', '<p><span style="color: rgb(0, 0, 0);"><!-- TRUST BADGES (LARGE + PREMIUM) --></span></p>
-<div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 14px; font-size: 14px;"></div>
-<h2 style="font-weight: 600; margin-bottom: 6px;"><span style="color: rgb(0, 0, 0);">Armeen — Elegant Festive 3Pcs</span></h2>
-<p style="font-size: 13px; color: #888; margin-bottom: 8px;"><strong><span style="color: rgb(0, 0, 0);">Cotton Embroidered Shirt • Chiffon Dupatta • Complete 3Pcs Set</span></strong></p>
-<p style="font-size: 14px; line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">A beautifully designed 3-piece ensemble that blends traditional charm with modern elegance. Armeen is crafted with a premium cotton embroidered shirt, detailed neckline, and a soft chiffon dupatta — creating a graceful look perfect for festive occasions.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Highlights</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Premium cotton embroidered shirt</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Elegant neckline with fine detailing</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Border detailing for a refined finish</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Soft &amp; flowy chiffon dupatta</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">3-piece complete ready-to-wear outfit</span></li>
+VALUES ('a020657f-4e8f-47c5-a90d-e129669dc324', 'Armeen 3pcs', 'armeen-3pcs', '<p><strong>Armeen — Elegant Festive 3Pcs</strong></p>
+<p><strong>Cotton Embroidered Shirt • Chiffon Dupatta • Complete 3Pcs Set</strong></p>
+<p>A beautifully designed 3-piece ensemble that blends traditional charm with modern elegance. Armeen is crafted with a premium cotton embroidered shirt, detailed neckline, and a soft chiffon dupatta — creating a graceful look perfect for festive occasions.</p>
+<p><strong>Product Highlights</strong></p>
+<ul>
+<li>Premium cotton embroidered shirt</li>
+<li>Elegant neckline with fine detailing</li>
+<li>Border detailing for a refined finish</li>
+<li>Soft & flowy chiffon dupatta</li>
+<li>3-piece complete ready-to-wear outfit</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Fabric &amp; Feel</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Lightweight cotton fabric ensures breathable comfort, while the chiffon dupatta adds a soft, graceful flow — perfect for all-day wear.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Occasion</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Ideal for Eid, festive gatherings, and special occasions — designed to give you an effortlessly elegant and polished look.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Delivery &amp; Payment</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Cash on Delivery available nationwide</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fast shipping across Pakistan</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
+<p><strong>Fabric & Feel</strong></p>
+<p>Lightweight cotton fabric ensures breathable comfort, while the chiffon dupatta adds a soft, graceful flow — perfect for all-day wear.</p>
+<p><strong>Occasion</strong></p>
+<p>Ideal for Eid, festive gatherings, and special occasions — designed to give you an effortlessly elegant and polished look.</p>
+<p><strong>Delivery & Payment</strong></p>
+<ul>
+<li>Cash on Delivery available nationwide</li>
+<li>Fast shipping across Pakistan</li>
+<li>Carefully packed for quality assurance</li>
 </ul>
-<p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'Armeen 3pcs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312216908009', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 75, '{"small / black","medium / black","large / black","xl / black"}', 'Cotton', true, false, false, true, 5, 0, 'Armeen 3pcs | GulPash Luxury Pret', 'Order Armeen 3pcs online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+<p>Limited pieces available — restocks are not guaranteed.</p>', 'Armeen 3pcs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312216908009', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 75, '{"small / black","medium / black","large / black","xl / black"}', 'Cotton', true, false, false, true, 5, 0, 'Armeen 3pcs | GulPash Luxury Pret', 'Order Armeen 3pcs online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('71f2b516-7326-4ed0-a553-5877dfdc668b', 'Azmeen 3 Piece', 'azmeen-3-piece', '<p><strong>Azmeen 3-Piece</strong></p>
-<p>A beautifully stitched cotton lawn outfit featuring an embroidered shirt, elegant embroidered plazo, and a graceful embroidered chiffon dupatta—perfect for a timeless and sophisticated look.</p>
+VALUES ('71f2b516-7326-4ed0-a553-5877dfdc668b', 'Azmeen 3 Piece', 'azmeen-3-piece', '<p>A beautifully stitched cotton lawn outfit featuring an embroidered shirt, elegant embroidered plazo, and a graceful embroidered chiffon dupatta—perfect for a timeless and sophisticated look.</p>
 <p><strong>Fabric Details</strong></p>
 <ul>
-<li style="list-style-type: none;">
+<li><strong>Fabric:</strong> Cotton Lawn</li>
+<li><strong>Shirt:</strong> Embroidered Shirt</li>
+<li><strong>Trouser:</strong> Embroidered Plazo</li>
+<li><strong>Dupatta:</strong> Embroidered Chiffon Dupatta</li>
+<li><strong>Type:</strong> Stitched</li>
+</ul>', 'Azmeen 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9353919135977', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5499, 7698.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Azmeen 3 Piece | GulPash Luxury Pret', 'Order Azmeen 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
+INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
+VALUES ('d6c3d9b0-c2d5-4b2b-aa90-8ee2b1f4bed2', 'Blackish EMB 3PCS', 'blackish-emb-3pcs-1', '<p><strong>Blackish — Embroidered Linen 3Pcs</strong></p>
+<p><strong>🔥 Bestseller • Premium Black Collection</strong></p>
+<p><strong>Linen Shirt & Trouser • Chiffon Dupatta • Complete 3PC Set</strong></p>
+<p>Step into timeless elegance with this stunning black embroidered 3-piece suit, crafted from premium linen for a refined and comfortable feel. Designed with intricate white threadwork, this outfit delivers a perfect balance of sophistication and modern style.</p>
+<p><strong>Product Highlights</strong></p>
 <ul>
-<li>
-<p><strong>Fabric:</strong> Cotton Lawn</p>
-</li>
-<li>
-<p><strong>Shirt:</strong> Embroidered Shirt</p>
-</li>
-<li>
-<p><strong>Trouser:</strong> Embroidered Plazo</p>
-</li>
-<li>
-<p><strong>Dupatta:</strong> Embroidered Chiffon Dupatta</p>
-</li>
-<li>
-<p><strong>Type:</strong> Stitched</p>
-</li>
+<li>Premium linen embroidered shirt</li>
+<li>Elegant white threadwork on sleeves, back & borders</li>
+<li>Long-length design for a graceful fall</li>
+<li>Classic and modest silhouette</li>
+<li>Matching linen trouser for a complete look</li>
+<li>Soft chiffon dupatta with flowy drape</li>
+<li>3-piece ready-to-wear ensemble</li>
 </ul>
-</li>
+<p><strong>Fabric & Feel</strong></p>
+<p>Crafted from breathable premium linen, offering comfort with structure, paired with a lightweight chiffon dupatta that adds elegance and softness to the overall look.</p>
+<p><strong>Occasion</strong></p>
+<p>Perfect for semi-formal wear, evening gatherings, and festive occasions — designed to give you a polished and standout appearance.</p>
+<p><strong>Product Details</strong></p>
+<ul>
+<li>Fabric: Premium Linen (Shirt & Trouser)</li>
+<li>Dupatta: Chiffon</li>
+<li>Pieces: 3 (Shirt + Trouser + Dupatta)</li>
+<li>Color: Black</li>
+<li>Work: White Thread Embroidery</li>
+<li>Style: Long-length graceful shirt</li>
+<li>Season: Mid-Season Wear</li>
 </ul>
-<h4><img alt="" src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/37_Length.png?v=1784748312" width="293" height="196" style="font-size: 0.875rem;"></h4>', 'Azmeen 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9353919135977', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5499, 7698.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Azmeen 3 Piece | GulPash Luxury Pret', 'Order Azmeen 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+<p><strong>Delivery & Payment</strong></p>
+<ul>
+<li>Cash on Delivery available nationwide</li>
+<li>Fast shipping across Pakistan</li>
+<li>Carefully packed for quality assurance</li>
+</ul>
+<p>Limited pieces available — restocks are not guaranteed.</p>', 'Blackish EMB 3PCS — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217628905', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"small","medium","large","extra-large"}', 'Premium Linen (Shirt & Trouser)', true, false, false, true, 5, 0, 'Blackish EMB 3PCS | GulPash Luxury Pret', 'Order Blackish EMB 3PCS online from GulPash. Handcrafted Pakistani pret, premium Premium Linen (Shirt & Trouser), fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('d6c3d9b0-c2d5-4b2b-aa90-8ee2b1f4bed2', 'Blackish EMB 3PCS', 'blackish-emb-3pcs-1', '<p><span style="color: rgb(0, 0, 0);"><!-- TRUST BADGES (LARGE + PREMIUM) --></span></p>
-<div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 14px; font-size: 14px;"></div>
-<h2 style="font-weight: 600; margin-bottom: 6px;"><span style="color: rgb(0, 0, 0);">Blackish — Embroidered Linen 3Pcs</span></h2>
-<p style="font-size: 13px; color: #c59d5f; margin-bottom: 8px;"><strong><span style="color: rgb(255, 42, 0);">🔥 Bestseller • Premium Black Collection</span></strong></p>
-<p style="font-size: 13px; color: #888; margin-bottom: 8px;"><span style="color: rgb(244, 6, 6);"><strong>Linen Shirt &amp; Trouser • Chiffon Dupatta • Complete 3PC Set</strong></span></p>
-<p style="font-size: 14px; line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Step into timeless elegance with this stunning black embroidered 3-piece suit, crafted from premium linen for a refined and comfortable feel. Designed with intricate white threadwork, this outfit delivers a perfect balance of sophistication and modern style.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Highlights</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Premium linen embroidered shirt</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Elegant white threadwork on sleeves, back &amp; borders</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Long-length design for a graceful fall</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Classic and modest silhouette</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Matching linen trouser for a complete look</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Soft chiffon dupatta with flowy drape</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">3-piece ready-to-wear ensemble</span></li>
-</ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Fabric &amp; Feel</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Crafted from breathable premium linen, offering comfort with structure, paired with a lightweight chiffon dupatta that adds elegance and softness to the overall look.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Occasion</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Perfect for semi-formal wear, evening gatherings, and festive occasions — designed to give you a polished and standout appearance.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Details</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fabric: Premium Linen (Shirt &amp; Trouser)</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Dupatta: Chiffon</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Pieces: 3 (Shirt + Trouser + Dupatta)</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Color: Black</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Work: White Thread Embroidery</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Style: Long-length graceful shirt</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Season: Mid-Season Wear</span></li>
-</ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Delivery &amp; Payment</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Cash on Delivery available nationwide</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fast shipping across Pakistan</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
-</ul>
-<p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'Blackish EMB 3PCS — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217628905', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"small","medium","large","extra-large"}', 'Premium Linen (Shirt & Trouser)', true, false, false, true, 5, 0, 'Blackish EMB 3PCS | GulPash Luxury Pret', 'Order Blackish EMB 3PCS online from GulPash. Handcrafted Pakistani pret, premium Premium Linen (Shirt & Trouser), fast delivery across Pakistan.')
-ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
-INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('22b380a2-b6e0-4a74-a457-c6828458bc57', 'Elara', 'elara', '<p> <img src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/612c9a1b-2ff8-45b2-a2bd-c5247a6c5670_cf12ef96-207e-46d9-8c42-fd3fe6070b57.png?v=1785478470" alt="" width="297" height="40"></p>
-<p>✅<span> </span><strong>Parcel can be opened and checked before payment.</strong></p>
+VALUES ('22b380a2-b6e0-4a74-a457-c6828458bc57', 'Elara', 'elara', '<p>✅ <strong>Parcel can be opened and checked before payment.</strong></p>
 <p><strong>Elara 3-Piece</strong></p>
-<p>Elevate your style with this elegant 2-piece &amp; 3-piece outfit featuring a beautifully embroidered shirt and a luxurious <strong>Farshi Shalwar</strong> adorned with intricate sequin and zari work, paired with a graceful printed chiffon dupatta.</p>
+<p>Elevate your style with this elegant 2-piece & 3-piece outfit featuring a beautifully embroidered shirt and a luxurious <strong>Farshi Shalwar</strong> adorned with intricate sequin and zari work, paired with a graceful printed chiffon dupatta.</p>
 <p><strong>Fabric Details</strong></p>
 <ul>
-<li>
-<p><strong>Shirt:</strong> Embroidered <span>Shirt</span></p>
-</li>
-<li>
-<p><strong>Trouser:</strong> Plain Trousers</p>
-</li>
-<li>
-<p><strong>Dupatta <span>Option</span>:</strong> Chiffon Dupatta</p>
-</li>
-<li>
-<p><strong>Type:</strong> Stitched<br><br></p>
-</li>
-</ul>
-<p><br><img alt="" src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/de779f4a-befd-44a6-8994-413d47719dbe.png?v=1784675504" width="303" height="202"><br></p>', 'Elara — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312216318185', '7138fe69-1731-41d8-ab8f-cad303d82089', '66142d53-e454-45bb-aa46-f0ef5a46af98', '2-Piece Ensembles', 'TRENDING', 3999, 7500, 200, '{"2-Piece / Small (S)","2-Piece / Medium (M)","2-Piece / Large (L)","2-Piece / Extra Large (XL)","3-Piece / Small (S)","3-Piece / Medium (M)","3-Piece / Large (L)","3-Piece / Extra Large (XL)"}', 'Chiffon', true, true, true, false, 5, 0, 'Elara | GulPash Luxury Pret', 'Order Elara online from GulPash. Handcrafted Pakistani pret, premium Chiffon, fast delivery across Pakistan.')
+<li><strong>Shirt:</strong> Embroidered Shirt</li>
+<li><strong>Trouser:</strong> Plain Trousers</li>
+<li><strong>Dupatta Option:</strong> Chiffon Dupatta</li>
+<li><strong>Type:</strong> Stitched<br /></li>
+</ul>', 'Elara — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312216318185', '7138fe69-1731-41d8-ab8f-cad303d82089', '66142d53-e454-45bb-aa46-f0ef5a46af98', '2-Piece Ensembles', 'TRENDING', 3999, 7500, 200, '{"2-Piece / Small (S)","2-Piece / Medium (M)","2-Piece / Large (L)","2-Piece / Extra Large (XL)","3-Piece / Small (S)","3-Piece / Medium (M)","3-Piece / Large (L)","3-Piece / Extra Large (XL)"}', 'Chiffon', true, true, true, false, 5, 0, 'Elara | GulPash Luxury Pret', 'Order Elara online from GulPash. Handcrafted Pakistani pret, premium Chiffon, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('bf19a309-ad4e-4746-a043-4bbe1261d43d', 'Elsa Embroidery 3pcs', 'elsa-embroidery-3pcs', '<p data-start="81" data-end="125"><strong data-start="81" data-end="125">Elsa 3pcs Suit – Zinc ✨ | GulPash</strong></p>
-<p data-start="127" data-end="442">✨ <strong data-start="129" data-end="140">Fabric:</strong> Premium SUMMER LINNEN<br data-start="154" data-end="157">✨ <strong data-start="159" data-end="188">Intricate Embroidery Work</strong><br data-start="188" data-end="191">✨ <strong data-start="193" data-end="240">Long, graceful shirt with elegant detailing</strong><br data-start="240" data-end="243">✨ <strong data-start="245" data-end="298">Standard-fit trousers for a sleek and modest look</strong><br data-start="298" data-end="301">✨ <strong data-start="303" data-end="327" data-is-only-node="">Soft Chiffon Dupatta</strong> completing the outfit with a refined touch<br data-start="370" data-end="373">✨ <strong data-start="375" data-end="442">Perfect blend of comfort, elegance, and timeless sophistication</strong></p>
-<p data-start="444" data-end="635">🌟 A stunning <em data-start="458" data-end="472">Zinc-colored</em> embroidered 3-piece suit crafted in premium Dhank fabric, paired with a beautifully draped chiffon dupatta — designed to make you stand out with effortless charm.</p>
-<p data-start="637" data-end="725">📩 <strong data-start="640" data-end="659">DM to Order Now</strong><br data-start="659" data-end="662">🛍️ <strong data-start="666" data-end="686">Order on Website</strong><br data-start="686" data-end="689">🚚 <strong data-start="692" data-end="725">Nationwide Delivery Available</strong></p>
-<p data-start="727" data-end="819">⚠️ <em data-start="730" data-end="743">Disclaimer:</em> Actual product color may vary slightly due to lighting and screen settings.</p>
-<p data-start="821" data-end="909">#GulPash #DhankFabric #3PcsSuit #ChiffonDupatta #ElegantWear #NewArrival #ZincSuit</p>', 'Elsa Embroidery 3pcs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312219660521', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"S – Chest 19"" / 47–48"" / Standard Size","M – Chest 21"" / 47–48"" / Standard Size","L – Chest 23"" / 47–48"" / Standard Size","XL – Chest 24"" / 47–48"" / Standard Size"}', 'Dhank', true, false, false, true, 5, 0, 'Elsa Embroidery 3pcs | GulPash Luxury Pret', 'Order Elsa Embroidery 3pcs online from GulPash. Handcrafted Pakistani pret, premium Dhank, fast delivery across Pakistan.')
+VALUES ('bf19a309-ad4e-4746-a043-4bbe1261d43d', 'Elsa Embroidery 3pcs', 'elsa-embroidery-3pcs', '<p><strong>Elsa 3pcs Suit – Zinc ✨ | GulPash</strong></p>
+<p>✨ <strong>Fabric:</strong> Premium SUMMER LINNEN<br>✨ <strong>Intricate Embroidery Work</strong><br>✨ <strong>Long, graceful shirt with elegant detailing</strong><br>✨ <strong>Standard-fit trousers for a sleek and modest look</strong><br>✨ <strong>Soft Chiffon Dupatta</strong> completing the outfit with a refined touch<br>✨ <strong>Perfect blend of comfort, elegance, and timeless sophistication</strong></p>
+<p>🌟 A stunning <em>Zinc-colored</em> embroidered 3-piece suit crafted in premium Dhank fabric, paired with a beautifully draped chiffon dupatta — designed to make you stand out with effortless charm.</p>
+<p>📩 <strong>DM to Order Now</strong><br>🛍️ <strong>Order on Website</strong><br>🚚 <strong>Nationwide Delivery Available</strong></p>
+<p>⚠️ <em>Disclaimer:</em> Actual product color may vary slightly due to lighting and screen settings.</p>
+<p>#GulPash #DhankFabric #3PcsSuit #ChiffonDupatta #ElegantWear #NewArrival #ZincSuit</p>', 'Elsa Embroidery 3pcs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312219660521', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"S – Chest 19"" / 47–48"" / Standard Size","M – Chest 21"" / 47–48"" / Standard Size","L – Chest 23"" / 47–48"" / Standard Size","XL – Chest 24"" / 47–48"" / Standard Size"}', 'Dhank', true, false, false, true, 5, 0, 'Elsa Embroidery 3pcs | GulPash Luxury Pret', 'Order Elsa Embroidery 3pcs online from GulPash. Handcrafted Pakistani pret, premium Dhank, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('f58f8a61-cb17-41f2-ae42-b53a905d0f75', 'Golden Grace', 'golden-grace', '<p data-start="119" data-end="165"><strong data-start="119" data-end="163">Mustard Long Length Embroidered Dress 💛</strong></p>
-<p data-start="167" data-end="353">✨ <strong data-start="169" data-end="180">Fabric:</strong> Dhank<br data-start="186" data-end="189">✨ <strong data-start="191" data-end="218">3 Piece Suit with Shawl</strong><br data-start="218" data-end="221">✨ <strong data-start="223" data-end="252">Beautiful Embroidery Work</strong><br data-start="252" data-end="255">✨ <strong data-start="257" data-end="280" data-is-only-node="">Long Graceful Shirt</strong> with Standard-Fit Trousers<br data-start="307" data-end="310">✨ <strong data-start="312" data-end="351">Perfect Blend of Comfort &amp; Elegance</strong></p>
-<p data-start="355" data-end="448">🌟 A timeless mustard outfit with elegant embroidery — made to make you stand out in style!</p>
-<p data-start="450" data-end="514">📩 <strong data-start="453" data-end="473">DM to Order Now!</strong><br data-start="473" data-end="476">🚚 <strong data-start="479" data-end="512">Nationwide Delivery Available</strong></p>', 'Golden Grace — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312219136233', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 50, '{"S – Chest 19"" / 47–48""","M – Chest 21"" / 47–48"""}', 'Dhank', true, false, false, true, 5, 0, 'Golden Grace | GulPash Luxury Pret', 'Order Golden Grace online from GulPash. Handcrafted Pakistani pret, premium Dhank, fast delivery across Pakistan.')
+VALUES ('f58f8a61-cb17-41f2-ae42-b53a905d0f75', 'Golden Grace', 'golden-grace', '<p><strong>Mustard Long Length Embroidered Dress 💛</strong></p>
+<p>✨ <strong>Fabric:</strong> Dhank<br>✨ <strong>3 Piece Suit with Shawl</strong><br>✨ <strong>Beautiful Embroidery Work</strong><br>✨ <strong>Long Graceful Shirt</strong> with Standard-Fit Trousers<br>✨ <strong>Perfect Blend of Comfort & Elegance</strong></p>
+<p>🌟 A timeless mustard outfit with elegant embroidery — made to make you stand out in style!</p>
+<p>📩 <strong>DM to Order Now!</strong><br>🚚 <strong>Nationwide Delivery Available</strong></p>', 'Golden Grace — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312219136233', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 50, '{"S – Chest 19"" / 47–48""","M – Chest 21"" / 47–48"""}', 'Dhank', true, false, false, true, 5, 0, 'Golden Grace | GulPash Luxury Pret', 'Order Golden Grace online from GulPash. Handcrafted Pakistani pret, premium Dhank, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('35a01cae-b1ea-4c90-a30c-e23b4ecee033', 'Kaavya Emb 3pcs', 'kaavya-emb-3pcs', '<p><span style="color: rgb(0, 0, 0);"><!-- TRUST BADGES (LARGE + PREMIUM) --></span></p>
-<div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 14px; font-size: 14px;"></div>
-<h2 style="font-weight: 600; margin-bottom: 6px;"><span style="color: rgb(0, 0, 0);">Kaavya — Zinc Linen 3Pcs</span></h2>
-<p style="font-size: 13px; color: #c59d5f; margin-bottom: 8px;"><span style="color: rgb(251, 14, 14);"><strong>✨ Modern Classic • Premium Collection</strong></span></p>
-<p style="font-size: 13px; color: #888; margin-bottom: 8px;"><strong><span style="color: rgb(0, 0, 0);">Premium Linen Embroidered Shirt &amp; Trouser • Dupatta Included</span></strong></p>
-<p style="font-size: 14px; line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">A sophisticated zinc-toned 3-piece ensemble designed for modern elegance. Kaavya features intricate embroidery on premium linen, paired with a long graceful shirt and standard-fit trousers, creating a refined and effortlessly stylish look.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Highlights</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Premium linen embroidered shirt</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Unique zinc tone for a modern, classy look</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Long graceful shirt with elegant fall</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Standard-fit trouser for balanced styling</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Matching dupatta for a complete outfit</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">3-piece ready-to-wear ensemble</span></li>
+VALUES ('35a01cae-b1ea-4c90-a30c-e23b4ecee033', 'Kaavya Emb 3pcs', 'kaavya-emb-3pcs', '<p><strong>Kaavya — Zinc Linen 3Pcs</strong></p>
+<p><strong>✨ Modern Classic • Premium Collection</strong></p>
+<p><strong>Premium Linen Embroidered Shirt & Trouser • Dupatta Included</strong></p>
+<p>A sophisticated zinc-toned 3-piece ensemble designed for modern elegance. Kaavya features intricate embroidery on premium linen, paired with a long graceful shirt and standard-fit trousers, creating a refined and effortlessly stylish look.</p>
+<p><strong>Product Highlights</strong></p>
+<ul>
+<li>Premium linen embroidered shirt</li>
+<li>Unique zinc tone for a modern, classy look</li>
+<li>Long graceful shirt with elegant fall</li>
+<li>Standard-fit trouser for balanced styling</li>
+<li>Matching dupatta for a complete outfit</li>
+<li>3-piece ready-to-wear ensemble</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Fabric &amp; Feel</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Crafted from breathable premium linen, offering comfort with structure — ideal for all-day wear while maintaining a polished appearance.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Occasion</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Perfect for office wear, casual gatherings, and semi-formal events — designed to give you a refined and elegant presence.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Details</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fabric: Premium Linen</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Work: Embroidered</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Pieces: 3 (Shirt + Trouser + Dupatta)</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Color: Zinc</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Style: Long-length graceful shirt</span></li>
+<p><strong>Fabric & Feel</strong></p>
+<p>Crafted from breathable premium linen, offering comfort with structure — ideal for all-day wear while maintaining a polished appearance.</p>
+<p><strong>Occasion</strong></p>
+<p>Perfect for office wear, casual gatherings, and semi-formal events — designed to give you a refined and elegant presence.</p>
+<p><strong>Product Details</strong></p>
+<ul>
+<li>Fabric: Premium Linen</li>
+<li>Work: Embroidered</li>
+<li>Pieces: 3 (Shirt + Trouser + Dupatta)</li>
+<li>Color: Zinc</li>
+<li>Style: Long-length graceful shirt</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Delivery &amp; Payment</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Cash on Delivery available nationwide</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fast shipping across Pakistan</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
+<p><strong>Delivery & Payment</strong></p>
+<ul>
+<li>Cash on Delivery available nationwide</li>
+<li>Fast shipping across Pakistan</li>
+<li>Carefully packed for quality assurance</li>
 </ul>
-<p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'Kaavya Emb 3pcs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312219562217', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"linen / small","linen / medium","linen / large","linen / extra-large"}', 'Premium Linen', true, false, false, true, 5, 0, 'Kaavya Emb 3pcs | GulPash Luxury Pret', 'Order Kaavya Emb 3pcs online from GulPash. Handcrafted Pakistani pret, premium Premium Linen, fast delivery across Pakistan.')
+<p>Limited pieces available — restocks are not guaranteed.</p>', 'Kaavya Emb 3pcs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312219562217', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"linen / small","linen / medium","linen / large","linen / extra-large"}', 'Premium Linen', true, false, false, true, 5, 0, 'Kaavya Emb 3pcs | GulPash Luxury Pret', 'Order Kaavya Emb 3pcs online from GulPash. Handcrafted Pakistani pret, premium Premium Linen, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('84c1092f-efa7-4e69-afe2-12ca7666fe26', 'Lemon Blossom 3-Piece', 'lemon-blossom-3-piece', '<h4><strong>Lemon Blossom 3-Piece</strong></h4>
-<p>A stylish stitched 3-piece outfit featuring an embroidered cotton shirt, printed Farshi Shalwar, and a chiffon dupatta—perfect for a graceful summer look.</p>
+VALUES ('84c1092f-efa7-4e69-afe2-12ca7666fe26', 'Lemon Blossom 3-Piece', 'lemon-blossom-3-piece', '<p>A stylish stitched 3-piece outfit featuring an embroidered cotton shirt, printed Farshi Shalwar, and a chiffon dupatta—perfect for a graceful summer look.</p>
 <p><strong>Fabric Details</strong></p>
 <ul>
-<li>
-<p><strong>Fabric:</strong> Cotton</p>
-</li>
-<li>
-<p><strong>Shirt:</strong> Embroidered Shirt</p>
-</li>
-<li>
-<p><strong>Trouser:</strong> Printed Farshi Shalwar</p>
-</li>
-<li>
-<p><strong>Dupatta:</strong> Chiffon Dupatta</p>
-</li>
-<li>
-<p><strong>Type:</strong> Stitched</p>
-</li>
-</ul>
-<h4><img alt="" src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/37_Length.png?v=1784748312" width="293" height="196"></h4>', 'Lemon Blossom 3-Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9352267956457', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5499, 7698.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Lemon Blossom 3-Piece | GulPash Luxury Pret', 'Order Lemon Blossom 3-Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+<li><strong>Fabric:</strong> Cotton</li>
+<li><strong>Shirt:</strong> Embroidered Shirt</li>
+<li><strong>Trouser:</strong> Printed Farshi Shalwar</li>
+<li><strong>Dupatta:</strong> Chiffon Dupatta</li>
+<li><strong>Type:</strong> Stitched</li>
+</ul>', 'Lemon Blossom 3-Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9352267956457', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5499, 7698.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Lemon Blossom 3-Piece | GulPash Luxury Pret', 'Order Lemon Blossom 3-Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('f8aa8eca-5946-4225-a9a8-bac867ad0f3b', 'Meadow Grace  3 Piece', 'meadow-grace-3-piece', '<p><span style="color: rgb(0, 0, 0);"><!-- TRUST BADGES (LARGE + PREMIUM) --></span></p>
-<h1>Meadow Grace – 3 Piece</h1>
-<p><strong>Fabric Details</strong></p>
+VALUES ('f8aa8eca-5946-4225-a9a8-bac867ad0f3b', 'Meadow Grace  3 Piece', 'meadow-grace-3-piece', '<p><strong>Fabric Details</strong></p>
 <ul>
-<li>
-<p><strong>Fabric:</strong> Cotton &amp; Linen</p>
-</li>
-<li>
-<p><strong>Shirt:</strong> Embroidered Shirt</p>
-</li>
-<li>
-<p><strong>Trouser:</strong> Plain Trouser</p>
-</li>
-<li>
-<p><strong>Dupatta:</strong> Chiffon Dupatta</p>
-</li>
-<li>
-<p><strong>Type:</strong> Stitched</p>
-</li>
-</ul>
-<p><img src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/44_to_45.png?v=1785787631" alt="" width="314" height="209"></p>', 'Meadow Grace  3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312216875241', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5999, 8250, 200, '{"Cotton / Small (S)","Cotton / Medium (M)","Cotton / Large (L)","Cotton / Extra Large (XL)","Linen / Small (S)","Linen / Medium (M)","Linen / Large (L)","Linen / Extra Large (XL)"}', 'Linen', true, true, true, false, 5, 0, 'Meadow Grace  3 Piece | GulPash Luxury Pret', 'Order Meadow Grace  3 Piece online from GulPash. Handcrafted Pakistani pret, premium Linen, fast delivery across Pakistan.')
+<li><strong>Fabric:</strong> Cotton & Linen</li>
+<li><strong>Shirt:</strong> Embroidered Shirt</li>
+<li><strong>Trouser:</strong> Plain Trouser</li>
+<li><strong>Dupatta:</strong> Chiffon Dupatta</li>
+<li><strong>Type:</strong> Stitched</li>
+</ul>', 'Meadow Grace  3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312216875241', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5999, 8250, 200, '{"Cotton / Small (S)","Cotton / Medium (M)","Cotton / Large (L)","Cotton / Extra Large (XL)","Linen / Small (S)","Linen / Medium (M)","Linen / Large (L)","Linen / Extra Large (XL)"}', 'Linen', true, true, true, false, 5, 0, 'Meadow Grace  3 Piece | GulPash Luxury Pret', 'Order Meadow Grace  3 Piece online from GulPash. Handcrafted Pakistani pret, premium Linen, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('c3d827b9-1a31-4228-a190-7a3da5a698af', 'Mehndi Emb 3Pc Stitched', 'mehndi-emb-3pc-stitched', '<p><img src="https://cdn.shopify.com/s/files/1/0638/4127/1923/files/IMG_20250427_222427.jpg?v=1745774765"><br></p>
-<p><span>Fabric: Dhank<br></span></p>
+VALUES ('c3d827b9-1a31-4228-a190-7a3da5a698af', 'Mehndi Emb 3Pc Stitched', 'mehndi-emb-3pc-stitched', '<p>Fabric: Dhank</p>
 <ul>
-<li data-end="784" data-start="736">
-<p data-end="784" data-start="738"><strong data-end="782" data-start="738">3 Piece Suit (Shirt + Trouser + Dupatta )<br></strong></p>
-</li>
-<li data-end="1001" data-start="960">
-<p data-end="1001" data-start="962"><strong data-end="972" data-start="962">Style:</strong><span> </span>Long-length graceful shirt</p>
-</li>
-<li data-end="1001" data-start="960">
-<strong data-end="972" data-start="962"><strong data-end="1015" data-start="1004">Season:</strong><span> Summer<br><img src="https://cdn.shopify.com/s/files/1/0977/8429/9803/files/co_ord_48.png?v=1761008602"></span></strong><br>
+<li><strong>3 Piece Suit (Shirt + Trouser + Dupatta )<br></strong></li>
+<li><strong>Style:</strong> Long-length graceful shirt</li>
+<li>
+<strong>Season:</strong> Summer<br></strong><br>
 </li>
 </ul>', 'Mehndi Emb 3Pc Stitched — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217399529', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"small","medium","large","xl"}', 'Dhank', true, false, false, true, 5, 0, 'Mehndi Emb 3Pc Stitched | GulPash Luxury Pret', 'Order Mehndi Emb 3Pc Stitched online from GulPash. Handcrafted Pakistani pret, premium Dhank, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('bce0772a-1255-47c8-afcd-5f578734316e', 'Mulberry Bloom 3 Piece', 'mulberry-bloom-3-piece', '<h3><strong><img src="https://cdn.shopify.com/s/files/1/0999/0035/8977/files/612c9a1b-2ff8-45b2-a2bd-c5247a6c5670_cf12ef96-207e-46d9-8c42-fd3fe6070b57.png?v=1786134739" alt=""></strong></h3>
-<p>✅<span> </span><strong>Parcel can be opened and checked before payment.</strong></p>
-<h4>
-<strong></strong><strong><span>Mulberry Bloom 3-Piece</span></strong>
-</h4>
-<p class="isSelectedEnd"><span>A beautifully stitched cotton outfit featuring an embroidered shirt, elegant embroidered Farshi Trouser, and a graceful chiffon dupatta—perfect for a timeless and sophisticated look.</span></p>
-<p class="isSelectedEnd"><strong><span>Fabric Details</span></strong></p>
+VALUES ('bce0772a-1255-47c8-afcd-5f578734316e', 'Mulberry Bloom 3 Piece', 'mulberry-bloom-3-piece', '<p>✅ <strong>Parcel can be opened and checked before payment.</strong></p>
+<p><strong>Mulberry Bloom 3-Piece</strong></p>
+<p>A beautifully stitched cotton outfit featuring an embroidered shirt, elegant embroidered Farshi Trouser, and a graceful chiffon dupatta—perfect for a timeless and sophisticated look.</p>
+<p><strong>Fabric Details</strong></p>
 <ul>
 <li>
-<strong><span>Shirt:</span></strong><span> Embroidered Shirt</span>
+<strong>Shirt:</strong> Embroidered Shirt
 </li>
 <li>
-<strong><span>Trouser:</span></strong><span> Embroidered Farshi Trouser</span>
+<strong>Trouser:</strong> Embroidered Farshi Trouser
 </li>
 <li>
-<strong><span>Dupatta:</span></strong><span> Chiffon Dupatta</span>
+<strong>Dupatta:</strong> Chiffon Dupatta
 </li>
 <li>
-<strong><span>Type:</span></strong><span> Stitched</span>
+<strong>Type:</strong> Stitched
 </li>
 <li>
-<strong><span>Fabric:</span></strong><span> Cotton</span>
+<strong>Fabric:</strong> Cotton
 </li>
-</ul>
-<p><img src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/de779f4a-befd-44a6-8994-413d47719dbe.png?v=1784675504" alt=""></p>', 'Mulberry Bloom 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9352245313769', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5299, 7419, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Mulberry Bloom 3 Piece | GulPash Luxury Pret', 'Order Mulberry Bloom 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+</ul>', 'Mulberry Bloom 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9352245313769', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5299, 7419, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Mulberry Bloom 3 Piece | GulPash Luxury Pret', 'Order Mulberry Bloom 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('9719080d-6d7f-4ad7-ac0d-75142e67ab13', 'Multi Color 3Pcs Embroidery', 'multi-color-3pcs-embroidery', '<p><span style="color: rgb(0, 0, 0);"><!-- TRUST BADGES (LARGE + PREMIUM) --></span></p>
-<div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 14px; font-size: 14px;"></div>
-<h2 style="font-weight: 600; margin-bottom: 6px;"><span style="color: rgb(0, 0, 0);">Multi Color — Embroidered 3Pcs Ensemble</span></h2>
-<p style="font-size: 13px; color: #888; margin-bottom: 8px;"><span style="color: rgb(255, 42, 0);"><strong>Premium Linen Shirt &amp; Trouser • Chiffon Dupatta</strong></span></p>
-<p style="font-size: 14px; line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">A beautifully balanced 3-piece ensemble featuring soft multi-tone embroidery on a refined base. Crafted from premium linen and paired with a lightweight chiffon dupatta, this outfit offers a perfect blend of elegance, comfort, and versatility for every season.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><strong><span style="color: rgb(0, 0, 0);">Product Highlights</span></strong></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Premium linen embroidered shirt</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Elegant multi-color detailing for a refined look</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Matching trouser for a complete coordinated outfit</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Soft chiffon dupatta with graceful fall</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">3-piece ready-to-wear ensemble</span></li>
+VALUES ('9719080d-6d7f-4ad7-ac0d-75142e67ab13', 'Multi Color 3Pcs Embroidery', 'multi-color-3pcs-embroidery', '<p><strong>Multi Color — Embroidered 3Pcs Ensemble</strong></p>
+<p><strong>Premium Linen Shirt & Trouser • Chiffon Dupatta</strong></p>
+<p>A beautifully balanced 3-piece ensemble featuring soft multi-tone embroidery on a refined base. Crafted from premium linen and paired with a lightweight chiffon dupatta, this outfit offers a perfect blend of elegance, comfort, and versatility for every season.</p>
+<p><strong>Product Highlights</strong></p>
+<ul>
+<li>Premium linen embroidered shirt</li>
+<li>Elegant multi-color detailing for a refined look</li>
+<li>Matching trouser for a complete coordinated outfit</li>
+<li>Soft chiffon dupatta with graceful fall</li>
+<li>3-piece ready-to-wear ensemble</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><strong><span style="color: rgb(0, 0, 0);">Fabric &amp; Feel</span></strong></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Made with breathable premium linen suitable for all seasons, complemented by a soft and flowy chiffon dupatta that enhances the overall elegance.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><strong><span style="color: rgb(0, 0, 0);">Occasion</span></strong></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Ideal for Eid, festive gatherings, and semi-formal wear — a versatile outfit designed to keep you stylish across all occasions.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><strong><span style="color: rgb(0, 0, 0);">Product Details</span></strong></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fabric: Premium Linen</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Dupatta: Chiffon</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Pieces: 3 (Shirt, Trouser &amp; Dupatta)</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Work: Embroidered</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Color: Multi Beige</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Season: 4-Season Wear</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Occasion: Eid, Festive &amp; Semi-Formal</span></li>
+<p><strong>Fabric & Feel</strong></p>
+<p>Made with breathable premium linen suitable for all seasons, complemented by a soft and flowy chiffon dupatta that enhances the overall elegance.</p>
+<p><strong>Occasion</strong></p>
+<p>Ideal for Eid, festive gatherings, and semi-formal wear — a versatile outfit designed to keep you stylish across all occasions.</p>
+<p><strong>Product Details</strong></p>
+<ul>
+<li>Fabric: Premium Linen</li>
+<li>Dupatta: Chiffon</li>
+<li>Pieces: 3 (Shirt, Trouser & Dupatta)</li>
+<li>Work: Embroidered</li>
+<li>Color: Multi Beige</li>
+<li>Season: 4-Season Wear</li>
+<li>Occasion: Eid, Festive & Semi-Formal</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><strong><span style="color: rgb(0, 0, 0);">Delivery &amp; Payment</span></strong></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Cash on Delivery available nationwide</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fast shipping across Pakistan</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
+<p><strong>Delivery & Payment</strong></p>
+<ul>
+<li>Cash on Delivery available nationwide</li>
+<li>Fast shipping across Pakistan</li>
+<li>Carefully packed for quality assurance</li>
 </ul>
-<p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'Multi Color 3Pcs Embroidery — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217333993', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"small / beige","medium / beige","large / beige","extra-large / beige"}', 'Premium Linen', true, false, false, true, 5, 0, 'Multi Color 3Pcs Embroidery | GulPash Luxury Pret', 'Order Multi Color 3Pcs Embroidery online from GulPash. Handcrafted Pakistani pret, premium Premium Linen, fast delivery across Pakistan.')
+<p>Limited pieces available — restocks are not guaranteed.</p>', 'Multi Color 3Pcs Embroidery — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217333993', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"small / beige","medium / beige","large / beige","extra-large / beige"}', 'Premium Linen', true, false, false, true, 5, 0, 'Multi Color 3Pcs Embroidery | GulPash Luxury Pret', 'Order Multi Color 3Pcs Embroidery online from GulPash. Handcrafted Pakistani pret, premium Premium Linen, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('47b17f35-a153-4561-a877-86519f825767', 'Multi Color Black 3Pcs', 'multi-color-black-3pcs', '<p><span style="color: rgb(0, 0, 0);"><!-- TRUST BADGES (LARGE + PREMIUM) --></span></p>
-<div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 14px; font-size: 14px;"></div>
-<h2 style="font-weight: 600; margin-bottom: 6px;"><span style="color: rgb(0, 0, 0);">Multi Color Black — Premium 3Pcs Ensemble</span></h2>
-<p style="font-size: 13px; color: #888; margin-bottom: 8px;"><strong><span style="color: rgb(0, 0, 0);">Premium Linen Shirt &amp; Trouser • Chiffon Dupatta</span></strong></p>
-<p style="font-size: 14px; line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">A statement 3-piece outfit designed in a rich multi-tone palette over a black base, combining elegance with modern charm. Crafted from premium linen and paired with a soft chiffon dupatta, this ensemble delivers both comfort and refined style for every season.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Highlights</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Premium linen embroidered shirt</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Elegant multi-color detailing on black base</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Matching trouser for a complete coordinated look</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Lightweight chiffon dupatta with soft fall</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">3-piece ready-to-wear outfit</span></li>
+VALUES ('47b17f35-a153-4561-a877-86519f825767', 'Multi Color Black 3Pcs', 'multi-color-black-3pcs', '<p><strong>Multi Color Black — Premium 3Pcs Ensemble</strong></p>
+<p><strong>Premium Linen Shirt & Trouser • Chiffon Dupatta</strong></p>
+<p>A statement 3-piece outfit designed in a rich multi-tone palette over a black base, combining elegance with modern charm. Crafted from premium linen and paired with a soft chiffon dupatta, this ensemble delivers both comfort and refined style for every season.</p>
+<p><strong>Product Highlights</strong></p>
+<ul>
+<li>Premium linen embroidered shirt</li>
+<li>Elegant multi-color detailing on black base</li>
+<li>Matching trouser for a complete coordinated look</li>
+<li>Lightweight chiffon dupatta with soft fall</li>
+<li>3-piece ready-to-wear outfit</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Fabric &amp; Feel</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Made from breathable premium linen suitable for all seasons, complemented by a flowy chiffon dupatta that adds a graceful and polished finish.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Occasion</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Ideal for Eid, festive gatherings, and semi-formal wear — a versatile outfit that balances comfort with standout style.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Details</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fabric: Premium Linen</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Dupatta: Chiffon</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Pieces: 3 (Shirt, Trouser &amp; Dupatta)</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Work: Embroidered</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Color: Multi Beige on Black Base</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Season: 4-Season Wear</span></li>
+<p><strong>Fabric & Feel</strong></p>
+<p>Made from breathable premium linen suitable for all seasons, complemented by a flowy chiffon dupatta that adds a graceful and polished finish.</p>
+<p><strong>Occasion</strong></p>
+<p>Ideal for Eid, festive gatherings, and semi-formal wear — a versatile outfit that balances comfort with standout style.</p>
+<p><strong>Product Details</strong></p>
+<ul>
+<li>Fabric: Premium Linen</li>
+<li>Dupatta: Chiffon</li>
+<li>Pieces: 3 (Shirt, Trouser & Dupatta)</li>
+<li>Work: Embroidered</li>
+<li>Color: Multi Beige on Black Base</li>
+<li>Season: 4-Season Wear</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Delivery &amp; Payment</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Cash on Delivery available nationwide</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fast shipping across Pakistan</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
+<p><strong>Delivery & Payment</strong></p>
+<ul>
+<li>Cash on Delivery available nationwide</li>
+<li>Fast shipping across Pakistan</li>
+<li>Carefully packed for quality assurance</li>
 </ul>
-<p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'Multi Color Black 3Pcs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217071849', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"small / black","medium / black","large / black","extra-large / black"}', 'Premium Linen', true, false, false, true, 5, 0, 'Multi Color Black 3Pcs | GulPash Luxury Pret', 'Order Multi Color Black 3Pcs online from GulPash. Handcrafted Pakistani pret, premium Premium Linen, fast delivery across Pakistan.')
+<p>Limited pieces available — restocks are not guaranteed.</p>', 'Multi Color Black 3Pcs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217071849', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"small / black","medium / black","large / black","extra-large / black"}', 'Premium Linen', true, false, false, true, 5, 0, 'Multi Color Black 3Pcs | GulPash Luxury Pret', 'Order Multi Color Black 3Pcs online from GulPash. Handcrafted Pakistani pret, premium Premium Linen, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('d4bd170b-03e7-476e-a108-8cfa2e96fbae', 'Multi Flower 3 Piece', 'multi-flower-3-piece', '<h3><strong>Multi Flower 3-Piece</strong></h3>
-<p>A premium embroidered floral suit crafted from soft, breathable cotton for a stylish and comfortable summer look.</p>
-<h3>Product Details</h3>
+VALUES ('d4bd170b-03e7-476e-a108-8cfa2e96fbae', 'Multi Flower 3 Piece', 'multi-flower-3-piece', '<p>A premium embroidered floral suit crafted from soft, breathable cotton for a stylish and comfortable summer look.</p>
+<p><strong>Product Details</strong></p>
 <ul>
 <li>
-<strong>Fabric:</strong><span> </span>Premium Cotton</li>
+<strong>Fabric:</strong> Premium Cotton</li>
 <li>
-<strong>Work:</strong><span> </span>Embroidery</li>
+<strong>Work:</strong> Embroidery</li>
 <li>
-<strong>Pieces:</strong><span> </span>3 (Shirt, Trouser &amp; Dupatta)</li>
+<strong>Pieces:</strong> 3 (Shirt, Trouser & Dupatta)</li>
 <li>
-<strong>Style:</strong><span> </span>Long-Length Shirt</li>
+<strong>Style:</strong> Long-Length Shirt</li>
 <li>
-<strong>Season:</strong><span> </span>Summer Wear</li>
-</ul>
-<p><img src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/long_length.png?v=1784682318" alt="" width="295" height="196"></p>', 'Multi Flower 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9351793475817', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5999, 8250, 200, '{"Small (S) / Beige","Small (S) / black","Medium (M) / Beige","Medium (M) / black","Large (L) / Beige","Large (L) / black","Extra Large (XL) / Beige","Extra Large (XL) / black"}', 'Cotton', true, true, true, false, 5, 0, 'Multi Flower 3 Piece | GulPash Luxury Pret', 'Order Multi Flower 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+<strong>Season:</strong> Summer Wear</li>
+</ul>', 'Multi Flower 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9351793475817', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5999, 8250, 200, '{"Small (S) / Beige","Small (S) / black","Medium (M) / Beige","Medium (M) / black","Large (L) / Beige","Large (L) / black","Extra Large (XL) / Beige","Extra Large (XL) / black"}', 'Cotton', true, true, true, false, 5, 0, 'Multi Flower 3 Piece | GulPash Luxury Pret', 'Order Multi Flower 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('3bc17692-61c5-4dcd-a738-d23fd7409f94', 'NEW AYRA 3PCS', 'aria-stitched-3pc', '<p><span style="color: rgb(0, 0, 0);"><!-- TRUST BADGES (LARGE + PREMIUM) --></span></p>
-<div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 14px; font-size: 14px;"><br></div>
-<h2 style="font-weight: 600; margin-bottom: 6px;"><span style="color: rgb(0, 0, 0);">NEW AYRA 3PCS — Sheesha Silk 3Pc EMB</span></h2>
-<p style="font-size: 13px; color: #c59d5f; margin-bottom: 8px;"><span style="color: rgb(255, 42, 0);"><strong>✨ Premium Collection • Limited Stock</strong></span></p>
-<p style="font-size: 13px; color: #888; margin-bottom: 8px;"><span style="color: rgb(254, 16, 16);"><strong>Sheesha Silk Shirt &amp; Trouser • Complete 3PC Set</strong></span></p>
-<p style="font-size: 14px; line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">A luxurious 3-piece ensemble crafted in elegant sheesha silk, designed to deliver a rich and graceful look. NEW AYRA 3PCS features a long-length silhouette that drapes beautifully, making it an ideal choice for refined and statement styling.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Highlights</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Premium sheesha silk fabric with a rich finish</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Long-length Embroidered shirt for a graceful fall</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Classic and modest silhouette</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Matching trouser for a complete outfit</span></li>
-<li style="color: rgb(0, 0, 0);">
-<span style="color: rgb(0, 0, 0);">3-piece ready-to-wear ensemble</span><span style="color: rgb(0, 0, 0);"></span>
+VALUES ('3bc17692-61c5-4dcd-a738-d23fd7409f94', 'NEW AYRA 3PCS', 'aria-stitched-3pc', '<br>
+<p><strong>NEW AYRA 3PCS — Sheesha Silk 3Pc EMB</strong></p>
+<p><strong>✨ Premium Collection • Limited Stock</strong></p>
+<p><strong>Sheesha Silk Shirt & Trouser • Complete 3PC Set</strong></p>
+<p>A luxurious 3-piece ensemble crafted in elegant sheesha silk, designed to deliver a rich and graceful look. NEW AYRA 3PCS features a long-length silhouette that drapes beautifully, making it an ideal choice for refined and statement styling.</p>
+<p><strong>Product Highlights</strong></p>
+<ul>
+<li>Premium sheesha silk fabric with a rich finish</li>
+<li>Long-length Embroidered shirt for a graceful fall</li>
+<li>Classic and modest silhouette</li>
+<li>Matching trouser for a complete outfit</li>
+<li>
+3-piece ready-to-wear ensemble
 </li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Fabric &amp; Feel</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Crafted from smooth and slightly glossy sheesha silk, offering a soft touch with an elegant drape — perfect for creating a premium and polished look.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Occasion</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Ideal for festive wear, evening events, and special occasions — designed to give you a sophisticated and standout appearance.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Details</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fabric: Sheesha Silk</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Pieces: 3 (Shirt + Trouser + Dupatta)</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Style: Long-length graceful shirt</span></li>
+<p><strong>Fabric & Feel</strong></p>
+<p>Crafted from smooth and slightly glossy sheesha silk, offering a soft touch with an elegant drape — perfect for creating a premium and polished look.</p>
+<p><strong>Occasion</strong></p>
+<p>Ideal for festive wear, evening events, and special occasions — designed to give you a sophisticated and standout appearance.</p>
+<p><strong>Product Details</strong></p>
+<ul>
+<li>Fabric: Sheesha Silk</li>
+<li>Pieces: 3 (Shirt + Trouser + Dupatta)</li>
+<li>Style: Long-length graceful shirt</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Delivery &amp; Payment</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Cash on Delivery available nationwide</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fast shipping across Pakistan</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
+<p><strong>Delivery & Payment</strong></p>
+<ul>
+<li>Cash on Delivery available nationwide</li>
+<li>Fast shipping across Pakistan</li>
+<li>Carefully packed for quality assurance</li>
 </ul>
-<p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'NEW AYRA 3PCS — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217563369', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"small","medium","large","xl"}', 'Sheesha Silk', true, false, false, true, 5, 0, 'NEW AYRA 3PCS | GulPash Luxury Pret', 'Order NEW AYRA 3PCS online from GulPash. Handcrafted Pakistani pret, premium Sheesha Silk, fast delivery across Pakistan.')
+<p>Limited pieces available — restocks are not guaranteed.</p>', 'NEW AYRA 3PCS — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217563369', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"small","medium","large","xl"}', 'Sheesha Silk', true, false, false, true, 5, 0, 'NEW AYRA 3PCS | GulPash Luxury Pret', 'Order NEW AYRA 3PCS online from GulPash. Handcrafted Pakistani pret, premium Sheesha Silk, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('8a3aeb94-1fa8-43ff-a032-acc5cbd5c630', 'NEW BROWNIE', 'brownish-3pc', '<p><span style="color: rgb(0, 0, 0);"><!-- TRUST BADGES (LARGE + PREMIUM) --></span></p>
-<div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 14px; font-size: 14px;"><br></div>
-<h2 style="font-weight: 600; margin-bottom: 6px;"><span style="color: rgb(0, 0, 0);">NEW BROWNIE — Embroidered Linen 3Pc</span></h2>
-<p style="font-size: 13px; color: #c59d5f; margin-bottom: 8px;"><span style="color: rgb(255, 42, 0);"><strong>🔥 Summer Favorite • Limited Stock</strong></span></p>
-<p style="font-size: 13px; color: #888; margin-bottom: 8px;"><span style="color: rgb(245, 10, 10);"><strong>Summer Linen Shirt &amp; Trouser • Pure Chiffon Dupatta</strong></span></p>
-<p style="font-size: 14px; line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">A sophisticated brown-toned 3-piece ensemble designed for effortless summer elegance. Featuring an embroidered linen shirt paired with a plain trouser and a pure chiffon dupatta, this outfit offers a refined and breathable look for warm weather styling.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Highlights</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Premium summer linen embroidered shirt</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Elegant earthy brown tone for a classy look</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Plain trouser for a clean and balanced outfit</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Pure chiffon dupatta with soft, flowy drape</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">3-piece complete ready-to-wear ensemble</span></li>
+VALUES ('8a3aeb94-1fa8-43ff-a032-acc5cbd5c630', 'NEW BROWNIE', 'brownish-3pc', '<br>
+<p><strong>NEW BROWNIE — Embroidered Linen 3Pc</strong></p>
+<p><strong>🔥 Summer Favorite • Limited Stock</strong></p>
+<p><strong>Summer Linen Shirt & Trouser • Pure Chiffon Dupatta</strong></p>
+<p>A sophisticated brown-toned 3-piece ensemble designed for effortless summer elegance. Featuring an embroidered linen shirt paired with a plain trouser and a pure chiffon dupatta, this outfit offers a refined and breathable look for warm weather styling.</p>
+<p><strong>Product Highlights</strong></p>
+<ul>
+<li>Premium summer linen embroidered shirt</li>
+<li>Elegant earthy brown tone for a classy look</li>
+<li>Plain trouser for a clean and balanced outfit</li>
+<li>Pure chiffon dupatta with soft, flowy drape</li>
+<li>3-piece complete ready-to-wear ensemble</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Fabric &amp; Feel</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Crafted from breathable summer linen for maximum comfort, paired with a lightweight pure chiffon dupatta that adds softness and elegance to the overall look.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Occasion</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Perfect for summer outings, casual gatherings, and semi-formal wear — designed to keep you cool while maintaining a polished appearance.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Details</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fabric: Summer Linen (Shirt &amp; Trouser)</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Dupatta: Pure Chiffon</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Pieces: 3 (Shirt + Trouser + Dupatta)</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Work: Embroidered Shirt</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Bottom: Plain Trouser</span></li>
+<p><strong>Fabric & Feel</strong></p>
+<p>Crafted from breathable summer linen for maximum comfort, paired with a lightweight pure chiffon dupatta that adds softness and elegance to the overall look.</p>
+<p><strong>Occasion</strong></p>
+<p>Perfect for summer outings, casual gatherings, and semi-formal wear — designed to keep you cool while maintaining a polished appearance.</p>
+<p><strong>Product Details</strong></p>
+<ul>
+<li>Fabric: Summer Linen (Shirt & Trouser)</li>
+<li>Dupatta: Pure Chiffon</li>
+<li>Pieces: 3 (Shirt + Trouser + Dupatta)</li>
+<li>Work: Embroidered Shirt</li>
+<li>Bottom: Plain Trouser</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Delivery &amp; Payment</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Cash on Delivery available nationwide</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fast shipping across Pakistan</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
+<p><strong>Delivery & Payment</strong></p>
+<ul>
+<li>Cash on Delivery available nationwide</li>
+<li>Fast shipping across Pakistan</li>
+<li>Carefully packed for quality assurance</li>
 </ul>
-<p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'NEW BROWNIE — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217497833', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"Small","Medium","Large","Xl"}', 'Summer Linen (Shirt & Trouser)', true, false, false, true, 5, 0, 'NEW BROWNIE | GulPash Luxury Pret', 'Order NEW BROWNIE online from GulPash. Handcrafted Pakistani pret, premium Summer Linen (Shirt & Trouser), fast delivery across Pakistan.')
+<p>Limited pieces available — restocks are not guaranteed.</p>', 'NEW BROWNIE — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217497833', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"Small","Medium","Large","Xl"}', 'Summer Linen (Shirt & Trouser)', true, false, false, true, 5, 0, 'NEW BROWNIE | GulPash Luxury Pret', 'Order NEW BROWNIE online from GulPash. Handcrafted Pakistani pret, premium Summer Linen (Shirt & Trouser), fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('a5686492-80b5-4882-ab9f-8555bdfea101', 'Noor e Naz Luxury 3 Piece', 'noor-e-naz-luxury-3-piece', '<h3><strong><img src="https://cdn.shopify.com/s/files/1/0999/0035/8977/files/612c9a1b-2ff8-45b2-a2bd-c5247a6c5670_cf12ef96-207e-46d9-8c42-fd3fe6070b57.png?v=1786134739" alt=""></strong></h3>
-<p>✅<span> </span><strong>Parcel can be opened and checked before payment.</strong></p>
+VALUES ('a5686492-80b5-4882-ab9f-8555bdfea101', 'Noor e Naz Luxury 3 Piece', 'noor-e-naz-luxury-3-piece', '<p>✅ <strong>Parcel can be opened and checked before payment.</strong></p>
 <p><strong>Noor-e-Naz Luxury 3-Piece</strong></p>
 <p>A premium stitched outfit featuring an embroidered cotton lawn shirt, plain trouser, and an elegant embroidered organza dupatta—crafted for a graceful and luxurious look.</p>
 <p><strong>Fabric Details</strong></p>
 <ul>
-<li>
-<p><strong>Fabric:</strong> Cotton Lawn</p>
-</li>
-<li>
-<p><strong>Shirt:</strong> Embroidered Shirt</p>
-</li>
-<li>
-<p><strong>Trouser:</strong> Plain Trouser</p>
-</li>
-<li>
-<p><strong>Dupatta:</strong> Embroidered Organza Dupatta</p>
-</li>
-<li>
-<p><strong>Type:</strong> Stitched</p>
-</li>
-</ul>
-<h3><img src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/long_length.png?v=1784682318" alt="" width="295" height="196" style="font-size: 0.875rem;"></h3>', 'Noor e Naz Luxury 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9353060024553', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5999, 8250, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Noor e Naz Luxury 3 Piece | GulPash Luxury Pret', 'Order Noor e Naz Luxury 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+<li><strong>Fabric:</strong> Cotton Lawn</li>
+<li><strong>Shirt:</strong> Embroidered Shirt</li>
+<li><strong>Trouser:</strong> Plain Trouser</li>
+<li><strong>Dupatta:</strong> Embroidered Organza Dupatta</li>
+<li><strong>Type:</strong> Stitched</li>
+</ul>', 'Noor e Naz Luxury 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9353060024553', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5999, 8250, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Noor e Naz Luxury 3 Piece | GulPash Luxury Pret', 'Order Noor e Naz Luxury 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('b1821be2-41c0-4224-a274-9d52826fe528', 'Noor e Zard 3 Piece', 'noor-e-zard-3-piece', '<h3><strong>Noor-e-Zard 3-Piece</strong></h3>
-<p>A beautifully stitched outfit featuring an embroidered shirt, embroidered Farshi shalwar, and an elegant organza dupatta—perfect for a graceful and timeless look.</p>
+VALUES ('b1821be2-41c0-4224-a274-9d52826fe528', 'Noor e Zard 3 Piece', 'noor-e-zard-3-piece', '<p>A beautifully stitched outfit featuring an embroidered shirt, embroidered Farshi shalwar, and an elegant organza dupatta—perfect for a graceful and timeless look.</p>
 <p><strong>Fabric Details</strong></p>
 <ul>
 <li>
-<strong><span>Fabric:</span></strong><span> Cotton Lawn</span>
+<strong>Fabric:</strong> Cotton Lawn
 </li>
 <li>
-<strong><span>Shirt:</span></strong><span> Embroidered Shirt</span>
+<strong>Shirt:</strong> Embroidered Shirt
 </li>
 <li>
-<strong><span>Trouser:</span></strong><span> Embroidered Farshi Shalwar</span>
+<strong>Trouser:</strong> Embroidered Farshi Shalwar
 </li>
 <li>
-<strong><span>Dupatta:</span></strong><span> Organza Dupatta</span>
+<strong>Dupatta:</strong> Organza Dupatta
 </li>
 <li>
-<strong><span>Type:</span></strong><span> Stitched</span><br>
+<strong>Type:</strong> Stitched<br>
 </li>
-</ul>
-<h4><img alt="" src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/37_Length.png?v=1784748312" width="293" height="196" style="font-size: 0.875rem;"></h4>', 'Noor e Zard 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9352270840041', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5499, 7698.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Noor e Zard 3 Piece | GulPash Luxury Pret', 'Order Noor e Zard 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+</ul>', 'Noor e Zard 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9352270840041', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5499, 7698.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Noor e Zard 3 Piece | GulPash Luxury Pret', 'Order Noor e Zard 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('2983d9d1-edad-45f6-a4df-dcf2f37cfd92', 'Parisa 3Pcs', 'parisa-3pcs', '<h3 data-end="959" data-start="933" data-section-id="1d57n9x"><span style="color: rgb(66, 5, 250);" role="text"><strong data-end="957" data-start="937">Product Details:</strong></span></h3>
-<ul data-end="1241" data-start="960">
-<li style="color: rgb(0, 0, 0);" data-end="1004" data-start="960" data-section-id="igh7bl"><span style="color: rgb(0, 0, 0);"><strong data-end="979" data-start="962">Article Name:</strong> Parisa 3Pcs</span></li>
-<li style="color: rgb(0, 0, 0);" data-end="1040" data-start="1005" data-section-id="1pw9v0g"><span style="color: rgb(0, 0, 0);"><strong data-end="1024" data-start="1007">Shirt Fabric:</strong> Premium Linen</span></li>
-<li style="color: rgb(0, 0, 0);" data-end="1078" data-start="1041" data-section-id="17i9z58"><span style="color: rgb(0, 0, 0);"><strong data-end="1062" data-start="1043">Trouser Fabric:</strong> Linen (Plain)</span></li>
-<li style="color: rgb(0, 0, 0);" data-end="1110" data-start="1079" data-section-id="ek2tp"><span style="color: rgb(0, 0, 0);"><strong data-end="1100" data-start="1081">Dupatta Fabric:</strong> Chiffon</span></li>
-<li style="color: rgb(0, 0, 0);" data-end="1164" data-start="1111" data-section-id="1dycag0"><span style="color: rgb(0, 0, 0);"><strong data-end="1122" data-start="1113">Work:</strong> Embroidered Shirt &amp; plain Dupatta</span></li>
-<li style="color: rgb(0, 0, 0);" data-end="1207" data-start="1165" data-section-id="16qrsoq"><span style="color: rgb(0, 0, 0);"><strong data-end="1180" data-start="1167">Includes:</strong> Shirt, Trouser &amp; Dupatta</span></li>
-<li style="color: rgb(0, 0, 0);" data-end="1241" data-start="1208" data-section-id="kd0huu"><span style="color: rgb(0, 0, 0);"><strong data-end="1220" data-start="1210">Style:</strong> Luxury Ethnic Wear</span></li>
+VALUES ('2983d9d1-edad-45f6-a4df-dcf2f37cfd92', 'Parisa 3Pcs', 'parisa-3pcs', '<p><strong>Product Details:</strong></p>
+<ul>
+<li><strong>Article Name:</strong> Parisa 3Pcs</li>
+<li><strong>Shirt Fabric:</strong> Premium Linen</li>
+<li><strong>Trouser Fabric:</strong> Linen (Plain)</li>
+<li><strong>Dupatta Fabric:</strong> Chiffon</li>
+<li><strong>Work:</strong> Embroidered Shirt & plain Dupatta</li>
+<li><strong>Includes:</strong> Shirt, Trouser & Dupatta</li>
+<li><strong>Style:</strong> Luxury Ethnic Wear</li>
 </ul>
-<h3 data-end="1287" data-start="1243" data-section-id="o1351e"><span style="color: rgb(249, 11, 11);" role="text"><strong data-end="1285" data-start="1247">Why Choose Parisa 3Pcs 3Pcs?</strong></span></h3>
-<p data-end="1543" data-start="1288"><span style="color: rgb(0, 0, 0);">✔ <strong data-end="1326" data-start="1290">Premium Linen Fabric for Comfort</strong></span><br data-end="1329" data-start="1326"><span style="color: rgb(0, 0, 0);">✔ <strong data-end="1367" data-start="1331">Elegant Embroidered Shirt Design</strong></span><br data-end="1370" data-start="1367"><span style="color: rgb(0, 0, 0);">✔ <strong data-end="1412" data-start="1372">Graceful Chiffon Embroidered Dupatta</strong></span><br data-end="1415" data-start="1412"><span style="color: rgb(0, 0, 0);">✔ <strong data-end="1451" data-start="1417">Simple Trouser for Classy Look</strong></span><br data-is-only-node="" data-end="1454" data-start="1451"><span style="color: rgb(0, 0, 0);">✔ <strong data-end="1493" data-start="1456">Perfect for Festive &amp; Casual Wear</strong></span><br data-end="1496" data-start="1493"><span style="color: rgb(0, 0, 0);">✔ <strong data-end="1541" data-start="1498">High-Quality Stitching &amp; Premium Finish</strong></span></p>
-<p data-is-only-node="" data-is-last-node="" data-end="1654" data-start="1545"><span style="color: rgb(0, 0, 0);">Add a touch of sophistication to your wardrobe with <strong data-end="1623" data-start="1597">Parisa 3Pcs </strong>— where luxury meets elegance.</span></p>', 'Parisa 3Pcs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312216580329', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"small","medium","large","xl"}', 'Linen', true, false, false, true, 5, 0, 'Parisa 3Pcs | GulPash Luxury Pret', 'Order Parisa 3Pcs online from GulPash. Handcrafted Pakistani pret, premium Linen, fast delivery across Pakistan.')
+<p><strong>Why Choose Parisa 3Pcs 3Pcs?</strong></p>
+<p>✔ <strong>Premium Linen Fabric for Comfort</strong><br>✔ <strong>Elegant Embroidered Shirt Design</strong><br>✔ <strong>Graceful Chiffon Embroidered Dupatta</strong><br>✔ <strong>Simple Trouser for Classy Look</strong><br>✔ <strong>Perfect for Festive & Casual Wear</strong><br>✔ <strong>High-Quality Stitching & Premium Finish</strong></p>
+<p>Add a touch of sophistication to your wardrobe with <strong>Parisa 3Pcs </strong>— where luxury meets elegance.</p>', 'Parisa 3Pcs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312216580329', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"small","medium","large","xl"}', 'Linen', true, false, false, true, 5, 0, 'Parisa 3Pcs | GulPash Luxury Pret', 'Order Parisa 3Pcs online from GulPash. Handcrafted Pakistani pret, premium Linen, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('acf9bbd7-3cb3-4632-ad2b-59e3ee7489dd', 'Pink Hearts 3 Piece', 'pink-hearts-3-piece', '<h3><strong>Pink Hearts 3-Piece</strong></h3>
-<p>A charming stitched 3-piece outfit featuring an embroidered shirt, an elegant embroidered Farshi Shalwar with sequin and zari work, and a printed chiffon dupatta—perfect for a graceful and stylish look.</p>
+VALUES ('acf9bbd7-3cb3-4632-ad2b-59e3ee7489dd', 'Pink Hearts 3 Piece', 'pink-hearts-3-piece', '<p>A charming stitched 3-piece outfit featuring an embroidered shirt, an elegant embroidered Farshi Shalwar with sequin and zari work, and a printed chiffon dupatta—perfect for a graceful and stylish look.</p>
 <p><strong>Fabric Details</strong></p>
 <ul>
-<li>
-<p><strong>Shirt:</strong> Embroidered with Sequin &amp; Zari Work</p>
-</li>
-<li>
-<p><strong>Trouser:</strong> Embroidered Farshi Shalwar with Sequin &amp; Zari Work</p>
-</li>
-<li>
-<p><strong>Dupatta:</strong> Printed Chiffon Dupatta</p>
-</li>
-<li>
-<p><strong>Type:</strong> Stitched</p>
-</li>
+<li><strong>Shirt:</strong> Embroidered with Sequin & Zari Work</li>
+<li><strong>Trouser:</strong> Embroidered Farshi Shalwar with Sequin & Zari Work</li>
+<li><strong>Dupatta:</strong> Printed Chiffon Dupatta</li>
+<li><strong>Type:</strong> Stitched</li>
 <li>
 <strong>Fabric:</strong> Cotton Lawn</li>
-</ul>
-<p><img alt="" src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/de779f4a-befd-44a6-8994-413d47719dbe.png?v=1784675504" width="303" height="202"><br></p>', 'Pink Hearts 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9351789215977', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 4499, 6298.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Pink Hearts 3 Piece | GulPash Luxury Pret', 'Order Pink Hearts 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+</ul>', 'Pink Hearts 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9351789215977', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 4499, 6298.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Pink Hearts 3 Piece | GulPash Luxury Pret', 'Order Pink Hearts 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('e8e3b097-8c56-46d9-a63f-fd7eb93b1ae7', 'pistiana 3pcs', 'pistachio-3pcs', '<p><span style="color: rgb(0, 0, 0);"><!-- TRUST BADGES (LARGE + PREMIUM) --></span></p>
-<div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 14px; font-size: 14px;"><br></div>
-<h2 style="font-weight: 600; margin-bottom: 6px;">pistiana 3pcs <span style="color: rgb(0, 0, 0);">— Elegant Summer 3Pcs</span>
-</h2>
-<p style="font-size: 13px; color: #888; margin-bottom: 8px;"><strong><span style="color: rgb(0, 0, 0);">Premium Linen Shirt &amp; Trouser • Chiffon Dupatta</span></strong></p>
-<p style="font-size: 14px; line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">A refreshing pistiana 3pcs-toned 3-piece ensemble designed for graceful summer styling. Crafted from premium linen and paired with a soft chiffon dupatta, this outfit offers breathable comfort with a refined and modest silhouette.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Highlights</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Premium linen shirt with elegant finish</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Long-length design for a graceful fall</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Classic and modest silhouette</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Matching trouser for a complete look</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Soft chiffon dupatta with flowy drape</span></li>
+VALUES ('e8e3b097-8c56-46d9-a63f-fd7eb93b1ae7', 'pistiana 3pcs', 'pistachio-3pcs', '<br>
+<p><strong>pistiana 3pcs — Elegant Summer 3Pcs
+</strong></p>
+<p><strong>Premium Linen Shirt & Trouser • Chiffon Dupatta</strong></p>
+<p>A refreshing pistiana 3pcs-toned 3-piece ensemble designed for graceful summer styling. Crafted from premium linen and paired with a soft chiffon dupatta, this outfit offers breathable comfort with a refined and modest silhouette.</p>
+<p><strong>Product Highlights</strong></p>
+<ul>
+<li>Premium linen shirt with elegant finish</li>
+<li>Long-length design for a graceful fall</li>
+<li>Classic and modest silhouette</li>
+<li>Matching trouser for a complete look</li>
+<li>Soft chiffon dupatta with flowy drape</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Fabric &amp; Feel</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Breathable premium linen ensures all-day comfort in warm weather, complemented by a lightweight chiffon dupatta that adds softness and elegance.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Occasion</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Ideal for summer wear, daytime outings, and semi-formal occasions — designed to keep you cool while maintaining a polished look.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Details</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fabric: Premium Linen (Shirt &amp; Trouser)</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Dupatta: Soft Chiffon</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Style: Long-length shirt</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Silhouette: Classic &amp; modest</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Season: Summer Wear</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Sizes: Small, Medium, Large, XL</span></li>
+<p><strong>Fabric & Feel</strong></p>
+<p>Breathable premium linen ensures all-day comfort in warm weather, complemented by a lightweight chiffon dupatta that adds softness and elegance.</p>
+<p><strong>Occasion</strong></p>
+<p>Ideal for summer wear, daytime outings, and semi-formal occasions — designed to keep you cool while maintaining a polished look.</p>
+<p><strong>Product Details</strong></p>
+<ul>
+<li>Fabric: Premium Linen (Shirt & Trouser)</li>
+<li>Dupatta: Soft Chiffon</li>
+<li>Style: Long-length shirt</li>
+<li>Silhouette: Classic & modest</li>
+<li>Season: Summer Wear</li>
+<li>Sizes: Small, Medium, Large, XL</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Delivery &amp; Payment</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Cash on Delivery available nationwide</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fast shipping across Pakistan</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
+<p><strong>Delivery & Payment</strong></p>
+<ul>
+<li>Cash on Delivery available nationwide</li>
+<li>Fast shipping across Pakistan</li>
+<li>Carefully packed for quality assurance</li>
 </ul>
-<p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'pistiana 3pcs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217432297', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"s","m","l","xl"}', 'Premium Linen (Shirt & Trouser)', true, false, false, true, 5, 0, 'pistiana 3pcs | GulPash Luxury Pret', 'Order pistiana 3pcs online from GulPash. Handcrafted Pakistani pret, premium Premium Linen (Shirt & Trouser), fast delivery across Pakistan.')
+<p>Limited pieces available — restocks are not guaranteed.</p>', 'pistiana 3pcs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217432297', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"s","m","l","xl"}', 'Premium Linen (Shirt & Trouser)', true, false, false, true, 5, 0, 'pistiana 3pcs | GulPash Luxury Pret', 'Order pistiana 3pcs online from GulPash. Handcrafted Pakistani pret, premium Premium Linen (Shirt & Trouser), fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('a106adfd-c20f-479b-abb3-eb18d5c3aeb4', 'Plum 3Piece', 'plum-3-piece', '<h3><strong>Plum 3-Piece</strong></h3>
-<p>A beautifully stitched cotton lawn outfit featuring an embroidered shirt, elegant embroidered Farshi trouser, and a printed chiffon dupatta—perfect for a graceful and stylish look.</p>
+VALUES ('a106adfd-c20f-479b-abb3-eb18d5c3aeb4', 'Plum 3Piece', 'plum-3-piece', '<p>A beautifully stitched cotton lawn outfit featuring an embroidered shirt, elegant embroidered Farshi trouser, and a printed chiffon dupatta—perfect for a graceful and stylish look.</p>
 <p><strong>Fabric Details</strong></p>
 <ul>
-<li>
-<p><strong>Fabric:</strong> Cotton Lawn</p>
-</li>
-<li>
-<p><strong>Shirt:</strong> Embroidered Shirt</p>
-</li>
-<li>
-<p><strong>Trouser:</strong> Embroidered Farshi Trouser</p>
-</li>
-<li>
-<p><strong>Dupatta:</strong> Printed Chiffon Dupatta</p>
-</li>
-<li>
-<p><strong>Type:</strong> Stitched</p>
-</li>
-</ul>
-<p><img src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/de779f4a-befd-44a6-8994-413d47719dbe.png?v=1784675504" alt=""></p>', 'Plum 3Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9356929859817', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'ALL ENSEMBLES', 5299, 7419, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, false, false, false, 5, 0, 'Plum 3Piece | GulPash Luxury Pret', 'Order Plum 3Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+<li><strong>Fabric:</strong> Cotton Lawn</li>
+<li><strong>Shirt:</strong> Embroidered Shirt</li>
+<li><strong>Trouser:</strong> Embroidered Farshi Trouser</li>
+<li><strong>Dupatta:</strong> Printed Chiffon Dupatta</li>
+<li><strong>Type:</strong> Stitched</li>
+</ul>', 'Plum 3Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9356929859817', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'ALL ENSEMBLES', 5299, 7419, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, false, false, false, 5, 0, 'Plum 3Piece | GulPash Luxury Pret', 'Order Plum 3Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('d495c75e-871c-41a0-a90b-b42c127fafe2', 'Raniya 3 Piece', 'raniya-3-piece', '<h3><strong>Raniya 3-Piece</strong></h3>
-<p>A beautifully stitched 3-piece outfit featuring an embroidered shirt, elegant embroidered Farshi Shalwar, and a graceful printed chiffon dupatta—perfect for a refined and stylish look.</p>
+VALUES ('d495c75e-871c-41a0-a90b-b42c127fafe2', 'Raniya 3 Piece', 'raniya-3-piece', '<p>A beautifully stitched 3-piece outfit featuring an embroidered shirt, elegant embroidered Farshi Shalwar, and a graceful printed chiffon dupatta—perfect for a refined and stylish look.</p>
 <p><strong>Fabric Details</strong></p>
 <ul>
-<li>
-<p><strong>Shirt:</strong> Embroidered Shirt</p>
-</li>
-<li>
-<p><strong>Trouser:</strong> Embroidered Farshi Shalwar</p>
-</li>
-<li>
-<p><strong>Dupatta:</strong> Printed Chiffon Dupatta</p>
-</li>
-<li>
-<p><strong>Type:</strong> Stitched</p>
-</li>
+<li><strong>Shirt:</strong> Embroidered Shirt</li>
+<li><strong>Trouser:</strong> Embroidered Farshi Shalwar</li>
+<li><strong>Dupatta:</strong> Printed Chiffon Dupatta</li>
+<li><strong>Type:</strong> Stitched</li>
 <li>
 <strong>Fabric:</strong> Cotton Lawn</li>
-</ul>
-<p><img alt="" src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/de779f4a-befd-44a6-8994-413d47719dbe.png?v=1784675504" width="303" height="202"><br></p>', 'Raniya 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9351792525545', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5299, 7419, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Raniya 3 Piece | GulPash Luxury Pret', 'Order Raniya 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+</ul>', 'Raniya 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9351792525545', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5299, 7419, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Raniya 3 Piece | GulPash Luxury Pret', 'Order Raniya 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('f2519c85-f4a5-4cf4-a11c-794648156d7b', 'Rina', 'camel-brown-linen-3-piece', '<p><span style="color: rgb(0, 0, 0);"><!-- TRUST BADGES (LARGE + PREMIUM) --></span></p>
-<div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 14px; font-size: 14px;"><br></div>
-<h2 style="font-weight: 600; margin-bottom: 6px;"><span style="color: rgb(0, 0, 0);">Rina — Linen 3Pcs</span></h2>
-<p style="font-size: 13px; color: #c59d5f; margin-bottom: 8px;"><strong><span style="color: rgb(0, 0, 0);">🤎 <span style="color: rgb(255, 42, 0);">Minimal Classic • Summer Essential</span></span></strong></p>
-<h4 style="font-size: 13px; color: #888; margin-bottom: 8px;"><strong><span style="color: rgb(0, 0, 0);">Summer Linen Shirt &amp; Trouser • Dupatta Included</span></strong></h4>
-<p style="font-size: 14px; line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">A refined Rina 3-piece ensemble designed for minimal and effortless elegance. Crafted in breathable summer linen, this outfit offers a clean, sophisticated look that works perfectly for everyday wear and modern styling.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><strong><span style="color: rgb(0, 0, 0);">Product Highlights</span></strong></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Premium summer linen fabric</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Elegant camel brown tone for a classy look</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Long graceful shirt with a clean fall</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Matching trouser for a complete outfit</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Dupatta included for a polished finish</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">3-piece ready-to-wear ensemble</span></li>
+VALUES ('f2519c85-f4a5-4cf4-a11c-794648156d7b', 'Rina', 'camel-brown-linen-3-piece', '<br>
+<p><strong>Rina — Linen 3Pcs</strong></p>
+<p><strong>🤎 Minimal Classic • Summer Essential</strong></p>
+<p><strong>Summer Linen Shirt & Trouser • Dupatta Included</strong></p>
+<p>A refined Rina 3-piece ensemble designed for minimal and effortless elegance. Crafted in breathable summer linen, this outfit offers a clean, sophisticated look that works perfectly for everyday wear and modern styling.</p>
+<p><strong>Product Highlights</strong></p>
+<ul>
+<li>Premium summer linen fabric</li>
+<li>Elegant camel brown tone for a classy look</li>
+<li>Long graceful shirt with a clean fall</li>
+<li>Matching trouser for a complete outfit</li>
+<li>Dupatta included for a polished finish</li>
+<li>3-piece ready-to-wear ensemble</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><strong><span style="color: rgb(0, 0, 0);">Fabric &amp; Feel</span></strong></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Made from lightweight and breathable summer linen, offering comfort and structure — ideal for staying cool while maintaining a refined appearance.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><strong><span style="color: rgb(0, 0, 0);">Occasion</span></strong></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Perfect for daily wear, office styling, and casual outings — designed to give you a minimal yet elegant look.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><strong><span style="color: rgb(0, 0, 0);">Product Details</span></strong></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fabric: Summer Linen</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Pieces: 3 (Shirt + Trouser + Dupatta)</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Color: Camel Brown</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Style: Long-length graceful shirt</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Season: Summer Wear</span></li>
+<p><strong>Fabric & Feel</strong></p>
+<p>Made from lightweight and breathable summer linen, offering comfort and structure — ideal for staying cool while maintaining a refined appearance.</p>
+<p><strong>Occasion</strong></p>
+<p>Perfect for daily wear, office styling, and casual outings — designed to give you a minimal yet elegant look.</p>
+<p><strong>Product Details</strong></p>
+<ul>
+<li>Fabric: Summer Linen</li>
+<li>Pieces: 3 (Shirt + Trouser + Dupatta)</li>
+<li>Color: Camel Brown</li>
+<li>Style: Long-length graceful shirt</li>
+<li>Season: Summer Wear</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><strong><span style="color: rgb(0, 0, 0);">Delivery &amp; Payment</span></strong></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Cash on Delivery available nationwide</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fast shipping across Pakistan</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
+<p><strong>Delivery & Payment</strong></p>
+<ul>
+<li>Cash on Delivery available nationwide</li>
+<li>Fast shipping across Pakistan</li>
+<li>Carefully packed for quality assurance</li>
 </ul>
-<p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'Rina — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312216809705', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 75, '{"small","medium","large","xl"}', 'Summer Linen', true, false, false, true, 5, 0, 'Rina | GulPash Luxury Pret', 'Order Rina online from GulPash. Handcrafted Pakistani pret, premium Summer Linen, fast delivery across Pakistan.')
+<p>Limited pieces available — restocks are not guaranteed.</p>', 'Rina — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312216809705', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 75, '{"small","medium","large","xl"}', 'Summer Linen', true, false, false, true, 5, 0, 'Rina | GulPash Luxury Pret', 'Order Rina online from GulPash. Handcrafted Pakistani pret, premium Summer Linen, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('61788cda-7961-4418-ab58-e7f555198e38', 'Ruby Grace 3 Piece', 'ruby-grace-3-piece', '<h3><strong><img src="https://cdn.shopify.com/s/files/1/0999/0035/8977/files/612c9a1b-2ff8-45b2-a2bd-c5247a6c5670_cf12ef96-207e-46d9-8c42-fd3fe6070b57.png?v=1786134739" alt=""></strong></h3>
-<p>✅<span> </span><strong>Parcel can be opened and checked before payment.</strong></p>
+VALUES ('61788cda-7961-4418-ab58-e7f555198e38', 'Ruby Grace 3 Piece', 'ruby-grace-3-piece', '<p>✅ <strong>Parcel can be opened and checked before payment.</strong></p>
 <p><strong>Ruby Grace 3-Piece</strong></p>
 <p>A beautifully stitched <em>Lawn Cotton</em> suit featuring an embroidered shirt, trouser, and elegant chiffon dupatta—perfect for a graceful look.</p>
 <p><strong>Fabric Details</strong></p>
@@ -772,34 +619,22 @@ VALUES ('61788cda-7961-4418-ab58-e7f555198e38', 'Ruby Grace 3 Piece', 'ruby-grac
 <strong>Dupatta:</strong> Embroidered Chiffon Dupatta</li>
 <li>
 <strong>Type:</strong> Stitched</li>
-</ul>
-<p><img src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/de779f4a-befd-44a6-8994-413d47719dbe.png?v=1784675504" alt="" style="font-size: 1rem;"></p>', 'Ruby Grace 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9351783219433', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5499, 7698.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Ruby Grace 3 Piece | GulPash Luxury Pret', 'Order Ruby Grace 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+</ul>', 'Ruby Grace 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9351783219433', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5499, 7698.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Ruby Grace 3 Piece | GulPash Luxury Pret', 'Order Ruby Grace 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('1c889dbe-c013-435f-ac8f-d389b30da10c', 'Rumi 3 Piece', 'rumi-3-piece', '<h3><strong>Rumi 3-Piece</strong></h3>
-<p>A timeless stitched 3-piece outfit featuring an embroidered shirt, elegant embroidered Farshi Shalwar, and a beautifully embroidered chiffon dupatta for a sophisticated look.</p>
+VALUES ('1c889dbe-c013-435f-ac8f-d389b30da10c', 'Rumi 3 Piece', 'rumi-3-piece', '<p>A timeless stitched 3-piece outfit featuring an embroidered shirt, elegant embroidered Farshi Shalwar, and a beautifully embroidered chiffon dupatta for a sophisticated look.</p>
 <p><strong>Fabric Details</strong></p>
 <ul>
-<li>
-<p><strong>Shirt:</strong> Embroidered Shirt</p>
-</li>
-<li>
-<p><strong>Trouser:</strong> Embroidered Farshi Shalwar</p>
-</li>
-<li>
-<p><strong>Dupatta:</strong> Embroidered Chiffon Dupatta</p>
-</li>
-<li>
-<p><strong>Type:</strong> Stitched</p>
-</li>
+<li><strong>Shirt:</strong> Embroidered Shirt</li>
+<li><strong>Trouser:</strong> Embroidered Farshi Shalwar</li>
+<li><strong>Dupatta:</strong> Embroidered Chiffon Dupatta</li>
+<li><strong>Type:</strong> Stitched</li>
 <li>
 <strong>Fabric:</strong> Cotton Lawn</li>
-</ul>
-<p><img alt="" src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/de779f4a-befd-44a6-8994-413d47719dbe.png?v=1784675504" width="303" height="202"><br></p>', 'Rumi 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9351790526697', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 4999, 6998.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Rumi 3 Piece | GulPash Luxury Pret', 'Order Rumi 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+</ul>', 'Rumi 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9351790526697', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 4999, 6998.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Rumi 3 Piece | GulPash Luxury Pret', 'Order Rumi 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('90efbae5-0c2e-4c30-aa93-81673709675e', 'Sapphire Bloom 3 Piece', 'sapphire-bloom-3-piece', '<h3><strong><img src="https://cdn.shopify.com/s/files/1/0999/0035/8977/files/612c9a1b-2ff8-45b2-a2bd-c5247a6c5670_cf12ef96-207e-46d9-8c42-fd3fe6070b57.png?v=1786134739" alt=""></strong></h3>
-<p>✅<span> </span><strong>Parcel can be opened and checked before payment.</strong></p>
+VALUES ('90efbae5-0c2e-4c30-aa93-81673709675e', 'Sapphire Bloom 3 Piece', 'sapphire-bloom-3-piece', '<p>✅ <strong>Parcel can be opened and checked before payment.</strong></p>
 <p><strong>Sapphire Bloom 3-Piece</strong></p>
 <p>A beautifully stitched <em>Cotton Lawn</em> suit featuring an embroidered shirt, printed farshi Shalwar, and matching printed dupatta—perfect for a stylish everyday look.</p>
 <p><strong>Fabric Details</strong></p>
@@ -814,132 +649,102 @@ VALUES ('90efbae5-0c2e-4c30-aa93-81673709675e', 'Sapphire Bloom 3 Piece', 'sapph
 <strong>Dupatta:</strong> Printed Chiffon Dupatta</li>
 <li>
 <strong>Type:</strong> Stitched</li>
-</ul>
-<p><img src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/35_Length_20.png?v=1788560795" alt=""></p>', 'Sapphire Bloom 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9351770898665', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5499, 7698.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Sapphire Bloom 3 Piece | GulPash Luxury Pret', 'Order Sapphire Bloom 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+</ul>', 'Sapphire Bloom 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9351770898665', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5499, 7698.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Sapphire Bloom 3 Piece | GulPash Luxury Pret', 'Order Sapphire Bloom 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('178198e7-3604-4651-a64c-cec8aa722608', 'Sophie 3Pcs', 'sophie-3pcs', '<p><span style="color: rgb(0, 0, 0);"><!-- TRUST BADGES (LARGE + PREMIUM) --></span></p>
-<div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 14px; font-size: 14px;"></div>
-<h2 style="font-weight: 600; margin-bottom: 6px;"><span style="color: rgb(0, 0, 0);">Sophie — Elegant Festive 3Pcs</span></h2>
-<p style="font-size: 13px; color: #888; margin-bottom: 8px;"><span style="color: rgb(0, 0, 0);"><strong>Premium Linen Shirt &amp; Trouser • Chiffon Dupatta</strong></span></p>
-<p style="font-size: 14px; line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">A beautifully designed 3-piece ensemble that blends traditional charm with modern elegance. Sophie is crafted from premium linen and paired with a soft chiffon dupatta, offering a refined look perfect for festive occasions.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Highlights</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Premium linen embroidered shirt</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Elegant neckline with detailed border finish</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Matching trouser for a complete look</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Soft &amp; flowy chiffon dupatta</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">3-piece ready-to-wear outfit</span></li>
+VALUES ('178198e7-3604-4651-a64c-cec8aa722608', 'Sophie 3Pcs', 'sophie-3pcs', '<p><strong>Sophie — Elegant Festive 3Pcs</strong></p>
+<p><strong>Premium Linen Shirt & Trouser • Chiffon Dupatta</strong></p>
+<p>A beautifully designed 3-piece ensemble that blends traditional charm with modern elegance. Sophie is crafted from premium linen and paired with a soft chiffon dupatta, offering a refined look perfect for festive occasions.</p>
+<p><strong>Product Highlights</strong></p>
+<ul>
+<li>Premium linen embroidered shirt</li>
+<li>Elegant neckline with detailed border finish</li>
+<li>Matching trouser for a complete look</li>
+<li>Soft & flowy chiffon dupatta</li>
+<li>3-piece ready-to-wear outfit</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Fabric &amp; Feel</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Breathable linen fabric ensures all-day comfort, while the lightweight chiffon dupatta adds a graceful flow, enhancing the overall elegance.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Occasion</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Perfect for Eid, festive gatherings, and special occasions — designed to give you an effortlessly polished and graceful look.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Delivery &amp; Payment</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Cash on Delivery available nationwide</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fast shipping across Pakistan</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
+<p><strong>Fabric & Feel</strong></p>
+<p>Breathable linen fabric ensures all-day comfort, while the lightweight chiffon dupatta adds a graceful flow, enhancing the overall elegance.</p>
+<p><strong>Occasion</strong></p>
+<p>Perfect for Eid, festive gatherings, and special occasions — designed to give you an effortlessly polished and graceful look.</p>
+<p><strong>Delivery & Payment</strong></p>
+<ul>
+<li>Cash on Delivery available nationwide</li>
+<li>Fast shipping across Pakistan</li>
+<li>Carefully packed for quality assurance</li>
 </ul>
-<p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available.</span></p>', 'Sophie 3Pcs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312216973545', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5500, 7950, 100, '{"small","medium","large","extra-large"}', 'Linen', true, false, false, true, 5, 0, 'Sophie 3Pcs | GulPash Luxury Pret', 'Order Sophie 3Pcs online from GulPash. Handcrafted Pakistani pret, premium Linen, fast delivery across Pakistan.')
+<p>Limited pieces available.</p>', 'Sophie 3Pcs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312216973545', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5500, 7950, 100, '{"small","medium","large","extra-large"}', 'Linen', true, false, false, true, 5, 0, 'Sophie 3Pcs | GulPash Luxury Pret', 'Order Sophie 3Pcs online from GulPash. Handcrafted Pakistani pret, premium Linen, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
 VALUES ('04e321ea-b08c-4f98-a96b-837c37aa8271', 'SUMMER SALE | Sweet 3Piece', 'summer-sale-sweet-3piece', '<p><strong>Sweet 3-Piece</strong></p>
 <p>Elevate your style with this elegant 3-piece outfit featuring a beautifully embroidered shirt and a luxurious <strong>Farshi Shalwar</strong> adorned with intricate sequin and zari work, paired with a graceful printed chiffon dupatta.</p>
 <p><strong>Fabric Details</strong></p>
 <ul>
-<li>
-<p><strong>Shirt:</strong> Embroidered with Sequin &amp; Zari Work</p>
-</li>
-<li>
-<p><strong>Trouser:</strong> Embroidered Farshi Shalwar with Sequin &amp; Zari Work</p>
-</li>
-<li>
-<p><strong>Dupatta:</strong> Printed Chiffon Dupatta</p>
-</li>
-<li>
-<p><strong>Type:</strong> Stitched<br><br><strong>Fabric:</strong> Cotton Lawn</p>
-</li>
-</ul>
-<p><br><img alt="" src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/de779f4a-befd-44a6-8994-413d47719dbe.png?v=1784675504" width="303" height="202"><br></p>', 'SUMMER SALE | Sweet 3Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9351784792297', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 4499, 6298.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'SUMMER SALE | Sweet 3Piece | GulPash Luxury Pret', 'Order SUMMER SALE | Sweet 3Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+<li><strong>Shirt:</strong> Embroidered with Sequin & Zari Work</li>
+<li><strong>Trouser:</strong> Embroidered Farshi Shalwar with Sequin & Zari Work</li>
+<li><strong>Dupatta:</strong> Printed Chiffon Dupatta</li>
+<li><strong>Type:</strong> Stitched<br /><strong>Fabric:</strong> Cotton Lawn</li>
+</ul>', 'SUMMER SALE | Sweet 3Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9351784792297', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 4499, 6298.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'SUMMER SALE | Sweet 3Piece | GulPash Luxury Pret', 'Order SUMMER SALE | Sweet 3Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('ed6de3eb-39f5-477a-aecf-f1f0bec901fe', 'Sunehri 3 Piece', 'sunehri-3-piece', '<h3><strong><img src="https://cdn.shopify.com/s/files/1/0999/0035/8977/files/612c9a1b-2ff8-45b2-a2bd-c5247a6c5670_cf12ef96-207e-46d9-8c42-fd3fe6070b57.png?v=1786134739" alt=""></strong></h3>
-<p>✅<span> </span><strong>Parcel can be opened and checked before payment.</strong></p>
-<h3>
-<strong style="font-size: 0.875rem;">Sunehri 3-Piece</strong><strong></strong>
-</h3>
+VALUES ('ed6de3eb-39f5-477a-aecf-f1f0bec901fe', 'Sunehri 3 Piece', 'sunehri-3-piece', '<p>✅ <strong>Parcel can be opened and checked before payment.</strong></p>
+<p><strong>Sunehri 3-Piece</strong></p>
 <p>A beautifully stitched cotton lawn outfit featuring an embroidered shirt, elegant embroidered Farshi trouser, and a printed chiffon dupatta—perfect for a graceful and stylish look.</p>
 <p><strong>Fabric Details</strong></p>
 <ul>
-<li>
-<p><strong>Fabric:</strong> Cotton Lawn</p>
-</li>
-<li>
-<p><strong>Shirt:</strong> Embroidered Shirt</p>
-</li>
-<li>
-<p><strong>Trouser:</strong> Embroidered Farshi Trouser</p>
-</li>
-<li>
-<p><strong>Dupatta:</strong> Printed Chiffon Dupatta</p>
-</li>
-<li>
-<p><strong>Type:</strong> Stitched</p>
-</li>
-</ul>
-<p><img src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/de779f4a-befd-44a6-8994-413d47719dbe.png?v=1784675504" alt=""></p>', 'Sunehri 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9353008480489', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5499, 7698.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Sunehri 3 Piece | GulPash Luxury Pret', 'Order Sunehri 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+<li><strong>Fabric:</strong> Cotton Lawn</li>
+<li><strong>Shirt:</strong> Embroidered Shirt</li>
+<li><strong>Trouser:</strong> Embroidered Farshi Trouser</li>
+<li><strong>Dupatta:</strong> Printed Chiffon Dupatta</li>
+<li><strong>Type:</strong> Stitched</li>
+</ul>', 'Sunehri 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9353008480489', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5499, 7698.6, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Sunehri 3 Piece | GulPash Luxury Pret', 'Order Sunehri 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('309b83cc-3af3-491e-a218-b07e73681f26', 'ZAARIF - COTTON 2 PC EMB', 'zaarif-cotton-3-pc-emb', '<p><span style="color: rgb(0, 0, 0);"><!-- TRUST BADGES (LARGE + PREMIUM) --></span></p>
-<div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 14px; font-size: 14px;"></div>
-<p><span style="color: rgb(0, 0, 0);"><!-- PRODUCT DESCRIPTION --></span></p>
-<h2 style="font-weight: 600; margin-bottom: 6px;"><span style="color: rgb(0, 0, 0);"><strong>Zaarif — Cotton Embroidered 2 Pcs</strong></span></h2>
-<p style="font-size: 13px; color: #c59d5f; margin-bottom: 8px;"><span style="color: rgb(246, 4, 4);"><strong>🌿 Everyday Luxury • Bestseller</strong></span></p>
-<p style="font-size: 13px; color: #888; margin-bottom: 8px;"><span style="color: rgb(0, 0, 0);"><strong>Premium Cotton Embroidered Shirt &amp; Trouser </strong></span></p>
-<p style="font-size: 14px; line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">A refined 2-piece cotton ensemble designed for everyday elegance with a premium touch. Zaarif features intricate embroidery on breathable cotton, paired with a long graceful shirt and matching trousers — delivering comfort with a polished look.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><strong><span style="color: rgb(0, 0, 0);">Product Highlights</span></strong></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Premium cotton embroidered shirt</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Elegant embroidery for a refined finish</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);"><strong>Farshi trouser</strong> for balanced styling</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Matching dupatta for a complete outfit</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);"><strong>2-piece ready-to-wear</strong> ensemble</span></li>
+VALUES ('309b83cc-3af3-491e-a218-b07e73681f26', 'ZAARIF - COTTON 2 PC EMB', 'zaarif-cotton-3-pc-emb', '<p><strong>Zaarif — Cotton Embroidered 2 Pcs</strong></p>
+<p><strong>🌿 Everyday Luxury • Bestseller</strong></p>
+<p><strong>Premium Cotton Embroidered Shirt & Trouser </strong></p>
+<p>A refined 2-piece cotton ensemble designed for everyday elegance with a premium touch. Zaarif features intricate embroidery on breathable cotton, paired with a long graceful shirt and matching trousers — delivering comfort with a polished look.</p>
+<p><strong>Product Highlights</strong></p>
+<ul>
+<li>Premium cotton embroidered shirt</li>
+<li>Elegant embroidery for a refined finish</li>
+<li><strong>Farshi trouser</strong> for balanced styling</li>
+<li>Matching dupatta for a complete outfit</li>
+<li><strong>2-piece ready-to-wear</strong> ensemble</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><strong><span style="color: rgb(0, 0, 0);">Fabric &amp; Feel</span></strong></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Crafted from breathable premium cotton, offering softness and comfort for all-day wear while maintaining a clean and structured appearance.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><strong><span style="color: rgb(0, 0, 0);">Occasion</span></strong></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Perfect for daily wear, office styling, and semi-formal gatherings — designed to give you an effortlessly elegant look.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><strong><span style="color: rgb(0, 0, 0);">Product Details</span></strong></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fabric: Premium Cotton</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Work: Embroidered</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Pieces: 2 (Shirt + Trouser)</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Style: Long-length graceful shirt</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Season: Summer &amp; Mid-Season Wear</span></li>
+<p><strong>Fabric & Feel</strong></p>
+<p>Crafted from breathable premium cotton, offering softness and comfort for all-day wear while maintaining a clean and structured appearance.</p>
+<p><strong>Occasion</strong></p>
+<p>Perfect for daily wear, office styling, and semi-formal gatherings — designed to give you an effortlessly elegant look.</p>
+<p><strong>Product Details</strong></p>
+<ul>
+<li>Fabric: Premium Cotton</li>
+<li>Work: Embroidered</li>
+<li>Pieces: 2 (Shirt + Trouser)</li>
+<li>Style: Long-length graceful shirt</li>
+<li>Season: Summer & Mid-Season Wear</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><strong><span style="color: rgb(0, 0, 0);">Delivery &amp; Payment</span></strong></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Cash on Delivery available nationwide</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fast shipping across Pakistan</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
+<p><strong>Delivery & Payment</strong></p>
+<ul>
+<li>Cash on Delivery available nationwide</li>
+<li>Fast shipping across Pakistan</li>
+<li>Carefully packed for quality assurance</li>
 </ul>
-<p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'ZAARIF - COTTON 2 PC EMB — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312216744169', '7138fe69-1731-41d8-ab8f-cad303d82089', '66142d53-e454-45bb-aa46-f0ef5a46af98', '2-Piece Ensembles', 'NEW ARRIVALS', 3999, NULL, 100, '{"cotton / small","cotton / medium","cotton / large","cotton / extra-large"}', 'Premium Cotton', true, false, false, true, 5, 0, 'ZAARIF - COTTON 2 PC EMB | GulPash Luxury Pret', 'Order ZAARIF - COTTON 2 PC EMB online from GulPash. Handcrafted Pakistani pret, premium Premium Cotton, fast delivery across Pakistan.')
+<p>Limited pieces available — restocks are not guaranteed.</p>', 'ZAARIF - COTTON 2 PC EMB — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312216744169', '7138fe69-1731-41d8-ab8f-cad303d82089', '66142d53-e454-45bb-aa46-f0ef5a46af98', '2-Piece Ensembles', 'NEW ARRIVALS', 3999, NULL, 100, '{"cotton / small","cotton / medium","cotton / large","cotton / extra-large"}', 'Premium Cotton', true, false, false, true, 5, 0, 'ZAARIF - COTTON 2 PC EMB | GulPash Luxury Pret', 'Order ZAARIF - COTTON 2 PC EMB online from GulPash. Handcrafted Pakistani pret, premium Premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('0f028a27-c9ef-4d7a-a46f-7a87b2388d88', 'Zar-E-Sabz 3Piece', 'zar-e-sabz-3piece', '<h3><strong><img src="https://cdn.shopify.com/s/files/1/0999/0035/8977/files/612c9a1b-2ff8-45b2-a2bd-c5247a6c5670_cf12ef96-207e-46d9-8c42-fd3fe6070b57.png?v=1786134739" alt=""></strong></h3>
-<p>✅<span> </span><strong>Parcel can be opened and checked before payment.</strong></p>
-<p class="PDq2pG_selectionAnchorContainer"><strong>Zar-E-Sabz 3Piece</strong><span class="PDq2pG_selectionAnchor"></span></p>
+VALUES ('0f028a27-c9ef-4d7a-a46f-7a87b2388d88', 'Zar-E-Sabz 3Piece', 'zar-e-sabz-3piece', '<p>✅ <strong>Parcel can be opened and checked before payment.</strong></p>
+<p><strong>Zar-E-Sabz 3Piece</strong></p>
 <p><strong>Fabric Details</strong></p>
-<div class="text-base my-auto mx-auto [--thread-content-margin:var(--thread-content-margin-xs,calc(var(--spacing)*4))] @w-sm/main:[--thread-content-margin:var(--thread-content-margin-sm,calc(var(--spacing)*6))] @w-lg/main:[--thread-content-margin:var(--thread-content-margin-lg,calc(var(--spacing)*16))] px-(--thread-content-margin)">
-<div class="[--thread-content-max-width:40rem] @w-lg/main:[--thread-content-max-width:48rem] mx-auto max-w-(--thread-content-max-width) flex-1 group/turn-messages focus-visible:outline-hidden relative flex w-full min-w-0 flex-col agent-turn">
-<div class="flex max-w-full flex-col gap-4 grow">
-<div dir="auto" class="min-h-8 text-message relative flex w-full flex-col items-end gap-2 text-start break-words whitespace-normal outline-none keyboard-focused:focus-ring [.text-message+&amp;]:mt-1">
-<div class="flex w-full flex-col gap-1 empty:hidden">
-<div class="fbskMG_root yWcLfW_streamingContainer markdown prose dark:prose-invert wrap-break-word w-full light markdown-new-styling">
+
+
+
+
+
+
 <ul>
 <li>
-<strong>Fabric:</strong> Mid-Season Fabric<span class="PDq2pG_selectionAnchor"></span>
+<strong>Fabric:</strong> Mid-Season Fabric
 </li>
 <li>
 <strong>Shirt:</strong> Embroidered Shirt</li>
@@ -951,74 +756,53 @@ VALUES ('0f028a27-c9ef-4d7a-a46f-7a87b2388d88', 'Zar-E-Sabz 3Piece', 'zar-e-sabz
 <strong>Style:</strong> Stitched – Ready to Wear</li>
 <li>
 <strong>Season:</strong> All Season Wear</li>
-</ul>
-<p><img src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/44_to_45.png?v=1785787631" alt=""></p>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>', 'Zar-E-Sabz 3Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9405081977065', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 6499, 8250, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Premium Lawn', true, true, true, false, 5, 0, 'Zar-E-Sabz 3Piece | GulPash Luxury Pret', 'Order Zar-E-Sabz 3Piece online from GulPash. Handcrafted Pakistani pret, premium Premium Lawn, fast delivery across Pakistan.')
+</ul>', 'Zar-E-Sabz 3Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9405081977065', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 6499, 8250, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Premium Lawn', true, true, true, false, 5, 0, 'Zar-E-Sabz 3Piece | GulPash Luxury Pret', 'Order Zar-E-Sabz 3Piece online from GulPash. Handcrafted Pakistani pret, premium Premium Lawn, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('79430272-a7fb-481b-a2c4-943682ddd582', 'Zeenat EMB – 3PCs', 'zeenat-emb-3pcs', '<p><span style="color: rgb(0, 0, 0);"><!-- TRUST BADGES (LARGE + PREMIUM) --></span></p>
-<div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 14px; font-size: 14px;"></div>
-<h2 style="font-weight: 600; margin-bottom: 6px;"><span style="color: rgb(0, 0, 0);">Zeenat EMB — Navy Blue Linen 3Pcs</span></h2>
-<p style="font-size: 13px; color: #c59d5f; margin-bottom: 8px;"><span style="color: rgb(255, 42, 0);"><strong>🔥 Summer Collection • Bestseller</strong></span></p>
-<p style="font-size: 13px; color: #888; margin-bottom: 8px;"><span style="color: rgb(251, 4, 4); background-color: rgb(255, 255, 255);"><strong>Linen Embroidered Shirt &amp; Trouser • Complete 3PC Set</strong></span></p>
-<p style="font-size: 14px; line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">A beautifully crafted navy blue 3-piece ensemble designed for elegant summer styling. Zeenat EMB features intricate embroidery on premium linen, offering a refined and graceful look that stands out effortlessly.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Highlights</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Premium linen embroidered shirt</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Elegant navy blue color for a rich look</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Long-length design for a graceful fall</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Classic and modest silhouette</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Matching trouser for a complete outfit</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">3-piece ready-to-wear ensemble with dupatta</span></li>
+VALUES ('79430272-a7fb-481b-a2c4-943682ddd582', 'Zeenat EMB – 3PCs', 'zeenat-emb-3pcs', '<p><strong>Zeenat EMB — Navy Blue Linen 3Pcs</strong></p>
+<p><strong>🔥 Summer Collection • Bestseller</strong></p>
+<p><strong>Linen Embroidered Shirt & Trouser • Complete 3PC Set</strong></p>
+<p>A beautifully crafted navy blue 3-piece ensemble designed for elegant summer styling. Zeenat EMB features intricate embroidery on premium linen, offering a refined and graceful look that stands out effortlessly.</p>
+<p><strong>Product Highlights</strong></p>
+<ul>
+<li>Premium linen embroidered shirt</li>
+<li>Elegant navy blue color for a rich look</li>
+<li>Long-length design for a graceful fall</li>
+<li>Classic and modest silhouette</li>
+<li>Matching trouser for a complete outfit</li>
+<li>3-piece ready-to-wear ensemble with dupatta</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Fabric &amp; Feel</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Crafted from breathable linen fabric, perfect for summer wear — offering comfort with a structured and polished finish.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Occasion</span></h3>
-<p style="line-height: 1.5; margin-bottom: 10px;"><span style="color: rgb(0, 0, 0);">Ideal for summer outings, festive gatherings, and semi-formal occasions — designed to give you a stylish and elegant appearance.</span></p>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Product Details</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fabric: Linen</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Pieces: 3 (Shirt + Trouser + Dupatta)</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Work: Embroidered</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Color: Navy Blue</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Style: Long-length dress</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Season: Summer Wear</span></li>
+<p><strong>Fabric & Feel</strong></p>
+<p>Crafted from breathable linen fabric, perfect for summer wear — offering comfort with a structured and polished finish.</p>
+<p><strong>Occasion</strong></p>
+<p>Ideal for summer outings, festive gatherings, and semi-formal occasions — designed to give you a stylish and elegant appearance.</p>
+<p><strong>Product Details</strong></p>
+<ul>
+<li>Fabric: Linen</li>
+<li>Pieces: 3 (Shirt + Trouser + Dupatta)</li>
+<li>Work: Embroidered</li>
+<li>Color: Navy Blue</li>
+<li>Style: Long-length dress</li>
+<li>Season: Summer Wear</li>
 </ul>
-<h3 style="font-weight: 600; margin-bottom: 5px;"><span style="color: rgb(0, 0, 0);">Delivery &amp; Payment</span></h3>
-<ul style="line-height: 1.6; margin-bottom: 10px; padding-left: 18px;">
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Cash on Delivery available nationwide</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Fast shipping across Pakistan</span></li>
-<li style="color: rgb(0, 0, 0);"><span style="color: rgb(0, 0, 0);">Carefully packed for quality assurance</span></li>
+<p><strong>Delivery & Payment</strong></p>
+<ul>
+<li>Cash on Delivery available nationwide</li>
+<li>Fast shipping across Pakistan</li>
+<li>Carefully packed for quality assurance</li>
 </ul>
-<p style="font-size: 13px; color: #555; margin-top: 5px;"><span style="color: rgb(0, 0, 0);">Limited pieces available — restocks are not guaranteed.</span></p>', 'Zeenat EMB – 3PCs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217694441', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"small","medium","large","extra-large"}', 'Linen', true, false, false, true, 5, 0, 'Zeenat EMB – 3PCs | GulPash Luxury Pret', 'Order Zeenat EMB – 3PCs online from GulPash. Handcrafted Pakistani pret, premium Linen, fast delivery across Pakistan.')
+<p>Limited pieces available — restocks are not guaranteed.</p>', 'Zeenat EMB – 3PCs — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9312217694441', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'NEW ARRIVALS', 5999, 8250, 100, '{"small","medium","large","extra-large"}', 'Linen', true, false, false, true, 5, 0, 'Zeenat EMB – 3PCs | GulPash Luxury Pret', 'Order Zeenat EMB – 3PCs online from GulPash. Handcrafted Pakistani pret, premium Linen, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 INSERT INTO public.products (id, title, slug, description, short_description, sku, category_id, collection_id, category_name, collection_name, price, compare_at_price, stock, sizes, fabric, is_visible, is_featured, is_best_seller, is_new_arrival, rating, review_count, seo_title, seo_description)
-VALUES ('62cca4a5-a562-45be-a5d0-99130e0a2519', 'Zohra 3 Piece', 'zohra-3-piece', '<h3><strong>Zohra 3-Piece</strong></h3>
-<p>A beautifully stitched 3-piece outfit featuring an embroidered shirt, elegant Farshi trouser, and a graceful chiffon dupatta—perfect for a timeless and sophisticated look.</p>
+VALUES ('62cca4a5-a562-45be-a5d0-99130e0a2519', 'Zohra 3 Piece', 'zohra-3-piece', '<p>A beautifully stitched 3-piece outfit featuring an embroidered shirt, elegant Farshi trouser, and a graceful chiffon dupatta—perfect for a timeless and sophisticated look.</p>
 <p><strong>Fabric Details</strong></p>
 <ul>
-<li>
-<p><strong>Fabric:</strong> Cotton Lawn</p>
-</li>
-<li>
-<p><strong>Shirt:</strong> Embroidered Shirt</p>
-</li>
-<li>
-<p><strong>Trouser:</strong> Embroidered Farshi Trouser</p>
-</li>
-<li>
-<p><strong>Dupatta:</strong> Printed Chiffon Dupatta</p>
-</li>
-<li>
-<p><strong>Type:</strong> Stitched</p>
-</li>
-</ul>
-<h4><strong><img style="font-size: 0.875rem;" alt="" src="https://cdn.shopify.com/s/files/1/0814/7419/1593/files/de779f4a-befd-44a6-8994-413d47719dbe.png?v=1784675504" width="264" height="176"></strong></h4>', 'Zohra 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9353039610089', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5299, 7419, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Zohra 3 Piece | GulPash Luxury Pret', 'Order Zohra 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
+<li><strong>Fabric:</strong> Cotton Lawn</li>
+<li><strong>Shirt:</strong> Embroidered Shirt</li>
+<li><strong>Trouser:</strong> Embroidered Farshi Trouser</li>
+<li><strong>Dupatta:</strong> Printed Chiffon Dupatta</li>
+<li><strong>Type:</strong> Stitched</li>
+</ul>', 'Zohra 3 Piece — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.', 'GP-9353039610089', '93053437-9ec9-4242-a7b9-a99514548627', '66142d53-e454-45bb-aa46-f0ef5a46af98', '3-Piece Ensembles', 'TRENDING', 5299, 7419, 100, '{"Small (S)","Medium (M)","Large (L)","Extra Large (XL)"}', 'Cotton', true, true, true, false, 5, 0, 'Zohra 3 Piece | GulPash Luxury Pret', 'Order Zohra 3 Piece online from GulPash. Handcrafted Pakistani pret, premium Cotton, fast delivery across Pakistan.')
 ON CONFLICT (slug) DO UPDATE SET title = EXCLUDED.title, price = EXCLUDED.price, compare_at_price = EXCLUDED.compare_at_price, stock = EXCLUDED.stock, is_visible = EXCLUDED.is_visible;
 
 -- 4. Insert Product Variants

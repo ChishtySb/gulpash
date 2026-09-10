@@ -159,7 +159,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({
             </div>
 
             <p className="mt-3 text-xs text-[#666] line-clamp-3 leading-relaxed">
-              {product.shortDescription || (product.description ? product.description.replace(/<[^>]+>/g, ' ') : '')}
+              {product.shortDescription || (product.description ? product.description.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim() : '')}
             </p>
 
             {/* Size Selector */}

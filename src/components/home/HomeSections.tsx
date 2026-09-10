@@ -131,25 +131,28 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
 
   // Dynamic Curated Collections for Homepage Row from dynamic collections prop
   const curatedCollections = useMemo(() => {
-    // Curated storefront collections (excluding 'all', respecting visibility and ordering)
+    // Curated storefront collections respecting visibility and ordering
+    // If 'all' has visibleOnHomepage === true, it will be included! If false/undefined, excluded from homepage cards by default.
+    // Other collections are included unless visibleOnHomepage === false.
     const active = collections
-      .filter(c => c.slug !== 'all' && c.visibleOnHomepage !== false)
-      .sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+      .filter(c => {
+        if (c.slug === 'all') return c.visibleOnHomepage === true;
+        return c.visibleOnHomepage !== false && c.isVisible !== false;
+      })
+      .sort((a, b) => {
+        const orderA = a.order ?? a.displayOrder ?? 99;
+        const orderB = b.order ?? b.displayOrder ?? 99;
+        return orderA - orderB;
+      });
 
-    const list = active.length > 0 ? active : collections.filter(c => c.slug !== 'all');
-
-    return list.map(item => {
+    return active.map(item => {
       // Recalculate dynamic count from catalog products
       const count = products.filter(p => {
+        if (item.slug === 'all') return p.isVisible !== false;
         if (p.collectionIds?.includes(item.id)) return true;
         if (p.collectionNames?.includes(item.name)) return true;
         if (p.collection === item.name) return true;
         if (p.collectionSlug === item.slug) return true;
-        if (item.slug === 'new-arrivals') return p.isNewArrival || p.tags?.includes('new-arrivals');
-        if (item.slug === 'best-selling') return p.isBestSeller || p.collectionNames?.includes('TRENDING') || p.tags?.includes('best-selling');
-        if (item.slug === 'winter-collection') return p.fabric?.toLowerCase().includes('winter') || p.fabric?.toLowerCase().includes('velvet') || p.tags?.includes('winter-collection');
-        if (item.slug === 'co-ords') return p.title?.toLowerCase().includes('co-ord') || p.title?.toLowerCase().includes('coord') || p.tags?.includes('co-ords');
-        if (item.slug === 'short-length-article') return p.title?.toLowerCase().includes('short') || p.tags?.includes('short-length-article');
         return false;
       }).length;
 
@@ -157,7 +160,7 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
         id: item.id,
         slug: item.slug,
         name: item.name,
-        count: count || item.productCount || 0,
+        count: count,
         image: item.image || item.imageUrl,
         bannerUrl: item.bannerUrl
       };
@@ -171,15 +174,17 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
     if (foundCol?.image && !foundCol.image.includes('1/0740/5784/2939')) return foundCol.image;
     if (foundCol?.imageUrl && !foundCol.imageUrl.includes('1/0740/5784/2939')) return foundCol.imageUrl;
 
-    // 2. Specific matching product
+    // 2. Distinct specific matching authentic product from that collection
     const match = products.find(p => {
-      if (colSlug === 'best-selling') return p.isBestSeller || p.collectionNames?.includes('BEST SELLING') || p.collectionNames?.includes('TRENDING') || p.collection === 'BEST SELLING';
-      if (colSlug === 'new-arrivals') return p.isNewArrival || p.collectionNames?.includes('NEW ARRIVALS') || p.collection === 'NEW ARRIVALS';
-      if (colSlug === 'winter-collection') return p.collectionNames?.includes('WINTER COLLECTION') || p.fabric?.toLowerCase().includes('winter') || p.fabric?.toLowerCase().includes('velvet');
-      if (colSlug === 'co-ords') return p.collectionNames?.includes('CO-ORDS') || p.title?.toLowerCase().includes('co-ord') || p.title?.toLowerCase().includes('coord');
-      if (colSlug === 'short-length-article') return p.collectionNames?.includes('SHORT LENGTH') || p.title?.toLowerCase().includes('short');
+      if (colSlug === 'all') return p.slug === 'aazure-3piece' || p.title?.toLowerCase().includes('aazure');
+      if (colSlug === 'best-selling') return p.slug === 'zar-e-sabz-3piece' || p.title?.toLowerCase().includes('zar-e-sabz');
+      if (colSlug === 'new-arrivals') return p.slug === 'zaarif-cotton-2-pc-emb' || p.slug === 'zeenat-emb-3pcs' || p.title?.toLowerCase().includes('zeenat');
+      if (colSlug === 'winter-collection') return p.slug === 'alize-3pcs' || p.fabric?.toLowerCase().includes('dhank') || p.title?.toLowerCase().includes('alize');
+      if (colSlug === 'co-ords') return p.slug === 'zaarif-cotton-2-pc-emb' || p.title?.toLowerCase().includes('zaarif');
+      if (colSlug === 'short-length-article') return p.slug === 'elara' || p.title?.toLowerCase().includes('elara');
       return false;
     });
+
     return match?.images?.[0] || products[0]?.images?.[0] || '';
   };
 
@@ -291,7 +296,7 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
             <div className="w-10 h-px bg-stone-300 mx-auto mt-3" />
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-6">
+          <div className={`grid grid-cols-2 sm:grid-cols-3 ${curatedCollections.length >= 6 ? 'lg:grid-cols-6' : 'lg:grid-cols-5'} gap-3.5 sm:gap-6`}>
             {curatedCollections.map((col) => {
               const coverImg = col.image || getCollectionCover(col.slug);
               const fallback = products[0]?.images?.[0] || '';

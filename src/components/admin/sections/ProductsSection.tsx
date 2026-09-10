@@ -2,7 +2,8 @@ import React, { useState, useRef } from 'react';
 import { 
   Package, Search, Plus, Edit, Trash2, Copy, ExternalLink, 
   Eye, EyeOff, Check, X, ArrowUpDown, Filter, Upload, Image as ImageIcon,
-  Video, Sparkles, AlertCircle, CheckCircle2, ChevronDown, Layers
+  Video, Sparkles, AlertCircle, CheckCircle2, ChevronDown, Layers,
+  ArrowLeft, ArrowRight, RefreshCw
 } from 'lucide-react';
 import { Product, Category, Collection } from '../../../types';
 import { StorageService } from '../../../lib/storage';
@@ -58,8 +59,12 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
   const [formTab, setFormTab] = useState<'basic' | 'media' | 'pricing' | 'collections' | 'fabric' | 'status'>('basic');
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [uploadingPoster, setUploadingPoster] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const replaceInputRef = useRef<HTMLInputElement>(null);
+  const [replaceTargetIndex, setReplaceTargetIndex] = useState<number | null>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
+  const posterInputRef = useRef<HTMLInputElement>(null);
 
   // Form state
   const [formData, setFormData] = useState<Partial<Product>>(() => {
@@ -226,6 +231,27 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
     }
   };
 
+  // POSTER IMAGE UPLOAD HANDLER FROM PC
+  const handlePosterFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploadingPoster(true);
+      const res = await StorageService.uploadMediaFile(file, 'product-image', [`Video Poster: ${formData.title || 'New Item'}`]);
+      if (res.url) {
+        setFormData(prev => ({ ...prev, videoPoster: res.url }));
+        onNotify('Video poster thumbnail uploaded successfully!');
+      }
+    } catch (err) {
+      console.error('Poster upload error:', err);
+      alert('Failed to upload video poster from PC.');
+    } finally {
+      setUploadingPoster(false);
+      if (posterInputRef.current) posterInputRef.current.value = '';
+    }
+  };
+
   // SET PRIMARY THUMBNAIL
   const handleSetPrimaryImage = (index: number) => {
     if (!formData.images || index === 0) return;
@@ -234,6 +260,51 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
     list.unshift(target);
     setFormData(prev => ({ ...prev, images: list }));
     onNotify('Primary storefront thumbnail updated.');
+  };
+
+  // REORDER IMAGE (MOVE LEFT / RIGHT)
+  const handleMoveImage = (index: number, direction: 'left' | 'right') => {
+    if (!formData.images) return;
+    const targetIdx = direction === 'left' ? index - 1 : index + 1;
+    if (targetIdx < 0 || targetIdx >= formData.images.length) return;
+    const list = [...formData.images];
+    const temp = list[index];
+    list[index] = list[targetIdx];
+    list[targetIdx] = temp;
+    setFormData(prev => ({ ...prev, images: list }));
+    onNotify(`Image reordered to position ${targetIdx + 1}.`);
+  };
+
+  // TRIGGER REPLACE IMAGE
+  const handleTriggerReplace = (index: number) => {
+    setReplaceTargetIndex(index);
+    if (replaceInputRef.current) {
+      replaceInputRef.current.value = '';
+      replaceInputRef.current.click();
+    }
+  };
+
+  // HANDLE REPLACE FILE SELECTION
+  const handleReplaceFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0 || replaceTargetIndex === null || !formData.images) return;
+    try {
+      setUploadingImage(true);
+      const res = await StorageService.uploadMediaFile(files[0], 'product-image', [`Product: ${formData.title || 'Item'}`]);
+      if (res.url) {
+        const list = [...formData.images];
+        list[replaceTargetIndex] = res.url;
+        setFormData(prev => ({ ...prev, images: list }));
+        onNotify(`Replaced image ${replaceTargetIndex + 1} successfully!`);
+      }
+    } catch (err) {
+      console.error('Replace image error:', err);
+      alert('Failed to replace image.');
+    } finally {
+      setUploadingImage(false);
+      setReplaceTargetIndex(null);
+      if (replaceInputRef.current) replaceInputRef.current.value = '';
+    }
   };
 
   // REMOVE IMAGE
@@ -265,6 +336,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
       description: formData.description || '',
       images: formData.images && formData.images.length > 0 ? formData.images : ['https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=80'],
       videoUrl: formData.videoUrl || undefined,
+      videoPoster: formData.videoPoster || undefined,
       stock: Number(formData.stock) || 0,
       status: formData.status || 'Active',
       isVisible: formData.isVisible ?? true,
@@ -916,6 +988,22 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
                   </p>
                 </div>
 
+                {/* IMAGE CANVAS GUIDANCE (Mandatory Requirement) */}
+                <div className="p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-md text-xs text-amber-900 flex items-start gap-2.5">
+                  <Sparkles className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                  <div className="space-y-0.5">
+                    <p className="font-semibold uppercase tracking-wider text-[11px] text-amber-900">
+                      Product Image Canvas Specifications
+                    </p>
+                    <p className="text-amber-800 text-[11px] leading-relaxed">
+                      <span className="font-medium">Recommended Resolution:</span> 1200 × 1500 px &nbsp;|&nbsp; 
+                      <span className="font-medium">Aspect Ratio:</span> 4:5 Portrait &nbsp;|&nbsp; 
+                      <span className="font-medium">Format:</span> WebP / JPG. 
+                      Non-destructive storefront presentation preserves authentic fashion photography without distortion.
+                    </p>
+                  </div>
+                </div>
+
                 {/* PC Upload Button */}
                 <div className="p-6 border-2 border-dashed border-stone-300 rounded-lg text-center space-y-3 bg-stone-50 hover:bg-stone-100/60 transition-colors">
                   <input
@@ -924,6 +1012,13 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
                     accept="image/*"
                     multiple
                     onChange={handleImageFileChange}
+                    className="hidden"
+                  />
+                  <input
+                    ref={replaceInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleReplaceFileChange}
                     className="hidden"
                   />
                   <ImageIcon className="w-8 h-8 mx-auto text-stone-400" />
@@ -938,49 +1033,102 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
                       <span>{uploadingImage ? 'Uploading Photos...' : 'Upload Photos from PC'}</span>
                     </button>
                     <p className="text-[11px] text-stone-500 mt-1">
-                      Select one or multiple photos (JPG, PNG, WEBP). First photo is storefront primary thumbnail.
+                      Select one or multiple photos (JPG, PNG, WEBP). First photo is storefront primary thumbnail. URL input is not mandatory.
                     </p>
                   </div>
                 </div>
 
-                {/* Images Preview Grid */}
+                {/* Images Preview Grid with Reorder, Replace, Set Primary, Remove */}
                 {formData.images && formData.images.length > 0 && (
                   <div>
-                    <h4 className="text-xs font-bold uppercase text-stone-700 mb-2">
-                      Uploaded Photos ({formData.images.length})
-                    </h4>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-xs font-bold uppercase text-stone-700">
+                        Uploaded Gallery Images ({formData.images.length})
+                      </h4>
+                      <span className="text-[11px] text-stone-500">
+                        Hover an image to reorder, replace, set primary, or remove
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
                       {formData.images.map((imgUrl, idx) => (
-                        <div key={idx} className="relative group border border-stone-200 rounded overflow-hidden bg-stone-100">
+                        <div key={idx} className="relative group border border-stone-200 rounded-sm overflow-hidden bg-stone-100 aspect-[3/4] flex flex-col justify-between shadow-2xs">
                           <img
                             src={imgUrl}
                             alt={`Preview ${idx + 1}`}
-                            className="w-full h-36 object-cover"
+                            className="w-full h-full object-cover object-top"
                           />
-                          {idx === 0 && (
-                            <span className="absolute top-1 left-1 bg-stone-900 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">
-                              Primary
-                            </span>
-                          )}
-                          <div className="absolute inset-0 bg-stone-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 p-1">
-                            {idx !== 0 && (
+                          
+                          {/* Badges */}
+                          <div className="absolute top-1.5 left-1.5 flex flex-col gap-1 z-10 pointer-events-none">
+                            {idx === 0 ? (
+                              <span className="bg-stone-900 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider shadow-xs">
+                                Primary
+                              </span>
+                            ) : (
+                              <span className="bg-black/60 backdrop-blur-xs text-white text-[9px] font-mono px-1 py-0.5 rounded">
+                                #{idx + 1}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Hover Action Overlay */}
+                          <div className="absolute inset-0 bg-stone-900/75 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-1.5 z-20">
+                            {/* Top row: Reorder arrows */}
+                            <div className="flex items-center justify-between">
                               <button
                                 type="button"
-                                onClick={() => handleSetPrimaryImage(idx)}
-                                className="p-1 bg-white text-stone-900 rounded text-[10px] font-medium"
-                                title="Set as primary"
+                                disabled={idx === 0}
+                                onClick={() => handleMoveImage(idx, 'left')}
+                                className="p-1 bg-white/90 hover:bg-white text-stone-800 disabled:opacity-30 rounded text-xs cursor-pointer"
+                                title="Move Left"
                               >
-                                Set Main
+                                <ArrowLeft className="w-3 h-3" />
                               </button>
-                            )}
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveImage(idx)}
-                              className="p-1 bg-rose-600 text-white rounded"
-                              title="Remove image"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
+                              <button
+                                type="button"
+                                disabled={idx === (formData.images?.length || 0) - 1}
+                                onClick={() => handleMoveImage(idx, 'right')}
+                                className="p-1 bg-white/90 hover:bg-white text-stone-800 disabled:opacity-30 rounded text-xs cursor-pointer"
+                                title="Move Right"
+                              >
+                                <ArrowRight className="w-3 h-3" />
+                              </button>
+                            </div>
+
+                            {/* Middle: Set Main and Replace */}
+                            <div className="flex flex-col gap-1 items-center">
+                              {idx !== 0 && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleSetPrimaryImage(idx)}
+                                  className="w-full py-1 px-1.5 bg-white text-stone-900 rounded text-[10px] font-medium tracking-wide uppercase hover:bg-stone-100 cursor-pointer text-center"
+                                  title="Set as storefront primary thumbnail"
+                                >
+                                  Set Primary
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => handleTriggerReplace(idx)}
+                                className="w-full py-1 px-1.5 bg-stone-800 hover:bg-stone-700 text-white rounded text-[10px] font-medium tracking-wide flex items-center justify-center gap-1 cursor-pointer"
+                                title="Replace image from PC"
+                              >
+                                <RefreshCw className="w-2.5 h-2.5" />
+                                <span>Replace</span>
+                              </button>
+                            </div>
+
+                            {/* Bottom: Remove */}
+                            <div className="flex justify-end">
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveImage(idx)}
+                                className="p-1 bg-rose-600 hover:bg-rose-700 text-white rounded cursor-pointer"
+                                title="Remove image"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -989,11 +1137,18 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
                 )}
 
                 {/* Video Upload / URL Section */}
-                <div className="pt-4 border-t border-stone-200 space-y-3">
-                  <h4 className="text-xs font-bold uppercase text-stone-700 flex items-center gap-1.5">
-                    <Video className="w-4 h-4 text-indigo-700" />
-                    <span>Runway Video Preview (Optional)</span>
-                  </h4>
+                <div className="pt-4 border-t border-stone-200 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-xs font-bold uppercase text-stone-700 flex items-center gap-1.5">
+                        <Video className="w-4 h-4 text-indigo-700" />
+                        <span>Runway Video Preview (Optional)</span>
+                      </h4>
+                      <p className="text-[11px] text-stone-500 mt-0.5">
+                        Recommended Canvas: 1080 × 1350 px (4:5) or 1080 × 1920 px (9:16 vertical runway). Formats: MP4, WebM.
+                      </p>
+                    </div>
+                  </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -1014,7 +1169,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
                         className="w-full p-2.5 bg-stone-100 hover:bg-stone-200 border border-stone-300 rounded text-xs text-stone-800 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                       >
                         <Upload className="w-4 h-4" />
-                        <span>{uploadingVideo ? 'Uploading Runway Video...' : 'Choose Video File from PC'}</span>
+                        <span>{uploadingVideo ? 'Uploading Runway Video...' : formData.videoUrl ? 'Replace Video from PC' : 'Choose Video File from PC'}</span>
                       </button>
                     </div>
 
@@ -1033,17 +1188,91 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
                   </div>
 
                   {formData.videoUrl && (
-                    <div className="p-3 bg-indigo-50/70 border border-indigo-200 rounded flex items-center justify-between text-xs text-indigo-950">
-                      <span className="truncate max-w-sm font-mono text-[11px]">{formData.videoUrl}</span>
-                      <button
-                        type="button"
-                        onClick={() => setFormData({ ...formData, videoUrl: '' })}
-                        className="text-rose-700 hover:underline shrink-0"
-                      >
-                        Remove video
-                      </button>
+                    <div className="p-3 bg-stone-50 border border-stone-200 rounded space-y-3">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
+                        <span className="truncate max-w-sm font-mono text-[11px] text-stone-700">{formData.videoUrl}</span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => videoInputRef.current?.click()}
+                            className="text-stone-700 hover:text-stone-900 font-medium underline"
+                          >
+                            Replace
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, videoUrl: '', videoPoster: '' })}
+                            className="text-rose-700 hover:underline font-medium"
+                          >
+                            Remove Video
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Video Player Preview */}
+                      <div className="max-w-xs bg-black rounded overflow-hidden aspect-[4/5] flex items-center justify-center">
+                        <video
+                          src={formData.videoUrl}
+                          poster={formData.videoPoster}
+                          controls
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     </div>
                   )}
+
+                  {/* Video Poster Image Management */}
+                  <div className="p-3 bg-stone-50 border border-stone-200 rounded space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-[11px] font-bold text-stone-800">
+                        Video Poster / Thumbnail Image
+                      </label>
+                      <span className="text-[10px] text-stone-500 font-mono">Recommended: 1080 × 1350 px (4:5)</span>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      {formData.videoPoster ? (
+                        <img
+                          src={formData.videoPoster}
+                          alt="Poster Preview"
+                          className="w-14 h-18 object-cover rounded border border-stone-300 shrink-0"
+                        />
+                      ) : (
+                        <div className="w-14 h-18 bg-stone-200 border border-dashed border-stone-300 rounded flex items-center justify-center text-[9px] text-stone-500 text-center p-1">
+                          No Poster
+                        </div>
+                      )}
+
+                      <div className="space-y-1.5">
+                        <input
+                          ref={posterInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={handlePosterFileChange}
+                          className="hidden"
+                        />
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            disabled={uploadingPoster}
+                            onClick={() => posterInputRef.current?.click()}
+                            className="px-3 py-1.5 bg-stone-900 text-white rounded text-[11px] font-medium hover:bg-stone-800 disabled:opacity-50"
+                          >
+                            {uploadingPoster ? 'Uploading...' : formData.videoPoster ? 'Replace Poster' : 'Upload Poster from PC'}
+                          </button>
+                          {formData.videoPoster && (
+                            <button
+                              type="button"
+                              onClick={() => setFormData({ ...formData, videoPoster: '' })}
+                              className="px-2.5 py-1.5 border border-stone-300 text-stone-700 hover:bg-stone-100 rounded text-[11px]"
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

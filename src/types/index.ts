@@ -140,6 +140,7 @@ export interface Collection {
   visibleInNav?: boolean;
   visibleOnHomepage?: boolean;
   order: number;
+  displayOrder?: number;
   bannerEnabled?: boolean;
   bannerType?: 'text' | 'image' | 'image_text';
   bannerTitle?: string;

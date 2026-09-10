@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Heart, ShoppingBag, Truck, ShieldCheck, RefreshCw, 
-  Play, Star, CheckCircle, ChevronRight, MessageCircle, 
+  Play, Star, CheckCircle, ChevronRight, ChevronLeft, MessageCircle, 
   Ruler, Share2, Sparkles, Check
 } from 'lucide-react';
 import { Product, CurrencyCode, ProductSize, Review } from '../../types';
@@ -9,6 +9,7 @@ import { formatPrice } from '../../lib/currency';
 import { StorageService } from '../../lib/storage';
 import { ProductCard } from './ProductCard';
 import { resolveWhatsAppSettings, getWhatsAppUrl } from '../../lib/whatsapp';
+import { SafeHtml } from '../common/SafeHtml';
 
 interface ProductDetailPageProps {
   product: Product;
@@ -233,8 +234,15 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 <div className="w-full h-full relative group overflow-hidden cursor-zoom-in">
                   <img
                     src={product.images[selectedImageIdx] || product.images[0]}
-                    alt={product.title}
+                    alt={`${product.title} - View ${selectedImageIdx + 1}`}
                     className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                    onError={(e) => {
+                      // Fallback to first image or hide if already on first image
+                      const target = e.target as HTMLImageElement;
+                      if (selectedImageIdx !== 0 && product.images[0]) {
+                        target.src = product.images[0];
+                      }
+                    }}
                   />
 
                   {/* Badges */}
@@ -255,6 +263,39 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                       </span>
                     )}
                   </div>
+
+                  {/* Previous / Next Arrow Controls */}
+                  {product.images.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedImageIdx((prev) => (prev > 0 ? prev - 1 : product.images.length - 1));
+                        }}
+                        aria-label="Previous image"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-stone-900 flex items-center justify-center shadow-md opacity-80 sm:opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedImageIdx((prev) => (prev < product.images.length - 1 ? prev + 1 : 0));
+                        }}
+                        aria-label="Next image"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-stone-900 flex items-center justify-center shadow-md opacity-80 sm:opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+
+                      {/* Image Position Indicator */}
+                      <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-xs text-white text-[10px] font-medium tracking-wider px-2.5 py-1 rounded-full pointer-events-none">
+                        {selectedImageIdx + 1} / {product.images.length}
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -335,14 +376,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                 <span className="font-semibold text-stone-900 uppercase tracking-wider text-[11px] block">
                   Authentic Product Details:
                 </span>
-                {product.description.includes('<') ? (
-                  <div 
-                    className="prose prose-stone max-w-none text-xs leading-relaxed text-stone-700 [&_p]:mb-1.5 [&_strong]:text-stone-900 [&_strong]:font-medium [&_ul]:list-disc [&_ul]:pl-4"
-                    dangerouslySetInnerHTML={{ __html: product.description }} 
-                  />
-                ) : (
-                  <p className="leading-relaxed">{product.description}</p>
-                )}
+                <SafeHtml html={product.description} className="text-xs leading-relaxed" />
               </div>
             )}
 
@@ -554,14 +588,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
           {/* Tab Contents */}
           {activeInfoTab === 'details' && (
             <div className="text-sm text-stone-600 leading-relaxed space-y-4 max-w-3xl font-light">
-              {product.description?.includes('<') ? (
-                <div 
-                  className="prose prose-stone max-w-none text-sm leading-relaxed text-stone-600 [&_p]:mb-3 [&_strong]:text-stone-900 [&_strong]:font-medium [&_ul]:list-disc [&_ul]:pl-5"
-                  dangerouslySetInnerHTML={{ __html: product.description }} 
-                />
-              ) : (
-                <p>{product.description}</p>
-              )}
+              <SafeHtml html={product.description} className="text-sm leading-relaxed text-stone-600" />
               {product.details?.stitchingDetails && (
                 <div className="bg-stone-50 p-4 border border-stone-200 text-xs space-y-1">
                   <h4 className="font-medium text-stone-900 uppercase tracking-wider text-[11px]">Tailoring & Embellishments:</h4>

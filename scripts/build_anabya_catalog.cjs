@@ -7,53 +7,142 @@ function generateId(prefix, key) {
   return `${hash.slice(0, 8)}-${hash.slice(8, 12)}-4${hash.slice(13, 16)}-a${hash.slice(17, 20)}-${hash.slice(20, 32)}`;
 }
 
+// Robust, safe HTML description normalizer
+// Strips comments, tracking badges, data attributes, garish styles, while strictly preserving 100% authentic product details
+function cleanDescription(html, productTitle) {
+  if (!html) return '';
+
+  let d = html;
+
+  // 1. Un-escape if html was escaped (e.g. &lt;p&gt; or &amp;lt;p&amp;gt;)
+  for (let i = 0; i < 3; i++) {
+    if (d.includes('&lt;') || d.includes('&gt;')) {
+      d = d.replace(/&lt;/g, '<')
+           .replace(/&gt;/g, '>')
+           .replace(/&quot;/g, '"')
+           .replace(/&amp;/g, '&');
+    }
+  }
+
+  // 2. Remove comments
+  d = d.replace(/<!--[\s\S]*?-->/g, '');
+
+  // 3. Remove script, style, iframe, object, embed, noscript
+  d = d.replace(/<(script|style|iframe|object|embed|noscript)[\s\S]*?<\/\1>/gi, '');
+
+  // 4. Remove external embedded images (Shopify sizing badge pngs, trust badges)
+  d = d.replace(/<img[^>]*>/gi, '');
+
+  // 5. Unwrap or remove div tags while keeping contents
+  d = d.replace(/<div[^>]*>\s*<\/div>/gi, '');
+  d = d.replace(/<\/?div[^>]*>/gi, '');
+
+  // 6. Strip all attributes from tags except semantic formatting
+  d = d.replace(/\s*(?:data-[a-z0-9_-]+|style|class|id|width|height|color|align|valign|role|dir|tabindex)\s*=\s*(?:"[^"]*"|\x27[^\x27]*\x27|[^\s>]+)/gi, '');
+  d = d.replace(/\s*on[a-z]+\s*=\s*(?:"[^"]*"|\x27[^\x27]*\x27|[^\s>]+)/gi, '');
+
+  // 7. Unwrap span tags (handle nested)
+  for (let i = 0; i < 3; i++) {
+    d = d.replace(/<span[^>]*>([\s\S]*?)<\/span>/gi, '$1');
+  }
+
+  // 8. Fix malformed list nesting like <ul><li style="..."><ul>...
+  d = d.replace(/<ul>\s*<li>\s*<ul>/gi, '<ul>');
+  d = d.replace(/<\/ul>\s*<\/li>\s*<\/ul>/gi, '</ul>');
+  d = d.replace(/<li>\s*<p>(.*?)<\/p>\s*<\/li>/gi, '<li>$1</li>');
+
+  // 9. Normalize heading tags into clean p strong
+  d = d.replace(/<h[12356][^>]*>([\s\S]*?)<\/h[12356]>/gi, '<p><strong>$1</strong></p>');
+  d = d.replace(/<h4[^>]*>([\s\S]*?)<\/h4>/gi, '<p><strong>$1</strong></p>');
+
+  // 10. Scrub external brand references
+  d = d.replace(/Tawakal\s*Closet/gi, 'GulPash')
+       .replace(/#TawakalCloset/gi, '#GulPash')
+       .replace(/Anabya\s*Garments/gi, 'GulPash')
+       .replace(/#AnabyaGarments/gi, '#GulPash');
+
+  // 11. Normalize entity &amp;
+  d = d.replace(/&amp;/g, '&');
+
+  // 12. Clean redundant nested strong/b tags
+  for (let i = 0; i < 3; i++) {
+    d = d.replace(/<strong>\s*<strong>/gi, '<strong>').replace(/<\/strong>\s*<\/strong>/gi, '</strong>');
+    d = d.replace(/<b>\s*<b>/gi, '<b>').replace(/<\/b>\s*<\/b>/gi, '</b>');
+  }
+
+  // 13. Remove empty tags
+  for (let i = 0; i < 3; i++) {
+    d = d.replace(/<p>\s*(?:<br\s*[\/]?>|\s|&nbsp;)*<\/p>/gi, '');
+    d = d.replace(/<strong>\s*<\/strong>/gi, '');
+    d = d.replace(/<b>\s*<\/b>/gi, '');
+    d = d.replace(/<em>\s*<\/em>/gi, '');
+    d = d.replace(/<i>\s*<\/i>/gi, '');
+    d = d.replace(/<li>\s*<\/li>/gi, '');
+  }
+
+  // 14. Remove redundant title at top if identical to product title
+  if (productTitle) {
+    const cleanTitle = productTitle.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    d = d.replace(/^\s*<p><strong>(.*?)<\/strong><\/p>/i, (match, inner) => {
+      const cleanInner = inner.replace(/<[^>]+>/g, '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (cleanInner === cleanTitle || cleanInner.startsWith(cleanTitle) || cleanTitle.startsWith(cleanInner)) {
+        return '';
+      }
+      return match;
+    });
+  }
+
+  // 15. Normalize excessive line breaks
+  d = d.replace(/(?:<br\s*[\/]?>\s*){2,}/gi, '<br />');
+  d = d.replace(/<p>\s*<br\s*[\/]?>\s*/gi, '<p>');
+  d = d.replace(/\s*<br\s*[\/]?>\s*<\/p>/gi, '</p>');
+
+  // 16. Final empty p cleanup and trim
+  d = d.replace(/<p>\s*<\/p>/gi, '');
+  d = d.trim();
+
+  return d;
+}
+
 const raw = JSON.parse(fs.readFileSync('anabya_raw_catalog.json', 'utf8'));
 
-// Collections
+// Canonical Collections in Exact Desired Order:
+// 1. NEW ARRIVALS
+// 2. TRENDING
+// 3. WINTER COLLECTION
+// 4. CO-ORDS
+// 5. SHORT LENGTH
+// 6. ALL ENSEMBLES
 const COLLECTIONS = [
   {
-    id: generateId('collection', 'all'),
-    name: 'ALL ENSEMBLES',
-    slug: 'all',
-    description: 'Complete GulPash pret & couture catalog. Discover our master-crafted ready-to-wear silhouettes.',
-    imageUrl: '/products/anabya/aazure-3piece/01_49544837890281.jpg',
-    image: '/products/anabya/aazure-3piece/01_49544837890281.jpg',
-    bannerUrl: '/products/anabya/aazure-3piece/01_49544837890281.jpg',
+    id: generateId('collection', 'new-arrivals'),
+    name: 'NEW ARRIVALS',
+    slug: 'new-arrivals',
+    description: 'The freshest silhouettes, hand-embellished luxury fabrics, and contemporary Pakistani couture cuts.',
+    imageUrl: '/products/anabya/zeenat-emb-3pcs/01_49440054640873.jpg',
+    image: '/products/anabya/zeenat-emb-3pcs/01_49440054640873.jpg',
+    bannerUrl: '/products/anabya/zeenat-emb-3pcs/01_49440054640873.jpg',
+    order: 1,
     displayOrder: 1,
-    isVisible: true
+    isVisible: true,
+    visibleOnHomepage: true,
+    visibleInNav: true,
+    altText: 'GulPash New Arrivals — Zeenat Embroidered Ensemble'
   },
   {
     id: generateId('collection', 'best-selling'),
     name: 'TRENDING',
     slug: 'best-selling',
     description: 'Our most coveted, highest-demand artisanal Pakistani ready-to-wear ensembles.',
-    imageUrl: '/products/anabya/zar-e-sabz-3piece/01_49544837890281.jpg',
-    image: '/products/anabya/zar-e-sabz-3piece/01_49544837890281.jpg',
-    bannerUrl: '/products/anabya/zar-e-sabz-3piece/01_49544837890281.jpg',
+    imageUrl: '/products/anabya/zar-e-sabz-3piece/01_50358171500777.png',
+    image: '/products/anabya/zar-e-sabz-3piece/01_50358171500777.png',
+    bannerUrl: '/products/anabya/zar-e-sabz-3piece/01_50358171500777.png',
+    order: 2,
     displayOrder: 2,
-    isVisible: true
-  },
-  {
-    id: generateId('collection', 'new-arrivals'),
-    name: 'NEW ARRIVALS',
-    slug: 'new-arrivals',
-    description: 'The freshest silhouettes, hand-embellished luxury fabrics, and contemporary Pakistani couture cuts.',
-    imageUrl: '/products/anabya/zaarif-cotton-2-pc-emb/01_49440049594601.jpg',
-    image: '/products/anabya/zaarif-cotton-2-pc-emb/01_49440049594601.jpg',
-    bannerUrl: '/products/anabya/zaarif-cotton-2-pc-emb/01_49440049594601.jpg',
-    displayOrder: 3,
-    isVisible: true
-  },
-  {
-    id: generateId('collection', 'co-ords'),
-    name: 'CO-ORDS',
-    slug: 'co-ords',
-    description: 'Chic matching separates and tailored 2-piece coords designed for effortless sophistication.',
-    imageUrl: '/products/anabya/zaarif-cotton-2-pc-emb/01_49440049594601.jpg',
-    image: '/products/anabya/zaarif-cotton-2-pc-emb/01_49440049594601.jpg',
-    bannerUrl: '/products/anabya/zaarif-cotton-2-pc-emb/01_49440049594601.jpg',
-    displayOrder: 4,
-    isVisible: true
+    isVisible: true,
+    visibleOnHomepage: true,
+    visibleInNav: true,
+    altText: 'GulPash Trending — Zar-E-Sabz 3Piece'
   },
   {
     id: generateId('collection', 'winter-collection'),
@@ -63,30 +152,68 @@ const COLLECTIONS = [
     imageUrl: '/products/anabya/alize-3pcs/01_49440049594601.jpg',
     image: '/products/anabya/alize-3pcs/01_49440049594601.jpg',
     bannerUrl: '/products/anabya/alize-3pcs/01_49440049594601.jpg',
-    displayOrder: 5,
-    isVisible: true
+    order: 3,
+    displayOrder: 3,
+    isVisible: true,
+    visibleOnHomepage: true,
+    visibleInNav: true,
+    altText: 'GulPash Winter Collection — Alize Embroidered Dhank'
+  },
+  {
+    id: generateId('collection', 'co-ords'),
+    name: 'CO-ORDS',
+    slug: 'co-ords',
+    description: 'Chic matching separates and tailored 2-piece coords designed for effortless sophistication.',
+    imageUrl: '/products/anabya/zaarif-cotton-3-pc-emb/01_49440046285033.jpg',
+    image: '/products/anabya/zaarif-cotton-3-pc-emb/01_49440046285033.jpg',
+    bannerUrl: '/products/anabya/zaarif-cotton-3-pc-emb/01_49440046285033.jpg',
+    order: 4,
+    displayOrder: 4,
+    isVisible: true,
+    visibleOnHomepage: true,
+    visibleInNav: true,
+    altText: 'GulPash Co-ords — Zaarif Tailored Separates'
   },
   {
     id: generateId('collection', 'short-length-article'),
     name: 'SHORT LENGTH',
     slug: 'short-length-article',
     description: 'Contemporary short tunic lengths paired with straight trousers or culottes.',
-    imageUrl: '/products/anabya/elara/01_49440049594601.jpg',
-    image: '/products/anabya/elara/01_49440049594601.jpg',
-    bannerUrl: '/products/anabya/elara/01_49440049594601.jpg',
+    imageUrl: '/products/anabya/elara/01_49440043499753.webp',
+    image: '/products/anabya/elara/01_49440043499753.webp',
+    bannerUrl: '/products/anabya/elara/01_49440043499753.webp',
+    order: 5,
+    displayOrder: 5,
+    isVisible: true,
+    visibleOnHomepage: true,
+    visibleInNav: true,
+    altText: 'GulPash Short Length Article — Elara Silhouette'
+  },
+  {
+    id: generateId('collection', 'all'),
+    name: 'ALL ENSEMBLES',
+    slug: 'all',
+    description: 'Complete GulPash pret & couture catalog. Discover our master-crafted ready-to-wear silhouettes.',
+    imageUrl: '/products/anabya/aazure-3piece/01_49909420425449.jpg',
+    image: '/products/anabya/aazure-3piece/01_49909420425449.jpg',
+    bannerUrl: '/products/anabya/aazure-3piece/01_49909420425449.jpg',
+    order: 6,
     displayOrder: 6,
-    isVisible: true
+    isVisible: true,
+    visibleOnHomepage: false, // Controlled via Admin Storefront toggle
+    visibleInNav: true,
+    altText: 'GulPash All Ensembles — Aazure Pret'
   }
 ];
 
-// Categories
+// Categories with verified images
 const CATEGORIES = [
   {
     id: generateId('category', '3-piece-ensembles'),
     name: '3-Piece Ensembles',
     slug: '3-piece-ensembles',
     description: 'Exquisite 3-piece designer ensembles complete with shirt, trouser, and dupatta.',
-    imageUrl: '/products/anabya/aazure-3piece/01_49544837890281.jpg',
+    imageUrl: '/products/anabya/aazure-3piece/01_49909420425449.jpg',
     order: 1,
     isVisible: true
   },
@@ -95,7 +222,7 @@ const CATEGORIES = [
     name: '2-Piece Ensembles',
     slug: '2-piece-ensembles',
     description: 'Versatile 2-piece shirts and trousers with contemporary tailoring and embroidery.',
-    imageUrl: '/products/anabya/zaarif-cotton-2-pc-emb/01_49440049594601.jpg',
+    imageUrl: '/products/anabya/zaarif-cotton-3-pc-emb/01_49440046285033.jpg',
     order: 2,
     isVisible: true
   },
@@ -113,7 +240,7 @@ const CATEGORIES = [
     name: 'Luxury Pret',
     slug: 'luxury-pret',
     description: 'Handcrafted festive pret with intricate embroidery and timeless silhouettes.',
-    imageUrl: '/products/anabya/zar-e-sabz-3piece/01_49544837890281.jpg',
+    imageUrl: '/products/anabya/zar-e-sabz-3piece/01_50358171500777.png',
     order: 4,
     isVisible: true
   },
@@ -122,7 +249,7 @@ const CATEGORIES = [
     name: 'Unstitched / Stitched',
     slug: 'unstitched-stitched',
     description: 'GulPash signature collections crafted in premium lawn, chiffon, dhank, and linen.',
-    imageUrl: '/products/anabya/amber-3piece/01_49544837890281.jpg',
+    imageUrl: '/products/anabya/amber-3piece/01_49909420589289.jpg',
     order: 5,
     isVisible: true
   }
@@ -201,6 +328,8 @@ for (const p of raw) {
   }
 }
 
+let cleanedCount = 0;
+
 for (let i = 0; i < raw.length; i++) {
   const p = raw[i];
   const productId = generateId('product', p.id);
@@ -225,24 +354,22 @@ for (let i = 0; i < raw.length; i++) {
     images = (p.images || []).map(img => img.src);
   }
 
+  // Normalized, sanitized description
+  const cleanHtmlDesc = cleanDescription(p.body_html || '', title);
+  cleanedCount++;
+
   // Fabric extraction
   let fabric = 'Premium Lawn';
-  let desc = (p.body_html || '')
-    .replace(/Tawakal\s*Closet/gi, 'GulPash')
-    .replace(/#TawakalCloset/gi, '#GulPash')
-    .replace(/Anabya\s*Garments/gi, 'GulPash')
-    .replace(/#AnabyaGarments/gi, '#GulPash');
-
-  const fabricMatch = desc.match(/Fabric:\s*([^<\n]+)/i) || desc.match(/Stuff:\s*([^<\n]+)/i);
+  const fabricMatch = cleanHtmlDesc.match(/Fabric:\s*([^<\n]+)/i) || cleanHtmlDesc.match(/Stuff:\s*([^<\n]+)/i);
   if (fabricMatch) {
     fabric = fabricMatch[1].replace(/&amp;/g, '&').replace(/<[^>]+>/g, '').trim();
-  } else if (desc.toLowerCase().includes('dhank')) {
+  } else if (cleanHtmlDesc.toLowerCase().includes('dhank')) {
     fabric = 'Dhank';
-  } else if (desc.toLowerCase().includes('linen')) {
+  } else if (cleanHtmlDesc.toLowerCase().includes('linen')) {
     fabric = 'Linen';
-  } else if (desc.toLowerCase().includes('cotton')) {
+  } else if (cleanHtmlDesc.toLowerCase().includes('cotton')) {
     fabric = 'Cotton';
-  } else if (desc.toLowerCase().includes('chiffon')) {
+  } else if (cleanHtmlDesc.toLowerCase().includes('chiffon')) {
     fabric = 'Chiffon';
   }
 
@@ -252,9 +379,9 @@ for (let i = 0; i < raw.length; i++) {
 
   // Details
   const details = {
-    shirt: desc.includes('Shirt') ? 'Detailed designer shirt with signature tailoring and embroidery' : `${pieceCount} embellished shirt`,
-    trouser: desc.includes('Trouser') ? 'Matching dyed/embroidered trouser' : 'Dyed cotton/linen trouser',
-    dupatta: is2Piece ? 'N/A (2-Piece Ensemble)' : (desc.includes('Dupatta') ? 'Embellished matching dupatta' : 'Dyed Chiffon Dupatta'),
+    shirt: cleanHtmlDesc.includes('Shirt') ? 'Detailed designer shirt with signature tailoring and embroidery' : `${pieceCount} embellished shirt`,
+    trouser: cleanHtmlDesc.includes('Trouser') ? 'Matching dyed/embroidered trouser' : 'Dyed cotton/linen trouser',
+    dupatta: is2Piece ? 'N/A (2-Piece Ensemble)' : (cleanHtmlDesc.includes('Dupatta') ? 'Embellished matching dupatta' : 'Dyed Chiffon Dupatta'),
     careInstructions: 'Dry clean recommended. Do not use bleach. Iron at moderate temperature. Protect embellishments.',
     stitchingDetails: 'Premium stitching with delicate piping, neat overlocking, and reinforced seams.'
   };
@@ -271,14 +398,14 @@ for (let i = 0; i < raw.length; i++) {
   const isWinter = WINTER_TITLES.includes(title);
 
   const matchedCollections = [COLLECTIONS.find(c => c.slug === 'all')];
-  if (isBestSeller) matchedCollections.push(COLLECTIONS.find(c => c.slug === 'best-selling'));
   if (isNewArrival) matchedCollections.push(COLLECTIONS.find(c => c.slug === 'new-arrivals'));
-  if (isCoord) matchedCollections.push(COLLECTIONS.find(c => c.slug === 'co-ords'));
+  if (isBestSeller) matchedCollections.push(COLLECTIONS.find(c => c.slug === 'best-selling'));
   if (isWinter) matchedCollections.push(COLLECTIONS.find(c => c.slug === 'winter-collection'));
+  if (isCoord) matchedCollections.push(COLLECTIONS.find(c => c.slug === 'co-ords'));
 
-  const primaryCollection = isBestSeller 
-    ? COLLECTIONS.find(c => c.slug === 'best-selling') 
-    : (isNewArrival ? COLLECTIONS.find(c => c.slug === 'new-arrivals') : COLLECTIONS.find(c => c.slug === 'all'));
+  const primaryCollection = isNewArrival 
+    ? COLLECTIONS.find(c => c.slug === 'new-arrivals')
+    : (isBestSeller ? COLLECTIONS.find(c => c.slug === 'best-selling') : COLLECTIONS.find(c => c.slug === 'all'));
 
   // Detailed variants
   const detailedVariants = variants.map((v, vIdx) => {
@@ -327,7 +454,7 @@ for (let i = 0; i < raw.length; i++) {
     id: productId,
     title: title,
     slug: slug,
-    description: desc,
+    description: cleanHtmlDesc,
     shortDescription: `${title} — Authentic GulPash ready-to-wear ensemble with handcrafted embroidery and signature tailoring.`,
     sku: sku,
     category: categoryObj.name,
@@ -391,10 +518,11 @@ fs.writeFileSync('src/data/migratedCategories.json', JSON.stringify(CATEGORIES, 
 fs.writeFileSync('src/data/migratedCollections.json', JSON.stringify(COLLECTIONS, null, 2));
 
 console.log('Successfully generated:');
-console.log(`- src/data/migratedProducts.json (${products.length} products)`);
+console.log(`- src/data/migratedProducts.json (${products.length} products, ${cleanedCount} descriptions sanitized)`);
 console.log(`- src/data/migratedCategories.json (${CATEGORIES.length} categories)`);
 console.log(`- src/data/migratedCollections.json (${COLLECTIONS.length} collections)`);
 
 COLLECTIONS.forEach(c => {
-  console.log(`  Collection [${c.name}] (${c.slug}): ${c.productCount} products`);
+  console.log(`  [Order ${c.order}] ${c.name} (${c.slug}): ${c.productCount} products, Image: ${c.imageUrl}`);
 });
+

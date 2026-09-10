@@ -28,9 +28,11 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
   // Collection editor state
   const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
   const [collectionBannerFile, setCollectionBannerFile] = useState<File | null>(null);
+  const [collectionMobileBannerFile, setCollectionMobileBannerFile] = useState<File | null>(null);
   const [collectionCardFile, setCollectionCardFile] = useState<File | null>(null);
   const [uploadingColAsset, setUploadingColAsset] = useState(false);
   const bannerInputRef = useRef<HTMLInputElement>(null);
+  const mobileBannerInputRef = useRef<HTMLInputElement>(null);
   const cardInputRef = useRef<HTMLInputElement>(null);
 
   // CMS state
@@ -50,29 +52,48 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
     try {
       setUploadingColAsset(true);
       let bannerUrl = editingCollection.bannerUrl;
-      let cardUrl = editingCollection.imageUrl;
+      let bannerDesktopImage = editingCollection.bannerDesktopImage || bannerUrl;
+      let bannerMobileImage = editingCollection.bannerMobileImage;
+      let cardUrl = editingCollection.imageUrl || editingCollection.image;
 
       if (collectionBannerFile) {
-        const res = await StorageService.uploadMediaFile(collectionBannerFile, 'collection-banner', [`Banner: ${editingCollection.name}`]);
-        if (res.url) bannerUrl = res.url;
+        const res = await StorageService.uploadMediaFile(collectionBannerFile, 'collection-banner', [`Desktop Banner: ${editingCollection.name}`]);
+        if (res.url) {
+          bannerUrl = res.url;
+          bannerDesktopImage = res.url;
+        }
+      }
+
+      if (collectionMobileBannerFile) {
+        const res = await StorageService.uploadMediaFile(collectionMobileBannerFile, 'collection-banner', [`Mobile Banner: ${editingCollection.name}`]);
+        if (res.url) {
+          bannerMobileImage = res.url;
+        }
       }
 
       if (collectionCardFile) {
         const res = await StorageService.uploadMediaFile(collectionCardFile, 'collection-image', [`Card: ${editingCollection.name}`]);
-        if (res.url) cardUrl = res.url;
+        if (res.url) {
+          cardUrl = res.url;
+        }
       }
 
       const updated: Collection = {
         ...editingCollection,
         bannerUrl,
+        bannerDesktopImage,
+        bannerMobileImage,
         imageUrl: cardUrl,
-        image: cardUrl
+        image: cardUrl,
+        order: Number(editingCollection.order) || 1,
+        displayOrder: Number(editingCollection.order) || 1
       };
 
       StorageService.updateCollection(updated.id, updated);
       onNotify(`Storefront Collection "${updated.name}" updated successfully!`);
       setEditingCollection(null);
       setCollectionBannerFile(null);
+      setCollectionMobileBannerFile(null);
       setCollectionCardFile(null);
     } catch (err) {
       console.error('Failed updating collection:', err);
@@ -155,75 +176,111 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {collections.map((col) => {
-              const isVisible = col.isVisible ?? true;
+            {collections
+              .slice()
+              .sort((a, b) => (a.order ?? a.displayOrder ?? 99) - (b.order ?? b.displayOrder ?? 99))
+              .map((col) => {
+                const isVisible = col.isVisible ?? true;
+                const isHomepage = col.slug === 'all' ? (col.visibleOnHomepage === true) : (col.visibleOnHomepage !== false);
+                const orderNum = col.order ?? col.displayOrder ?? 1;
 
-              return (
-                <div key={col.id} className="bg-white border border-stone-200 rounded-lg overflow-hidden flex flex-col justify-between">
-                  <div>
-                    {/* Banner or Card Preview */}
-                    <div className="relative h-44 bg-stone-100 overflow-hidden">
-                      <img
-                        src={col.imageUrl || col.bannerUrl || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80'}
-                        alt={col.name}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end p-4">
-                        <div className="text-white">
-                          <span className="text-[10px] font-mono uppercase tracking-widest text-amber-300 block">
-                            {col.slug}
+                return (
+                  <div key={col.id} className="bg-white border border-stone-200 rounded-lg overflow-hidden flex flex-col justify-between shadow-xs">
+                    <div>
+                      {/* Banner or Card Preview */}
+                      <div className="relative h-48 bg-stone-100 overflow-hidden">
+                        <img
+                          src={col.imageUrl || col.image || col.bannerUrl || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80'}
+                          alt={col.name}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex items-end p-4">
+                          <div className="text-white">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-[10px] font-mono uppercase tracking-widest bg-amber-400/90 text-stone-900 px-1.5 py-0.5 rounded-xs font-bold">
+                                Order #{orderNum}
+                              </span>
+                              <span className="text-[10px] font-mono text-stone-300">
+                                /{col.slug}
+                              </span>
+                            </div>
+                            <h4 className="font-serif text-lg font-normal">{col.name}</h4>
+                          </div>
+                        </div>
+                        <div className="absolute top-2 right-2 flex flex-col gap-1 items-end">
+                          <span className={`text-[10px] px-2 py-0.5 rounded-xs font-medium shadow-xs ${
+                            isVisible ? 'bg-emerald-600 text-white' : 'bg-stone-500 text-white'
+                          }`}>
+                            {isVisible ? 'Catalog: Live' : 'Catalog: Hidden'}
                           </span>
-                          <h4 className="font-serif text-lg font-light">{col.name}</h4>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-xs font-medium shadow-xs ${
+                            isHomepage ? 'bg-indigo-600 text-white' : 'bg-stone-600/90 text-stone-200'
+                          }`}>
+                            {isHomepage ? 'Homepage: ON' : 'Homepage: OFF'}
+                          </span>
                         </div>
                       </div>
-                      <div className="absolute top-2 right-2">
-                        <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${
-                          isVisible ? 'bg-emerald-500 text-white' : 'bg-stone-500 text-white'
-                        }`}>
-                          {isVisible ? 'Live on Store' : 'Hidden'}
-                        </span>
+
+                      <div className="p-4 space-y-3 text-xs">
+                        <p className="text-stone-600 line-clamp-2 leading-relaxed">
+                          {col.description || 'Signature collection crafted with exquisite embroidery and regal silhouettes.'}
+                        </p>
+                        
+                        <div className="pt-2 flex items-center justify-between text-[11px] text-stone-500 border-t border-stone-100">
+                          <span>Assigned Products: <strong className="text-stone-800 font-mono text-xs">{col.productCount || 0}</strong></span>
+                          <a
+                            href={`#collection-${col.slug}`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              window.open(`/?collection=${col.slug}`, '_blank');
+                            }}
+                            className="text-stone-700 hover:text-stone-900 flex items-center gap-1 font-medium hover:underline"
+                          >
+                            <span>Preview Collection</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </div>
+
+                        {/* Inline Homepage Toggle */}
+                        <div className="flex items-center justify-between p-2.5 bg-stone-50 rounded border border-stone-200">
+                          <div>
+                            <span className="block font-bold text-[11px] text-stone-900">Show on Homepage</span>
+                            <span className="block text-[10px] text-stone-500">
+                              {col.slug === 'all' ? 'Toggle "ALL ENSEMBLES" card on homepage' : 'Display card in curated collection grid'}
+                            </span>
+                          </div>
+                          <input
+                            type="checkbox"
+                            checked={isHomepage}
+                            onChange={(e) => {
+                              const updatedCol = { ...col, visibleOnHomepage: e.target.checked };
+                              StorageService.updateCollection(col.id, { visibleOnHomepage: e.target.checked });
+                              onNotify(`Homepage visibility for "${col.name}" set to ${e.target.checked ? 'ON' : 'OFF'}`);
+                            }}
+                            className="w-4 h-4 accent-stone-900 cursor-pointer"
+                          />
+                        </div>
                       </div>
                     </div>
 
-                    <div className="p-4 space-y-2 text-xs">
-                      <p className="text-stone-600 line-clamp-2 leading-relaxed">
-                        {col.description || 'Signature collection crafted with exquisite embroidery and regal silhouettes.'}
-                      </p>
-                      <div className="pt-2 flex items-center justify-between text-[11px] text-stone-500 border-t border-stone-100">
-                        <span>Items: <strong>{col.productCount || 0}</strong></span>
-                        <a
-                          href={`#collection-${col.slug}`}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            window.open(`/?collection=${col.slug}`, '_blank');
-                          }}
-                          className="text-stone-700 hover:text-stone-900 flex items-center gap-1 font-medium hover:underline"
-                        >
-                          <span>Preview Link</span>
-                          <ExternalLink className="w-3 h-3" />
-                        </a>
-                      </div>
+                    <div className="p-3 bg-stone-50 border-t border-stone-200">
+                      <button
+                        type="button"
+                        onClick={() => setEditingCollection(col)}
+                        className="w-full py-2 bg-stone-900 hover:bg-stone-800 text-white rounded text-xs font-medium uppercase tracking-wider transition-colors cursor-pointer"
+                      >
+                        Edit Media, Banners & Details
+                      </button>
                     </div>
                   </div>
-
-                  <div className="p-3 bg-stone-50 border-t border-stone-200">
-                    <button
-                      type="button"
-                      onClick={() => setEditingCollection(col)}
-                      className="w-full py-2 bg-stone-900 hover:bg-stone-800 text-white rounded text-xs font-medium uppercase tracking-wider transition-colors cursor-pointer"
-                    >
-                      Edit Banner & Info
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
           </div>
 
           {/* Edit Collection Modal */}
           {editingCollection && (
             <div className="fixed inset-0 bg-stone-950/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in">
-              <div className="bg-white rounded-lg max-w-lg w-full p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+              <div className="bg-white rounded-lg max-w-xl w-full p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto">
                 <div className="flex items-center justify-between border-b border-stone-200 pb-3">
                   <div>
                     <span className="text-[10px] font-mono text-stone-400 uppercase tracking-widest block">Edit Collection</span>
@@ -234,48 +291,67 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
                     onClick={() => {
                       setEditingCollection(null);
                       setCollectionBannerFile(null);
+                      setCollectionMobileBannerFile(null);
                       setCollectionCardFile(null);
                     }}
-                    className="text-stone-400 hover:text-stone-900"
+                    className="text-stone-400 hover:text-stone-900 text-lg leading-none"
                   >
                     &times;
                   </button>
                 </div>
 
                 <form onSubmit={handleSaveCollection} className="space-y-4 text-xs">
-                  <div>
-                    <label className="block font-bold text-stone-800 mb-1">Collection Title</label>
-                    <input
-                      type="text"
-                      value={editingCollection.name}
-                      onChange={(e) => setEditingCollection({ ...editingCollection, name: e.target.value })}
-                      className="w-full p-2 border border-stone-300 rounded"
-                      required
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="sm:col-span-2">
+                      <label className="block font-bold text-stone-800 mb-1">Collection Title</label>
+                      <input
+                        type="text"
+                        value={editingCollection.name}
+                        onChange={(e) => setEditingCollection({ ...editingCollection, name: e.target.value })}
+                        className="w-full p-2 border border-stone-300 rounded"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-bold text-stone-800 mb-1">Canonical Order (1-6)</label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={6}
+                        value={editingCollection.order ?? 1}
+                        onChange={(e) => setEditingCollection({ ...editingCollection, order: Number(e.target.value) })}
+                        className="w-full p-2 border border-stone-300 rounded"
+                        required
+                      />
+                    </div>
                   </div>
 
                   <div>
-                    <label className="block font-bold text-stone-800 mb-1">Description</label>
+                    <label className="block font-bold text-stone-800 mb-1">Editorial Description</label>
                     <textarea
-                      rows={3}
+                      rows={2}
                       value={editingCollection.description || ''}
                       onChange={(e) => setEditingCollection({ ...editingCollection, description: e.target.value })}
                       className="w-full p-2 border border-stone-300 rounded"
                     />
                   </div>
 
-                  {/* Card Image Upload */}
+                  {/* 1. Card Image Upload */}
                   <div className="space-y-2 p-3 bg-stone-50 border border-stone-200 rounded">
-                    <label className="block font-bold text-stone-800">
-                      Collection Card Thumbnail (Portrait 4:5)
-                    </label>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-between">
+                      <label className="block font-bold text-stone-800">
+                        Homepage Card Image (Portrait 4:5)
+                      </label>
+                      <span className="text-[10px] text-stone-500 font-mono">Recommended: 1200 × 1500 px (4:5)</span>
+                    </div>
+
+                    <div className="flex items-start gap-3">
                       <img
-                        src={collectionCardFile ? URL.createObjectURL(collectionCardFile) : editingCollection.imageUrl}
+                        src={collectionCardFile ? URL.createObjectURL(collectionCardFile) : (editingCollection.imageUrl || editingCollection.image)}
                         alt="Card preview"
-                        className="w-14 h-18 object-cover rounded border border-stone-300 shrink-0"
+                        className="w-16 h-20 object-cover rounded border border-stone-300 shrink-0"
                       />
-                      <div className="space-y-1">
+                      <div className="space-y-2 flex-1">
                         <input
                           ref={cardInputRef}
                           type="file"
@@ -283,81 +359,243 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
                           onChange={(e) => setCollectionCardFile(e.target.files?.[0] || null)}
                           className="hidden"
                         />
-                        <button
-                          type="button"
-                          onClick={() => cardInputRef.current?.click()}
-                          className="px-3 py-1.5 bg-stone-900 text-white rounded text-[11px] font-medium"
-                        >
-                          Upload Card Photo from PC
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => cardInputRef.current?.click()}
+                            className="px-3 py-1.5 bg-stone-900 text-white rounded text-[11px] font-medium hover:bg-stone-800 cursor-pointer"
+                          >
+                            {collectionCardFile ? 'Replace Card Photo' : 'Upload Card Photo from PC'}
+                          </button>
+                          {(collectionCardFile || editingCollection.imageUrl) && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setCollectionCardFile(null);
+                                setEditingCollection({ ...editingCollection, imageUrl: '', image: '' });
+                              }}
+                              className="px-2.5 py-1.5 border border-stone-300 text-stone-700 hover:bg-stone-100 rounded text-[11px] cursor-pointer"
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
                         {collectionCardFile && (
                           <span className="block text-[10px] text-emerald-700 font-bold">Selected: {collectionCardFile.name}</span>
+                        )}
+                        <div>
+                          <label className="block text-[10px] text-stone-600 mb-0.5">Alt Text / SEO Description</label>
+                          <input
+                            type="text"
+                            value={editingCollection.altText || ''}
+                            onChange={(e) => setEditingCollection({ ...editingCollection, altText: e.target.value })}
+                            placeholder="e.g. GulPash New Arrivals — Embroidered Ensemble"
+                            className="w-full p-1.5 text-[11px] border border-stone-300 rounded"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 2. Collection Header Banner Controls */}
+                  <div className="space-y-3 p-3 bg-stone-50 border border-stone-200 rounded">
+                    <div className="flex items-center justify-between border-b border-stone-200 pb-2">
+                      <div>
+                        <strong className="block text-stone-900">Collection Header Banner</strong>
+                        <span className="text-[11px] text-stone-500">Displayed at the top of the collection landing page</span>
+                      </div>
+                      <label className="flex items-center gap-1.5 text-stone-800 font-bold cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={editingCollection.bannerEnabled ?? true}
+                          onChange={(e) => setEditingCollection({ ...editingCollection, bannerEnabled: e.target.checked })}
+                          className="w-4 h-4 accent-stone-900 cursor-pointer"
+                        />
+                        <span>Banner Enabled</span>
+                      </label>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-bold text-stone-800 mb-1">Banner Type</label>
+                        <select
+                          value={editingCollection.bannerType || 'image_text'}
+                          onChange={(e) => setEditingCollection({ ...editingCollection, bannerType: e.target.value as any })}
+                          className="w-full p-2 border border-stone-300 rounded"
+                        >
+                          <option value="image_text">Image + Text Overlay</option>
+                          <option value="image">Image Only (No Text Overlay)</option>
+                          <option value="text">Text Only (Dark Background)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block font-bold text-stone-800 mb-1">Banner Heading</label>
+                        <input
+                          type="text"
+                          value={editingCollection.bannerTitle || ''}
+                          onChange={(e) => setEditingCollection({ ...editingCollection, bannerTitle: e.target.value })}
+                          placeholder={editingCollection.name}
+                          className="w-full p-2 border border-stone-300 rounded"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block font-bold text-stone-800 mb-1">Banner Subtitle / Description</label>
+                      <input
+                        type="text"
+                        value={editingCollection.bannerSubtitle || ''}
+                        onChange={(e) => setEditingCollection({ ...editingCollection, bannerSubtitle: e.target.value })}
+                        placeholder={editingCollection.description || ''}
+                        className="w-full p-2 border border-stone-300 rounded"
+                      />
+                    </div>
+
+                    {/* Desktop Banner Image Upload */}
+                    <div className="space-y-1.5 pt-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-stone-800 text-[11px]">Desktop Header Banner</span>
+                        <span className="text-[10px] text-stone-500 font-mono">Recommended: 1920 × 600 px (16:5)</span>
+                      </div>
+                      <div className="space-y-2">
+                        {(collectionBannerFile || editingCollection.bannerDesktopImage || editingCollection.bannerUrl) && (
+                          <img
+                            src={collectionBannerFile ? URL.createObjectURL(collectionBannerFile) : (editingCollection.bannerDesktopImage || editingCollection.bannerUrl)}
+                            alt="Desktop Banner Preview"
+                            className="w-full h-20 object-cover rounded border border-stone-300"
+                          />
+                        )}
+                        <input
+                          ref={bannerInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => setCollectionBannerFile(e.target.files?.[0] || null)}
+                          className="hidden"
+                        />
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => bannerInputRef.current?.click()}
+                            className="px-3 py-1.5 bg-stone-900 text-white rounded text-[11px] font-medium hover:bg-stone-800 cursor-pointer"
+                          >
+                            {collectionBannerFile ? 'Replace Desktop Banner' : 'Upload Desktop Banner from PC'}
+                          </button>
+                          {(collectionBannerFile || editingCollection.bannerDesktopImage || editingCollection.bannerUrl) && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setCollectionBannerFile(null);
+                                setEditingCollection({ ...editingCollection, bannerDesktopImage: '', bannerUrl: '' });
+                              }}
+                              className="px-2.5 py-1.5 border border-stone-300 text-stone-700 hover:bg-stone-100 rounded text-[11px] cursor-pointer"
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
+                        {collectionBannerFile && (
+                          <span className="block text-[10px] text-emerald-700 font-bold">Selected: {collectionBannerFile.name}</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Mobile Banner Image Upload */}
+                    <div className="space-y-1.5 pt-1">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-stone-800 text-[11px]">Mobile Header Banner</span>
+                        <span className="text-[10px] text-stone-500 font-mono">Recommended: 1080 × 1350 px (4:5)</span>
+                      </div>
+                      <div className="space-y-2">
+                        {(collectionMobileBannerFile || editingCollection.bannerMobileImage) && (
+                          <img
+                            src={collectionMobileBannerFile ? URL.createObjectURL(collectionMobileBannerFile) : editingCollection.bannerMobileImage}
+                            alt="Mobile Banner Preview"
+                            className="w-24 h-24 object-cover rounded border border-stone-300"
+                          />
+                        )}
+                        <input
+                          ref={mobileBannerInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => setCollectionMobileBannerFile(e.target.files?.[0] || null)}
+                          className="hidden"
+                        />
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => mobileBannerInputRef.current?.click()}
+                            className="px-3 py-1.5 bg-stone-900 text-white rounded text-[11px] font-medium hover:bg-stone-800 cursor-pointer"
+                          >
+                            {collectionMobileBannerFile ? 'Replace Mobile Banner' : 'Upload Mobile Banner from PC'}
+                          </button>
+                          {(collectionMobileBannerFile || editingCollection.bannerMobileImage) && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setCollectionMobileBannerFile(null);
+                                setEditingCollection({ ...editingCollection, bannerMobileImage: '' });
+                              }}
+                              className="px-2.5 py-1.5 border border-stone-300 text-stone-700 hover:bg-stone-100 rounded text-[11px] cursor-pointer"
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
+                        {collectionMobileBannerFile && (
+                          <span className="block text-[10px] text-emerald-700 font-bold">Selected: {collectionMobileBannerFile.name}</span>
                         )}
                       </div>
                     </div>
                   </div>
 
-                  {/* Banner Image Upload */}
-                  <div className="space-y-2 p-3 bg-stone-50 border border-stone-200 rounded">
-                    <label className="block font-bold text-stone-800">
-                      Collection Header Banner (Landscape 16:9)
-                    </label>
-                    <div className="space-y-2">
-                      {(collectionBannerFile || editingCollection.bannerUrl) && (
-                        <img
-                          src={collectionBannerFile ? URL.createObjectURL(collectionBannerFile) : editingCollection.bannerUrl}
-                          alt="Banner preview"
-                          className="w-full h-24 object-cover rounded border border-stone-300"
-                        />
-                      )}
+                  {/* 3. Homepage & Storefront Visibility Toggles */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-3 bg-stone-50 border border-stone-200 rounded">
+                      <div>
+                        <strong className="block text-stone-900">Show on Homepage Collections Row</strong>
+                        <span className="text-[11px] text-stone-500">
+                          {editingCollection.slug === 'all'
+                            ? 'Toggle ON to display "ALL ENSEMBLES" card on the homepage collections grid.'
+                            : 'Display this collection card on the homepage curated showcase.'}
+                        </span>
+                      </div>
                       <input
-                        ref={bannerInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => setCollectionBannerFile(e.target.files?.[0] || null)}
-                        className="hidden"
+                        type="checkbox"
+                        checked={editingCollection.slug === 'all' ? (editingCollection.visibleOnHomepage === true) : (editingCollection.visibleOnHomepage !== false)}
+                        onChange={(e) => setEditingCollection({ ...editingCollection, visibleOnHomepage: e.target.checked })}
+                        className="w-4 h-4 accent-stone-900 cursor-pointer"
                       />
-                      <button
-                        type="button"
-                        onClick={() => bannerInputRef.current?.click()}
-                        className="px-3 py-1.5 bg-stone-900 text-white rounded text-[11px] font-medium"
-                      >
-                        Upload Header Banner from PC
-                      </button>
-                      {collectionBannerFile && (
-                        <span className="block text-[10px] text-emerald-700 font-bold">Selected: {collectionBannerFile.name}</span>
-                      )}
                     </div>
-                  </div>
 
-                  {/* Visibility toggle */}
-                  <div className="flex items-center justify-between p-3 bg-stone-50 border border-stone-200 rounded">
-                    <div>
-                      <strong className="block text-stone-900">Show on Storefront</strong>
-                      <span className="text-[11px] text-stone-500">Display this collection card on the homepage</span>
+                    <div className="flex items-center justify-between p-3 bg-stone-50 border border-stone-200 rounded">
+                      <div>
+                        <strong className="block text-stone-900">Active in Storefront Catalog</strong>
+                        <span className="text-[11px] text-stone-500">Enable this collection in shop filters and navigation</span>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={editingCollection.isVisible ?? true}
+                        onChange={(e) => setEditingCollection({ ...editingCollection, isVisible: e.target.checked })}
+                        className="w-4 h-4 accent-stone-900 cursor-pointer"
+                      />
                     </div>
-                    <input
-                      type="checkbox"
-                      checked={editingCollection.isVisible ?? true}
-                      onChange={(e) => setEditingCollection({ ...editingCollection, isVisible: e.target.checked })}
-                      className="w-4 h-4 accent-stone-900 cursor-pointer"
-                    />
                   </div>
 
                   <div className="flex justify-end gap-2 pt-2 border-t border-stone-200">
                     <button
                       type="button"
                       onClick={() => setEditingCollection(null)}
-                      className="px-4 py-2 border border-stone-300 rounded text-stone-700 hover:bg-stone-50"
+                      className="px-4 py-2 border border-stone-300 rounded text-stone-700 hover:bg-stone-50 cursor-pointer"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
                       disabled={uploadingColAsset}
-                      className="px-5 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded font-medium uppercase tracking-wider disabled:opacity-50"
+                      className="px-5 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded font-medium uppercase tracking-wider disabled:opacity-50 cursor-pointer"
                     >
-                      {uploadingColAsset ? 'Uploading & Saving...' : 'Save Collection'}
+                      {uploadingColAsset ? 'Uploading & Saving...' : 'Save Collection Changes'}
                     </button>
                   </div>
                 </form>
