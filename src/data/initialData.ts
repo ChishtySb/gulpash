@@ -7,7 +7,7 @@ export const INITIAL_CATEGORIES: Category[] = MIGRATED_CATEGORIES;
 // 2. AUTHORITATIVE MIGRATED COLLECTIONS (6 Collections from Source Catalog)
 export const INITIAL_COLLECTIONS: Collection[] = MIGRATED_COLLECTIONS;
 
-// 3. AUTHORITATIVE MIGRATED PRODUCTS (68 Products, 269 Variants, 397 Images)
+// 3. AUTHORITATIVE MIGRATED PRODUCTS (38 Products, 162 Variants, 220 Images)
 export const INITIAL_PRODUCTS: Product[] = MIGRATED_PRODUCTS;
 
 // 4. ORDERS (Initial sample order referencing verified migrated catalog)
@@ -29,18 +29,18 @@ export const INITIAL_ORDERS: Order[] = [
     items: [
       {
         productId: MIGRATED_PRODUCTS[0]?.id || 'prod-default',
-        title: MIGRATED_PRODUCTS[0]?.title || 'Plum 3Piece',
+        title: MIGRATED_PRODUCTS[0]?.title || 'Aazure 3Piece',
         size: 'Medium',
-        price: MIGRATED_PRODUCTS[0]?.price || 5499,
+        price: MIGRATED_PRODUCTS[0]?.price || 5999,
         quantity: 1,
         image: MIGRATED_PRODUCTS[0]?.images[0] || '',
-        sku: MIGRATED_PRODUCTS[0]?.sku || 'GP-10523493630267'
+        sku: MIGRATED_PRODUCTS[0]?.sku || 'GP-ANB-1'
       }
     ],
-    subtotal: MIGRATED_PRODUCTS[0]?.price || 5499,
+    subtotal: MIGRATED_PRODUCTS[0]?.price || 5999,
     shippingFee: 0,
     discount: 0,
-    total: MIGRATED_PRODUCTS[0]?.price || 5499,
+    total: MIGRATED_PRODUCTS[0]?.price || 5999,
     paymentMethod: 'Cash on Delivery (COD)',
     paymentStatus: 'Unpaid',
     status: 'Processing',

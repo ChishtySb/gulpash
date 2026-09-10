@@ -1,0 +1,74 @@
+[
+  {
+    "id": "4ca893b6-3d59-4256-86b9-81b25057c513",
+    "name": "BEST SELLING",
+    "slug": "best-selling",
+    "description": "Discover GulPash BEST SELLING. Handcrafted luxury silhouettes and signature designs.",
+    "image_url": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/17_22ba13c3-6eda-4dde-a515-e01030c718f6.png?v=1787217341",
+    "banner_url": null,
+    "display_order": 1,
+    "is_visible": true,
+    "created_at": "2026-09-06T13:41:59.472196+00:00",
+    "updated_at": "2026-09-06T13:41:59.472196+00:00"
+  },
+  {
+    "id": "d12a9e3b-e23b-4a89-80d5-6c2478bbfe89",
+    "name": "Co-Ords",
+    "slug": "co-ords",
+    "description": "Discover GulPash Co-Ords. Handcrafted luxury silhouettes and signature designs.",
+    "image_url": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/EidcollectionisavailablenowZimalbyModernmilaapGoandshoponlinefromwebsite_1.jpg?v=1771952830",
+    "banner_url": null,
+    "display_order": 2,
+    "is_visible": true,
+    "created_at": "2026-09-06T13:41:59.472196+00:00",
+    "updated_at": "2026-09-06T13:41:59.472196+00:00"
+  },
+  {
+    "id": "f743b288-d90c-42ad-882a-94a1df7a90b8",
+    "name": "Home",
+    "slug": "home",
+    "description": "Discover GulPash Home. Handcrafted luxury silhouettes and signature designs.",
+    "image_url": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/17_22ba13c3-6eda-4dde-a515-e01030c718f6.png?v=1787217341",
+    "banner_url": null,
+    "display_order": 3,
+    "is_visible": true,
+    "created_at": "2026-09-06T13:41:59.472196+00:00",
+    "updated_at": "2026-09-06T13:41:59.472196+00:00"
+  },
+  {
+    "id": "4ab60e51-dddb-433c-880c-d30909bcbcb3",
+    "name": "NEW ARRIVALS",
+    "slug": "new-arrivals",
+    "description": "Discover GulPash NEW ARRIVALS. Handcrafted luxury silhouettes and signature designs.",
+    "image_url": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/17_22ba13c3-6eda-4dde-a515-e01030c718f6.png?v=1787217341",
+    "banner_url": null,
+    "display_order": 4,
+    "is_visible": true,
+    "created_at": "2026-09-06T13:41:59.472196+00:00",
+    "updated_at": "2026-09-06T13:41:59.472196+00:00"
+  },
+  {
+    "id": "ac6105c8-44f9-4e59-85ab-8896de893627",
+    "name": "Trending Designs",
+    "slug": "short-length-article",
+    "description": "Discover GulPash Trending Designs. Handcrafted luxury silhouettes and signature designs.",
+    "image_url": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/17_22ba13c3-6eda-4dde-a515-e01030c718f6.png?v=1787217341",
+    "banner_url": null,
+    "display_order": 5,
+    "is_visible": true,
+    "created_at": "2026-09-06T13:41:59.472196+00:00",
+    "updated_at": "2026-09-06T13:41:59.472196+00:00"
+  },
+  {
+    "id": "e627afcf-c6cf-4c7e-809d-d2582a64ab48",
+    "name": "WINTER COLLECTION",
+    "slug": "winter-collection",
+    "description": "Discover GulPash WINTER COLLECTION. Handcrafted luxury silhouettes and signature designs.",
+    "image_url": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Mirana11thoct-1502_1000x_jpg.jpg?v=1767786202",
+    "banner_url": null,
+    "display_order": 6,
+    "is_visible": true,
+    "created_at": "2026-09-06T13:41:59.472196+00:00",
+    "updated_at": "2026-09-06T13:41:59.472196+00:00"
+  }
+]

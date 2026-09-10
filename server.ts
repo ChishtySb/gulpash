@@ -267,6 +267,47 @@ app.put('/api/settings', (req, res) => {
   }
 });
 
+// Products: Authoritative GulPash Anabya Catalog
+app.get('/api/products', (req, res) => {
+  try {
+    const productsPath = path.join(process.cwd(), 'src', 'data', 'migratedProducts.json');
+    if (fs.existsSync(productsPath)) {
+      const data = JSON.parse(fs.readFileSync(productsPath, 'utf8'));
+      res.json(data);
+    } else {
+      res.json([]);
+    }
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/categories', (req, res) => {
+  try {
+    const p = path.join(process.cwd(), 'src', 'data', 'migratedCategories.json');
+    if (fs.existsSync(p)) {
+      res.json(JSON.parse(fs.readFileSync(p, 'utf8')));
+    } else {
+      res.json([]);
+    }
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/collections', (req, res) => {
+  try {
+    const p = path.join(process.cwd(), 'src', 'data', 'migratedCollections.json');
+    if (fs.existsSync(p)) {
+      res.json(JSON.parse(fs.readFileSync(p, 'utf8')));
+    } else {
+      res.json([]);
+    }
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Orders: Store-wide persistent orders with authoritative shipping calculation
 app.get('/api/orders', (req, res) => {
   const orders = readOrders();
@@ -707,6 +748,9 @@ app.put('/api/notifications/read-all', (req, res) => {
 
 // ---------------- DEV & PROD SETUP ----------------
 async function start() {
+  // Direct local product image serving
+  app.use('/products', express.static(path.join(process.cwd(), 'public', 'products')));
+
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },

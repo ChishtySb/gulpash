@@ -1,6 +1,6 @@
 // Auto-generated GulPash Normalized Catalog Migration Layer
-// Authoritative snapshot from source: https://tawakalcloset.com/ -> https://gulpash.online/
-// Verified Products: 68, Variants: 269, Images: 397
+// Authoritative snapshot from source: https://anabyagarments.com/ -> https://gulpash.pk/
+// Verified Products: 38, Variants: 162, Images: 220
 
 import { Product, Category, Collection } from '../types';
 import migratedProductsJson from './migratedProducts.json';

@@ -565,7 +565,7 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
         </div>
       </section>
 
-      {/* 6. FREQUENTLY ASKED QUESTIONS (TAWAKAL CLOSET HOMEPAGE REPLICATION) */}
+      {/* 6. FREQUENTLY ASKED QUESTIONS */}
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
           <span className="text-[10px] uppercase tracking-[0.3em] text-stone-500 font-medium block">

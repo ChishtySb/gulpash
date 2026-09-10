@@ -60,7 +60,7 @@ export const MigrationReportView: React.FC<MigrationReportViewProps> = ({ onNavi
             Catalog Migration & Integrity Audit
           </h2>
           <p className="text-sm text-[#7A766F] mt-1 max-w-3xl">
-            Complete reconciliation between source <span className="font-mono text-[#1C1B1A]">tawakalcloset.com</span> and target <span className="font-mono text-[#1C1B1A]">gulpash.online</span>. Verified idempotent migration snapshot.
+            Complete reconciliation between source <span className="font-mono text-[#1C1B1A]">anabyagarments.com</span> and target <span className="font-mono text-[#1C1B1A]">gulpash.pk</span>. Verified idempotent migration snapshot.
           </p>
         </div>
 
@@ -298,7 +298,7 @@ export const MigrationReportView: React.FC<MigrationReportViewProps> = ({ onNavi
                   <div>
                     <div className="text-sm font-medium text-[#1C1B1A]">GulPash Central Branding & Domain</div>
                     <div className="text-xs text-[#7A766F] mt-0.5">
-                      Target domain <span className="font-mono text-[#1C1B1A]">gulpash.online</span> active, no legacy Tawakal branding in customer storefront.
+                      Target domain <span className="font-mono text-[#1C1B1A]">gulpash.pk</span> active, no foreign branding in customer storefront.
                     </div>
                   </div>
                 </div>
@@ -308,7 +308,7 @@ export const MigrationReportView: React.FC<MigrationReportViewProps> = ({ onNavi
         </div>
       )}
 
-      {/* TAB 2: ALL 68 PRODUCTS AUDIT TABLE */}
+      {/* TAB 2: ALL 38 PRODUCTS AUDIT TABLE */}
       {activeTab === 'products' && (
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-4 border border-[#E8E6E1] rounded-lg">
@@ -516,7 +516,7 @@ export const MigrationReportView: React.FC<MigrationReportViewProps> = ({ onNavi
               <div className="p-4 bg-[#FAF9F6] border border-[#E8E6E1] rounded">
                 <div className="text-xs uppercase tracking-wider font-semibold text-[#7A766F] mb-1">Storage Bucket</div>
                 <div className="font-mono text-sm text-[#1C1B1A]">product-images</div>
-                <div className="text-xs text-[#2E4A3D] mt-1">397 Objects Configured</div>
+                <div className="text-xs text-[#2E4A3D] mt-1">220 Objects Configured</div>
               </div>
               <div className="p-4 bg-[#FAF9F6] border border-[#E8E6E1] rounded">
                 <div className="text-xs uppercase tracking-wider font-semibold text-[#7A766F] mb-1">Storage Bucket</div>

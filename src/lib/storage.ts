@@ -15,9 +15,9 @@ import {
 } from './whatsapp';
 
 const KEYS = {
-  PRODUCTS: 'gulpash_products_v3_ref_aligned',
-  CATEGORIES: 'gulpash_categories_v2_migrated',
-  COLLECTIONS: 'gulpash_collections_v4_merchandised',
+  PRODUCTS: 'gulpash_products_v4_anabya',
+  CATEGORIES: 'gulpash_categories_v3_anabya',
+  COLLECTIONS: 'gulpash_collections_v5_anabya',
   ORDERS: 'gulpash_orders_v2_migrated',
   REVIEWS: 'gulpash_reviews_v2_migrated',
   CMS: 'gulpash_cms_v2_migrated',
@@ -44,7 +44,7 @@ export const StorageService = {
       let list: Product[] = data ? JSON.parse(data) : INITIAL_PRODUCTS;
       
       // Auto-heal if older dummy data exists or catalog size doesn't match migrated size
-      if (!list || list.length < 68 || list.some(p => p.id === 'gp-001')) {
+      if (!list || list.length !== 38 || list.some(p => p.id === 'gp-001' || p.sku?.startsWith('TAW-') || p.sku?.includes('10523493630267'))) {
         list = INITIAL_PRODUCTS;
         localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(list));
       }
@@ -319,6 +319,9 @@ export const StorageService = {
           p.collection === 'WINTER COLLECTION' ||
           p.collectionIds?.includes(col.id) ||
           p.tags?.includes('winter-collection') ||
+          p.tags?.includes('wintercollection') ||
+          p.fabric?.toLowerCase().includes('dhank') ||
+          p.fabric?.toLowerCase().includes('linen') ||
           p.fabric?.toLowerCase().includes('winter') || 
           p.fabric?.toLowerCase().includes('velvet')
         );
@@ -330,8 +333,11 @@ export const StorageService = {
           p.collection === 'CO-ORDS' ||
           p.collectionIds?.includes(col.id) ||
           p.tags?.includes('co-ords') ||
+          p.tags?.includes('coords-collection') ||
           p.title?.toLowerCase().includes('co-ord') || 
-          p.title?.toLowerCase().includes('coord')
+          p.title?.toLowerCase().includes('coord') ||
+          p.title?.toLowerCase().includes('2 pc') ||
+          p.title?.toLowerCase().includes('2-piece')
         );
         count = matches.length;
         pIds = matches.map(p => p.id);

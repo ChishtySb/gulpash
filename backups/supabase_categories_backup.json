@@ -1,0 +1,57 @@
+[
+  {
+    "id": "90151ef9-20ad-496b-8daf-eef1fb0a8aa9",
+    "name": "Unstitched / Stitched",
+    "slug": "unstitched-stitched",
+    "description": "GulPash luxury Unstitched / Stitched collection. Master-crafted Pakistani tailoring and premium textiles.",
+    "image_url": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/17_22ba13c3-6eda-4dde-a515-e01030c718f6.png?v=1787217341",
+    "display_order": 1,
+    "is_visible": true,
+    "created_at": "2026-09-06T13:41:59.472196+00:00",
+    "updated_at": "2026-09-06T13:41:59.472196+00:00"
+  },
+  {
+    "id": "b6f45e57-efe5-4094-8c75-91ca5cde1f1e",
+    "name": "Stitched",
+    "slug": "stitched",
+    "description": "GulPash luxury Stitched collection. Master-crafted Pakistani tailoring and premium textiles.",
+    "image_url": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/Mirana11thoct-1502_1000x_jpg.jpg?v=1767786202",
+    "display_order": 2,
+    "is_visible": true,
+    "created_at": "2026-09-06T13:41:59.472196+00:00",
+    "updated_at": "2026-09-06T13:41:59.472196+00:00"
+  },
+  {
+    "id": "eb8a2f48-1c92-495b-8a7f-2b18de2a8c6e",
+    "name": "woman",
+    "slug": "woman",
+    "description": "GulPash luxury woman collection. Master-crafted Pakistani tailoring and premium textiles.",
+    "image_url": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/MaaheZrmny-2623_jpg_1.png?v=1777640850",
+    "display_order": 3,
+    "is_visible": true,
+    "created_at": "2026-09-06T13:41:59.472196+00:00",
+    "updated_at": "2026-09-06T13:41:59.472196+00:00"
+  },
+  {
+    "id": "238b9607-7157-468b-82ad-49fd47f535f7",
+    "name": "Clothing",
+    "slug": "clothing",
+    "description": "GulPash luxury Clothing collection. Master-crafted Pakistani tailoring and premium textiles.",
+    "image_url": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/imgi_96_MSS-5751_3_fe45d47b-39a0-4cfb-8c50-73b86c82f29a_jpg.jpg?v=1777546756",
+    "display_order": 4,
+    "is_visible": true,
+    "created_at": "2026-09-06T13:41:59.472196+00:00",
+    "updated_at": "2026-09-06T13:41:59.472196+00:00"
+  },
+  {
+    "id": "182c6be1-75c0-406c-826f-770ab3725133",
+    "name": "3 Pieces",
+    "slug": "3-pieces",
+    "description": "GulPash luxury 3 Pieces collection. Master-crafted Pakistani tailoring and premium textiles.",
+    "image_url": "https://cdn.shopify.com/s/files/1/0935/5368/8891/files/IMG_20251101_002112_7ab25f69-918d-43f5-9ada-78b2ca914dfc_1.jpg?v=1769455005",
+    "display_order": 5,
+    "is_visible": true,
+    "created_at": "2026-09-06T13:41:59.472196+00:00",
+    "updated_at": "2026-09-06T13:41:59.472196+00:00"
+  }
+]
