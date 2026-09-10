@@ -61,8 +61,19 @@ class ChimePlayer {
 const chime = new ChimePlayer();
 
 export const NotificationService = {
+  // Subscription listener for reactive UI
+  subscribe(listener: () => void): () => void {
+    if (typeof window === 'undefined') return () => {};
+    window.addEventListener('gulpash_notifications_changed', listener);
+    return () => window.removeEventListener('gulpash_notifications_changed', listener);
+  },
+
   // Sound playback
   playSound() {
+    chime.play();
+  },
+
+  playOrderChime() {
     chime.play();
   },
 
@@ -77,6 +88,11 @@ export const NotificationService = {
     } catch {
       return 'denied';
     }
+  },
+
+  async requestBrowserPermission(): Promise<boolean> {
+    const perm = await this.requestPermission();
+    return perm === 'granted';
   },
 
   getPermissionStatus(): NotificationPermission {

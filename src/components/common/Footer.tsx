@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { StorageService } from '../../lib/storage';
 import { SiteSettings } from '../../types';
+import { resolveWhatsAppSettings, getWhatsAppUrl } from '../../lib/whatsapp';
 
 interface FooterProps {
   onNavigate: (view: string, param?: string) => void;
@@ -15,6 +16,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenTrackOrder }) 
   const [settings, setSettings] = useState<SiteSettings>(StorageService.getSettings());
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+
+  const waConfig = resolveWhatsAppSettings(settings);
 
   useEffect(() => {
     const handleUpdate = () => setSettings(StorageService.getSettings());
@@ -116,6 +119,22 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenTrackOrder }) 
                 <Phone className="w-4 h-4 text-stone-400 shrink-0" />
                 <span>Support: {settings.supportPhone} (Mon - Sat, 10am - 8pm PKT)</span>
               </p>
+              {waConfig.enabled && waConfig.showInFooter && (
+                <p className="flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-[#25D366] shrink-0" />
+                  <span>
+                    WhatsApp Concierge:{' '}
+                    <a
+                      href={getWhatsAppUrl(waConfig.destinationNumber, waConfig.defaultMessage)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-white underline decoration-stone-600 underline-offset-2 transition-colors"
+                    >
+                      {waConfig.number}
+                    </a>
+                  </span>
+                </p>
+              )}
               <p className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-stone-400 shrink-0" />
                 <span>{settings.contactEmail}</span>
@@ -201,16 +220,18 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenTrackOrder }) 
                   <Truck className="w-3.5 h-3.5 text-stone-400" /> Track Your Order
                 </button>
               </li>
-              <li>
-                <a 
-                  href={`https://wa.me/${settings.whatsappNumber}`}
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="hover:text-white transition-colors"
-                >
-                  WhatsApp Ordering Help
-                </a>
-              </li>
+              {waConfig.enabled && waConfig.showInFooter && (
+                <li>
+                  <a 
+                    href={getWhatsAppUrl(waConfig.destinationNumber, waConfig.defaultMessage)}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="hover:text-white transition-colors"
+                  >
+                    {waConfig.displayLabel} ({waConfig.number})
+                  </a>
+                </li>
+              )}
               <li>
                 <button 
                   onClick={() => onNavigate('shipping-policy')}

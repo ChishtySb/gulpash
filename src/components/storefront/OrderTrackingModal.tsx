@@ -6,6 +6,7 @@ import {
 import { StorageService } from '../../lib/storage';
 import { Order, CurrencyCode } from '../../types';
 import { formatPrice } from '../../lib/currency';
+import { resolveWhatsAppSettings, getWhatsAppUrl } from '../../lib/whatsapp';
 
 interface OrderTrackingModalProps {
   isOpen: boolean;
@@ -181,7 +182,27 @@ export const OrderTrackingModal: React.FC<OrderTrackingModalProps> = ({
               <div className="text-center py-6 text-xs text-[#777] bg-[#faf8f5] rounded border border-[#eee]">
                 <AlertCircle className="w-6 h-6 text-[#aa814d] mx-auto mb-2" />
                 <p className="font-semibold text-[#333]">No order found matching &ldquo;{query}&rdquo;</p>
-                <p className="mt-1">Please double check your order number or phone, or WhatsApp us at +92 321 8489999.</p>
+                {(() => {
+                  const waConfig = resolveWhatsAppSettings(StorageService.getSettings());
+                  if (waConfig.enabled && waConfig.showInOrderAssistance) {
+                    return (
+                      <p className="mt-1">
+                        Please double check your order number or phone, or contact{' '}
+                        <a
+                          href={getWhatsAppUrl(waConfig.destinationNumber, `Assalam o Alaikum, I need assistance tracking my GulPash order (Query: ${query})`)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-stone-900 underline font-semibold hover:text-[#aa814d]"
+                        >
+                          {waConfig.displayLabel} at {waConfig.number}
+                        </a>.
+                      </p>
+                    );
+                  }
+                  return (
+                    <p className="mt-1">Please double check your order number or phone, or contact customer support.</p>
+                  );
+                })()}
               </div>
             ) : (
               <div className="space-y-6">

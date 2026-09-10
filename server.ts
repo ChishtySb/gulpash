@@ -32,8 +32,20 @@ const DEFAULT_SETTINGS = {
   logoUrl: '',
   faviconUrl: '',
   contactEmail: 'care@gulpash.online',
-  whatsappNumber: '923218489999',
+  whatsappNumber: '03006392025',
   whatsappDefaultMessage: 'Assalam o Alaikum GulPash, I am inquiring about your luxury collection on gulpash.online',
+  whatsappAssistance: {
+    enabled: true,
+    number: '03006392025',
+    destinationNumber: '923006392025',
+    displayLabel: 'WhatsApp Assistance',
+    defaultMessage: 'Assalam o Alaikum GulPash, I am inquiring about your luxury collection on gulpash.online',
+    showFloatingButton: true,
+    showInHeader: true,
+    showInFooter: true,
+    showOnProductPages: true,
+    showInOrderAssistance: true
+  },
   supportPhone: '+92 42 3578 9922',
   address: 'Flagship Studio: 14-L, Mini Market, Gulberg II, Lahore, Pakistan',
   city: 'Lahore',
@@ -190,8 +202,27 @@ app.get('/api/health', (req, res) => {
 });
 
 // Settings: Store-wide persistent settings
-app.get('/api/settings', (req, res) => {
+app.get('/api/settings', async (req, res) => {
   const settings = readSettings();
+  // Ensure legacy numbers are replaced
+  if (!settings.whatsappNumber || settings.whatsappNumber.includes('8489999')) {
+    settings.whatsappNumber = '03006392025';
+  }
+  if (!settings.whatsappAssistance) {
+    settings.whatsappAssistance = {
+      enabled: true,
+      number: '03006392025',
+      destinationNumber: '923006392025',
+      displayLabel: 'WhatsApp Assistance',
+      defaultMessage: settings.whatsappDefaultMessage || 'Assalam o Alaikum GulPash, I am inquiring about your luxury collection on gulpash.online',
+      showFloatingButton: true,
+      showInHeader: true,
+      showInFooter: true,
+      showOnProductPages: true,
+      showInOrderAssistance: true
+    };
+  }
+
   res.json(settings);
 });
 
@@ -199,7 +230,37 @@ app.put('/api/settings', (req, res) => {
   try {
     const current = readSettings();
     const updated = { ...current, ...req.body, updatedAt: new Date().toISOString() };
+    
+    // Normalization of WhatsApp number
+    if (updated.whatsappAssistance?.number) {
+      const cleanDigits = updated.whatsappAssistance.number.replace(/\D/g, '');
+      let dest = cleanDigits;
+      if (cleanDigits.startsWith('03') && cleanDigits.length === 11) {
+        dest = '92' + cleanDigits.slice(1);
+      } else if (cleanDigits.startsWith('9203') && cleanDigits.length === 13) {
+        dest = '92' + cleanDigits.slice(3);
+      } else if (cleanDigits.startsWith('3') && cleanDigits.length === 10) {
+        dest = '92' + cleanDigits;
+      }
+      updated.whatsappAssistance.destinationNumber = dest;
+    }
+
     writeSettings(updated);
+
+    // Asynchronously synchronize with Supabase site_settings
+    const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://alzqexevrhcmzcluvatc.supabase.co';
+    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+    if (supabaseKey && updated.whatsappAssistance) {
+      import('@supabase/supabase-js').then(({ createClient }) => {
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        Promise.resolve(supabase.from('site_settings').upsert({
+          setting_key: 'whatsapp_assistance',
+          setting_value: updated.whatsappAssistance,
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'setting_key' })).catch(() => {});
+      }).catch(() => {});
+    }
+
     res.json({ success: true, settings: updated });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err.message });
@@ -282,7 +343,7 @@ app.post('/api/orders', (req, res) => {
     if (supabaseKey) {
       import('@supabase/supabase-js').then(({ createClient }) => {
         const supabase = createClient(supabaseUrl, supabaseKey);
-        supabase.from('orders').insert({
+        Promise.resolve(supabase.from('orders').insert({
           order_number: newOrder.orderNumber,
           customer_name: newOrder.customer?.fullName || 'Customer',
           customer_email: newOrder.customer?.email || 'care@gulpash.online',
@@ -296,7 +357,7 @@ app.post('/api/orders', (req, res) => {
           payment_method: newOrder.paymentMethod,
           payment_status: newOrder.paymentStatus || 'Unpaid',
           order_status: newOrder.status || 'Pending'
-        }).then(() => {}).catch(() => {});
+        })).catch(() => {});
       }).catch(() => {});
     }
 

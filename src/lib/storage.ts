@@ -7,6 +7,12 @@ import {
   INITIAL_ORDERS, INITIAL_REVIEWS, INITIAL_CMS, INITIAL_SETTINGS 
 } from '../data/initialData';
 import { NotificationService } from './notifications';
+import { 
+  resolveWhatsAppSettings, 
+  syncWhatsAppToSupabase, 
+  fetchWhatsAppFromSupabase,
+  DEFAULT_WHATSAPP_NUMBER_VISIBLE 
+} from './whatsapp';
 
 const KEYS = {
   PRODUCTS: 'gulpash_products_v3_ref_aligned',
@@ -625,6 +631,17 @@ export const StorageService = {
         settings.shipping.bankDetails = settings.shipping.bankDetails.replace('+92 321 8489999', 'our WhatsApp Concierge');
         changed = true;
       }
+
+      // WhatsApp assistance single source of truth & migration of legacy numbers
+      if (!settings.whatsappNumber || settings.whatsappNumber.includes('8489999')) {
+        settings.whatsappNumber = DEFAULT_WHATSAPP_NUMBER_VISIBLE;
+        changed = true;
+      }
+      if (!settings.whatsappAssistance || settings.whatsappAssistance.number?.includes('8489999')) {
+        settings.whatsappAssistance = resolveWhatsAppSettings(settings);
+        changed = true;
+      }
+
       if (settings.shipping) {
         if (settings.shipping.freeCodEnabled === undefined) {
           settings.shipping.freeCodEnabled = false;
@@ -681,20 +698,44 @@ export const StorageService = {
   },
 
   async fetchSettingsAsync(): Promise<SiteSettings> {
+    let settings = this.getSettings();
+
+    // 1. Attempt to fetch WhatsApp configuration from Supabase store settings
+    try {
+      const supabaseWhatsApp = await fetchWhatsAppFromSupabase();
+      if (supabaseWhatsApp) {
+        settings.whatsappAssistance = supabaseWhatsApp;
+        settings.whatsappNumber = supabaseWhatsApp.number;
+        settings.whatsappDefaultMessage = supabaseWhatsApp.defaultMessage;
+      }
+    } catch {
+      // Supabase fetch is resilient
+    }
+
+    // 2. Fetch authoritative settings from server
     try {
       const res = await fetch('/api/settings');
       if (res.ok) {
         const serverSettings = await res.json();
         if (serverSettings && serverSettings.payments) {
-          localStorage.setItem(KEYS.SETTINGS, JSON.stringify(serverSettings));
+          // If server had settings, merge with WhatsApp configuration
+          settings = {
+            ...settings,
+            ...serverSettings,
+            whatsappNumber: serverSettings.whatsappNumber?.includes('8489999')
+              ? DEFAULT_WHATSAPP_NUMBER_VISIBLE 
+              : (serverSettings.whatsappNumber || DEFAULT_WHATSAPP_NUMBER_VISIBLE),
+            whatsappAssistance: resolveWhatsAppSettings(serverSettings)
+          };
+          localStorage.setItem(KEYS.SETTINGS, JSON.stringify(settings));
           notifyChange('settings');
-          return serverSettings;
+          return settings;
         }
       }
     } catch (err) {
       console.warn('Could not fetch server settings, using cached:', err);
     }
-    return this.getSettings();
+    return settings;
   },
 
   saveSettings(settings: SiteSettings): void {
@@ -702,15 +743,27 @@ export const StorageService = {
       settings.shipping.codEnabled = settings.payments.cod.enabled;
       settings.shipping.bankTransferEnabled = settings.payments.bankTransfer.enabled;
     }
+
+    // Ensure whatsappAssistance is resolved and synchronized with whatsappNumber
+    const waConfig = resolveWhatsAppSettings(settings);
+    settings.whatsappAssistance = waConfig;
+    settings.whatsappNumber = waConfig.number;
+    settings.whatsappDefaultMessage = waConfig.defaultMessage;
+
     localStorage.setItem(KEYS.SETTINGS, JSON.stringify(settings));
     notifyChange('settings');
 
-    // Sync with server persistent storage (Req 5, 14)
+    // 1. Sync with server persistent storage
     fetch('/api/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(settings)
     }).catch(err => console.error('Failed to sync settings with server:', err));
+
+    // 2. Persist to Supabase site_settings table
+    syncWhatsAppToSupabase(waConfig).catch(err => {
+      console.warn('Supabase WhatsApp sync note:', err);
+    });
   },
 
   // CART

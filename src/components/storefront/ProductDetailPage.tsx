@@ -8,6 +8,7 @@ import { Product, CurrencyCode, ProductSize, Review } from '../../types';
 import { formatPrice } from '../../lib/currency';
 import { StorageService } from '../../lib/storage';
 import { ProductCard } from './ProductCard';
+import { resolveWhatsAppSettings, getWhatsAppUrl } from '../../lib/whatsapp';
 
 interface ProductDetailPageProps {
   product: Product;
@@ -152,9 +153,11 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
     setNewComment('');
   };
 
-  const whatsappInquiryUrl = `https://wa.me/${settings.whatsappNumber}?text=${encodeURIComponent(
+  const waConfig = resolveWhatsAppSettings(settings);
+  const whatsappInquiryUrl = getWhatsAppUrl(
+    waConfig.destinationNumber,
     `Assalam o Alaikum GulPash, I want to inquire about ${product.title} (SKU: ${product.sku}) priced at Rs. ${product.price}. Is size "${selectedSize}" in stock? Link: ${window.location.href}`
-  )}`;
+  );
 
   return (
     <div className="bg-[#FAF9F6] font-sans pb-20">
@@ -454,15 +457,17 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
               )}
 
               {/* WhatsApp Instant Inquiry */}
-              <a
-                href={whatsappInquiryUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 bg-stone-100 hover:bg-stone-200 border border-stone-300 text-stone-800 text-xs font-medium uppercase tracking-wider py-3.5 px-4 transition-all"
-              >
-                <MessageCircle className="w-4 h-4 text-emerald-600" />
-                <span>Inquire on WhatsApp (+92 321 8489999)</span>
-              </a>
+              {waConfig.enabled && waConfig.showOnProductPages && (
+                <a
+                  href={whatsappInquiryUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 bg-stone-100 hover:bg-stone-200 border border-stone-300 text-stone-800 text-xs font-medium uppercase tracking-wider py-3.5 px-4 transition-all cursor-pointer"
+                >
+                  <MessageCircle className="w-4 h-4 text-emerald-600" />
+                  <span>Inquire on WhatsApp ({waConfig.number})</span>
+                </a>
+              )}
 
               {/* Share link button */}
               <div className="flex justify-end pt-1">

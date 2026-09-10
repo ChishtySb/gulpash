@@ -12,6 +12,14 @@ import { StorageService } from '../../lib/storage';
 import { formatPrice } from '../../lib/currency';
 import { MigrationReportView } from './MigrationReportView';
 import { getSupabaseClient } from '../../lib/supabaseClient';
+import { 
+  resolveWhatsAppSettings, 
+  getWhatsAppUrl, 
+  normalizeWhatsAppDestination, 
+  DEFAULT_WHATSAPP_NUMBER_VISIBLE,
+  DEFAULT_WHATSAPP_LABEL,
+  DEFAULT_WHATSAPP_MESSAGE 
+} from '../../lib/whatsapp';
 
 interface AdminDashboardProps {
   onExitAdmin: () => void;
@@ -2338,53 +2346,231 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
                   </div>
                 </div>
 
-                {/* WhatsApp & Concierge */}
-                <div className="p-4 bg-[#f2faf4] border border-[#c4e8ce] rounded-sm space-y-4">
-                  <h3 className="font-bold text-xs uppercase tracking-wider text-[#1d6b38] flex items-center gap-1.5">
-                    WhatsApp Concierge Integration
-                  </h3>
+                {/* WhatsApp Assistance Center */}
+                {(() => {
+                  const waConfig = resolveWhatsAppSettings(settings);
+                  const destNumber = normalizeWhatsAppDestination(waConfig.number);
+                  const previewUrl = getWhatsAppUrl(destNumber, waConfig.defaultMessage);
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-bold text-[#333] mb-1">
-                        WhatsApp Number (with country code, no +) *
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={settings.whatsappNumber}
-                        onChange={(e) => setSettings({ ...settings, whatsappNumber: e.target.value })}
-                        placeholder="923218489999"
-                        className="w-full border border-[#ddd] bg-white p-2.5 text-xs rounded-xs font-mono focus:outline-hidden"
-                      />
-                    </div>
+                  const updateWhatsApp = (partial: Partial<typeof waConfig>) => {
+                    const updatedWa = { ...waConfig, ...partial };
+                    // If number changed, update destinationNumber as well
+                    if (partial.number !== undefined) {
+                      updatedWa.destinationNumber = normalizeWhatsAppDestination(partial.number);
+                    }
+                    setSettings({
+                      ...settings,
+                      whatsappNumber: updatedWa.number,
+                      whatsappDefaultMessage: updatedWa.defaultMessage,
+                      whatsappAssistance: updatedWa
+                    });
+                  };
 
-                    <div>
-                      <label className="block text-xs font-bold text-[#333] mb-1">
-                        Support Hotline Display Phone
-                      </label>
-                      <input
-                        type="text"
-                        value={settings.supportPhone}
-                        onChange={(e) => setSettings({ ...settings, supportPhone: e.target.value })}
-                        placeholder="+92 321 8489999"
-                        className="w-full border border-[#ddd] bg-white p-2.5 text-xs rounded-xs focus:outline-hidden"
-                      />
-                    </div>
+                  return (
+                    <div className="p-5 bg-[#f0f9f3] border border-[#b7e4c5] rounded-sm space-y-5">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#c8ebd2] pb-4">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                            <h3 className="font-bold text-sm uppercase tracking-wider text-[#14532d] flex items-center gap-2">
+                              <MessageCircle className="w-4 h-4 text-emerald-600" />
+                              WhatsApp Assistance Configuration
+                            </h3>
+                          </div>
+                          <p className="text-xs text-stone-600 mt-1">
+                            Single source of truth for customer concierge, ordering help, product inquiries, and automated sync with Supabase.
+                          </p>
+                        </div>
 
-                    <div className="sm:col-span-2">
-                      <label className="block text-xs font-bold text-[#333] mb-1">
-                        Default WhatsApp Message Template
-                      </label>
-                      <input
-                        type="text"
-                        value={settings.whatsappDefaultMessage}
-                        onChange={(e) => setSettings({ ...settings, whatsappDefaultMessage: e.target.value })}
-                        className="w-full border border-[#ddd] bg-white p-2.5 text-xs rounded-xs focus:outline-hidden"
-                      />
+                        {/* Master Toggle */}
+                        <div className="flex items-center gap-3 bg-white px-3 py-1.5 rounded border border-[#b7e4c5]">
+                          <span className="text-xs font-semibold text-stone-800">
+                            Assistance System:
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => updateWhatsApp({ enabled: !waConfig.enabled })}
+                            className={`px-3 py-1 rounded text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer ${
+                              waConfig.enabled
+                                ? 'bg-emerald-600 text-white'
+                                : 'bg-stone-200 text-stone-600'
+                            }`}
+                          >
+                            {waConfig.enabled ? 'Enabled' : 'Disabled'}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Primary Contact Details */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-bold text-stone-800 mb-1">
+                            WhatsApp Number (Visible to Customers) *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={waConfig.number}
+                            onChange={(e) => updateWhatsApp({ number: e.target.value })}
+                            placeholder="03006392025"
+                            className="w-full border border-stone-300 bg-white p-2.5 text-xs rounded-xs font-mono font-bold text-stone-900 focus:outline-hidden focus:border-emerald-600"
+                          />
+                          <span className="text-[10px] text-stone-500 mt-1 block">
+                            Displayed on storefront: <strong>{waConfig.number || '03006392025'}</strong>
+                          </span>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-stone-800 mb-1">
+                            Assistance Button / Link Label *
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={waConfig.displayLabel}
+                            onChange={(e) => updateWhatsApp({ displayLabel: e.target.value })}
+                            placeholder="WhatsApp Assistance"
+                            className="w-full border border-stone-300 bg-white p-2.5 text-xs rounded-xs font-medium text-stone-900 focus:outline-hidden focus:border-emerald-600"
+                          />
+                          <span className="text-[10px] text-stone-500 mt-1 block">
+                            Default: WhatsApp Assistance
+                          </span>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-bold text-stone-800 mb-1">
+                            Support Hotline (Voice Calls)
+                          </label>
+                          <input
+                            type="text"
+                            value={settings.supportPhone}
+                            onChange={(e) => setSettings({ ...settings, supportPhone: e.target.value })}
+                            placeholder="+92 42 3578 9922"
+                            className="w-full border border-stone-300 bg-white p-2.5 text-xs rounded-xs focus:outline-hidden"
+                          />
+                          <span className="text-[10px] text-stone-500 mt-1 block">
+                            Used for telephone hotlines in footer & policies
+                          </span>
+                        </div>
+
+                        <div className="sm:col-span-3">
+                          <label className="block text-xs font-bold text-stone-800 mb-1">
+                            Default WhatsApp Message Template
+                          </label>
+                          <input
+                            type="text"
+                            value={waConfig.defaultMessage}
+                            onChange={(e) => updateWhatsApp({ defaultMessage: e.target.value })}
+                            placeholder="Assalam o Alaikum GulPash, I am inquiring about your luxury collection on gulpash.online"
+                            className="w-full border border-stone-300 bg-white p-2.5 text-xs rounded-xs focus:outline-hidden focus:border-emerald-600"
+                          />
+                          <span className="text-[10px] text-stone-500 mt-1 block">
+                            Pre-filled in WhatsApp chat when customers tap assistance links.
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Storefront Placements */}
+                      <div className="bg-white p-4 rounded border border-[#c8ebd2] space-y-3">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-stone-800">
+                          Storefront Placements & Channels
+                        </h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                          <label className="flex items-center gap-2 p-2 border border-stone-200 rounded cursor-pointer hover:bg-stone-50">
+                            <input
+                              type="checkbox"
+                              checked={waConfig.showFloatingButton}
+                              onChange={(e) => updateWhatsApp({ showFloatingButton: e.target.checked })}
+                              className="rounded text-emerald-600 focus:ring-emerald-500"
+                            />
+                            <div>
+                              <span className="font-semibold block text-stone-800">Floating Button</span>
+                              <span className="text-[10px] text-stone-500">Bottom-right sticky launcher</span>
+                            </div>
+                          </label>
+
+                          <label className="flex items-center gap-2 p-2 border border-stone-200 rounded cursor-pointer hover:bg-stone-50">
+                            <input
+                              type="checkbox"
+                              checked={waConfig.showInHeader}
+                              onChange={(e) => updateWhatsApp({ showInHeader: e.target.checked })}
+                              className="rounded text-emerald-600 focus:ring-emerald-500"
+                            />
+                            <div>
+                              <span className="font-semibold block text-stone-800">Top Header Bar</span>
+                              <span className="text-[10px] text-stone-500">Desktop & mobile drawer</span>
+                            </div>
+                          </label>
+
+                          <label className="flex items-center gap-2 p-2 border border-stone-200 rounded cursor-pointer hover:bg-stone-50">
+                            <input
+                              type="checkbox"
+                              checked={waConfig.showInFooter}
+                              onChange={(e) => updateWhatsApp({ showInFooter: e.target.checked })}
+                              className="rounded text-emerald-600 focus:ring-emerald-500"
+                            />
+                            <div>
+                              <span className="font-semibold block text-stone-800">Footer Assistance</span>
+                              <span className="text-[10px] text-stone-500">Contact column & quick links</span>
+                            </div>
+                          </label>
+
+                          <label className="flex items-center gap-2 p-2 border border-stone-200 rounded cursor-pointer hover:bg-stone-50">
+                            <input
+                              type="checkbox"
+                              checked={waConfig.showOnProductPages}
+                              onChange={(e) => updateWhatsApp({ showOnProductPages: e.target.checked })}
+                              className="rounded text-emerald-600 focus:ring-emerald-500"
+                            />
+                            <div>
+                              <span className="font-semibold block text-stone-800">Product Inquiries</span>
+                              <span className="text-[10px] text-stone-500">Item details direct inquiry</span>
+                            </div>
+                          </label>
+
+                          <label className="flex items-center gap-2 p-2 border border-stone-200 rounded cursor-pointer hover:bg-stone-50 sm:col-span-2">
+                            <input
+                              type="checkbox"
+                              checked={waConfig.showInOrderAssistance}
+                              onChange={(e) => updateWhatsApp({ showInOrderAssistance: e.target.checked })}
+                              className="rounded text-emerald-600 focus:ring-emerald-500"
+                            />
+                            <div>
+                              <span className="font-semibold block text-stone-800">Order Tracking & Confirmation</span>
+                              <span className="text-[10px] text-stone-500">Dispatch confirmation & tracking assistance</span>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Live Link Verification & Preview */}
+                      <div className="bg-[#e7f6ec] p-3.5 rounded border border-[#b7e4c5] flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-stone-900">Computed Click-to-Chat URL:</span>
+                            <span className="font-mono text-[11px] bg-white px-2 py-0.5 rounded border border-[#b7e4c5] text-emerald-800">
+                              https://wa.me/{destNumber}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-stone-600">
+                            Click below to test your WhatsApp Assistance link live. Saves will automatically synchronize to Supabase database.
+                          </p>
+                        </div>
+
+                        <a
+                          href={previewUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#1ebd5b] text-white px-4 py-2 rounded font-bold text-xs shadow-xs transition-colors whitespace-nowrap cursor-pointer"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          <span>Test WhatsApp Link</span>
+                          <ExternalLink className="w-3 h-3 ml-0.5" />
+                        </a>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  );
+                })()}
 
                 {/* Contact Email & Atelier Address */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -6,6 +6,7 @@ import {
 import { StorageService } from '../../lib/storage';
 import { CurrencyCode, SiteSettings, HomepageCMS, Category } from '../../types';
 import { CURRENCY_RATES } from '../../lib/currency';
+import { resolveWhatsAppSettings, getWhatsAppUrl } from '../../lib/whatsapp';
 
 interface HeaderProps {
   currentView: string;
@@ -41,6 +42,8 @@ export const Header: React.FC<HeaderProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  const waConfig = resolveWhatsAppSettings(settings);
 
   useEffect(() => {
     const handleDataChange = () => {
@@ -152,15 +155,20 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 Track Order
               </button>
-              <span className="text-stone-600">•</span>
-              <a 
-                href={`https://wa.me/${settings.whatsappNumber}`}
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-stone-300 hover:text-white transition-colors flex items-center gap-1"
-              >
-                <Phone className="w-3 h-3 text-[#25D366]" /> WhatsApp Concierge
-              </a>
+              {waConfig.enabled && waConfig.showInHeader && (
+                <>
+                  <span className="text-stone-600">•</span>
+                  <a 
+                    href={getWhatsAppUrl(waConfig.destinationNumber, waConfig.defaultMessage)}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-stone-300 hover:text-white transition-colors flex items-center gap-1"
+                    title={`${waConfig.displayLabel}: ${waConfig.number}`}
+                  >
+                    <Phone className="w-3 h-3 text-[#25D366]" /> {waConfig.displayLabel}
+                  </a>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -385,19 +393,21 @@ export const Header: React.FC<HeaderProps> = ({
               </nav>
             </div>
 
-            <div className="pt-6 border-t border-stone-200 space-y-3">
-              <a 
-                href={`https://wa.me/${settings.whatsappNumber}`}
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white text-[11px] font-semibold py-3 px-4 tracking-widest uppercase"
-              >
-                <Phone className="w-3.5 h-3.5" /> WhatsApp Assistance
-              </a>
-              <p className="text-center text-[10px] uppercase tracking-wider text-stone-400">
-                Nationwide Delivery &bull; Cash on Delivery
-              </p>
-            </div>
+            {waConfig.enabled && waConfig.showInHeader && (
+              <div className="pt-6 border-t border-stone-200 space-y-3">
+                <a 
+                  href={getWhatsAppUrl(waConfig.destinationNumber, waConfig.defaultMessage)}
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white text-[11px] font-semibold py-3 px-4 tracking-widest uppercase cursor-pointer"
+                >
+                  <Phone className="w-3.5 h-3.5" /> {waConfig.displayLabel} ({waConfig.number})
+                </a>
+                <p className="text-center text-[10px] uppercase tracking-wider text-stone-400">
+                  Nationwide Delivery &bull; Cash on Delivery
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}

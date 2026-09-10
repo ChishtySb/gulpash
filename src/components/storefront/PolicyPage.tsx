@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft, ShieldCheck, Truck, RefreshCw, MapPin } from 'lucide-react';
 import { StorageService } from '../../lib/storage';
+import { resolveWhatsAppSettings, getWhatsAppUrl } from '../../lib/whatsapp';
 
 interface PolicyPageProps {
   type: 'shipping-policy' | 'exchange-policy' | 'privacy-policy' | 'about';
@@ -9,6 +10,7 @@ interface PolicyPageProps {
 
 export const PolicyPage: React.FC<PolicyPageProps> = ({ type, onNavigate }) => {
   const settings = StorageService.getSettings();
+  const waConfig = resolveWhatsAppSettings(settings);
 
   const renderContent = () => {
     switch (type) {
@@ -49,7 +51,20 @@ export const PolicyPage: React.FC<PolicyPageProps> = ({ type, onNavigate }) => {
               </div>
 
               <p>
-                If you have an urgent wedding or festive date, please notify our WhatsApp Concierge at <strong className="text-stone-900 font-medium">{settings.supportPhone}</strong> right after placing your order so we can arrange priority express handling.
+                If you have an urgent wedding or festive date, please notify our {waConfig.displayLabel} at{' '}
+                {waConfig.enabled ? (
+                  <a
+                    href={getWhatsAppUrl(waConfig.destinationNumber, 'Assalam o Alaikum, I placed an order with GulPash and need priority express handling for an urgent date.')}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-stone-900 font-medium underline hover:text-black"
+                  >
+                    {waConfig.number}
+                  </a>
+                ) : (
+                  <strong className="text-stone-900 font-medium">{settings.supportPhone}</strong>
+                )}{' '}
+                right after placing your order so we can arrange priority express handling.
               </p>
             </div>
           </div>
@@ -83,7 +98,20 @@ export const PolicyPage: React.FC<PolicyPageProps> = ({ type, onNavigate }) => {
               <div className="bg-stone-50 p-5 border border-stone-200 space-y-2">
                 <h3 className="font-medium text-sm text-stone-900 font-serif italic">How to Request an Exchange</h3>
                 <p>
-                  Simply send a WhatsApp message to <strong className="text-stone-900 font-medium">{settings.supportPhone}</strong> with your Order Number (e.g. GP-94825) and photos of the garment. Our support team will guide you through the return pickup or drop-off process promptly.
+                  Simply send a WhatsApp message to{' '}
+                  {waConfig.enabled ? (
+                    <a
+                      href={getWhatsAppUrl(waConfig.destinationNumber, 'Assalam o Alaikum, I would like to request an exchange for my GulPash order.')}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-stone-900 font-medium underline hover:text-black"
+                    >
+                      {waConfig.number}
+                    </a>
+                  ) : (
+                    <strong className="text-stone-900 font-medium">{settings.supportPhone}</strong>
+                  )}{' '}
+                  with your Order Number (e.g. GP-94825) and photos of the garment. Our support team will guide you through the return pickup or drop-off process promptly.
                 </p>
               </div>
             </div>
@@ -136,7 +164,21 @@ export const PolicyPage: React.FC<PolicyPageProps> = ({ type, onNavigate }) => {
               <div className="bg-stone-50 p-5 border border-stone-200 space-y-2">
                 <h3 className="font-medium text-sm text-stone-900 font-serif italic">Our Flagship Atelier</h3>
                 <p>{settings.address}</p>
-                <p>Email: {settings.contactEmail} &bull; WhatsApp: {settings.supportPhone}</p>
+                <p>
+                  Email: {settings.contactEmail} &bull; WhatsApp:{' '}
+                  {waConfig.enabled ? (
+                    <a
+                      href={getWhatsAppUrl(waConfig.destinationNumber, waConfig.defaultMessage)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-stone-900 font-medium underline hover:text-black"
+                    >
+                      {waConfig.number}
+                    </a>
+                  ) : (
+                    <span>{settings.supportPhone}</span>
+                  )}
+                </p>
               </div>
             </div>
           </div>

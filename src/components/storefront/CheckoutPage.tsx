@@ -10,6 +10,7 @@ import { CartItem, CurrencyCode, Order, PaymentMethod, SiteSettings } from '../.
 import { StorageService } from '../../lib/storage';
 import { formatPrice } from '../../lib/currency';
 import { NotificationService } from '../../lib/notifications';
+import { resolveWhatsAppSettings, getWhatsAppUrl } from '../../lib/whatsapp';
 
 interface CheckoutPageProps {
   items: CartItem[];
@@ -401,14 +402,14 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   // SUCCESS CONFIRMATION SCREEN
   if (placedOrder) {
     const isPlacedAdvance = placedOrder.paymentMethod !== 'Cash on Delivery (COD)';
-    const cleanPhone = (settings.whatsappNumber || '923218489999').replace(/\D/g, '');
+    const waConfig = resolveWhatsAppSettings(settings);
     
     // WhatsApp message with ACTUAL order information (Requirement 13)
     const whatsappOrderMessage = isPlacedAdvance
       ? `Assalam o Alaikum GulPash Atelier,\n\nHere are my payment details for Order #${placedOrder.orderNumber}:\n• Customer Name: ${placedOrder.customer.fullName}\n• Contact Phone: ${placedOrder.customer.phone}\n• Total Amount: PKR ${placedOrder.total.toLocaleString()}\n• Payment Method: ${placedOrder.paymentMethod}\n• Transaction / Ref #: ${placedOrder.paymentProof?.transactionReference || transactionReference || 'Receipt screenshot attached'}\n• City: ${placedOrder.customer.city}\n\nPlease find my payment confirmation attached for verification and dispatch. Shukriya!`
       : `Assalam o Alaikum GulPash Atelier,\n\nI have placed Cash on Delivery Order #${placedOrder.orderNumber} for PKR ${placedOrder.total.toLocaleString()}.\n• Customer Name: ${placedOrder.customer.fullName}\n• Phone: ${placedOrder.customer.phone}\n• Destination: ${placedOrder.customer.address}, ${placedOrder.customer.city}\n\nPlease confirm dispatch! Shukriya.`;
 
-    const whatsappOrderUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(whatsappOrderMessage)}`;
+    const whatsappOrderUrl = getWhatsAppUrl(waConfig.destinationNumber, whatsappOrderMessage);
 
     return (
       <div className="max-w-3xl mx-auto px-4 py-16 font-sans">
@@ -598,15 +599,17 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
           {/* Action buttons (WhatsApp with ACTUAL order info - Requirement 13) */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
-            <a
-              href={whatsappOrderUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto bg-[#25D366] hover:bg-[#1EBE5D] text-white text-xs font-bold uppercase tracking-wider py-3.5 px-6 flex items-center justify-center gap-2 rounded-xs transition-all shadow-sm"
-            >
-              <MessageCircle className="w-4 h-4" />
-              <span>{isPlacedAdvance ? 'Send Payment Details via WhatsApp' : 'Confirm Order on WhatsApp'}</span>
-            </a>
+            {waConfig.enabled && waConfig.showInOrderAssistance && (
+              <a
+                href={whatsappOrderUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto bg-[#25D366] hover:bg-[#1EBE5D] text-white text-xs font-bold uppercase tracking-wider py-3.5 px-6 flex items-center justify-center gap-2 rounded-xs transition-all shadow-sm cursor-pointer"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>{isPlacedAdvance ? 'Send Payment Details via WhatsApp' : 'Confirm Order on WhatsApp'}</span>
+              </a>
+            )}
 
             <button
               onClick={() => window.print()}
@@ -915,7 +918,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 
                 {paymentOptions.length === 0 ? (
                   <div className="p-4 bg-stone-50 border border-stone-300 text-center text-xs text-stone-600">
-                    Online checkout is currently undergoing routine maintenance. Please contact our WhatsApp concierge at +{settings.whatsappNumber || '923218489999'} to place your order directly.
+                    Online checkout is currently undergoing routine maintenance. Please contact our WhatsApp concierge at {resolveWhatsAppSettings(settings).number} to place your order directly.
                   </div>
                 ) : (
                   <div className="space-y-3">

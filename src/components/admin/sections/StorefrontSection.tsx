@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { Collection, CMSConfig, SiteSettings } from '../../../types';
 import { StorageService } from '../../../lib/storage';
+import { resolveWhatsAppSettings, getWhatsAppUrl, normalizeWhatsAppDestination } from '../../../lib/whatsapp';
 
 interface StorefrontSectionProps {
   collections: Collection[];
@@ -435,7 +436,7 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
                     const file = e.target.files?.[0];
                     if (!file) return;
                     setUploadingHeroMedia(true);
-                    const res = await StorageService.uploadMediaFile(file, 'hero-image', ['Homepage Hero Banner']);
+                    const res = await StorageService.uploadMediaFile(file, 'homepage-image', ['Homepage Hero Banner']);
                     if (res.url) {
                       setCmsConfig({
                         ...cmsConfig,
@@ -482,7 +483,7 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
                     const file = e.target.files?.[0];
                     if (!file) return;
                     setUploadingHeroMedia(true);
-                    const res = await StorageService.uploadMediaFile(file, 'hero-video', ['Homepage Runway Video']);
+                    const res = await StorageService.uploadMediaFile(file, 'homepage-video', ['Homepage Runway Video']);
                     if (res.url) {
                       setCmsConfig({
                         ...cmsConfig,
@@ -599,44 +600,106 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div>
-              <label className="block font-bold text-stone-800 mb-1">
-                Official WhatsApp Number (without +)
-              </label>
-              <input
-                type="text"
-                value={siteSettings.whatsappNumber || '923218489999'}
-                onChange={(e) => setSiteSettings({ ...siteSettings, whatsappNumber: e.target.value })}
-                className="w-full p-2.5 border border-stone-300 rounded font-mono"
-              />
-              <span className="text-[10px] text-stone-500">Format: 923218489999</span>
-            </div>
+          {(() => {
+            const waConfig = resolveWhatsAppSettings(siteSettings);
+            const destNumber = normalizeWhatsAppDestination(waConfig.number);
+            const testUrl = getWhatsAppUrl(destNumber, waConfig.defaultMessage);
 
-            <div>
-              <label className="block font-bold text-stone-800 mb-1">
-                Customer Support Email
-              </label>
-              <input
-                type="email"
-                value={siteSettings.email || 'orders@gulpash.pk'}
-                onChange={(e) => setSiteSettings({ ...siteSettings, email: e.target.value })}
-                className="w-full p-2.5 border border-stone-300 rounded"
-              />
-            </div>
+            return (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                  <div>
+                    <label className="block font-bold text-stone-800 mb-1">
+                      Visible WhatsApp Number *
+                    </label>
+                    <input
+                      type="text"
+                      value={waConfig.number}
+                      onChange={(e) => {
+                        const newNum = e.target.value;
+                        setSiteSettings({
+                          ...siteSettings,
+                          whatsappNumber: newNum,
+                          whatsappAssistance: {
+                            ...waConfig,
+                            number: newNum,
+                            destinationNumber: normalizeWhatsAppDestination(newNum)
+                          }
+                        });
+                      }}
+                      placeholder="03006392025"
+                      className="w-full p-2.5 border border-stone-300 rounded font-mono font-bold text-stone-900"
+                    />
+                    <span className="text-[10px] text-stone-500 mt-0.5 block">Visible customer format: 03006392025</span>
+                  </div>
 
-            <div className="md:col-span-2">
-              <label className="block font-bold text-stone-800 mb-1">
-                Flagship Studio Address
-              </label>
-              <input
-                type="text"
-                value={siteSettings.address || 'GulPash Haute Couture Studio, MM Alam Road, Gulberg III, Lahore, Pakistan'}
-                onChange={(e) => setSiteSettings({ ...siteSettings, address: e.target.value })}
-                className="w-full p-2.5 border border-stone-300 rounded"
-              />
-            </div>
-          </div>
+                  <div>
+                    <label className="block font-bold text-stone-800 mb-1">
+                      Button / Link Label
+                    </label>
+                    <input
+                      type="text"
+                      value={waConfig.displayLabel}
+                      onChange={(e) => {
+                        const newLabel = e.target.value;
+                        setSiteSettings({
+                          ...siteSettings,
+                          whatsappAssistance: {
+                            ...waConfig,
+                            displayLabel: newLabel
+                          }
+                        });
+                      }}
+                      placeholder="WhatsApp Assistance"
+                      className="w-full p-2.5 border border-stone-300 rounded"
+                    />
+                    <span className="text-[10px] text-stone-500 mt-0.5 block">Storefront label: WhatsApp Assistance</span>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-stone-800 mb-1">
+                      Customer Support Email
+                    </label>
+                    <input
+                      type="email"
+                      value={siteSettings.contactEmail || siteSettings.email || 'orders@gulpash.pk'}
+                      onChange={(e) => setSiteSettings({ ...siteSettings, contactEmail: e.target.value, email: e.target.value })}
+                      className="w-full p-2.5 border border-stone-300 rounded"
+                    />
+                    <span className="text-[10px] text-stone-500 mt-0.5 block">Official customer care inbox</span>
+                  </div>
+
+                  <div className="md:col-span-3">
+                    <label className="block font-bold text-stone-800 mb-1">
+                      Flagship Studio Address
+                    </label>
+                    <input
+                      type="text"
+                      value={siteSettings.address || 'GulPash Haute Couture Studio, MM Alam Road, Gulberg III, Lahore, Pakistan'}
+                      onChange={(e) => setSiteSettings({ ...siteSettings, address: e.target.value })}
+                      className="w-full p-2.5 border border-stone-300 rounded"
+                    />
+                  </div>
+                </div>
+
+                <div className="p-3 bg-[#eef8f1] border border-[#c4e8ce] rounded flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                  <div>
+                    <span className="font-bold text-stone-900 block">Click-to-Chat Destination: https://wa.me/{destNumber}</span>
+                    <span className="text-[11px] text-stone-600">Syncs directly to Supabase site_settings and triggers live updates across the storefront.</span>
+                  </div>
+                  <a
+                    href={testUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3.5 py-1.5 bg-[#25D366] hover:bg-[#1ebd5b] text-white font-bold rounded text-xs inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Phone className="w-3.5 h-3.5" />
+                    <span>Test WhatsApp Link</span>
+                  </a>
+                </div>
+              </>
+            );
+          })()}
 
           <div className="pt-4 border-t border-stone-200 flex justify-end">
             <button

@@ -64,6 +64,7 @@ export interface Product {
   sku: string;
   category: string; // e.g. "Unstitched / Stitched", "Stitched", etc.
   categoryId?: string;
+  categorySlug?: string;
   collection?: string;
   collectionSlug?: string;
   collectionIds?: string[];
@@ -74,6 +75,8 @@ export interface Product {
   stock: number;
   sizes: (ProductSize | string)[];
   fabric: string;
+  fabricDetails?: string;
+  pieceCount?: string;
   colors?: string[];
   tags: string[];
   images: string[];
@@ -230,6 +233,7 @@ export interface Order {
   paymentProof?: OrderPaymentProof;
   trackingNumber?: string;
   courierName?: string;
+  carrier?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -360,7 +364,9 @@ export interface AdminNotificationSettings {
 
 export type NotificationEventType = 
   | 'NEW_ORDER'
+  | 'ORDER_STATUS_CHANGED'
   | 'NEW_PAYMENT_PROOF'
+  | 'PAYMENT_PROOF_SUBMITTED'
   | 'PAYMENT_PROOF_RESUBMITTED'
   | 'PAYMENT_VERIFIED'
   | 'PAYMENT_ACTION_REQUIRED'
@@ -397,6 +403,19 @@ export interface MediaAsset {
   usedIn?: string[]; // e.g. ["TRENDING Collection Banner", "Product: Plum 3Piece"]
 }
 
+export interface WhatsAppAssistanceSettings {
+  enabled: boolean;
+  number: string; // Visible customer-facing number, e.g. "03006392025"
+  destinationNumber?: string; // Click-to-chat destination, e.g. "923006392025"
+  displayLabel: string; // e.g. "WhatsApp Assistance"
+  defaultMessage: string; // Editable message template
+  showFloatingButton: boolean; // Floating button ON / OFF
+  showInHeader: boolean; // Top header link ON / OFF
+  showInFooter: boolean; // Footer assistance link ON / OFF
+  showOnProductPages: boolean; // Product detail page inquiry button ON / OFF
+  showInOrderAssistance: boolean; // Order tracking / checkout assistance ON / OFF
+}
+
 export interface SiteSettings {
   brandName: string;
   tagline: string;
@@ -404,8 +423,9 @@ export interface SiteSettings {
   logoUrl: string;
   faviconUrl: string;
   contactEmail: string;
-  whatsappNumber: string; // e.g. "923001234567"
+  whatsappNumber: string; // Visible default: "03006392025"
   whatsappDefaultMessage: string;
+  whatsappAssistance?: WhatsAppAssistanceSettings;
   supportPhone: string;
   address: string;
   city: string;
