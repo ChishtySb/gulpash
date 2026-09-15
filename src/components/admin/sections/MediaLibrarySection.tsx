@@ -294,11 +294,13 @@ export const MediaLibrarySection: React.FC<MediaLibrarySectionProps> = ({ onNoti
                 onChange={(e) => setSelectedSpecKey(e.target.value)}
                 className="w-full p-2.5 border border-stone-300 rounded bg-stone-50 font-medium"
               >
-                {Object.keys(MEDIA_SPECS).map(k => (
-                  <option key={k} value={k}>
-                    {MEDIA_SPECS[k].label} ({MEDIA_SPECS[k].recommendedWidth} × {MEDIA_SPECS[k].recommendedHeight} px, {MEDIA_SPECS[k].aspectRatio})
-                  </option>
-                ))}
+                {Object.entries(MEDIA_SPECS)
+                  .filter(([_, spec], index, self) => self.findIndex(([, s]) => s.id === spec.id) === index)
+                  .map(([k, spec]) => (
+                    <option key={k} value={k}>
+                      {spec.label} ({spec.recommendedWidth} × {spec.recommendedHeight} px, {spec.aspectRatio})
+                    </option>
+                  ))}
               </select>
             </div>
 

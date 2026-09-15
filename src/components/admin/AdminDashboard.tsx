@@ -236,6 +236,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         {/* WORKSPACE CONTENT WRAPPED IN REACT ERROR BOUNDARY */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
           <AdminErrorBoundary 
+            key={`${activeSection}-${activeSubview}`}
             moduleName={`${activeSection.toUpperCase()} View`}
             onReset={() => handleNavigate('dashboard', 'overview')}
           >

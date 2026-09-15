@@ -32,9 +32,9 @@ const STOREFRONT_COLLECTIONS = [
 ];
 
 export const ProductsSection: React.FC<ProductsSectionProps> = ({
-  products,
-  categories,
-  collections,
+  products = [],
+  categories = [],
+  collections = [],
   subview,
   editingProduct,
   onSelectProductToEdit,
@@ -83,9 +83,9 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
       stock: 15,
       status: 'Active',
       isVisible: true,
-      category: categories[0]?.name || 'Luxury Pret',
-      categoryId: categories[0]?.id || 'cat-1',
-      categorySlug: categories[0]?.slug || 'luxury-pret',
+      category: categories?.[0]?.name || 'Luxury Pret',
+      categoryId: categories?.[0]?.id || 'cat-1',
+      categorySlug: categories?.[0]?.slug || 'luxury-pret',
       collectionNames: ['NEW ARRIVALS'],
       tags: [],
       fabricDetails: 'Pure Organza & Raw Silk 80g',

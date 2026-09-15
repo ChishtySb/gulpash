@@ -29,6 +29,13 @@ export class AdminErrorBoundary extends React.Component<Props, State> {
     this.setState({ errorInfo });
   }
 
+  public override componentDidUpdate(prevProps: Props) {
+    // Automatically clear error when switching to a different module
+    if (prevProps.moduleName !== this.props.moduleName && this.state.hasError) {
+      this.setState({ hasError: false, error: null, errorInfo: null });
+    }
+  }
+
   public handleReset = () => {
     this.setState({ hasError: false, error: null, errorInfo: null });
     if (this.props.onReset) {
@@ -42,14 +49,14 @@ export class AdminErrorBoundary extends React.Component<Props, State> {
         <div className="p-6 sm:p-8 max-w-3xl mx-auto my-8 bg-white border border-rose-200 rounded-xl shadow-sm font-sans">
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center shrink-0 text-rose-600">
-              <AlertTriangle className="w-6 h-6" />
+              <AlertTriangle className="w-6 h-6 shrink-0" aria-hidden="true" />
             </div>
             <div className="flex-1 min-w-0">
               <span className="text-[10px] font-bold uppercase tracking-widest text-rose-600 block mb-1">
                 Admin Error Recovery
               </span>
               <h2 className="text-lg font-bold text-stone-900">
-                {this.props.moduleName || 'Admin Module'} Encountered an Issue
+                {this.props.moduleName || 'Admin Module'} encountered an issue.
               </h2>
               <p className="text-xs text-stone-600 mt-1">
                 A rendering or runtime exception occurred in this admin panel view. Your database and existing storefront operations remain completely safe and untouched.
@@ -65,9 +72,9 @@ export class AdminErrorBoundary extends React.Component<Props, State> {
                 <button
                   type="button"
                   onClick={this.handleReset}
-                  className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold rounded-md flex items-center gap-2 transition-colors cursor-pointer"
+                  className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold rounded-md inline-flex items-center gap-2 transition-colors cursor-pointer"
                 >
-                  <RefreshCw className="w-3.5 h-3.5" />
+                  <RefreshCw className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
                   <span>Retry Module</span>
                 </button>
 
@@ -75,10 +82,10 @@ export class AdminErrorBoundary extends React.Component<Props, State> {
                   <button
                     type="button"
                     onClick={this.props.onReset}
-                    className="px-4 py-2 border border-stone-300 hover:bg-stone-100 text-stone-800 text-xs font-semibold rounded-md flex items-center gap-2 transition-colors cursor-pointer"
+                    className="px-4 py-2 border border-stone-300 hover:bg-stone-100 text-stone-800 text-xs font-semibold rounded-md inline-flex items-center gap-2 transition-colors cursor-pointer"
                   >
-                    <LayoutDashboard className="w-3.5 h-3.5" />
-                    <span>Return to Overview</span>
+                    <LayoutDashboard className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                    <span>Return to Dashboard</span>
                   </button>
                 )}
               </div>

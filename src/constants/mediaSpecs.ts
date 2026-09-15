@@ -188,5 +188,83 @@ export const MEDIA_SPECS: Record<string, MediaSpecification> = {
     mediaType: 'image',
     description: 'High-contrast cinematic campaign photograph for homepage luxury merchandising.',
     storageFolder: 'cms'
+  },
+
+  // OPEN GRAPH SOCIAL SHARE
+  OG_IMAGE: {
+    id: 'og_image',
+    label: 'Open Graph Social Share Image',
+    subLabel: 'Social media preview card for WhatsApp, Facebook, iMessage, and Twitter',
+    recommendedWidth: 1200,
+    recommendedHeight: 630,
+    aspectRatio: '1.91:1',
+    ratioValue: 1200 / 630, // 1.904
+    ratioTolerance: 0.15,
+    acceptedFormats: ['JPG', 'PNG', 'WebP'],
+    mediaType: 'image',
+    description: 'Crisp social preview banner ensuring luxury brand impact on WhatsApp and social chat cards.',
+    storageFolder: 'seo'
+  },
+
+  // BRAND LOGO & FAVICON
+  STORE_LOGO: {
+    id: 'store_logo',
+    label: 'Store Brand Logo',
+    subLabel: 'Primary brand insignia rendered in top header bar, footer, and printed invoices',
+    recommendedWidth: 600,
+    recommendedHeight: 180,
+    aspectRatio: '10:3',
+    ratioValue: 600 / 180,
+    ratioTolerance: 0.35,
+    acceptedFormats: ['PNG', 'WebP', 'SVG'],
+    mediaType: 'image',
+    description: 'Transparent PNG/SVG logo with horizontal orientation for luxury typography balance.',
+    storageFolder: 'brand'
+  },
+  STORE_FAVICON: {
+    id: 'store_favicon',
+    label: 'Browser Favicon',
+    subLabel: 'Browser tab bookmark emblem and mobile bookmark icon',
+    recommendedWidth: 64,
+    recommendedHeight: 64,
+    aspectRatio: '1:1',
+    ratioValue: 1.0,
+    ratioTolerance: 0.05,
+    acceptedFormats: ['PNG', 'ICO'],
+    mediaType: 'image',
+    description: 'Square monogram insignia. Bold, high-contrast icon visible in compact browser tabs.',
+    storageFolder: 'brand'
   }
 };
+
+// Aliases mapped for direct admin sections compatibility
+MEDIA_SPECS.HERO_DESKTOP = MEDIA_SPECS.HOMEPAGE_HERO_DESKTOP_IMAGE;
+MEDIA_SPECS.HERO_MOBILE = MEDIA_SPECS.HOMEPAGE_HERO_MOBILE_IMAGE;
+MEDIA_SPECS.HERO_VIDEO_DESKTOP = MEDIA_SPECS.HOMEPAGE_HERO_DESKTOP_VIDEO;
+MEDIA_SPECS.HERO_VIDEO_MOBILE = MEDIA_SPECS.HOMEPAGE_HERO_MOBILE_VIDEO;
+MEDIA_SPECS.HERO_DESKTOP_POSTER = MEDIA_SPECS.HOMEPAGE_HERO_DESKTOP_POSTER;
+MEDIA_SPECS.HERO_MOBILE_POSTER = MEDIA_SPECS.HOMEPAGE_HERO_MOBILE_POSTER;
+MEDIA_SPECS.COLLECTION_CARD = MEDIA_SPECS.COLLECTION_CARD_IMAGE;
+MEDIA_SPECS.COLLECTION_BANNER = MEDIA_SPECS.COLLECTION_DESKTOP_BANNER;
+MEDIA_SPECS.COLLECTION_BANNER_MOBILE = MEDIA_SPECS.COLLECTION_MOBILE_BANNER;
+MEDIA_SPECS.PROMO_BANNER_MID = MEDIA_SPECS.PROMOTIONAL_EDITORIAL_BANNER;
+
+export const DEFAULT_MEDIA_SPEC: MediaSpecification = {
+  id: 'default_spec',
+  label: 'Media File',
+  subLabel: 'Standard upload specification',
+  recommendedWidth: 1200,
+  recommendedHeight: 1500,
+  aspectRatio: '4:5',
+  ratioValue: 0.8,
+  ratioTolerance: 0.2,
+  acceptedFormats: ['WebP', 'JPG', 'PNG'],
+  mediaType: 'image',
+  description: 'Upload media asset',
+  storageFolder: 'general'
+};
+
+export function getMediaSpec(key?: string): MediaSpecification {
+  if (!key) return DEFAULT_MEDIA_SPEC;
+  return MEDIA_SPECS[key] || DEFAULT_MEDIA_SPEC;
+}

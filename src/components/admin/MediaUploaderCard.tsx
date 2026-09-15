@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Upload, X, RefreshCw, AlertTriangle, CheckCircle2, Video, Image as ImageIcon, Eye, ChevronDown, ChevronUp } from 'lucide-react';
-import { MediaSpecification } from '../../constants/mediaSpecs';
+import { Upload, X, RefreshCw, AlertTriangle, CheckCircle2, Video, Image as ImageIcon, ChevronDown, ChevronUp } from 'lucide-react';
+import { MediaSpecification, DEFAULT_MEDIA_SPEC } from '../../constants/mediaSpecs';
 import { StorageService } from '../../lib/storage';
 
 interface MediaUploaderCardProps {
-  spec: MediaSpecification;
+  spec?: MediaSpecification;
   currentUrl?: string;
   onUrlChange: (newUrl: string) => void;
   labelOverride?: string;
@@ -32,6 +32,7 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
   subLabelOverride,
   className = ''
 }) => {
+  const activeSpec = spec || DEFAULT_MEDIA_SPEC;
   const [uploading, setUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
   const [metadata, setMetadata] = useState<FileMetadata | null>(null);
@@ -51,11 +52,11 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
 
   // Inspect existing media to derive dimensions
   const inspectExistingMedia = (url: string) => {
-    if (spec.mediaType === 'image') {
+    if (activeSpec.mediaType === 'image') {
       const img = new Image();
       img.onload = () => {
         const ratio = img.naturalWidth / (img.naturalHeight || 1);
-        const diff = Math.abs(ratio - spec.ratioValue) / spec.ratioValue;
+        const diff = Math.abs(ratio - activeSpec.ratioValue) / (activeSpec.ratioValue || 1);
         setMetadata({
           width: img.naturalWidth,
           height: img.naturalHeight,
@@ -63,16 +64,16 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
           ratioValue: ratio,
           fileSize: 'Server Asset',
           format: url.split('.').pop()?.toUpperCase().split('?')[0] || 'IMG',
-          isRatioMatched: diff <= spec.ratioTolerance,
+          isRatioMatched: diff <= activeSpec.ratioTolerance,
           ratioDiffPercent: Math.round(diff * 100)
         });
       };
       img.src = url;
-    } else if (spec.mediaType === 'video') {
+    } else if (activeSpec.mediaType === 'video') {
       const video = document.createElement('video');
       video.onloadedmetadata = () => {
         const ratio = video.videoWidth / (video.videoHeight || 1);
-        const diff = Math.abs(ratio - spec.ratioValue) / spec.ratioValue;
+        const diff = Math.abs(ratio - activeSpec.ratioValue) / (activeSpec.ratioValue || 1);
         setMetadata({
           width: video.videoWidth,
           height: video.videoHeight,
@@ -81,7 +82,7 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
           fileSize: 'Server Video',
           format: url.split('.').pop()?.toUpperCase().split('?')[0] || 'MP4',
           duration: Math.round(video.duration),
-          isRatioMatched: diff <= spec.ratioTolerance,
+          isRatioMatched: diff <= activeSpec.ratioTolerance,
           ratioDiffPercent: Math.round(diff * 100)
         });
       };
@@ -101,7 +102,7 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
         format: file.type.split('/')[1]?.toUpperCase() || file.name.split('.').pop()?.toUpperCase() || ''
       };
 
-      if (spec.mediaType === 'image') {
+      if (activeSpec.mediaType === 'image') {
         const dimensions = await new Promise<{ width: number; height: number }>((resolve) => {
           const img = new Image();
           img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
@@ -110,17 +111,17 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
         });
 
         const ratio = dimensions.width / (dimensions.height || 1);
-        const diff = Math.abs(ratio - spec.ratioValue) / spec.ratioValue;
+        const diff = Math.abs(ratio - activeSpec.ratioValue) / (activeSpec.ratioValue || 1);
         measuredMeta = {
           ...measuredMeta,
           width: dimensions.width,
           height: dimensions.height,
           aspectRatio: `${dimensions.width}:${dimensions.height}`,
           ratioValue: ratio,
-          isRatioMatched: diff <= spec.ratioTolerance,
+          isRatioMatched: diff <= activeSpec.ratioTolerance,
           ratioDiffPercent: Math.round(diff * 100)
         };
-      } else if (spec.mediaType === 'video') {
+      } else if (activeSpec.mediaType === 'video') {
         const vidInfo = await new Promise<{ width: number; height: number; duration: number }>((resolve) => {
           const video = document.createElement('video');
           video.onloadedmetadata = () => resolve({
@@ -133,7 +134,7 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
         });
 
         const ratio = vidInfo.width / (vidInfo.height || 1);
-        const diff = Math.abs(ratio - spec.ratioValue) / spec.ratioValue;
+        const diff = Math.abs(ratio - activeSpec.ratioValue) / (activeSpec.ratioValue || 1);
         measuredMeta = {
           ...measuredMeta,
           width: vidInfo.width,
@@ -141,7 +142,7 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
           aspectRatio: `${vidInfo.width}:${vidInfo.height}`,
           ratioValue: ratio,
           duration: vidInfo.duration,
-          isRatioMatched: diff <= spec.ratioTolerance,
+          isRatioMatched: diff <= activeSpec.ratioTolerance,
           ratioDiffPercent: Math.round(diff * 100)
         };
       }
@@ -149,12 +150,12 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
       setMetadata(measuredMeta as FileMetadata);
 
       // Upload permanently to Supabase Storage via StorageService
-      const category = (spec.storageFolder === 'hero' ? 'homepage-image' :
-                        spec.storageFolder === 'collection-banners' ? 'collection-banner' :
-                        spec.storageFolder === 'collection-cards' ? 'collection-image' :
-                        spec.storageFolder === 'product-videos' ? 'product-video' : 'product-image') as any;
+      const category = (activeSpec.storageFolder === 'hero' ? 'homepage-image' :
+                        activeSpec.storageFolder === 'collection-banners' ? 'collection-banner' :
+                        activeSpec.storageFolder === 'collection-cards' ? 'collection-image' :
+                        activeSpec.storageFolder === 'product-videos' ? 'product-video' : 'product-image') as any;
 
-      const res = await StorageService.uploadMediaFile(file, category, [spec.label]);
+      const res = await StorageService.uploadMediaFile(file, category, [activeSpec.label]);
       if (res.url) {
         onUrlChange(res.url);
         setManualUrl(res.url);
@@ -188,21 +189,21 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 pb-2 border-b border-stone-200">
         <div>
           <h4 className="text-xs font-bold uppercase tracking-wider text-stone-900 flex items-center gap-1.5">
-            {spec.mediaType === 'video' ? <Video className="w-3.5 h-3.5 text-stone-600" /> : <ImageIcon className="w-3.5 h-3.5 text-stone-600" />}
-            {labelOverride || spec.label}
+            {activeSpec.mediaType === 'video' ? <Video className="w-3.5 h-3.5 text-stone-600" aria-hidden="true" /> : <ImageIcon className="w-3.5 h-3.5 text-stone-600" aria-hidden="true" />}
+            {labelOverride || activeSpec.label}
           </h4>
           <p className="text-[11px] text-stone-500">
-            {subLabelOverride || spec.subLabel || spec.description}
+            {subLabelOverride || activeSpec.subLabel || activeSpec.description}
           </p>
         </div>
 
         {/* Prominent Spec Pill */}
         <div className="inline-flex items-center gap-2 bg-stone-900 text-white px-2.5 py-1 rounded-sm text-[10px] font-mono tracking-tight shrink-0 self-start sm:self-auto">
-          <span>{spec.recommendedWidth} × {spec.recommendedHeight} px</span>
+          <span>{activeSpec.recommendedWidth} × {activeSpec.recommendedHeight} px</span>
           <span className="text-stone-400">•</span>
-          <span className="font-semibold text-amber-300">{spec.aspectRatio}</span>
+          <span className="font-semibold text-amber-300">{activeSpec.aspectRatio}</span>
           <span className="text-stone-400">•</span>
-          <span className="text-stone-300">{spec.acceptedFormats.join('/')}</span>
+          <span className="text-stone-300">{activeSpec.acceptedFormats.join('/')}</span>
         </div>
       </div>
 
@@ -211,7 +212,7 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
         <div className="space-y-3">
           {/* Media Preview Frame */}
           <div className="relative group bg-stone-900 rounded-md overflow-hidden border border-stone-300">
-            {spec.mediaType === 'video' ? (
+            {activeSpec.mediaType === 'video' ? (
               <video
                 src={currentUrl}
                 controls
@@ -220,7 +221,7 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
             ) : (
               <img
                 src={currentUrl}
-                alt={labelOverride || spec.label}
+                alt={labelOverride || activeSpec.label}
                 className="w-full max-h-56 object-contain mx-auto bg-stone-950"
               />
             )}
@@ -234,7 +235,7 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
                 className="px-2.5 py-1 bg-white/90 hover:bg-white text-stone-900 rounded text-[11px] font-semibold flex items-center gap-1 shadow-md cursor-pointer transition-colors"
                 title="Replace from PC"
               >
-                <RefreshCw className={`w-3 h-3 ${uploading ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-3 h-3 ${uploading ? 'animate-spin' : ''}`} aria-hidden="true" />
                 <span>Replace</span>
               </button>
               <button
@@ -243,7 +244,7 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
                 className="p-1 bg-rose-600/90 hover:bg-rose-600 text-white rounded shadow-md cursor-pointer transition-colors"
                 title="Remove Media"
               >
-                <X className="w-3.5 h-3.5" />
+                <X className="w-3.5 h-3.5" aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -254,9 +255,9 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
               metadata.isRatioMatched ? 'bg-emerald-50 border border-emerald-200 text-emerald-900' : 'bg-amber-50 border border-amber-200 text-amber-900'
             }`}>
               {metadata.isRatioMatched ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" aria-hidden="true" />
               ) : (
-                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" aria-hidden="true" />
               )}
               <div className="space-y-0.5 flex-1">
                 <div className="flex items-center justify-between font-mono text-[11px]">
@@ -267,11 +268,11 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
                 </div>
                 {metadata.isRatioMatched ? (
                   <p className="text-[11px] text-emerald-700 font-medium">
-                    ✓ Recommended {spec.aspectRatio} canvas ratio matched perfectly.
+                    ✓ Recommended {activeSpec.aspectRatio} canvas ratio matched perfectly.
                   </p>
                 ) : (
                   <p className="text-[11px] text-amber-800">
-                    ⚠ Recommended ratio is <strong>{spec.aspectRatio}</strong> ({spec.recommendedWidth} × {spec.recommendedHeight} px). 
+                    ⚠ Recommended ratio is <strong>{activeSpec.aspectRatio}</strong> ({activeSpec.recommendedWidth} × {activeSpec.recommendedHeight} px). 
                     The storefront container will preserve presentation via object-cover, which may crop outer edges.
                   </p>
                 )}
@@ -294,7 +295,7 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
         >
           <div className="space-y-2">
             <div className="w-10 h-10 mx-auto rounded-full bg-stone-100 flex items-center justify-center text-stone-600">
-              <Upload className="w-5 h-5" />
+              <Upload className="w-5 h-5" aria-hidden="true" />
             </div>
             <div>
               <button
@@ -302,15 +303,15 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
                 disabled={uploading}
                 className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-md text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-2 shadow-xs cursor-pointer"
               >
-                {uploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+                {uploading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" aria-hidden="true" /> : <Upload className="w-3.5 h-3.5" aria-hidden="true" />}
                 <span>{uploading ? 'Uploading to Supabase...' : 'Upload From PC'}</span>
               </button>
               <p className="text-[11px] text-stone-500 mt-1.5">
-                or drag and drop your {spec.mediaType} file here
+                or drag and drop your {activeSpec.mediaType} file here
               </p>
             </div>
             <div className="text-[10px] text-stone-400 font-mono pt-1">
-              Canvas: {spec.recommendedWidth} × {spec.recommendedHeight} px ({spec.aspectRatio}) • {spec.acceptedFormats.join(', ')}
+              Canvas: {activeSpec.recommendedWidth} × {activeSpec.recommendedHeight} px ({activeSpec.aspectRatio}) • {activeSpec.acceptedFormats.join(', ')}
             </div>
           </div>
         </div>
@@ -320,7 +321,7 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
       <input
         ref={fileInputRef}
         type="file"
-        accept={spec.mediaType === 'video' ? 'video/mp4,video/webm' : 'image/jpeg,image/png,image/webp'}
+        accept={activeSpec.mediaType === 'video' ? 'video/mp4,video/webm' : 'image/jpeg,image/png,image/webp'}
         onChange={(e) => {
           if (e.target.files && e.target.files[0]) {
             handleFile(e.target.files[0]);
@@ -336,7 +337,7 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
           onClick={() => setShowAdvancedUrl(!showAdvancedUrl)}
           className="text-[11px] text-stone-500 hover:text-stone-800 flex items-center gap-1 cursor-pointer font-medium"
         >
-          {showAdvancedUrl ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+          {showAdvancedUrl ? <ChevronUp className="w-3 h-3" aria-hidden="true" /> : <ChevronDown className="w-3 h-3" aria-hidden="true" />}
           <span>{showAdvancedUrl ? 'Hide' : 'Show'} Advanced / External URL Override</span>
         </button>
 
