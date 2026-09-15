@@ -2,7 +2,7 @@
 // Authoritative snapshot from source: https://anabyagarments.com/ -> https://gulpash.pk/
 // Verified Products: 38, Variants: 162, Images: 220
 
-import { Product, Category, Collection } from '../types';
+import { Product, Category, Collection } from '../types/index.ts';
 import migratedProductsJson from './migratedProducts.json';
 import migratedCategoriesJson from './migratedCategories.json';
 import migratedCollectionsJson from './migratedCollections.json';

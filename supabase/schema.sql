@@ -163,9 +163,10 @@ CREATE TABLE IF NOT EXISTS public.orders (
   shipping_fee NUMERIC(10,2) DEFAULT 0,
   discount NUMERIC(10,2) DEFAULT 0,
   total NUMERIC(10,2) NOT NULL,
-  payment_method TEXT NOT NULL CHECK (payment_method IN ('Cash on Delivery (COD)', 'Direct Bank Transfer', 'Card Payment')),
-  payment_status TEXT DEFAULT 'Unpaid' CHECK (payment_status IN ('Unpaid', 'Paid')),
+  payment_method TEXT NOT NULL,
+  payment_status TEXT DEFAULT 'Unpaid' CHECK (payment_status IN ('Unpaid', 'Paid', 'Under Verification', 'Rejected')),
   order_status TEXT DEFAULT 'Pending' CHECK (order_status IN ('Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned')),
+  payment_proof JSONB,
   tracking_number TEXT,
   courier_name TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -280,23 +281,23 @@ CREATE POLICY "Public can create order items" ON public.order_items FOR INSERT W
 
 -- Admin has full read/write access to all tables
 DROP POLICY IF EXISTS "Admins full access to categories" ON public.categories;
-CREATE POLICY "Admins full access to categories" ON public.categories FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
+CREATE POLICY "Admins full access to categories" ON public.categories FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk' OR auth.jwt() ->> 'email' LIKE '%@gulpash.online' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
 DROP POLICY IF EXISTS "Admins full access to collections" ON public.collections;
-CREATE POLICY "Admins full access to collections" ON public.collections FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
+CREATE POLICY "Admins full access to collections" ON public.collections FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk' OR auth.jwt() ->> 'email' LIKE '%@gulpash.online' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
 DROP POLICY IF EXISTS "Admins full access to products" ON public.products;
-CREATE POLICY "Admins full access to products" ON public.products FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
+CREATE POLICY "Admins full access to products" ON public.products FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk' OR auth.jwt() ->> 'email' LIKE '%@gulpash.online' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
 DROP POLICY IF EXISTS "Admins full access to product_variants" ON public.product_variants;
-CREATE POLICY "Admins full access to product_variants" ON public.product_variants FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
+CREATE POLICY "Admins full access to product_variants" ON public.product_variants FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk' OR auth.jwt() ->> 'email' LIKE '%@gulpash.online' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
 DROP POLICY IF EXISTS "Admins full access to product_categories" ON public.product_categories;
-CREATE POLICY "Admins full access to product_categories" ON public.product_categories FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
+CREATE POLICY "Admins full access to product_categories" ON public.product_categories FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk' OR auth.jwt() ->> 'email' LIKE '%@gulpash.online' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
 DROP POLICY IF EXISTS "Admins full access to product_collections" ON public.product_collections;
-CREATE POLICY "Admins full access to product_collections" ON public.product_collections FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
+CREATE POLICY "Admins full access to product_collections" ON public.product_collections FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk' OR auth.jwt() ->> 'email' LIKE '%@gulpash.online' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
 DROP POLICY IF EXISTS "Admins full access to orders" ON public.orders;
-CREATE POLICY "Admins full access to orders" ON public.orders FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
+CREATE POLICY "Admins full access to orders" ON public.orders FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk' OR auth.jwt() ->> 'email' LIKE '%@gulpash.online' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
 DROP POLICY IF EXISTS "Admins full access to CMS" ON public.homepage_cms;
-CREATE POLICY "Admins full access to CMS" ON public.homepage_cms FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
+CREATE POLICY "Admins full access to CMS" ON public.homepage_cms FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk' OR auth.jwt() ->> 'email' LIKE '%@gulpash.online' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
 DROP POLICY IF EXISTS "Admins full access to settings" ON public.site_settings;
-CREATE POLICY "Admins full access to settings" ON public.site_settings FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk');
+CREATE POLICY "Admins full access to settings" ON public.site_settings FOR ALL USING (auth.jwt() ->> 'email' LIKE '%@gulpash.pk' OR auth.jwt() ->> 'email' LIKE '%@gulpash.online' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
 
 -- ==========================================================
 -- STORAGE BUCKETS SETUP & POLICIES
@@ -306,25 +307,47 @@ INSERT INTO storage.buckets (id, name, public) VALUES ('hero-images', 'hero-imag
 INSERT INTO storage.buckets (id, name, public) VALUES ('hero-videos', 'hero-videos', true) ON CONFLICT (id) DO UPDATE SET public = true;
 INSERT INTO storage.buckets (id, name, public) VALUES ('category-images', 'category-images', true) ON CONFLICT (id) DO UPDATE SET public = true;
 INSERT INTO storage.buckets (id, name, public) VALUES ('site-assets', 'site-assets', true) ON CONFLICT (id) DO UPDATE SET public = true;
+INSERT INTO storage.buckets (id, name, public) VALUES ('payment-proofs', 'payment-proofs', false) ON CONFLICT (id) DO UPDATE SET public = false;
 
--- Storage RLS Policies
+-- Public Storage Objects (Images & Videos)
 DROP POLICY IF EXISTS "Public can view storage objects" ON storage.objects;
-CREATE POLICY "Public can view storage objects" ON storage.objects FOR SELECT USING (bucket_id IN ('product-images', 'hero-images', 'hero-videos', 'category-images', 'site-assets'));
+CREATE POLICY "Public can view storage objects" ON storage.objects FOR SELECT USING (
+  bucket_id IN ('product-images', 'hero-images', 'hero-videos', 'category-images', 'site-assets')
+);
 
+-- Admin Media Uploads
 DROP POLICY IF EXISTS "Admins can upload storage objects" ON storage.objects;
 CREATE POLICY "Admins can upload storage objects" ON storage.objects FOR INSERT WITH CHECK (
   bucket_id IN ('product-images', 'hero-images', 'hero-videos', 'category-images', 'site-assets') 
-  AND auth.jwt() ->> 'email' LIKE '%@gulpash.pk'
+  AND (auth.jwt() ->> 'email' LIKE '%@gulpash.pk' OR auth.jwt() ->> 'email' LIKE '%@gulpash.online' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin')
 );
 
 DROP POLICY IF EXISTS "Admins can update storage objects" ON storage.objects;
 CREATE POLICY "Admins can update storage objects" ON storage.objects FOR UPDATE USING (
   bucket_id IN ('product-images', 'hero-images', 'hero-videos', 'category-images', 'site-assets') 
-  AND auth.jwt() ->> 'email' LIKE '%@gulpash.pk'
+  AND (auth.jwt() ->> 'email' LIKE '%@gulpash.pk' OR auth.jwt() ->> 'email' LIKE '%@gulpash.online' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin')
 );
 
 DROP POLICY IF EXISTS "Admins can delete storage objects" ON storage.objects;
 CREATE POLICY "Admins can delete storage objects" ON storage.objects FOR DELETE USING (
   bucket_id IN ('product-images', 'hero-images', 'hero-videos', 'category-images', 'site-assets') 
-  AND auth.jwt() ->> 'email' LIKE '%@gulpash.pk'
+  AND (auth.jwt() ->> 'email' LIKE '%@gulpash.pk' OR auth.jwt() ->> 'email' LIKE '%@gulpash.online' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin')
+);
+
+-- Payment Proofs Private Storage Policies
+DROP POLICY IF EXISTS "Public can upload payment proofs" ON storage.objects;
+CREATE POLICY "Public can upload payment proofs" ON storage.objects FOR INSERT WITH CHECK (
+  bucket_id = 'payment-proofs'
+);
+
+DROP POLICY IF EXISTS "Admins can view payment proofs" ON storage.objects;
+CREATE POLICY "Admins can view payment proofs" ON storage.objects FOR SELECT USING (
+  bucket_id = 'payment-proofs' 
+  AND (auth.jwt() ->> 'email' LIKE '%@gulpash.pk' OR auth.jwt() ->> 'email' LIKE '%@gulpash.online' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin')
+);
+
+DROP POLICY IF EXISTS "Admins can manage payment proofs" ON storage.objects;
+CREATE POLICY "Admins can manage payment proofs" ON storage.objects FOR ALL USING (
+  bucket_id = 'payment-proofs' 
+  AND (auth.jwt() ->> 'email' LIKE '%@gulpash.pk' OR auth.jwt() ->> 'email' LIKE '%@gulpash.online' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin')
 );

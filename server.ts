@@ -2,29 +2,26 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
+import { createClient } from '@supabase/supabase-js';
 
 const app = express();
 const PORT = 3000;
 const HOST = '0.0.0.0';
 
+// Supabase backend configuration
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://alzqexevrhcmzcluvatc.supabase.co';
+const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseServer = (SUPABASE_URL && SUPABASE_ANON_KEY)
+  ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: false }
+    })
+  : null;
+
 // Limit to 50mb for receipt screenshot uploads
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Ensure data directories exist
-const DATA_DIR = path.join(process.cwd(), 'data');
-const PROOFS_DIR = path.join(DATA_DIR, 'proofs');
-const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
-const ORDERS_FILE = path.join(DATA_DIR, 'orders.json');
-
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-}
-if (!fs.existsSync(PROOFS_DIR)) {
-  fs.mkdirSync(PROOFS_DIR, { recursive: true });
-}
-
-// Initial fallback settings if file doesn't exist yet
+// Initial fallback settings if not loaded yet
 const DEFAULT_SETTINGS = {
   brandName: 'GulPash',
   tagline: 'Luxury Pakistani Women Fashion & Haute Couture',
@@ -100,181 +97,256 @@ const DEFAULT_SETTINGS = {
   }
 };
 
-// Helper read/write functions
-function readSettings() {
-  try {
-    if (fs.existsSync(SETTINGS_FILE)) {
-      const data = fs.readFileSync(SETTINGS_FILE, 'utf-8');
-      return JSON.parse(data);
-    }
-  } catch (err) {
-    console.error('Failed reading settings.json:', err);
+// ---------------- IN-MEMORY DURABLE RUNTIME STATE ----------------
+// Production target: VERCEL RUNTIME FILESYSTEM BUSINESS DATA = ZERO
+// All dynamic business data is served from memory and synchronized directly with Supabase Postgres & Storage.
+let serverSettings: any = { ...DEFAULT_SETTINGS };
+let serverOrders: any[] = [];
+let serverProducts: any[] = [];
+let serverCollections: any[] = [];
+let serverCategories: any[] = [];
+let serverCMS: any = null;
+let serverMediaAssets: any[] = [];
+let serverNotifications: any[] = [];
+const serverPaymentProofs = new Map<string, { buffer: Buffer; mimeType: string; extension: string }>();
+const serverMediaFiles = new Map<string, { buffer: Buffer; mimeType: string }>();
+
+// Read static baseline catalogues once at startup into memory
+try {
+  const pPath = path.join(process.cwd(), 'src', 'data', 'migratedProducts.json');
+  if (fs.existsSync(pPath)) {
+    serverProducts = JSON.parse(fs.readFileSync(pPath, 'utf-8'));
   }
-  // Initialize file
-  try {
-    fs.writeFileSync(SETTINGS_FILE, JSON.stringify(DEFAULT_SETTINGS, null, 2), 'utf-8');
-  } catch (e) {}
-  return DEFAULT_SETTINGS;
+} catch (e) {}
+
+try {
+  const cPath = path.join(process.cwd(), 'src', 'data', 'migratedCollections.json');
+  if (fs.existsSync(cPath)) {
+    serverCollections = JSON.parse(fs.readFileSync(cPath, 'utf-8'));
+  }
+} catch (e) {}
+
+try {
+  const catPath = path.join(process.cwd(), 'src', 'data', 'migratedCategories.json');
+  if (fs.existsSync(catPath)) {
+    serverCategories = JSON.parse(fs.readFileSync(catPath, 'utf-8'));
+  }
+} catch (e) {}
+
+// Hydrate from Supabase Postgres on boot (Supabase as Canonical Source of Truth)
+if (supabaseServer) {
+  (async () => {
+    try {
+      const { data: dbSettings } = await supabaseServer.from('site_settings').select('*').eq('setting_key', 'general_settings').single();
+      if (dbSettings?.setting_value) {
+        serverSettings = { ...serverSettings, ...dbSettings.setting_value };
+      }
+    } catch (e) {}
+
+    try {
+      const { data: dbProducts } = await supabaseServer.from('products').select('*, product_variants(*), product_images(*)');
+      if (dbProducts && dbProducts.length > 0) {
+        serverProducts = dbProducts.map((p: any) => {
+          const sortedImgs = (p.product_images || []).sort((a: any, b: any) => (a.display_order ?? 0) - (b.display_order ?? 0));
+          const images = sortedImgs.map((img: any) => img.image_url);
+          const variants = (p.product_variants || []).sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0));
+          return {
+            id: p.id,
+            title: p.title,
+            slug: p.slug,
+            description: p.description,
+            shortDescription: p.short_description,
+            sku: p.sku,
+            category: p.category_name,
+            categoryId: p.category_id,
+            collection: p.collection_name,
+            collectionId: p.collection_id,
+            price: Number(p.price),
+            compareAtPrice: p.compare_at_price ? Number(p.compare_at_price) : null,
+            costPrice: p.cost_price ? Number(p.cost_price) : undefined,
+            stock: Number(p.stock),
+            sizes: p.sizes || ['Unstitched', 'S', 'M', 'L', 'XL'],
+            fabric: p.fabric,
+            colors: p.colors || [],
+            tags: p.tags || [],
+            images: images.length > 0 ? images : ['https://cdn.shopify.com/s/files/1/0935/5368/8891/files/17_22ba13c3-6eda-4dde-a515-e01030c718f6.png?v=1787217341'],
+            variants: variants.map((v: any) => ({
+              id: v.id,
+              title: v.title,
+              size: v.size,
+              color: v.color,
+              fabric: v.fabric,
+              sku: v.sku,
+              price: Number(v.price),
+              compareAtPrice: v.compare_at_price ? Number(v.compare_at_price) : null,
+              available: v.available,
+              stock: Number(v.stock),
+              position: v.position
+            })),
+            status: p.is_visible ? 'Active' : 'Archived',
+            isVisible: p.is_visible,
+            isFeatured: p.is_featured,
+            isBestSeller: p.is_best_seller,
+            isNewArrival: p.is_new_arrival,
+            isSoldOut: p.is_sold_out,
+            rating: Number(p.rating) || 5,
+            reviewCount: Number(p.review_count) || 0,
+            details: p.details || {},
+            createdAt: p.created_at,
+            updatedAt: p.updated_at
+          };
+        });
+        console.log(`[Supabase Boot] Loaded & mapped ${serverProducts.length} products from Supabase Postgres`);
+      }
+    } catch (e) {}
+
+    try {
+      const { data: dbCollections } = await supabaseServer.from('collections').select('*').order('display_order', { ascending: true });
+      if (dbCollections && dbCollections.length > 0) {
+        serverCollections = dbCollections.map((c: any) => ({
+          id: c.id,
+          name: c.name,
+          slug: c.slug,
+          description: c.description || '',
+          imageUrl: c.image_url || '',
+          bannerUrl: c.banner_url || '',
+          displayOrder: c.display_order,
+          isVisible: c.is_visible
+        }));
+      }
+    } catch (e) {}
+
+    try {
+      const { data: dbCategories } = await supabaseServer.from('categories').select('*').order('display_order', { ascending: true });
+      if (dbCategories && dbCategories.length > 0) {
+        serverCategories = dbCategories.map((cat: any) => ({
+          id: cat.id,
+          name: cat.name,
+          slug: cat.slug,
+          description: cat.description || '',
+          imageUrl: cat.image_url || '',
+          displayOrder: cat.display_order,
+          isVisible: cat.is_visible
+        }));
+      }
+    } catch (e) {}
+
+    try {
+      const { data: dbOrders } = await supabaseServer.from('orders').select('*, order_items(*)').order('created_at', { ascending: false });
+      if (dbOrders && dbOrders.length > 0) {
+        serverOrders = dbOrders.map((o: any) => ({
+          id: o.id,
+          orderNumber: o.order_number,
+          customer: {
+            fullName: o.customer_name,
+            email: o.customer_email,
+            phone: o.customer_phone,
+            whatsapp: o.customer_whatsapp,
+            address: o.address,
+            apartment: o.apartment,
+            city: o.city,
+            province: o.province,
+            postalCode: o.postal_code
+          },
+          items: (o.order_items || []).map((it: any) => ({
+            productId: it.product_id,
+            productTitle: it.product_title,
+            size: it.size,
+            color: it.color,
+            quantity: it.quantity,
+            price: Number(it.price),
+            subtotal: Number(it.subtotal),
+            sku: it.sku,
+            imageUrl: it.image_url
+          })),
+          subtotal: Number(o.subtotal),
+          shippingFee: Number(o.shipping_fee),
+          discount: Number(o.discount || 0),
+          total: Number(o.total),
+          paymentMethod: o.payment_method,
+          paymentStatus: o.payment_status,
+          status: o.order_status,
+          createdAt: o.created_at,
+          updatedAt: o.updated_at
+        }));
+      }
+    } catch (e) {}
+  })();
+}
+
+function readSettings() {
+  return serverSettings;
 }
 
 function writeSettings(settings: any) {
-  fs.writeFileSync(SETTINGS_FILE, JSON.stringify(settings, null, 2), 'utf-8');
+  serverSettings = { ...serverSettings, ...settings };
+  if (supabaseServer) {
+    Promise.resolve(supabaseServer.from('site_settings').upsert({
+      setting_key: 'general_settings',
+      setting_value: serverSettings,
+      updated_at: new Date().toISOString()
+    })).catch((err: any) => console.warn('Supabase settings sync error:', err?.message));
+  }
 }
 
 function readOrders(): any[] {
-  try {
-    if (fs.existsSync(ORDERS_FILE)) {
-      const data = fs.readFileSync(ORDERS_FILE, 'utf-8');
-      return JSON.parse(data);
-    }
-  } catch (err) {
-    console.error('Failed reading orders.json:', err);
-  }
-  return [];
+  return serverOrders;
 }
 
 function writeOrders(orders: any[]) {
-  fs.writeFileSync(ORDERS_FILE, JSON.stringify(orders, null, 2), 'utf-8');
+  serverOrders = orders;
 }
 
-// Products, Collections, Categories, and CMS persistent files
-const PRODUCTS_FILE = path.join(DATA_DIR, 'products.json');
-const CMS_FILE = path.join(DATA_DIR, 'cms.json');
-const COLLECTIONS_FILE = path.join(DATA_DIR, 'collections.json');
-const CATEGORIES_FILE = path.join(DATA_DIR, 'categories.json');
-
 function readProducts(): any[] {
-  try {
-    if (fs.existsSync(PRODUCTS_FILE)) {
-      const content = fs.readFileSync(PRODUCTS_FILE, 'utf-8');
-      const parsed = JSON.parse(content);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (err) {
-    console.error('Failed reading products.json:', err);
-  }
-  const fallbackPath = path.join(process.cwd(), 'src', 'data', 'migratedProducts.json');
-  if (fs.existsSync(fallbackPath)) {
-    const list = JSON.parse(fs.readFileSync(fallbackPath, 'utf-8'));
-    writeProducts(list);
-    return list;
-  }
-  return [];
+  return serverProducts;
 }
 
 function writeProducts(products: any[]) {
-  fs.writeFileSync(PRODUCTS_FILE, JSON.stringify(products, null, 2), 'utf-8');
+  serverProducts = products;
 }
 
 function readCollections(): any[] {
-  try {
-    if (fs.existsSync(COLLECTIONS_FILE)) {
-      const content = fs.readFileSync(COLLECTIONS_FILE, 'utf-8');
-      const parsed = JSON.parse(content);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (err) {
-    console.error('Failed reading collections.json:', err);
-  }
-  const fallbackPath = path.join(process.cwd(), 'src', 'data', 'migratedCollections.json');
-  if (fs.existsSync(fallbackPath)) {
-    const list = JSON.parse(fs.readFileSync(fallbackPath, 'utf-8'));
-    writeCollections(list);
-    return list;
-  }
-  return [];
+  return serverCollections;
 }
 
 function writeCollections(collections: any[]) {
-  fs.writeFileSync(COLLECTIONS_FILE, JSON.stringify(collections, null, 2), 'utf-8');
+  serverCollections = collections;
 }
 
 function readCategories(): any[] {
-  try {
-    if (fs.existsSync(CATEGORIES_FILE)) {
-      const content = fs.readFileSync(CATEGORIES_FILE, 'utf-8');
-      const parsed = JSON.parse(content);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
-      }
-    }
-  } catch (err) {
-    console.error('Failed reading categories.json:', err);
-  }
-  const fallbackPath = path.join(process.cwd(), 'src', 'data', 'migratedCategories.json');
-  if (fs.existsSync(fallbackPath)) {
-    const list = JSON.parse(fs.readFileSync(fallbackPath, 'utf-8'));
-    writeCategories(list);
-    return list;
-  }
-  return [];
+  return serverCategories;
 }
 
 function writeCategories(categories: any[]) {
-  fs.writeFileSync(CATEGORIES_FILE, JSON.stringify(categories, null, 2), 'utf-8');
+  serverCategories = categories;
 }
 
 function readCMS(): any {
-  try {
-    if (fs.existsSync(CMS_FILE)) {
-      return JSON.parse(fs.readFileSync(CMS_FILE, 'utf-8'));
-    }
-  } catch (err) {
-    console.error('Failed reading cms.json:', err);
-  }
-  return null;
+  return serverCMS;
 }
 
 function writeCMS(cms: any) {
-  fs.writeFileSync(CMS_FILE, JSON.stringify(cms, null, 2), 'utf-8');
-}
-
-// Media Assets management
-const MEDIA_DIR = path.join(DATA_DIR, 'media');
-const MEDIA_FILE = path.join(DATA_DIR, 'media_assets.json');
-const NOTIFICATIONS_FILE = path.join(DATA_DIR, 'notifications.json');
-
-if (!fs.existsSync(MEDIA_DIR)) {
-  fs.mkdirSync(MEDIA_DIR, { recursive: true });
+  serverCMS = cms;
 }
 
 function readMediaAssets(): any[] {
-  try {
-    if (fs.existsSync(MEDIA_FILE)) {
-      return JSON.parse(fs.readFileSync(MEDIA_FILE, 'utf-8'));
-    }
-  } catch (e) {}
-  return [];
+  return serverMediaAssets;
 }
 
 function writeMediaAssets(assets: any[]) {
-  try {
-    fs.writeFileSync(MEDIA_FILE, JSON.stringify(assets, null, 2), 'utf-8');
-  } catch (e) {}
+  serverMediaAssets = assets;
 }
 
 function readNotifications(): any[] {
-  try {
-    if (fs.existsSync(NOTIFICATIONS_FILE)) {
-      return JSON.parse(fs.readFileSync(NOTIFICATIONS_FILE, 'utf-8'));
-    }
-  } catch (e) {}
-  return [];
+  return serverNotifications;
 }
 
 function writeNotifications(notifs: any[]) {
-  try {
-    fs.writeFileSync(NOTIFICATIONS_FILE, JSON.stringify(notifs.slice(0, 150), null, 2), 'utf-8');
-  } catch (e) {}
+  serverNotifications = notifs.slice(0, 150);
 }
 
 function addServerNotification(item: any) {
   try {
-    const list = readNotifications();
     const id = `notif-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
     const newNotif = {
       id,
@@ -282,8 +354,10 @@ function addServerNotification(item: any) {
       timestamp: new Date().toISOString(),
       read: false
     };
-    list.unshift(newNotif);
-    writeNotifications(list);
+    serverNotifications.unshift(newNotif);
+    if (serverNotifications.length > 150) {
+      serverNotifications = serverNotifications.slice(0, 150);
+    }
     return newNotif;
   } catch (e) {
     return null;
@@ -740,76 +814,136 @@ app.put('/api/orders/:id/proof', (req, res) => {
   }
 });
 
-// Payment Proof UPLOAD: Stores file persistently in ./data/proofs/
-app.post('/api/payment-proof/upload', (req, res) => {
+// Payment Proof UPLOAD: Direct upload to Supabase Storage private bucket 'payment-proofs' + in-memory store (ZERO filesystem writes)
+app.post('/api/payment-proof/upload', async (req, res) => {
   try {
-    const { data, mimeType } = req.body;
+    const { data, mimeType, orderNumber } = req.body;
     if (!data) {
       return res.status(400).json({ error: 'No image data provided' });
     }
 
     let base64Data = data;
     let extension = 'png';
+    let detectedMime = mimeType || 'image/png';
 
     if (data.startsWith('data:')) {
-      const match = data.match(/^data:image\/([a-zA-Z0-9+]+);base64,(.+)$/);
+      const match = data.match(/^data:([a-zA-Z0-9/+-]+);base64,(.+)$/);
       if (match) {
-        extension = match[1] === 'jpeg' ? 'jpg' : match[1];
+        detectedMime = match[1];
+        extension = detectedMime.includes('jpeg') ? 'jpg' : detectedMime.includes('png') ? 'png' : 'jpg';
         base64Data = match[2];
       }
-    } else if (mimeType) {
-      extension = mimeType.includes('jpeg') ? 'jpg' : 'png';
     }
 
+    const proofBuffer = Buffer.from(base64Data, 'base64');
     const proofId = `proof-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
     const filename = `${proofId}.${extension}`;
-    const filePath = path.join(PROOFS_DIR, filename);
+    const objectPath = `proofs/${(orderNumber || 'order').replace(/[^a-zA-Z0-9_-]/g, '_')}_${filename}`;
 
-    fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+    // Store in-memory map for fast ephemeral retrieval (Zero filesystem writes)
+    serverPaymentProofs.set(proofId, { buffer: proofBuffer, mimeType: detectedMime, extension });
 
-    const proofUrl = `/api/payment-proof/${proofId}`;
+    let storagePath = objectPath;
+    let signedUrl = `/api/payment-proof/${proofId}`;
+
+    // Upload directly to Supabase Storage private bucket 'payment-proofs'
+    if (supabaseServer) {
+      try {
+        const { data: uploadData, error: uploadErr } = await supabaseServer.storage
+          .from('payment-proofs')
+          .upload(objectPath, proofBuffer, {
+            contentType: detectedMime,
+            cacheControl: '3600',
+            upsert: true
+          });
+
+        if (!uploadErr && uploadData) {
+          storagePath = uploadData.path;
+          const { data: signedData } = await supabaseServer.storage
+            .from('payment-proofs')
+            .createSignedUrl(uploadData.path, 3600);
+          if (signedData?.signedUrl) {
+            signedUrl = signedData.signedUrl;
+          }
+          console.log('Payment proof uploaded to Supabase Storage payment-proofs:', storagePath);
+        } else {
+          console.warn('Supabase storage upload fallback:', uploadErr?.message);
+        }
+      } catch (err: any) {
+        console.warn('Supabase storage upload error:', err?.message);
+      }
+    }
+
     res.json({
       success: true,
       proofId,
       filename,
-      url: proofUrl
+      storagePath,
+      bucket: 'payment-proofs',
+      url: signedUrl
     });
   } catch (err: any) {
-    console.error('Failed saving proof:', err);
-    res.status(500).json({ error: 'Failed to save payment proof' });
+    console.error('Failed saving payment proof:', err);
+    res.status(500).json({ error: 'Failed to process payment proof' });
   }
 });
 
-// Payment Proof PRIVACY & ACCESS CONTROL (Req 4)
-// Private, authenticated endpoint: No public directory listing!
-app.get('/api/payment-proof/:proofId', (req, res) => {
+// Payment Proof PRIVACY & ACCESS CONTROL
+// Serves from in-memory store or creates fresh signed URL from Supabase Storage
+app.get('/api/payment-proof/:proofId', async (req, res) => {
   try {
     const { proofId } = req.params;
-    // Prevent path traversal
     if (!/^[a-zA-Z0-9_-]+$/.test(proofId)) {
       return res.status(400).json({ error: 'Invalid proof identifier' });
     }
 
-    // Find file matching proofId
-    const files = fs.readdirSync(PROOFS_DIR);
-    const matchedFile = files.find(f => f.startsWith(`${proofId}.`));
-
-    if (!matchedFile) {
-      return res.status(404).json({ error: 'Payment proof not found' });
+    const proof = serverPaymentProofs.get(proofId);
+    if (proof) {
+      res.setHeader('Content-Type', proof.mimeType);
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('Cache-Control', 'private, no-transform, max-age=3600');
+      return res.end(proof.buffer);
     }
 
-    const filePath = path.join(PROOFS_DIR, matchedFile);
-    const ext = path.extname(matchedFile).toLowerCase();
-    const contentType = ext === '.jpg' || ext === '.jpeg' ? 'image/jpeg' : 'image/png';
+    // Attempt retrieval from Supabase Storage if not in memory
+    if (supabaseServer) {
+      try {
+        const { data: listData } = await supabaseServer.storage.from('payment-proofs').list('proofs');
+        const match = listData?.find(f => f.name.includes(proofId));
+        if (match) {
+          const { data: signedData } = await supabaseServer.storage.from('payment-proofs').createSignedUrl(`proofs/${match.name}`, 300);
+          if (signedData?.signedUrl) {
+            return res.redirect(signedData.signedUrl);
+          }
+        }
+      } catch (e) {}
+    }
 
-    // Set privacy and security headers
-    res.setHeader('Content-Type', contentType);
-    res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('Cache-Control', 'private, no-transform, max-age=3600');
-    
-    fs.createReadStream(filePath).pipe(res);
+    return res.status(404).json({ error: 'Payment proof not found or expired' });
   } catch (err: any) {
     res.status(500).json({ error: 'Failed retrieving payment proof' });
+  }
+});
+
+// Payment Proof signed-url endpoint for admin viewers
+app.post('/api/payment-proof/signed-url', async (req, res) => {
+  try {
+    const { storagePath, expiresIn = 3600 } = req.body;
+    if (!storagePath) {
+      return res.status(400).json({ error: 'Missing storagePath' });
+    }
+    if (supabaseServer) {
+      const cleanPath = storagePath.replace(/^payment-proofs:/, '');
+      const { data, error } = await supabaseServer.storage
+        .from('payment-proofs')
+        .createSignedUrl(cleanPath, expiresIn);
+      if (!error && data?.signedUrl) {
+        return res.json({ success: true, signedUrl: data.signedUrl });
+      }
+    }
+    return res.status(404).json({ error: 'Could not generate signed URL' });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -828,16 +962,17 @@ app.post('/api/media/upload', (req, res) => {
 
     let base64Data = data;
     let extension = mediaType === 'video' ? 'mp4' : 'jpg';
+    let detectedMime = 'image/jpeg';
 
     if (data.startsWith('data:')) {
       const match = data.match(/^data:([a-zA-Z0-9/+-]+);base64,(.+)$/);
       if (match) {
-        const mime = match[1];
+        detectedMime = match[1];
         base64Data = match[2];
-        if (mime.includes('png')) extension = 'png';
-        else if (mime.includes('webp')) extension = 'webp';
-        else if (mime.includes('mp4')) extension = 'mp4';
-        else if (mime.includes('webm')) extension = 'webm';
+        if (detectedMime.includes('png')) extension = 'png';
+        else if (detectedMime.includes('webp')) extension = 'webp';
+        else if (detectedMime.includes('mp4')) extension = 'mp4';
+        else if (detectedMime.includes('webm')) extension = 'webm';
         else extension = 'jpg';
       }
     }
@@ -845,9 +980,9 @@ app.post('/api/media/upload', (req, res) => {
     const cleanBaseName = (fileName || 'media').replace(/[^a-zA-Z0-9_-]/g, '_').toLowerCase();
     const mediaId = `media_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`;
     const savedFilename = `${mediaId}_${cleanBaseName}.${extension}`;
-    const filePath = path.join(MEDIA_DIR, savedFilename);
 
-    fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
+    // Store in-memory map (Zero filesystem writes)
+    serverMediaFiles.set(savedFilename, { buffer: Buffer.from(base64Data, 'base64'), mimeType: detectedMime });
 
     const publicUrl = `/api/media/uploads/${savedFilename}`;
     const isVid = mediaType === 'video' || extension === 'mp4' || extension === 'webm';
@@ -864,10 +999,7 @@ app.post('/api/media/upload', (req, res) => {
       usedIn: Array.isArray(usedIn) ? usedIn : []
     };
 
-    const currentAssets = readMediaAssets();
-    currentAssets.unshift(asset);
-    writeMediaAssets(currentAssets);
-
+    serverMediaAssets.unshift(asset);
     res.json({ success: true, url: publicUrl, asset });
   } catch (err: any) {
     console.error('Failed media upload:', err);
@@ -881,22 +1013,14 @@ app.get('/api/media/uploads/:filename', (req, res) => {
     if (!/^[a-zA-Z0-9_.-]+$/.test(filename)) {
       return res.status(400).json({ error: 'Invalid filename' });
     }
-    const filePath = path.join(MEDIA_DIR, filename);
-    if (!fs.existsSync(filePath)) {
+    const item = serverMediaFiles.get(filename);
+    if (!item) {
       return res.status(404).json({ error: 'Media file not found' });
     }
 
-    const ext = path.extname(filename).toLowerCase();
-    let contentType = 'application/octet-stream';
-    if (ext === '.jpg' || ext === '.jpeg') contentType = 'image/jpeg';
-    else if (ext === '.png') contentType = 'image/png';
-    else if (ext === '.webp') contentType = 'image/webp';
-    else if (ext === '.mp4') contentType = 'video/mp4';
-    else if (ext === '.webm') contentType = 'video/webm';
-
-    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Type', item.mimeType);
     res.setHeader('Cache-Control', 'public, max-age=86400');
-    fs.createReadStream(filePath).pipe(res);
+    res.end(item.buffer);
   } catch (err: any) {
     res.status(500).json({ error: 'Failed serving media' });
   }
@@ -905,8 +1029,7 @@ app.get('/api/media/uploads/:filename', (req, res) => {
 app.delete('/api/media/:id', (req, res) => {
   try {
     const { id } = req.params;
-    const assets = readMediaAssets().filter(a => a.id !== id);
-    writeMediaAssets(assets);
+    serverMediaAssets = serverMediaAssets.filter(a => a.id !== id);
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
