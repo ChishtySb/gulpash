@@ -10,13 +10,15 @@ import { StorageService } from '../../../lib/storage';
 import { formatPrice } from '../../../lib/currency';
 import { NotificationService } from '../../../lib/notifications';
 
+export type OrdersSubview = 'all' | 'proof_verification' | 'pending_advance' | 'ready_dispatch' | 'confirmed' | 'dispatched' | 'delivered' | 'returns';
+
 interface OrdersSectionProps {
   orders: Order[];
   settings: SiteSettings;
-  subview: 'all' | 'proof_verification' | 'pending_advance' | 'confirmed' | 'dispatched' | 'delivered' | 'returns';
+  subview: OrdersSubview;
   selectedOrder: Order | null;
   onSelectOrder: (order: Order | null) => void;
-  onNavigateSub: (sub: 'all' | 'proof_verification' | 'pending_advance' | 'confirmed' | 'dispatched' | 'delivered' | 'returns') => void;
+  onNavigateSub: (sub: OrdersSubview) => void;
   onNotify: (msg: string) => void;
 }
 
@@ -32,6 +34,7 @@ export const OrdersSection: React.FC<OrdersSectionProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [proofModalImage, setProofModalImage] = useState<string | null>(null);
   const [rejectionModalOrder, setRejectionModalOrder] = useState<Order | null>(null);
+  const [cancelModalOrder, setCancelModalOrder] = useState<Order | null>(null);
   const [rejectionReason, setRejectionReason] = useState('Amount or Transaction ID could not be verified.');
   const [courierInput, setCourierInput] = useState('');
   const [trackingNumberInput, setTrackingNumberInput] = useState('');
@@ -60,7 +63,7 @@ export const OrdersSection: React.FC<OrdersSectionProps> = ({
         (order.status === 'Pending' || order.status === 'Payment Verification Pending' || order.paymentStatus === 'Unpaid')
       );
     }
-    if (subview === 'confirmed') {
+    if (subview === 'ready_dispatch' || subview === 'confirmed') {
       return order.status === 'Confirmed' || order.status === 'In Production';
     }
     if (subview === 'dispatched') {
@@ -120,6 +123,10 @@ export const OrdersSection: React.FC<OrdersSectionProps> = ({
 
   // Update order status
   const handleStatusChange = (order: Order, newStatus: OrderStatus) => {
+    if (newStatus === 'Cancelled') {
+      setCancelModalOrder(order);
+      return;
+    }
     const updated: Order = {
       ...order,
       status: newStatus,
@@ -128,6 +135,19 @@ export const OrdersSection: React.FC<OrdersSectionProps> = ({
     StorageService.saveOrder(updated);
     onSelectOrder(updated);
     onNotify(`Order #${order.orderNumber} status changed to ${newStatus}.`);
+  };
+
+  const handleConfirmCancelOrder = () => {
+    if (!cancelModalOrder) return;
+    const updated: Order = {
+      ...cancelModalOrder,
+      status: 'Cancelled',
+      updatedAt: new Date().toISOString()
+    };
+    StorageService.saveOrder(updated);
+    onSelectOrder(updated);
+    onNotify(`Order #${cancelModalOrder.orderNumber} has been marked as Cancelled.`);
+    setCancelModalOrder(null);
   };
 
   // Update courier info
@@ -182,6 +202,15 @@ export const OrdersSection: React.FC<OrdersSectionProps> = ({
           }`}
         >
           Pending Advance
+        </button>
+        <button
+          type="button"
+          onClick={() => onNavigateSub('ready_dispatch')}
+          className={`px-3 py-1.5 rounded font-medium whitespace-nowrap transition-colors cursor-pointer ${
+            subview === 'ready_dispatch' ? 'bg-stone-900 text-white' : 'text-stone-600 hover:bg-stone-100'
+          }`}
+        >
+          Ready to Dispatch
         </button>
         <button
           type="button"
@@ -618,9 +647,47 @@ export const OrdersSection: React.FC<OrdersSectionProps> = ({
               <button
                 type="button"
                 onClick={handleRejectProof}
-                className="px-4 py-1.5 bg-rose-700 hover:bg-rose-800 text-white text-xs font-medium rounded"
+                className="px-4 py-1.5 bg-rose-700 hover:bg-rose-800 text-white text-xs font-medium rounded cursor-pointer"
               >
                 Confirm Rejection
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Order Confirmation Modal */}
+      {cancelModalOrder && (
+        <div className="fixed inset-0 bg-stone-950/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in font-sans">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 space-y-4 shadow-xl border border-stone-200">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-stone-900">Cancel Order #{cancelModalOrder.orderNumber}?</h4>
+                <p className="text-xs text-stone-500">Customer: {cancelModalOrder.customer.fullName}</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-stone-600">
+              Are you sure you want to cancel this order? This action will mark the status as <strong>Cancelled</strong>. The historical record will be preserved in your database.
+            </p>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setCancelModalOrder(null)}
+                className="px-3.5 py-1.5 text-xs text-stone-700 hover:bg-stone-100 rounded-lg cursor-pointer font-medium"
+              >
+                Keep Order
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmCancelOrder}
+                className="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg shadow-xs cursor-pointer"
+              >
+                Confirm Cancellation
               </button>
             </div>
           </div>

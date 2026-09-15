@@ -243,8 +243,8 @@ export default function App() {
 
   // Wishlist toggle
   const handleToggleWishlist = (productId: string) => {
-    const updated = StorageService.toggleWishlist(productId);
-    setWishlistIds(updated);
+    StorageService.toggleWishlist(productId);
+    setWishlistIds(StorageService.getWishlist());
   };
 
   // Current product for PDP

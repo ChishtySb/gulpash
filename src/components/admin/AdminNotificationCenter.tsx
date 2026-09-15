@@ -313,7 +313,7 @@ export const AdminNotificationCenter: React.FC<AdminNotificationCenterProps> = (
                           {item.title}
                         </h5>
                         <span className="text-[10px] text-stone-400 whitespace-nowrap">
-                          {formatRelativeTime(item.createdAt)}
+                          {formatRelativeTime(item.timestamp || (item as any).createdAt)}
                         </span>
                       </div>
                       <p className="text-[11px] text-stone-600 line-clamp-2 leading-relaxed">

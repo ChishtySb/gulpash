@@ -171,18 +171,24 @@ export type OrderStatus =
   | 'Ready to Dispatch'
   | 'Pending'
   | 'Confirmed'
+  | 'In Production'
   | 'Processing'
   | 'Shipped'
+  | 'Dispatched'
   | 'Delivered'
   | 'Cancelled'
-  | 'Returned';
+  | 'Returned'
+  | 'Exchange Requested';
 
 export type PaymentMethod = 
   | 'Cash on Delivery (COD)' 
   | 'JazzCash' 
   | 'Easypaisa' 
   | 'Direct Bank Transfer' 
-  | 'Card Payment';
+  | 'Card Payment'
+  | 'jazzcash'
+  | 'easypaisa'
+  | 'bank_transfer';
 
 export interface OrderPaymentProof {
   screenshotUrl?: string;
@@ -229,7 +235,7 @@ export interface Order {
   total: number;
   paymentMethod: PaymentMethod;
   paymentType?: 'Full Advance' | 'Cash on Delivery';
-  paymentStatus: 'Unpaid' | 'Paid' | 'Under Verification' | 'Rejected';
+  paymentStatus: 'Unpaid' | 'Paid' | 'Under Verification' | 'Rejected' | 'Failed';
   status: OrderStatus;
   paymentProof?: OrderPaymentProof;
   trackingNumber?: string;
@@ -277,6 +283,11 @@ export interface HeroSlideConfig {
   posterImageUrl?: string;
   overlayOpacity: number; // 0 to 100
   isActive: boolean;
+  image?: string;
+  mobileImage?: string;
+  title?: string;
+  subtitle?: string;
+  linkUrl?: string;
 }
 
 export interface AnnouncementItem {
@@ -303,6 +314,18 @@ export interface HomepageCMS {
     buttonText: string;
     buttonUrl: string;
     imageUrl: string;
+  };
+  editorialShowcase?: {
+    heading?: string;
+    subheading?: string;
+    subtitle?: string;
+    buttonText?: string;
+    buttonUrl?: string;
+    imageUrl?: string;
+  };
+  announcementBar?: {
+    enabled?: boolean;
+    messages?: string[];
   };
 }
 
@@ -343,15 +366,17 @@ export interface PaymentGatewaysConfig {
 
 export interface AdvanceFreeDeliverySettings {
   enabled: boolean;
-  eligiblePaymentMethods: PaymentMethod[]; // e.g. ['JazzCash', 'Easypaisa', 'Direct Bank Transfer']
-  minimumOrderAmount: number; // 0 means any order qualifies
-  customerMessage: string; // e.g. "Pay full in advance & get FREE delivery nationwide!"
+  eligiblePaymentMethods?: PaymentMethod[]; // e.g. ['JazzCash', 'Easypaisa', 'Direct Bank Transfer']
+  minimumOrderAmount?: number; // 0 means any order qualifies
+  minOrderAmount?: number;
+  customerMessage?: string; // e.g. "Pay full in advance & get FREE delivery nationwide!"
+  badgeText?: string;
 }
 
 export interface AdminNotificationSettings {
   soundEnabled: boolean;
-  browserNotificationsEnabled: boolean;
-  events: {
+  browserNotificationsEnabled?: boolean;
+  events?: {
     newOrder: boolean;
     newPaymentProof: boolean;
     paymentResubmitted: boolean;
@@ -361,6 +386,11 @@ export interface AdminNotificationSettings {
     lowStock: boolean;
   };
   lowStockThreshold: number; // default 3
+  browserEnabled?: boolean;
+  orderAlerts?: boolean;
+  paymentProofAlerts?: boolean;
+  lowStockAlerts?: boolean;
+  soundVolume?: number;
 }
 
 export type NotificationEventType = 
@@ -405,16 +435,16 @@ export interface MediaAsset {
 }
 
 export interface WhatsAppAssistanceSettings {
-  enabled: boolean;
-  number: string; // Visible customer-facing number, e.g. "03006392025"
+  enabled?: boolean;
+  number?: string; // Visible customer-facing number, e.g. "03006392025"
   destinationNumber?: string; // Click-to-chat destination, e.g. "923006392025"
-  displayLabel: string; // e.g. "WhatsApp Assistance"
-  defaultMessage: string; // Editable message template
-  showFloatingButton: boolean; // Floating button ON / OFF
-  showInHeader: boolean; // Top header link ON / OFF
-  showInFooter: boolean; // Footer assistance link ON / OFF
-  showOnProductPages: boolean; // Product detail page inquiry button ON / OFF
-  showInOrderAssistance: boolean; // Order tracking / checkout assistance ON / OFF
+  displayLabel?: string; // e.g. "WhatsApp Assistance"
+  defaultMessage?: string; // Editable message template
+  showFloatingButton?: boolean; // Floating button ON / OFF
+  showInHeader?: boolean; // Top header link ON / OFF
+  showInFooter?: boolean; // Footer assistance link ON / OFF
+  showOnProductPages?: boolean; // Product detail page inquiry button ON / OFF
+  showInOrderAssistance?: boolean; // Order tracking / checkout assistance ON / OFF
 }
 
 export interface SiteSettings {

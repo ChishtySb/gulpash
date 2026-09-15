@@ -4,7 +4,7 @@ import {
   ShieldCheck, Save, CheckCircle2, AlertTriangle, 
   HelpCircle, ExternalLink, Sparkles, Smartphone, Building2
 } from 'lucide-react';
-import { SiteSettings } from '../../../types';
+import { SiteSettings, PaymentMethod } from '../../../types';
 import { StorageService } from '../../../lib/storage';
 import { MEDIA_SPECS } from '../../../constants/mediaSpecs';
 import { MediaUploaderCard } from '../MediaUploaderCard';
@@ -348,9 +348,9 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                     </label>
                     <div className="flex flex-wrap gap-2 pt-1">
                       {[
-                        { id: 'jazzcash', label: 'JazzCash' },
-                        { id: 'easypaisa', label: 'Easypaisa' },
-                        { id: 'bank_transfer', label: 'Direct Bank Transfer' }
+                        { id: 'jazzcash' as PaymentMethod, label: 'JazzCash' },
+                        { id: 'easypaisa' as PaymentMethod, label: 'Easypaisa' },
+                        { id: 'bank_transfer' as PaymentMethod, label: 'Direct Bank Transfer' }
                       ].map(method => {
                         const methods = formData.shipping.advanceFreeDelivery?.eligiblePaymentMethods || [];
                         const isChecked = methods.includes(method.id);
@@ -360,7 +360,7 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                               type="checkbox"
                               checked={isChecked}
                               onChange={(e) => {
-                                const next = e.target.checked
+                                const next: PaymentMethod[] = e.target.checked
                                   ? [...methods, method.id]
                                   : methods.filter(m => m !== method.id);
                                 setFormData({
@@ -751,7 +751,7 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                     <span className="font-medium text-stone-800">{item.label}</span>
                     <input
                       type="checkbox"
-                      checked={isChecked}
+                      checked={Boolean(isChecked)}
                       onChange={(e) => setFormData({
                         ...formData,
                         whatsappAssistance: {

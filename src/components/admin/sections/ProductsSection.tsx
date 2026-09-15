@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { 
   Package, Search, Plus, Edit, Trash2, Copy, ExternalLink, 
   Eye, EyeOff, Check, X, ArrowUpDown, Filter, Upload, Image as ImageIcon,
-  Video, Sparkles, AlertCircle, CheckCircle2, ChevronDown, Layers,
+  Video, Sparkles, AlertCircle, AlertTriangle, CheckCircle2, ChevronDown, Layers,
   ArrowLeft, ArrowRight, RefreshCw
 } from 'lucide-react';
 import { Product, Category, Collection } from '../../../types';
@@ -54,6 +54,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
 
   // Quick inline stock editor state
   const [inlineStockEdit, setInlineStockEdit] = useState<{ id: string; stock: number } | null>(null);
+  const [deleteConfirmModal, setDeleteConfirmModal] = useState<{ id: string; title: string } | null>(null);
 
   // Form tabs for Add / Edit
   const [formTab, setFormTab] = useState<'basic' | 'media' | 'pricing' | 'collections' | 'fabric' | 'status'>('basic');
@@ -144,12 +145,27 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
     onNotify(`Product "${p.title}" is now ${updated.isVisible ? 'Visible on store' : 'Hidden from store'}.`);
   };
 
-  // DELETE PRODUCT
+  // DELETE / ARCHIVE PRODUCT
   const handleDelete = (id: string, title: string) => {
-    if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
-      StorageService.deleteProduct(id, false);
-      onNotify(`Product "${title}" has been deleted.`);
+    setDeleteConfirmModal({ id, title });
+  };
+
+  const handleArchiveProduct = () => {
+    if (!deleteConfirmModal) return;
+    const p = products.find(prod => prod.id === deleteConfirmModal.id);
+    if (p) {
+      const updated: Product = { ...p, status: 'Archived', isVisible: false };
+      StorageService.saveProduct(updated);
+      onNotify(`Product "${p.title}" has been safely archived. Historical orders preserved.`);
     }
+    setDeleteConfirmModal(null);
+  };
+
+  const handlePermanentDeleteProduct = () => {
+    if (!deleteConfirmModal) return;
+    StorageService.deleteProduct(deleteConfirmModal.id, false);
+    onNotify(`Product "${deleteConfirmModal.title}" permanently deleted.`);
+    setDeleteConfirmModal(null);
   };
 
   // QUICK STOCK SAVE
@@ -1728,6 +1744,56 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
                 </div>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {/* Product Delete / Archive Confirmation Modal */}
+      {deleteConfirmModal && (
+        <div className="fixed inset-0 bg-stone-950/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in font-sans">
+          <div className="bg-white rounded-xl max-w-md w-full p-6 space-y-4 shadow-xl border border-stone-200">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700 shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-stone-900">Manage Product Removal</h4>
+                <p className="text-xs text-stone-500 font-medium truncate max-w-xs">{deleteConfirmModal.title}</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-stone-600 leading-relaxed">
+              Permanent deletion will erase this product from your database. To preserve customer historical orders, order details, and sales audit trails, we strongly recommend <strong>Archiving</strong> instead.
+            </p>
+
+            <div className="p-3 bg-amber-50/70 border border-amber-200 rounded-lg text-[11px] text-amber-900 space-y-1">
+              <p><strong>Archiving:</strong> Hides product from storefront catalog while protecting previous purchases.</p>
+              <p><strong>Permanent Delete:</strong> Erases the record completely from Supabase.</p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-end gap-2 pt-3 border-t border-stone-100">
+              <button
+                type="button"
+                onClick={() => setDeleteConfirmModal(null)}
+                className="w-full sm:w-auto px-3.5 py-2 text-xs text-stone-600 hover:bg-stone-100 rounded-lg font-medium cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleArchiveProduct}
+                className="w-full sm:w-auto px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold rounded-lg shadow-xs cursor-pointer"
+              >
+                Archive (Recommended)
+              </button>
+              <button
+                type="button"
+                onClick={handlePermanentDeleteProduct}
+                className="w-full sm:w-auto px-3.5 py-2 border border-rose-300 text-rose-700 hover:bg-rose-50 text-xs font-semibold rounded-lg cursor-pointer"
+              >
+                Delete Permanently
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -144,75 +144,159 @@ if (supabaseServer) {
     } catch (e) {}
 
     try {
+      let baseline38: any[] = [];
+      const pPath = path.join(process.cwd(), 'src', 'data', 'migratedProducts.json');
+      if (fs.existsSync(pPath)) {
+        baseline38 = JSON.parse(fs.readFileSync(pPath, 'utf-8'));
+      }
+
+      const activeSlugs = new Set(baseline38.map((p: any) => p.slug.toLowerCase()));
+      const activeTitles = new Set(baseline38.map((p: any) => p.title.toLowerCase().replace(/[^a-z0-9]/g, '')));
+      const activeIds = new Set(baseline38.map((p: any) => p.id));
+
       const { data: dbProducts } = await supabaseServer.from('products').select('*, product_variants(*), product_images(*)');
       if (dbProducts && dbProducts.length > 0) {
-        serverProducts = dbProducts.map((p: any) => {
+        const activeMap = new Map<string, any>();
+        baseline38.forEach((bp: any) => {
+          activeMap.set(bp.slug, { ...bp, isVisible: true, status: 'Active' });
+        });
+
+        const historicalProducts: any[] = [];
+
+        dbProducts.forEach((p: any) => {
+          const normTitle = (p.title || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+          const isDirectSlug = activeSlugs.has(p.slug?.toLowerCase());
+          const isDirectTitle = activeTitles.has(normTitle);
+          const isDirectId = activeIds.has(p.id);
+
           const sortedImgs = (p.product_images || []).sort((a: any, b: any) => (a.display_order ?? 0) - (b.display_order ?? 0));
           const images = sortedImgs.map((img: any) => img.image_url);
           const variants = (p.product_variants || []).sort((a: any, b: any) => (a.position ?? 0) - (b.position ?? 0));
-          return {
-            id: p.id,
-            title: p.title,
-            slug: p.slug,
-            description: p.description,
-            shortDescription: p.short_description,
-            sku: p.sku,
-            category: p.category_name,
-            categoryId: p.category_id,
-            collection: p.collection_name,
-            collectionId: p.collection_id,
-            price: Number(p.price),
-            compareAtPrice: p.compare_at_price ? Number(p.compare_at_price) : null,
-            costPrice: p.cost_price ? Number(p.cost_price) : undefined,
-            stock: Number(p.stock),
-            sizes: p.sizes || ['Unstitched', 'S', 'M', 'L', 'XL'],
-            fabric: p.fabric,
-            colors: p.colors || [],
-            tags: p.tags || [],
-            images: images.length > 0 ? images : ['https://cdn.shopify.com/s/files/1/0935/5368/8891/files/17_22ba13c3-6eda-4dde-a515-e01030c718f6.png?v=1787217341'],
-            variants: variants.map((v: any) => ({
-              id: v.id,
-              title: v.title,
-              size: v.size,
-              color: v.color,
-              fabric: v.fabric,
-              sku: v.sku,
-              price: Number(v.price),
-              compareAtPrice: v.compare_at_price ? Number(v.compare_at_price) : null,
-              available: v.available,
-              stock: Number(v.stock),
-              position: v.position
-            })),
-            status: p.is_visible ? 'Active' : 'Archived',
-            isVisible: p.is_visible,
-            isFeatured: p.is_featured,
-            isBestSeller: p.is_best_seller,
-            isNewArrival: p.is_new_arrival,
-            isSoldOut: p.is_sold_out,
-            rating: Number(p.rating) || 5,
-            reviewCount: Number(p.review_count) || 0,
-            details: p.details || {},
-            createdAt: p.created_at,
-            updatedAt: p.updated_at
-          };
+
+          if (isDirectSlug || isDirectTitle || isDirectId) {
+            const matchedKey = Array.from(activeMap.keys()).find(k => 
+              k === p.slug || 
+              activeMap.get(k)?.id === p.id || 
+              activeMap.get(k)?.title.toLowerCase().replace(/[^a-z0-9]/g, '') === normTitle
+            );
+            if (matchedKey && activeMap.has(matchedKey)) {
+              const existing = activeMap.get(matchedKey);
+              if (p.stock !== undefined) existing.stock = Number(p.stock);
+              if (p.price !== undefined) existing.price = Number(p.price);
+              if (variants.length > 0) {
+                existing.variants = variants.map((v: any) => ({
+                  id: v.id,
+                  title: v.title,
+                  size: v.size,
+                  color: v.color,
+                  fabric: v.fabric,
+                  sku: v.sku,
+                  price: Number(v.price),
+                  compareAtPrice: v.compare_at_price ? Number(v.compare_at_price) : null,
+                  available: v.available,
+                  stock: Number(v.stock),
+                  position: v.position
+                }));
+              }
+            }
+          } else {
+            // Historical product row: PRESERVE in database for historic orders, but mark hidden from storefront
+            historicalProducts.push({
+              id: p.id,
+              title: p.title,
+              slug: p.slug,
+              description: p.description,
+              shortDescription: p.short_description,
+              sku: p.sku,
+              category: p.category_name,
+              categoryId: p.category_id,
+              collection: p.collection_name,
+              collectionId: p.collection_id,
+              price: Number(p.price),
+              compareAtPrice: p.compare_at_price ? Number(p.compare_at_price) : null,
+              costPrice: p.cost_price ? Number(p.cost_price) : undefined,
+              stock: Number(p.stock),
+              sizes: p.sizes || ['Unstitched', 'S', 'M', 'L', 'XL'],
+              fabric: p.fabric,
+              colors: p.colors || [],
+              tags: p.tags || [],
+              images: images.length > 0 ? images : ['https://cdn.shopify.com/s/files/1/0935/5368/8891/files/17_22ba13c3-6eda-4dde-a515-e01030c718f6.png?v=1787217341'],
+              variants: variants.map((v: any) => ({
+                id: v.id,
+                title: v.title,
+                size: v.size,
+                color: v.color,
+                fabric: v.fabric,
+                sku: v.sku,
+                price: Number(v.price),
+                compareAtPrice: v.compare_at_price ? Number(v.compare_at_price) : null,
+                available: v.available,
+                stock: Number(v.stock),
+                position: v.position
+              })),
+              status: 'Archived',
+              isVisible: false,
+              isFeatured: false,
+              isBestSeller: false,
+              isNewArrival: false,
+              isSoldOut: p.is_sold_out,
+              rating: Number(p.rating) || 5,
+              reviewCount: Number(p.review_count) || 0,
+              details: p.details || {},
+              createdAt: p.created_at,
+              updatedAt: p.updated_at
+            });
+          }
         });
-        console.log(`[Supabase Boot] Loaded & mapped ${serverProducts.length} products from Supabase Postgres`);
+
+        serverProducts = [...Array.from(activeMap.values()), ...historicalProducts];
+        console.log(`[Supabase Boot] Loaded & mapped ${serverProducts.length} products (Active Storefront: ${activeMap.size}, Preserved Historical: ${historicalProducts.length})`);
       }
     } catch (e) {}
 
     try {
+      const cPath = path.join(process.cwd(), 'src', 'data', 'migratedCollections.json');
+      let baselineCols: any[] = [];
+      if (fs.existsSync(cPath)) {
+        baselineCols = JSON.parse(fs.readFileSync(cPath, 'utf-8'));
+      }
+
       const { data: dbCollections } = await supabaseServer.from('collections').select('*').order('display_order', { ascending: true });
+      
+      const canonicalMap: Record<string, { name: string; slug: string; order: number; nav: boolean; home: boolean }> = {
+        'new-arrivals': { name: 'NEW ARRIVALS', slug: 'new-arrivals', order: 1, nav: true, home: true },
+        'best-selling': { name: 'TRENDING', slug: 'best-selling', order: 2, nav: true, home: true },
+        'winter-collection': { name: 'WINTER COLLECTION', slug: 'winter-collection', order: 3, nav: true, home: true },
+        'co-ords': { name: 'CO-ORDS', slug: 'co-ords', order: 4, nav: true, home: true },
+        'short-length-article': { name: 'SHORT LENGTH', slug: 'short-length-article', order: 5, nav: true, home: true },
+        'home': { name: 'ALL ENSEMBLES', slug: 'all', order: 6, nav: true, home: false },
+        'all': { name: 'ALL ENSEMBLES', slug: 'all', order: 6, nav: true, home: false }
+      };
+
       if (dbCollections && dbCollections.length > 0) {
-        serverCollections = dbCollections.map((c: any) => ({
-          id: c.id,
-          name: c.name,
-          slug: c.slug,
-          description: c.description || '',
-          imageUrl: c.image_url || '',
-          bannerUrl: c.banner_url || '',
-          displayOrder: c.display_order,
-          isVisible: c.is_visible
-        }));
+        serverCollections = dbCollections.map((c: any) => {
+          const rule = canonicalMap[c.slug] || { name: c.name, slug: c.slug, order: c.display_order || 99, nav: true, home: true };
+          const base = baselineCols.find((bc: any) => bc.slug === rule.slug || bc.slug === c.slug);
+          return {
+            id: c.id,
+            name: rule.name,
+            slug: rule.slug,
+            description: c.description || base?.description || '',
+            imageUrl: base?.imageUrl || base?.image || c.image_url || '',
+            image: base?.image || base?.imageUrl || c.image_url || '',
+            bannerUrl: base?.bannerUrl || c.banner_url || '',
+            displayOrder: rule.order,
+            order: rule.order,
+            isVisible: c.is_visible ?? true,
+            visibleInNav: rule.nav,
+            visibleOnHomepage: rule.home,
+            productCount: base?.productCount ?? (base?.productSlugs?.length || 0),
+            productSlugs: base?.productSlugs || [],
+            productIds: base?.productIds || []
+          };
+        }).sort((a: any, b: any) => a.displayOrder - b.displayOrder);
+      } else if (baselineCols.length > 0) {
+        serverCollections = baselineCols;
       }
     } catch (e) {}
 
@@ -441,7 +525,25 @@ app.put('/api/settings', (req, res) => {
 app.get('/api/products', (req, res) => {
   try {
     const list = readProducts();
-    res.json(list);
+    if (req.query.includeHidden === 'true' || req.query.all === 'true') {
+      res.json(list);
+    } else {
+      res.json(list.filter((p: any) => p.isVisible));
+    }
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/products/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const list = readProducts();
+    const product = list.find((p: any) => p.id === id || p.slug === id || p.sku === id);
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+    res.json(product);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }

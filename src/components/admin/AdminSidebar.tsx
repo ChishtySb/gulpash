@@ -4,13 +4,15 @@ import {
   Megaphone, Bell, Settings, ShieldCheck, ExternalLink, 
   LogOut, ChevronRight, RefreshCw, Layers, Sparkles, 
   FileCheck, History, Image as ImageIcon, Plus, Truck,
-  CreditCard, Smartphone, CheckCircle2, ChevronDown
+  CreditCard, Smartphone, CheckCircle2, ChevronDown,
+  PanelLeftClose, PanelLeftOpen, Database, Sliders
 } from 'lucide-react';
 import { Order, Product } from '../../types';
 
 export type AdminMainSection = 
   | 'dashboard' 
-  | 'products' 
+  | 'catalog' 
+  | 'products' // alias for catalog
   | 'orders' 
   | 'customers' 
   | 'storefront' 
@@ -20,7 +22,7 @@ export type AdminMainSection =
   | 'system';
 
 interface AdminSidebarProps {
-  activeSection: AdminMainSection;
+  activeSection: string;
   activeSubview: string;
   onNavigate: (section: AdminMainSection, subview?: string) => void;
   orders: Order[];
@@ -29,6 +31,8 @@ interface AdminSidebarProps {
   onExitAdmin: () => void;
   isOpenMobile: boolean;
   onCloseMobile: () => void;
+  isCollapsedDesktop?: boolean;
+  onToggleCollapseDesktop?: () => void;
 }
 
 export const AdminSidebar: React.FC<AdminSidebarProps> = ({
@@ -40,15 +44,26 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
   unreadNotificationCount,
   onExitAdmin,
   isOpenMobile,
-  onCloseMobile
+  onCloseMobile,
+  isCollapsedDesktop = false,
+  onToggleCollapseDesktop
 }) => {
+  // Normalize active section (catalog/products compatibility)
+  const normalizedSection = activeSection === 'products' ? 'catalog' : activeSection;
+
   // Metric badge counts
   const pendingOrdersCount = orders.filter(
     o => o.status === 'Pending' || o.status === 'Payment Verification Pending'
   ).length;
 
+  const pendingProofCount = orders.filter(
+    o => o.status === 'Payment Verification Pending' || (o.paymentProof && o.paymentStatus === 'Under Verification')
+  ).length;
+
+  const lowStockThreshold = 5;
   const lowStockCount = products.filter(
-    p => (p.stock !== undefined && p.stock <= 5) || (p.variants && p.variants.some(v => (v.stock || 0) <= 3))
+    p => (p.stock !== undefined && p.stock <= lowStockThreshold && p.stock > 0) || 
+         (p.variants && p.variants.some(v => (v.stock || 0) <= 3 && (v.stock || 0) > 0))
   ).length;
 
   interface NavItem {
@@ -60,21 +75,24 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
     subviews?: Array<{ id: string; label: string; badge?: number }>;
   }
 
+  // EXACT STRUCTURE REQUESTED BY USER
   const navItems: NavItem[] = [
     {
       id: 'dashboard',
       label: 'Dashboard',
-      icon: LayoutDashboard
+      icon: LayoutDashboard,
+      subviews: [
+        { id: 'overview', label: 'Overview' }
+      ]
     },
     {
-      id: 'products',
-      label: 'Products',
+      id: 'catalog',
+      label: 'Catalog',
       icon: Package,
       badge: lowStockCount > 0 ? lowStockCount : undefined,
       badgeColor: 'bg-amber-500 text-black',
       subviews: [
-        { id: 'all', label: 'All Products' },
-        { id: 'add', label: 'Add Product' },
+        { id: 'products', label: 'Products' },
         { id: 'inventory', label: 'Inventory & Stock', badge: lowStockCount > 0 ? lowStockCount : undefined },
         { id: 'collections', label: 'Collections' },
         { id: 'sync', label: 'Catalog Sync' }
@@ -88,12 +106,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       badgeColor: 'bg-rose-500 text-white',
       subviews: [
         { id: 'all', label: 'All Orders' },
-        { id: 'proof_verification', label: 'Payment Verification', badge: orders.filter(o => o.status === 'Payment Verification Pending').length || undefined },
-        { id: 'pending_advance', label: 'Pending Advance' },
-        { id: 'confirmed', label: 'Confirmed' },
-        { id: 'dispatched', label: 'Ready to Dispatch' },
-        { id: 'delivered', label: 'Delivered' },
-        { id: 'returns', label: 'Cancelled / Returns' }
+        { id: 'proof_verification', label: 'Payment Verification', badge: pendingProofCount > 0 ? pendingProofCount : undefined },
+        { id: 'ready_dispatch', label: 'Ready to Dispatch' }
       ]
     },
     {
@@ -101,9 +115,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       label: 'Customers',
       icon: Users,
       subviews: [
-        { id: 'all', label: 'All Customers' },
-        { id: 'repeat', label: 'Repeat Buyers' },
-        { id: 'high_value', label: 'High Value (VIP)' }
+        { id: 'all', label: 'Customers' }
       ]
     },
     {
@@ -111,22 +123,22 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       label: 'Storefront',
       icon: Store,
       subviews: [
-        { id: 'homepage', label: 'Homepage CMS' },
-        { id: 'hero', label: 'Hero Slides (Video/Img)' },
-        { id: 'collections', label: 'Collections & Banners' },
+        { id: 'homepage', label: 'Homepage' },
+        { id: 'hero', label: 'Hero & Media' },
+        { id: 'collections', label: 'Collections' },
+        { id: 'banners', label: 'Banners' },
         { id: 'navigation', label: 'Header & Navigation' },
         { id: 'announcement', label: 'Announcement Bar' },
-        { id: 'footer', label: 'Footer & Links' },
+        { id: 'footer', label: 'Footer' },
         { id: 'media', label: 'Media Library' }
       ]
     },
     {
       id: 'marketing',
-      label: 'Marketing / SEO',
+      label: 'Marketing',
       icon: Megaphone,
       subviews: [
-        { id: 'seo', label: 'SEO Metadata' },
-        { id: 'promotions', label: 'Promotional Banners' }
+        { id: 'seo', label: 'SEO' }
       ]
     },
     {
@@ -134,7 +146,10 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       label: 'Notifications',
       icon: Bell,
       badge: unreadNotificationCount > 0 ? unreadNotificationCount : undefined,
-      badgeColor: 'bg-rose-500 text-white'
+      badgeColor: 'bg-rose-500 text-white',
+      subviews: [
+        { id: 'all', label: 'All Notifications' }
+      ]
     },
     {
       id: 'settings',
@@ -142,11 +157,11 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       icon: Settings,
       subviews: [
         { id: 'store', label: 'Store & Branding' },
-        { id: 'shipping', label: 'Shipping & Delivery' },
-        { id: 'payments', label: 'Payment Methods' },
+        { id: 'shipping', label: 'Shipping' },
+        { id: 'payments', label: 'Payments' },
         { id: 'whatsapp', label: 'WhatsApp & Contact' },
-        { id: 'social', label: 'Social Media' },
-        { id: 'roles', label: 'Security & Admin' }
+        { id: 'social', label: 'Social Links' },
+        { id: 'notifications', label: 'Notifications' }
       ]
     },
     {
@@ -154,7 +169,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       label: 'System',
       icon: ShieldCheck,
       subviews: [
-        { id: 'audit', label: 'Store Control Audit' },
+        { id: 'audit', label: 'Control Audit' },
+        { id: 'catalog_audit', label: 'Catalog Audit' },
         { id: 'activity', label: 'Activity Log' }
       ]
     }
@@ -179,41 +195,58 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
 
       {/* Sidebar Container */}
       <aside 
-        className={`fixed top-0 left-0 bottom-0 z-50 w-72 bg-[#141414] text-stone-300 flex flex-col border-r border-[#262626] transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-          isOpenMobile ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
+        className={`fixed top-0 left-0 bottom-0 z-50 bg-[#121212] text-stone-300 flex flex-col border-r border-[#242424] transition-all duration-300 ease-in-out ${
+          isOpenMobile 
+            ? 'translate-x-0 w-72 shadow-2xl' 
+            : '-translate-x-full lg:translate-x-0'
+        } ${
+          isCollapsedDesktop ? 'lg:w-20' : 'lg:w-64'
         }`}
       >
-        {/* BRAND HEADER */}
-        <div className="p-5 border-b border-[#262626] flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-rush-driver text-xl tracking-wider text-white font-bold">
-                GULPASH
-              </span>
-              <span className="text-[9px] uppercase tracking-[0.25em] bg-stone-800 text-stone-300 px-1.5 py-0.5 rounded font-mono font-bold">
-                PRO
+        {/* BRAND & HEADER */}
+        <div className="p-4 border-b border-[#242424] flex items-center justify-between min-h-16">
+          {!isCollapsedDesktop ? (
+            <div className="animate-in fade-in duration-200">
+              <div className="flex items-center gap-2">
+                <span className="font-rush-driver text-lg tracking-wider text-white font-bold">
+                  GULPASH
+                </span>
+                <span className="text-[9px] uppercase tracking-[0.2em] bg-stone-800 text-amber-400 px-1.5 py-0.5 rounded font-mono font-bold">
+                  ADMIN
+                </span>
+              </div>
+              <span className="text-[10px] text-stone-400 tracking-wider uppercase block mt-0.5 font-medium">
+                Control Center
               </span>
             </div>
-            <span className="text-[10px] text-stone-400 tracking-wider uppercase block mt-0.5 font-medium">
-              Store Control Center
-            </span>
-          </div>
+          ) : (
+            <div className="mx-auto text-amber-400 font-bold font-rush-driver text-lg">
+              GP
+            </div>
+          )}
 
-          <button
-            onClick={onExitAdmin}
-            title="View Storefront"
-            className="flex items-center gap-1 text-[11px] text-stone-400 hover:text-white bg-stone-900 hover:bg-stone-800 px-2.5 py-1.5 rounded border border-stone-800 transition-colors"
-          >
-            <span>Store</span>
-            <ExternalLink className="w-3 h-3" />
-          </button>
+          {/* Desktop Collapse Toggle Button */}
+          {onToggleCollapseDesktop && (
+            <button
+              type="button"
+              onClick={onToggleCollapseDesktop}
+              title={isCollapsedDesktop ? "Expand Sidebar" : "Collapse Sidebar"}
+              className="hidden lg:flex p-1.5 text-stone-400 hover:text-white rounded hover:bg-stone-800 transition-colors"
+            >
+              {isCollapsedDesktop ? (
+                <PanelLeftOpen className="w-4 h-4" />
+              ) : (
+                <PanelLeftClose className="w-4 h-4" />
+              )}
+            </button>
+          )}
         </div>
 
         {/* NAVIGATION LIST */}
         <nav className="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar text-xs">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isSectionActive = activeSection === item.id;
+            const isSectionActive = normalizedSection === item.id;
             const hasSubviews = item.subviews && item.subviews.length > 0;
 
             return (
@@ -221,38 +254,45 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 <button
                   type="button"
                   onClick={() => handleNavClick(item.id, item.subviews ? item.subviews[0].id : undefined)}
-                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-md font-medium transition-colors cursor-pointer group ${
+                  title={isCollapsedDesktop ? item.label : undefined}
+                  className={`w-full flex items-center ${
+                    isCollapsedDesktop ? 'justify-center px-2 py-3' : 'justify-between px-3 py-2.5'
+                  } rounded-lg font-medium transition-all cursor-pointer group ${
                     isSectionActive
-                      ? 'bg-stone-800/90 text-white shadow-xs font-semibold'
+                      ? 'bg-stone-800/95 text-white shadow-xs font-semibold border-l-2 border-amber-400'
                       : 'text-stone-400 hover:text-stone-100 hover:bg-stone-900/80'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <Icon className={`w-4 h-4 transition-colors ${
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <Icon className={`w-4 h-4 shrink-0 transition-colors ${
                       isSectionActive ? 'text-amber-400' : 'text-stone-400 group-hover:text-stone-200'
                     }`} />
-                    <span className="tracking-wide text-xs">{item.label}</span>
+                    {!isCollapsedDesktop && (
+                      <span className="tracking-wide text-xs truncate">{item.label}</span>
+                    )}
                   </div>
 
-                  <div className="flex items-center gap-1.5">
-                    {item.badge !== undefined && (
-                      <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
-                        item.badgeColor || 'bg-stone-700 text-white'
-                      }`}>
-                        {item.badge}
-                      </span>
-                    )}
-                    {hasSubviews && (
-                      <ChevronRight className={`w-3.5 h-3.5 transition-transform duration-200 text-stone-400 ${
-                        isSectionActive ? 'rotate-90 text-stone-300' : ''
-                      }`} />
-                    )}
-                  </div>
+                  {!isCollapsedDesktop && (
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {item.badge !== undefined && (
+                        <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+                          item.badgeColor || 'bg-stone-700 text-white'
+                        }`}>
+                          {item.badge}
+                        </span>
+                      )}
+                      {hasSubviews && item.subviews!.length > 1 && (
+                        <ChevronRight className={`w-3.5 h-3.5 transition-transform duration-200 text-stone-500 ${
+                          isSectionActive ? 'rotate-90 text-stone-300' : ''
+                        }`} />
+                      )}
+                    </div>
+                  )}
                 </button>
 
-                {/* Subviews */}
-                {isSectionActive && hasSubviews && (
-                  <div className="pl-6 pr-2 py-1 space-y-0.5 border-l border-stone-800 ml-5 my-1 animate-in fade-in slide-in-from-top-1">
+                {/* Subviews (Visible when section is active and sidebar is expanded) */}
+                {!isCollapsedDesktop && isSectionActive && hasSubviews && (
+                  <div className="pl-6 pr-2 py-1 space-y-0.5 border-l border-stone-800 ml-5 my-1 animate-in fade-in duration-150">
                     {item.subviews!.map((sub) => {
                       const isSubActive = activeSubview === sub.id;
                       return (
@@ -260,9 +300,9 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                           key={sub.id}
                           type="button"
                           onClick={() => handleNavClick(item.id, sub.id)}
-                          className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded text-[11px] transition-colors cursor-pointer text-left ${
+                          className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-md text-[11px] transition-colors cursor-pointer text-left ${
                             isSubActive
-                              ? 'bg-stone-800 text-amber-300 font-bold'
+                              ? 'bg-stone-800/90 text-amber-300 font-semibold'
                               : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900/50'
                           }`}
                         >
@@ -283,36 +323,52 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
         </nav>
 
         {/* FOOTER & STATUS */}
-        <div className="p-3.5 border-t border-[#262626] bg-[#0e0e0e] space-y-3 text-xs">
-          {/* Live System Indicator */}
-          <div className="flex items-center justify-between px-2 py-1.5 bg-stone-900/60 rounded border border-stone-800/60 text-[11px]">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-stone-300 font-mono text-[10px]">Production Sync</span>
-            </div>
-            <span className="text-[10px] text-emerald-400 font-bold">LIVE (38/38)</span>
-          </div>
-
-          {/* Admin User Info */}
-          <div className="flex items-center justify-between pt-1">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 flex items-center justify-center text-stone-950 font-bold text-xs shadow-xs">
-                GP
+        <div className="p-3 border-t border-[#242424] bg-[#0c0c0c] space-y-2 text-xs">
+          {!isCollapsedDesktop ? (
+            <>
+              {/* Live Baseline Indicator */}
+              <div className="flex items-center justify-between px-2.5 py-1.5 bg-stone-900/70 rounded border border-stone-800/70 text-[10px]">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-stone-300 font-mono">Catalog Baseline</span>
+                </div>
+                <span className="text-emerald-400 font-bold font-mono">38 ACTIVE</span>
               </div>
-              <div className="leading-tight">
-                <span className="font-medium text-stone-200 block text-[11px]">Admin Concierge</span>
-                <span className="text-[10px] text-stone-400">admin@gulpash.online</span>
-              </div>
-            </div>
 
-            <button
-              onClick={onExitAdmin}
-              title="Exit Admin Panel"
-              className="p-1.5 text-stone-400 hover:text-rose-400 rounded hover:bg-stone-900 transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
+              {/* Admin User Info & Exit */}
+              <div className="flex items-center justify-between pt-1">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 flex items-center justify-center text-stone-950 font-bold text-xs shrink-0 shadow-xs">
+                    GP
+                  </div>
+                  <div className="leading-tight truncate">
+                    <span className="font-semibold text-stone-200 block text-[11px] truncate">Admin Concierge</span>
+                    <span className="text-[9px] text-stone-500 font-mono">admin@gulpash.online</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={onExitAdmin}
+                  title="Return to Storefront"
+                  className="p-1.5 text-stone-400 hover:text-rose-400 rounded hover:bg-stone-900 transition-colors cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center gap-2 py-1">
+              <button
+                type="button"
+                onClick={onExitAdmin}
+                title="Return to Storefront"
+                className="p-2 text-stone-400 hover:text-rose-400 rounded hover:bg-stone-800 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
       </aside>
     </>
