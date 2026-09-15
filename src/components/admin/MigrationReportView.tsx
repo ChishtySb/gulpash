@@ -196,8 +196,8 @@ export const MigrationReportView: React.FC<MigrationReportViewProps> = ({ onNavi
               : 'text-[#7A766F] hover:text-[#1C1B1A]'
           }`}
         >
-          All 68 Products Audit
-          <span className="px-2 py-0.5 text-xs bg-[#E8E6E1] text-[#1C1B1A] rounded-full">68</span>
+          Catalog Products Audit
+          <span className="px-2 py-0.5 text-xs bg-[#E8E6E1] text-[#1C1B1A] rounded-full">{report.productAudits.length}</span>
         </button>
         <button
           onClick={() => setActiveTab('collections')}
@@ -208,7 +208,7 @@ export const MigrationReportView: React.FC<MigrationReportViewProps> = ({ onNavi
           }`}
         >
           Collections Map
-          <span className="px-2 py-0.5 text-xs bg-[#E8E6E1] text-[#1C1B1A] rounded-full">6</span>
+          <span className="px-2 py-0.5 text-xs bg-[#E8E6E1] text-[#1C1B1A] rounded-full">{report.metrics.collections.migrated}</span>
         </button>
         <button
           onClick={() => setActiveTab('categories')}
@@ -219,7 +219,7 @@ export const MigrationReportView: React.FC<MigrationReportViewProps> = ({ onNavi
           }`}
         >
           Categories Map
-          <span className="px-2 py-0.5 text-xs bg-[#E8E6E1] text-[#1C1B1A] rounded-full">5</span>
+          <span className="px-2 py-0.5 text-xs bg-[#E8E6E1] text-[#1C1B1A] rounded-full">{report.metrics.categories.migrated}</span>
         </button>
         <button
           onClick={() => setActiveTab('supabase')}
@@ -246,7 +246,7 @@ export const MigrationReportView: React.FC<MigrationReportViewProps> = ({ onNavi
                   <div>
                     <div className="text-sm font-medium text-[#1C1B1A]">Pricing Preserved (Zero Changes)</div>
                     <div className="text-xs text-[#7A766F] mt-0.5">
-                      All 68 products and 269 variants match the exact source prices (PKR 2,999 to 6,499). No rounding, no discounts altered.
+                      All {report.metrics.products.migrated} products and {report.metrics.variants.migrated} variants match the exact source prices (PKR 2,999 to 6,499). No rounding, no discounts altered.
                     </div>
                   </div>
                 </div>

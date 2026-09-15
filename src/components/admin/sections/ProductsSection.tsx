@@ -21,14 +21,14 @@ interface ProductsSectionProps {
   onNotify: (msg: string) => void;
 }
 
-// Pre-defined 6 Storefront Collections
+// Pre-defined 6 Active Storefront Collections (Source of Truth)
 const STOREFRONT_COLLECTIONS = [
-  { slug: 'luxury-formals', name: 'Luxury Formals' },
-  { slug: 'luxury-pret', name: 'Luxury Pret' },
-  { slug: 'velvet-edit', name: 'Velvet Edit' },
-  { slug: 'signature-raw-silk', name: 'Signature Raw Silk' },
-  { slug: 'wedding-festive', name: 'Wedding Festive' },
-  { slug: 'short-length-article', name: 'Short Length Article' }
+  { slug: 'new-arrivals', name: 'NEW ARRIVALS' },
+  { slug: 'best-selling', name: 'TRENDING' },
+  { slug: 'winter-collection', name: 'WINTER COLLECTION' },
+  { slug: 'co-ords', name: 'CO-ORDS' },
+  { slug: 'short-length-article', name: 'SHORT LENGTH' },
+  { slug: 'all', name: 'ALL ENSEMBLES' }
 ];
 
 export const ProductsSection: React.FC<ProductsSectionProps> = ({

@@ -137,6 +137,102 @@ function writeOrders(orders: any[]) {
   fs.writeFileSync(ORDERS_FILE, JSON.stringify(orders, null, 2), 'utf-8');
 }
 
+// Products, Collections, Categories, and CMS persistent files
+const PRODUCTS_FILE = path.join(DATA_DIR, 'products.json');
+const CMS_FILE = path.join(DATA_DIR, 'cms.json');
+const COLLECTIONS_FILE = path.join(DATA_DIR, 'collections.json');
+const CATEGORIES_FILE = path.join(DATA_DIR, 'categories.json');
+
+function readProducts(): any[] {
+  try {
+    if (fs.existsSync(PRODUCTS_FILE)) {
+      const content = fs.readFileSync(PRODUCTS_FILE, 'utf-8');
+      const parsed = JSON.parse(content);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (err) {
+    console.error('Failed reading products.json:', err);
+  }
+  const fallbackPath = path.join(process.cwd(), 'src', 'data', 'migratedProducts.json');
+  if (fs.existsSync(fallbackPath)) {
+    const list = JSON.parse(fs.readFileSync(fallbackPath, 'utf-8'));
+    writeProducts(list);
+    return list;
+  }
+  return [];
+}
+
+function writeProducts(products: any[]) {
+  fs.writeFileSync(PRODUCTS_FILE, JSON.stringify(products, null, 2), 'utf-8');
+}
+
+function readCollections(): any[] {
+  try {
+    if (fs.existsSync(COLLECTIONS_FILE)) {
+      const content = fs.readFileSync(COLLECTIONS_FILE, 'utf-8');
+      const parsed = JSON.parse(content);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (err) {
+    console.error('Failed reading collections.json:', err);
+  }
+  const fallbackPath = path.join(process.cwd(), 'src', 'data', 'migratedCollections.json');
+  if (fs.existsSync(fallbackPath)) {
+    const list = JSON.parse(fs.readFileSync(fallbackPath, 'utf-8'));
+    writeCollections(list);
+    return list;
+  }
+  return [];
+}
+
+function writeCollections(collections: any[]) {
+  fs.writeFileSync(COLLECTIONS_FILE, JSON.stringify(collections, null, 2), 'utf-8');
+}
+
+function readCategories(): any[] {
+  try {
+    if (fs.existsSync(CATEGORIES_FILE)) {
+      const content = fs.readFileSync(CATEGORIES_FILE, 'utf-8');
+      const parsed = JSON.parse(content);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (err) {
+    console.error('Failed reading categories.json:', err);
+  }
+  const fallbackPath = path.join(process.cwd(), 'src', 'data', 'migratedCategories.json');
+  if (fs.existsSync(fallbackPath)) {
+    const list = JSON.parse(fs.readFileSync(fallbackPath, 'utf-8'));
+    writeCategories(list);
+    return list;
+  }
+  return [];
+}
+
+function writeCategories(categories: any[]) {
+  fs.writeFileSync(CATEGORIES_FILE, JSON.stringify(categories, null, 2), 'utf-8');
+}
+
+function readCMS(): any {
+  try {
+    if (fs.existsSync(CMS_FILE)) {
+      return JSON.parse(fs.readFileSync(CMS_FILE, 'utf-8'));
+    }
+  } catch (err) {
+    console.error('Failed reading cms.json:', err);
+  }
+  return null;
+}
+
+function writeCMS(cms: any) {
+  fs.writeFileSync(CMS_FILE, JSON.stringify(cms, null, 2), 'utf-8');
+}
+
 // Media Assets management
 const MEDIA_DIR = path.join(DATA_DIR, 'media');
 const MEDIA_FILE = path.join(DATA_DIR, 'media_assets.json');
@@ -270,39 +366,145 @@ app.put('/api/settings', (req, res) => {
 // Products: Authoritative GulPash Anabya Catalog
 app.get('/api/products', (req, res) => {
   try {
-    const productsPath = path.join(process.cwd(), 'src', 'data', 'migratedProducts.json');
-    if (fs.existsSync(productsPath)) {
-      const data = JSON.parse(fs.readFileSync(productsPath, 'utf8'));
-      res.json(data);
-    } else {
-      res.json([]);
-    }
+    const list = readProducts();
+    res.json(list);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 });
 
+app.post('/api/products', (req, res) => {
+  try {
+    const products = readProducts();
+    const product = req.body;
+    if (!product.id) {
+      product.id = `gp-${Date.now()}`;
+    }
+    product.createdAt = product.createdAt || new Date().toISOString();
+    product.updatedAt = new Date().toISOString();
+    
+    products.unshift(product);
+    writeProducts(products);
+    res.json({ success: true, product });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.put('/api/products/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const products = readProducts();
+    const idx = products.findIndex((p: any) => p.id === id);
+    if (idx >= 0) {
+      products[idx] = { ...products[idx], ...req.body, updatedAt: new Date().toISOString() };
+      writeProducts(products);
+      res.json({ success: true, product: products[idx] });
+    } else {
+      const newProduct = { ...req.body, id, updatedAt: new Date().toISOString() };
+      products.unshift(newProduct);
+      writeProducts(products);
+      res.json({ success: true, product: newProduct });
+    }
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.delete('/api/products/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const hard = req.query.hard === 'true';
+    let products = readProducts();
+    if (hard) {
+      products = products.filter((p: any) => p.id !== id);
+    } else {
+      products = products.map((p: any) => p.id === id ? { ...p, isVisible: false, status: 'Archived', updatedAt: new Date().toISOString() } : p);
+    }
+    writeProducts(products);
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Categories API
 app.get('/api/categories', (req, res) => {
   try {
-    const p = path.join(process.cwd(), 'src', 'data', 'migratedCategories.json');
-    if (fs.existsSync(p)) {
-      res.json(JSON.parse(fs.readFileSync(p, 'utf8')));
+    const categories = readCategories();
+    res.json(categories);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/categories', (req, res) => {
+  try {
+    if (Array.isArray(req.body)) {
+      writeCategories(req.body);
+      res.json({ success: true, categories: req.body });
     } else {
-      res.json([]);
+      res.status(400).json({ error: 'Expected array of categories' });
     }
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 });
 
+// Collections API
 app.get('/api/collections', (req, res) => {
   try {
-    const p = path.join(process.cwd(), 'src', 'data', 'migratedCollections.json');
-    if (fs.existsSync(p)) {
-      res.json(JSON.parse(fs.readFileSync(p, 'utf8')));
+    const collections = readCollections();
+    res.json(collections);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/collections', (req, res) => {
+  try {
+    if (Array.isArray(req.body)) {
+      writeCollections(req.body);
+      res.json({ success: true, collections: req.body });
     } else {
-      res.json([]);
+      res.status(400).json({ error: 'Expected array of collections' });
     }
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/collections/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const collections = readCollections();
+    const idx = collections.findIndex((c: any) => c.id === id);
+    if (idx >= 0) {
+      collections[idx] = { ...collections[idx], ...req.body, updatedAt: new Date().toISOString() };
+      writeCollections(collections);
+      res.json({ success: true, collection: collections[idx] });
+    } else {
+      res.status(404).json({ error: 'Collection not found' });
+    }
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// CMS API
+app.get('/api/cms', (req, res) => {
+  try {
+    const cms = readCMS();
+    res.json(cms || {});
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/cms', (req, res) => {
+  try {
+    writeCMS(req.body);
+    res.json({ success: true, cms: req.body });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }

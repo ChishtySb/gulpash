@@ -1,0 +1,38 @@
+[
+  {
+    "id": "notif-1789457377253-7381",
+    "type": "PAYMENT_VERIFIED",
+    "title": "Payment Verified: #GP-AUDIT-1001",
+    "message": "Payment confirmed by GulPash Auditor. Order marked Ready to Dispatch.",
+    "orderId": "ord-test-1789457377093",
+    "orderNumber": "GP-AUDIT-1001",
+    "orderTotal": 4999,
+    "paymentMethod": "JazzCash",
+    "timestamp": "2026-09-15T07:29:37.253Z",
+    "read": false
+  },
+  {
+    "id": "notif-1789457377237-4152",
+    "type": "PAYMENT_ACTION_REQUIRED",
+    "title": "Payment Action Required: #GP-AUDIT-1001",
+    "message": "Proof rejected: \"Transaction ID not found in JazzCash statement\". Order remains active.",
+    "orderId": "ord-test-1789457377093",
+    "orderNumber": "GP-AUDIT-1001",
+    "orderTotal": 4999,
+    "paymentMethod": "JazzCash",
+    "timestamp": "2026-09-15T07:29:37.237Z",
+    "read": false
+  },
+  {
+    "id": "notif-1789457377115-5917",
+    "type": "NEW_ORDER",
+    "title": "New Order Placed: #GP-AUDIT-1001",
+    "message": "Customer ordered 1 item(s) totaling PKR 4,999 via JazzCash.",
+    "orderId": "ord-test-1789457377093",
+    "orderNumber": "GP-AUDIT-1001",
+    "orderTotal": 4999,
+    "paymentMethod": "JazzCash",
+    "timestamp": "2026-09-15T07:29:37.115Z",
+    "read": false
+  }
+]

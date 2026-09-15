@@ -457,3 +457,26 @@ export interface SiteSettings {
     ogImage: string;
   };
 }
+
+export interface ActivityLogItem {
+  id: string;
+  timestamp: string;
+  action: string;
+  category: 'product' | 'order' | 'media' | 'collection' | 'settings' | 'cms' | 'shipping' | 'system';
+  actor: string;
+  details: string;
+}
+
+export interface CatalogSyncConfig {
+  autoSyncEnabled: boolean;
+  syncIntervalMinutes: number;
+  newProductsAsDraft: boolean;
+  syncPrices: boolean;
+  syncDescriptions: boolean;
+  syncMedia: boolean;
+  lastSyncTimestamp: string;
+  lastSyncStatus: 'success' | 'failed' | 'in_progress' | 'idle';
+  totalProductsChecked: number;
+  totalProductsSynced: number;
+}
+

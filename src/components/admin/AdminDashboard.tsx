@@ -5,13 +5,19 @@ import {
   Plus, Edit, Trash2, Search, ArrowLeft, Save, Play, 
   Image as ImageIcon, RefreshCw, X, ShieldAlert, Eye, EyeOff,
   Database, ExternalLink, ArrowUp, ArrowDown, Video, Layers, Globe, LogOut, Upload, Loader2,
-  Clock, Check, Copy, CheckCircle, XCircle, CreditCard, Smartphone, Building2, MessageCircle
+  Clock, Check, Copy, CheckCircle, XCircle, CreditCard, Smartphone, Building2, MessageCircle,
+  ShieldCheck, Sparkles, History
 } from 'lucide-react';
 import { Product, Order, CMSConfig, SiteSettings, ProductSize, OrderStatus, ProductVariantDetailed, Category, Collection } from '../../types';
 import { StorageService } from '../../lib/storage';
 import { formatPrice } from '../../lib/currency';
 import { MigrationReportView } from './MigrationReportView';
 import { getSupabaseClient } from '../../lib/supabaseClient';
+import { StorefrontControlAuditSection } from './sections/StorefrontControlAuditSection';
+import { MediaLibrarySection } from './sections/MediaLibrarySection';
+import { MarketingSeoSection } from './sections/MarketingSeoSection';
+import { ActivityLogSection } from './sections/ActivityLogSection';
+import { CatalogSyncSection } from './sections/CatalogSyncSection';
 import { 
   resolveWhatsAppSettings, 
   getWhatsAppUrl, 
@@ -27,7 +33,7 @@ interface AdminDashboardProps {
 }
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onNavigateToStoreProduct }) => {
-  const [activeTab, setActiveTab] = useState<'analytics' | 'products' | 'orders' | 'categories' | 'cms' | 'settings' | 'migration'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'products' | 'orders' | 'categories' | 'cms' | 'settings' | 'migration' | 'audit' | 'media' | 'marketing' | 'activity' | 'sync'>('analytics');
   
   // Data states
   const [products, setProducts] = useState<Product[]>(StorageService.getProducts(true));
@@ -642,6 +648,56 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
           </button>
 
           <button
+            onClick={() => setActiveTab('audit')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-sm text-xs font-bold uppercase tracking-wider transition-colors ${
+              activeTab === 'audit' ? 'bg-[#181818] text-white' : 'bg-white text-[#555] hover:text-black'
+            }`}
+          >
+            <ShieldCheck className="w-4 h-4 text-[#c59b66]" />
+            <span>Control Audit</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('media')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-sm text-xs font-bold uppercase tracking-wider transition-colors ${
+              activeTab === 'media' ? 'bg-[#181818] text-white' : 'bg-white text-[#555] hover:text-black'
+            }`}
+          >
+            <ImageIcon className="w-4 h-4 text-[#c59b66]" />
+            <span>Media Library</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('marketing')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-sm text-xs font-bold uppercase tracking-wider transition-colors ${
+              activeTab === 'marketing' ? 'bg-[#181818] text-white' : 'bg-white text-[#555] hover:text-black'
+            }`}
+          >
+            <Sparkles className="w-4 h-4 text-[#c59b66]" />
+            <span>Marketing & SEO</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('activity')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-sm text-xs font-bold uppercase tracking-wider transition-colors ${
+              activeTab === 'activity' ? 'bg-[#181818] text-white' : 'bg-white text-[#555] hover:text-black'
+            }`}
+          >
+            <History className="w-4 h-4 text-[#c59b66]" />
+            <span>Audit Log</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('sync')}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-sm text-xs font-bold uppercase tracking-wider transition-colors ${
+              activeTab === 'sync' ? 'bg-[#181818] text-white' : 'bg-white text-[#555] hover:text-black'
+            }`}
+          >
+            <RefreshCw className="w-4 h-4 text-[#c59b66]" />
+            <span>Catalog Sync</span>
+          </button>
+
+          <button
             onClick={() => setActiveTab('migration')}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-sm text-xs font-bold uppercase tracking-wider transition-colors border ${
               activeTab === 'migration' 
@@ -650,9 +706,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
             }`}
           >
             <Database className="w-4 h-4 text-emerald-600" />
-            <span>Catalog Migration Audit</span>
+            <span>Catalog Audit</span>
             <span className="bg-emerald-700 text-white text-[9px] px-1.5 py-0.5 rounded font-mono font-bold tracking-tight">
-              68/68 PASS
+              {products.length} ACTIVE
             </span>
           </button>
         </div>
@@ -2676,6 +2732,51 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExitAdmin, onN
         {activeTab === 'migration' && (
           <div className="space-y-6 animate-in fade-in">
             <MigrationReportView onNavigateToProduct={onNavigateToStoreProduct} />
+          </div>
+        )}
+
+        {/* 7. STOREFRONT CONTROL AUDIT TAB */}
+        {activeTab === 'audit' && (
+          <div className="space-y-6 animate-in fade-in">
+            <StorefrontControlAuditSection 
+              onNavigate={(tab) => {
+                if (tab === 'storefront') setActiveTab('categories');
+                else if (tab === 'cms') setActiveTab('cms');
+                else if (tab === 'settings') setActiveTab('settings');
+                else if (tab === 'media') setActiveTab('media');
+                else if (tab === 'marketing') setActiveTab('marketing');
+                else if (tab === 'products') setActiveTab('products');
+                else if (tab === 'orders') setActiveTab('orders');
+              }} 
+            />
+          </div>
+        )}
+
+        {/* 8. MEDIA LIBRARY TAB */}
+        {activeTab === 'media' && (
+          <div className="space-y-6 animate-in fade-in">
+            <MediaLibrarySection onNotify={triggerNotice} />
+          </div>
+        )}
+
+        {/* 9. MARKETING & SEO TAB */}
+        {activeTab === 'marketing' && (
+          <div className="space-y-6 animate-in fade-in">
+            <MarketingSeoSection onNotify={triggerNotice} />
+          </div>
+        )}
+
+        {/* 10. ACTIVITY AUDIT TRAIL TAB */}
+        {activeTab === 'activity' && (
+          <div className="space-y-6 animate-in fade-in">
+            <ActivityLogSection onNotify={triggerNotice} />
+          </div>
+        )}
+
+        {/* 11. CATALOG SYNC TAB */}
+        {activeTab === 'sync' && (
+          <div className="space-y-6 animate-in fade-in">
+            <CatalogSyncSection onNotify={triggerNotice} />
           </div>
         )}
 

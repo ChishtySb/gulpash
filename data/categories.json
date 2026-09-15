@@ -1,0 +1,52 @@
+[
+  {
+    "id": "93053437-9ec9-4242-a7b9-a99514548627",
+    "name": "3-Piece Ensembles",
+    "slug": "3-piece-ensembles",
+    "description": "Exquisite 3-piece designer ensembles complete with shirt, trouser, and dupatta.",
+    "imageUrl": "/products/anabya/aazure-3piece/01_49909420425449.jpg",
+    "order": 1,
+    "isVisible": true,
+    "productCount": 36
+  },
+  {
+    "id": "7138fe69-1731-41d8-ab8f-cad303d82089",
+    "name": "2-Piece Ensembles",
+    "slug": "2-piece-ensembles",
+    "description": "Versatile 2-piece shirts and trousers with contemporary tailoring and embroidery.",
+    "imageUrl": "/products/anabya/zaarif-cotton-3-pc-emb/01_49440046285033.jpg",
+    "order": 2,
+    "isVisible": true,
+    "productCount": 2
+  },
+  {
+    "id": "d265519d-8ed1-4fdd-ad7c-a775c0a9f636",
+    "name": "Stitched",
+    "slug": "stitched",
+    "description": "GulPash luxury Stitched ready-to-wear ensembles. Master-crafted Pakistani tailoring and premium textiles.",
+    "imageUrl": "/products/anabya/alize-3pcs/01_49440049594601.jpg",
+    "order": 3,
+    "isVisible": true,
+    "productCount": 0
+  },
+  {
+    "id": "3dbf3569-cf4c-40a5-a6a1-ac8f5a49a0a9",
+    "name": "Luxury Pret",
+    "slug": "luxury-pret",
+    "description": "Handcrafted festive pret with intricate embroidery and timeless silhouettes.",
+    "imageUrl": "/products/anabya/zar-e-sabz-3piece/01_50358171500777.png",
+    "order": 4,
+    "isVisible": true,
+    "productCount": 0
+  },
+  {
+    "id": "f4d58d48-6c5c-4add-a10b-df56f77b0663",
+    "name": "Unstitched / Stitched",
+    "slug": "unstitched-stitched",
+    "description": "GulPash signature collections crafted in premium lawn, chiffon, dhank, and linen.",
+    "imageUrl": "/products/anabya/amber-3piece/01_49909420589289.jpg",
+    "order": 5,
+    "isVisible": true,
+    "productCount": 0
+  }
+]

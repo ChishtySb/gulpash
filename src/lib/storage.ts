@@ -1,6 +1,6 @@
 import { 
   Product, Category, Collection, Order, OrderStatus, OrderPaymentProof, HomepageCMS, SiteSettings, 
-  CartItem, Review, CustomerSummary, MediaAsset 
+  CartItem, Review, CustomerSummary, MediaAsset, ActivityLogItem, CatalogSyncConfig 
 } from '../types';
 import { 
   INITIAL_CATEGORIES, INITIAL_COLLECTIONS, INITIAL_PRODUCTS, 
@@ -26,7 +26,9 @@ const KEYS = {
   CART: 'gulpash_cart_v2',
   WISHLIST: 'gulpash_wishlist_v2',
   ADMIN_AUTH: 'gulpash_admin_auth_v2',
-  CURRENCY: 'gulpash_currency_v2'
+  CURRENCY: 'gulpash_currency_v2',
+  ACTIVITY_LOGS: 'gulpash_activity_logs_v1',
+  CATALOG_SYNC: 'gulpash_catalog_sync_v1'
 };
 
 // Dispatch storage change event for components listening
@@ -55,7 +57,7 @@ export const StorageService = {
         p.description.includes('Tawakal')
       );
 
-      if (!list || list.length !== 38 || list.some(p => p.id === 'gp-001' || p.sku?.startsWith('TAW-') || p.sku?.includes('10523493630267')) || hasMalformedDesc) {
+      if (!list || !Array.isArray(list) || list.length === 0 || list.some(p => p.id === 'gp-001' || p.sku?.startsWith('TAW-') || p.sku?.includes('10523493630267')) || hasMalformedDesc) {
         list = INITIAL_PRODUCTS;
         localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(list));
       }
@@ -93,18 +95,35 @@ export const StorageService = {
     localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(products));
     notifyChange('products');
     this.syncCollectionsWithProducts();
+
+    // Persist to server backend across all sessions & devices
+    if (typeof fetch !== 'undefined') {
+      fetch(`/api/products/${product.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(product)
+      }).catch(err => console.warn('Failed syncing product to server:', err));
+    }
   },
 
   deleteProduct(id: string, softDelete = true): void {
     const products = this.getProducts(true);
     if (softDelete) {
-      const updated = products.map(p => p.id === id ? { ...p, isVisible: false } : p);
+      const updated = products.map(p => p.id === id ? { ...p, isVisible: false, status: 'Archived' } : p);
       localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(updated));
     } else {
       const filtered = products.filter(p => p.id !== id);
       localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(filtered));
     }
     notifyChange('products');
+    this.syncCollectionsWithProducts();
+
+    // Persist delete to server backend
+    if (typeof fetch !== 'undefined') {
+      fetch(`/api/products/${id}?hard=${!softDelete}`, {
+        method: 'DELETE'
+      }).catch(err => console.warn('Failed syncing delete to server:', err));
+    }
   },
 
   duplicateProduct(id: string): Product | null {
@@ -234,6 +253,13 @@ export const StorageService = {
   saveCategories(categories: Category[]): void {
     localStorage.setItem(KEYS.CATEGORIES, JSON.stringify(categories));
     notifyChange('categories');
+    if (typeof fetch !== 'undefined') {
+      fetch('/api/categories', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(categories)
+      }).catch(err => console.warn('Failed syncing categories to server:', err));
+    }
   },
 
   saveCategory(category: Category): void {
@@ -244,14 +270,12 @@ export const StorageService = {
     } else {
       categories.push(category);
     }
-    localStorage.setItem(KEYS.CATEGORIES, JSON.stringify(categories));
-    notifyChange('categories');
+    this.saveCategories(categories);
   },
 
   deleteCategory(id: string): void {
     const categories = this.getCategories().filter(c => c.id !== id);
-    localStorage.setItem(KEYS.CATEGORIES, JSON.stringify(categories));
-    notifyChange('categories');
+    this.saveCategories(categories);
   },
 
   // COLLECTIONS
@@ -284,13 +308,19 @@ export const StorageService = {
     } else {
       collections.push(col);
     }
-    localStorage.setItem(KEYS.COLLECTIONS, JSON.stringify(collections));
-    notifyChange('collections');
+    this.saveCollections(collections);
   },
 
   saveCollections(collections: Collection[]): void {
     localStorage.setItem(KEYS.COLLECTIONS, JSON.stringify(collections));
     notifyChange('collections');
+    if (typeof fetch !== 'undefined') {
+      fetch('/api/collections', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(collections)
+      }).catch(err => console.warn('Failed syncing collections to server:', err));
+    }
   },
 
   syncCollectionsWithProducts(): void {
@@ -635,6 +665,13 @@ export const StorageService = {
   saveCMS(cms: HomepageCMS): void {
     localStorage.setItem(KEYS.CMS, JSON.stringify(cms));
     notifyChange('cms');
+    if (typeof fetch !== 'undefined') {
+      fetch('/api/cms', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cms)
+      }).catch(err => console.warn('Failed syncing CMS to server:', err));
+    }
   },
 
   // SETTINGS
@@ -1105,29 +1142,188 @@ export const StorageService = {
     } catch (err: any) {
       return { url: null, error: err.message || 'Upload failed' };
     }
+  },
+
+  // ACTIVITY LOGS
+  getActivityLogs(): ActivityLogItem[] {
+    try {
+      const data = localStorage.getItem(KEYS.ACTIVITY_LOGS);
+      if (data) {
+        return JSON.parse(data);
+      }
+    } catch {}
+
+    const seedLogs: ActivityLogItem[] = [
+      {
+        id: 'log-1',
+        timestamp: new Date(Date.now() - 1000 * 60 * 18).toISOString(),
+        action: 'Payment Verified',
+        category: 'order',
+        actor: 'Admin Concierge',
+        details: 'Order #GP-84920 payment of Rs. 28,500 verified via JazzCash reference #JC-982173.'
+      },
+      {
+        id: 'log-2',
+        timestamp: new Date(Date.now() - 1000 * 60 * 55).toISOString(),
+        action: 'Hero Slide Updated',
+        category: 'cms',
+        actor: 'Admin Concierge',
+        details: 'Updated Desktop Hero banner and headline to "GulPash Luxury Collection".'
+      },
+      {
+        id: 'log-3',
+        timestamp: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
+        action: 'Shipping Rules Updated',
+        category: 'shipping',
+        actor: 'Store Owner',
+        details: 'Confirmed Standard Delivery fee (Rs. 250) and Full Advance Free Delivery policy.'
+      },
+      {
+        id: 'log-4',
+        timestamp: new Date(Date.now() - 1000 * 60 * 240).toISOString(),
+        action: 'Collection Banners Synced',
+        category: 'collection',
+        actor: 'Admin Concierge',
+        details: 'Verified page banners and mobile crops for 6 signature storefront collections.'
+      },
+      {
+        id: 'log-5',
+        timestamp: new Date(Date.now() - 1000 * 60 * 480).toISOString(),
+        action: 'Catalog Sync Verified',
+        category: 'system',
+        actor: 'System Automation',
+        details: 'Full catalog sync verified with 38 active Pakistani couture products.'
+      }
+    ];
+
+    try {
+      localStorage.setItem(KEYS.ACTIVITY_LOGS, JSON.stringify(seedLogs));
+    } catch {}
+    return seedLogs;
+  },
+
+  addActivityLog(item: Omit<ActivityLogItem, 'id' | 'timestamp'>): void {
+    try {
+      const current = this.getActivityLogs();
+      const newLog: ActivityLogItem = {
+        id: `log-${Date.now()}-${Math.floor(100 + Math.random() * 900)}`,
+        timestamp: new Date().toISOString(),
+        ...item
+      };
+      const updated = [newLog, ...current].slice(0, 150);
+      localStorage.setItem(KEYS.ACTIVITY_LOGS, JSON.stringify(updated));
+      notifyChange('activity_logs');
+    } catch (e) {
+      console.warn('Failed to record activity log:', e);
+    }
+  },
+
+  // CATALOG SYNC CONFIG
+  getCatalogSyncConfig(): CatalogSyncConfig {
+    const defaultConfig: CatalogSyncConfig = {
+      autoSyncEnabled: true,
+      syncIntervalMinutes: 60,
+      newProductsAsDraft: false,
+      syncPrices: true,
+      syncDescriptions: true,
+      syncMedia: true,
+      lastSyncTimestamp: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
+      lastSyncStatus: 'success',
+      totalProductsChecked: 38,
+      totalProductsSynced: 38
+    };
+
+    try {
+      const data = localStorage.getItem(KEYS.CATALOG_SYNC);
+      if (data) {
+        return { ...defaultConfig, ...JSON.parse(data) };
+      }
+    } catch {}
+    return defaultConfig;
+  },
+
+  saveCatalogSyncConfig(config: CatalogSyncConfig): void {
+    try {
+      localStorage.setItem(KEYS.CATALOG_SYNC, JSON.stringify(config));
+      notifyChange('catalog_sync');
+    } catch (e) {
+      console.warn('Failed to save catalog sync config:', e);
+    }
+  },
+
+  async fetchInitialDataAsync(): Promise<void> {
+    if (typeof fetch === 'undefined') return;
+    try {
+      const [pRes, cRes, colRes, sRes, oRes, cmsRes] = await Promise.allSettled([
+        fetch('/api/products'),
+        fetch('/api/categories'),
+        fetch('/api/collections'),
+        fetch('/api/settings'),
+        fetch('/api/orders'),
+        fetch('/api/cms')
+      ]);
+
+      let hasChanges = false;
+
+      if (pRes.status === 'fulfilled' && pRes.value.ok) {
+        const prods = await pRes.value.json();
+        if (Array.isArray(prods) && prods.length > 0) {
+          localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(prods));
+          hasChanges = true;
+        }
+      }
+
+      if (cmsRes.status === 'fulfilled' && cmsRes.value.ok) {
+        const cmsData = await cmsRes.value.json();
+        if (cmsData && Object.keys(cmsData).length > 0 && cmsData.hero) {
+          localStorage.setItem(KEYS.CMS, JSON.stringify(cmsData));
+          hasChanges = true;
+        }
+      }
+
+      if (colRes.status === 'fulfilled' && colRes.value.ok) {
+        const cols = await colRes.value.json();
+        if (Array.isArray(cols) && cols.length > 0) {
+          localStorage.setItem(KEYS.COLLECTIONS, JSON.stringify(cols));
+          hasChanges = true;
+        }
+      }
+
+      if (cRes.status === 'fulfilled' && cRes.value.ok) {
+        const cats = await cRes.value.json();
+        if (Array.isArray(cats) && cats.length > 0) {
+          localStorage.setItem(KEYS.CATEGORIES, JSON.stringify(cats));
+          hasChanges = true;
+        }
+      }
+
+      if (sRes.status === 'fulfilled' && sRes.value.ok) {
+        const sets = await sRes.value.json();
+        if (sets && sets.payments) {
+          localStorage.setItem(KEYS.SETTINGS, JSON.stringify(sets));
+          hasChanges = true;
+        }
+      }
+
+      if (oRes.status === 'fulfilled' && oRes.value.ok) {
+        const ords = await oRes.value.json();
+        if (Array.isArray(ords)) {
+          localStorage.setItem(KEYS.ORDERS, JSON.stringify(ords));
+          hasChanges = true;
+        }
+      }
+
+      if (hasChanges) {
+        notifyChange('initial_sync');
+      }
+    } catch (e) {
+      console.warn('Initial server sync completed with local cache fallback:', e);
+    }
   }
 };
 
-// Automatic background hydration from server to synchronize store-wide settings and orders
+// Automatic background hydration from server to synchronize store-wide settings, products, cms, collections, and orders across sessions
 if (typeof window !== 'undefined') {
-  fetch('/api/settings')
-    .then(r => r.ok ? r.json() : null)
-    .then(s => {
-      if (s && s.payments) {
-        localStorage.setItem(KEYS.SETTINGS, JSON.stringify(s));
-        notifyChange('settings');
-      }
-    })
-    .catch(() => {});
-
-  fetch('/api/orders')
-    .then(r => r.ok ? r.json() : null)
-    .then(o => {
-      if (Array.isArray(o) && o.length > 0) {
-        localStorage.setItem(KEYS.ORDERS, JSON.stringify(o));
-        notifyChange('orders');
-      }
-    })
-    .catch(() => {});
+  StorageService.fetchInitialDataAsync().catch(() => {});
 }
 

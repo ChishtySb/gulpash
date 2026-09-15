@@ -75,6 +75,8 @@ export function normalizeWhatsAppDestination(rawNumber?: string | null): string 
   return digits || DEFAULT_WHATSAPP_NUMBER_DESTINATION;
 }
 
+export const normalizeWhatsAppNumber = normalizeWhatsAppDestination;
+
 /**
  * Formats visible customer-facing number.
  * "Do NOT display +92 format to the customer unless the existing UI specifically requires international formatting."
