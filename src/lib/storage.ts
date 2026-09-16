@@ -107,6 +107,30 @@ export const StorageService = {
     }
   },
 
+  async saveProductAsync(product: Product): Promise<{ success: boolean; error?: string }> {
+    try {
+      this.saveProduct(product);
+      if (typeof fetch !== 'undefined') {
+        try {
+          const res = await fetch(`/api/products/${product.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(product)
+          });
+          if (!res.ok) {
+            console.warn('Server product update returned non-OK status:', res.status);
+          }
+        } catch (serverErr: any) {
+          console.warn('Server product update offline or network delay:', serverErr?.message);
+        }
+      }
+      return { success: true };
+    } catch (err: any) {
+      console.error('Failed saveProductAsync:', err);
+      return { success: false, error: err?.message || 'Failed saving product' };
+    }
+  },
+
   deleteProduct(id: string, softDelete = true): void {
     const products = this.getProducts(true);
     if (softDelete) {
@@ -420,6 +444,53 @@ export const StorageService = {
     }
   },
 
+  async updateCollectionAsync(id: string, updates: Partial<Collection>): Promise<{ success: boolean; error?: string }> {
+    const collections = this.getCollections();
+    const idx = collections.findIndex(c => c.id === id);
+    if (idx >= 0) {
+      collections[idx] = { ...collections[idx], ...updates };
+      localStorage.setItem(KEYS.COLLECTIONS, JSON.stringify(collections));
+      notifyChange('collections');
+
+      // Sync with Express server
+      if (typeof fetch !== 'undefined') {
+        try {
+          await fetch('/api/collections', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(collections)
+          });
+        } catch (e) {
+          console.warn('Server collections sync note:', e);
+        }
+      }
+
+      // Persist to Supabase collections table
+      const { getSupabaseClient } = await import('./supabaseClient');
+      const supabase = getSupabaseClient();
+      if (supabase) {
+        const item = collections[idx];
+        const { error } = await supabase.from('collections').update({
+          name: item.name,
+          description: item.description || '',
+          image_url: item.imageUrl || item.image || null,
+          banner_url: item.bannerDesktopImage || item.bannerUrl || null,
+          display_order: Number(item.order) || 1,
+          updated_at: new Date().toISOString()
+        }).eq('id', id);
+
+        if (error) {
+          if (error.message?.includes('row-level security') || error.code === '42501') {
+            throw new Error(`Supabase DB RLS error: Insufficient permissions to update "collections" table. (${error.message})`);
+          }
+          throw new Error(`Supabase DB error (${error.code || 'REST'}): ${error.message}`);
+        }
+      }
+    }
+
+    return { success: true };
+  },
+
   // ORDERS
   getOrders(): Order[] {
     try {
@@ -673,6 +744,60 @@ export const StorageService = {
         body: JSON.stringify(cms)
       }).catch(err => console.warn('Failed syncing CMS to server:', err));
     }
+    // Also trigger async Supabase persistence in background
+    this.saveCMSAsync(cms).catch(err => {
+      console.warn('Supabase CMS persistence background sync note:', err?.message || err);
+    });
+  },
+
+  async saveCMSAsync(cms: HomepageCMS): Promise<{ success: boolean; error?: string }> {
+    // 1. Persist to localStorage synchronously for immediate client-side reactivity
+    localStorage.setItem(KEYS.CMS, JSON.stringify(cms));
+    notifyChange('cms');
+
+    // 2. Persist to Express custom server API
+    if (typeof fetch !== 'undefined') {
+      try {
+        await fetch('/api/cms', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(cms)
+        });
+      } catch (e) {
+        console.warn('Server CMS update non-fatal error:', e);
+      }
+    }
+
+    // 3. Persist directly to Supabase homepage_cms table
+    const { getSupabaseClient } = await import('./supabaseClient');
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      // Upsert hero section config
+      const { error: heroErr } = await supabase.from('homepage_cms').upsert({
+        section_key: 'hero',
+        data: cms.hero || {},
+        is_active: true,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'section_key' });
+
+      // Upsert full homepage CMS snapshot
+      const { error: fullErr } = await supabase.from('homepage_cms').upsert({
+        section_key: 'homepage',
+        data: cms,
+        is_active: true,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'section_key' });
+
+      if (heroErr || fullErr) {
+        const err = heroErr || fullErr;
+        if (err?.message?.includes('row-level security') || err?.code === '42501') {
+          throw new Error(`Supabase DB RLS error: Insufficient permissions to update "homepage_cms" table. (${err.message})`);
+        }
+        throw new Error(`Supabase DB error (${err?.code || 'REST'}): ${err?.message || 'Failed updating homepage_cms'}`);
+      }
+    }
+
+    return { success: true };
   },
 
   // SETTINGS
@@ -819,6 +944,55 @@ export const StorageService = {
     syncWhatsAppToSupabase(waConfig).catch(err => {
       console.warn('Supabase WhatsApp sync note:', err);
     });
+  },
+
+  async saveSettingsAsync(settings: SiteSettings): Promise<{ success: boolean; error?: string }> {
+    if (settings.payments && settings.shipping) {
+      settings.shipping.codEnabled = settings.payments.cod.enabled;
+      settings.shipping.bankTransferEnabled = settings.payments.bankTransfer.enabled;
+    }
+
+    const waConfig = resolveWhatsAppSettings(settings);
+    settings.whatsappAssistance = waConfig;
+    settings.whatsappNumber = waConfig.number;
+    settings.whatsappDefaultMessage = waConfig.defaultMessage;
+
+    // 1. Persist to localStorage synchronously
+    localStorage.setItem(KEYS.SETTINGS, JSON.stringify(settings));
+    notifyChange('settings');
+
+    // 2. Persist to Express server
+    if (typeof fetch !== 'undefined') {
+      try {
+        await fetch('/api/settings', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(settings)
+        });
+      } catch (e) {
+        console.warn('Server settings update non-fatal note:', e);
+      }
+    }
+
+    // 3. Persist to Supabase site_settings table
+    const { getSupabaseClient } = await import('./supabaseClient');
+    const supabase = getSupabaseClient();
+    if (supabase) {
+      const { error: setErr } = await supabase.from('site_settings').upsert({
+        setting_key: 'general_settings',
+        setting_value: settings,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'setting_key' });
+
+      if (setErr) {
+        if (setErr.message?.includes('row-level security') || setErr.code === '42501') {
+          throw new Error(`Supabase DB RLS error: Insufficient permissions to update "site_settings" table. (${setErr.message})`);
+        }
+        throw new Error(`Supabase DB error (${setErr.code || 'REST'}): ${setErr.message}`);
+      }
+    }
+
+    return { success: true };
   },
 
   // CART
@@ -1047,99 +1221,156 @@ export const StorageService = {
     }
   },
 
+  // SUPABASE STORAGE UPLOADER
+  async uploadToSupabaseStorage(
+    bucket: 'product-images' | 'hero-images' | 'hero-videos' | 'category-images' | 'site-assets',
+    file: File,
+    pathPrefix = '',
+    specMetadata?: { dimensions?: string; aspectRatio?: string; label?: string }
+  ): Promise<{ url: string; storagePath: string; bucket: string; asset?: MediaAsset }> {
+    const { getSupabaseClient } = await import('./supabaseClient');
+    const supabase = getSupabaseClient();
+
+    if (!supabase) {
+      throw new Error('Supabase client is not configured. Please verify environment credentials.');
+    }
+
+    const isVideo = file.type.startsWith('video/') || file.name.endsWith('.mp4') || file.name.endsWith('.webm');
+    const rawExt = file.name.split('.').pop()?.toLowerCase() || (isVideo ? 'mp4' : 'jpg');
+    const cleanBase = file.name.substring(0, file.name.lastIndexOf('.') || file.name.length)
+      .replace(/[^a-zA-Z0-9_-]/g, '_')
+      .toLowerCase();
+    const cleanName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}_${cleanBase}.${rawExt}`;
+    const cleanPrefix = pathPrefix.replace(/^\/+|\/+$/g, '');
+    const storagePath = cleanPrefix ? `${cleanPrefix}/${cleanName}` : cleanName;
+
+    // Detect valid MIME type
+    const mimeType = file.type || (isVideo ? 'video/mp4' : rawExt === 'png' ? 'image/png' : rawExt === 'webp' ? 'image/webp' : 'image/jpeg');
+
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .upload(storagePath, file, {
+        contentType: mimeType,
+        cacheControl: '3600',
+        upsert: true
+      });
+
+    if (error) {
+      console.error(`Supabase Storage upload error for bucket "${bucket}":`, error);
+      if (error.message?.includes('row-level security') || (error as any).statusCode === 403 || (error as any).status === 403) {
+        throw new Error(`Supabase Storage RLS error: Insufficient permissions to upload to "${bucket}" bucket. (${error.message}). Please ensure admin is authenticated.`);
+      }
+      throw new Error(`Supabase Storage upload failed: ${error.message}`);
+    }
+
+    if (!data || !data.path) {
+      throw new Error('Supabase Storage upload succeeded but returned no object path.');
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(data.path);
+
+    const publicUrl = publicUrlData?.publicUrl;
+    if (!publicUrl || publicUrl.startsWith('blob:') || publicUrl.startsWith('data:')) {
+      throw new Error('Invalid public URL returned by Supabase Storage.');
+    }
+
+    // Register asset in Media Library
+    const asset: MediaAsset = {
+      id: `media_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+      url: publicUrl,
+      fileName: file.name,
+      dimensions: specMetadata?.dimensions || (isVideo ? '1080 × 1350 px' : '1200 × 1500 px'),
+      aspectRatio: specMetadata?.aspectRatio || '4:5',
+      fileSize: `${Math.round(file.size / 1024)} KB`,
+      uploadedAt: new Date().toISOString(),
+      mediaType: isVideo ? 'video' : 'image',
+      category: (bucket === 'hero-images' || bucket === 'hero-videos' ? 'homepage-image' : bucket === 'category-images' ? 'collection-banner' : bucket === 'product-images' ? 'product-image' : 'brand-asset') as any,
+      usedIn: specMetadata?.label ? [specMetadata.label] : []
+    };
+    this.saveMediaAsset(asset);
+
+    return {
+      url: publicUrl,
+      storagePath: data.path,
+      bucket,
+      asset
+    };
+  },
+
   async uploadMediaFile(
     file: File, 
     category: MediaAsset['category'] = 'product-image', 
     usedIn: string[] = []
   ): Promise<{ url: string; asset?: MediaAsset }> {
-    return new Promise((resolve, reject) => {
-      const isVideo = file.type.startsWith('video/') || file.name.endsWith('.mp4') || file.name.endsWith('.webm');
-      const reader = new FileReader();
-
-      reader.onload = async () => {
-        const base64Data = reader.result as string;
-        try {
-          const res = await fetch('/api/media/upload', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              data: base64Data,
-              fileName: file.name,
-              category,
-              usedIn,
-              fileSize: `${Math.round(file.size / 1024)} KB`,
-              mediaType: isVideo ? 'video' : 'image',
-              dimensions: isVideo ? '1080 × 1350 px' : '1200 × 1500 px',
-              aspectRatio: '4:5'
-            })
-          });
-
-          if (res.ok) {
-            const json = await res.json();
-            if (json.asset) {
-              this.saveMediaAsset(json.asset);
-            }
-            resolve({ url: json.url || base64Data, asset: json.asset });
-            return;
-          }
-        } catch (e) {
-          console.warn('Server media upload failed, fallback to local storage:', e);
-        }
-
-        // Fallback to local Data URL
-        const localAsset: MediaAsset = {
-          id: `media_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`,
-          url: base64Data,
-          fileName: file.name,
-          dimensions: isVideo ? '1080 × 1350 px' : '1200 × 1500 px',
-          aspectRatio: '4:5',
-          fileSize: `${Math.round(file.size / 1024)} KB`,
-          uploadedAt: new Date().toISOString(),
-          mediaType: isVideo ? 'video' : 'image',
-          category,
-          usedIn
-        };
-        this.saveMediaAsset(localAsset);
-        resolve({ url: base64Data, asset: localAsset });
-      };
-
-      reader.onerror = () => reject(new Error('File reading error'));
-      reader.readAsDataURL(file);
-    });
-  },
-
-  // SUPABASE STORAGE UPLOADER
-  async uploadMedia(bucket: 'product-images' | 'hero-images' | 'hero-videos', file: File, pathPrefix = ''): Promise<{ url: string | null; error: string | null }> {
-    const { getSupabaseClient } = await import('./supabaseClient');
-    const supabase = getSupabaseClient();
+    const isVideo = file.type.startsWith('video/') || file.name.endsWith('.mp4') || file.name.endsWith('.webm');
     
-    if (!supabase) {
-      // Create a local object URL for preview if Supabase remote credentials are not set
-      const localUrl = URL.createObjectURL(file);
-      return { url: localUrl, error: null };
-    }
+    // Auto-route category to appropriate Supabase Storage bucket
+    let bucket: 'hero-images' | 'product-images' | 'hero-videos' | 'category-images' | 'site-assets' = 'product-images';
+    if (category === 'homepage-image') bucket = isVideo ? 'hero-videos' : 'hero-images';
+    else if (category === 'collection-banner') bucket = 'category-images';
+    else if (category === 'collection-image') bucket = 'product-images';
+    else if (category === 'product-video') bucket = 'hero-videos';
+    else if (category === 'brand-asset' || category === 'campaign-graphic') bucket = 'site-assets';
 
     try {
-      const ext = file.name.split('.').pop() || 'jpg';
-      const cleanName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${ext}`;
-      const fullPath = pathPrefix ? `${pathPrefix.replace(/\/$/, '')}/${cleanName}` : cleanName;
+      const res = await this.uploadToSupabaseStorage(bucket, file, '', {
+        label: usedIn[0] || category,
+        dimensions: isVideo ? '1080 × 1350 px' : '1200 × 1500 px',
+        aspectRatio: '4:5'
+      });
+      return { url: res.url, asset: res.asset };
+    } catch (supabaseErr: any) {
+      console.warn('Direct Supabase storage upload notice, falling back to server media endpoint:', supabaseErr?.message);
+      
+      // Fallback to Express server media upload endpoint
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async () => {
+          const base64Data = reader.result as string;
+          try {
+            const res = await fetch('/api/media/upload', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                data: base64Data,
+                fileName: file.name,
+                category,
+                usedIn,
+                fileSize: `${Math.round(file.size / 1024)} KB`,
+                mediaType: isVideo ? 'video' : 'image',
+                dimensions: isVideo ? '1080 × 1350 px' : '1200 × 1500 px',
+                aspectRatio: '4:5'
+              })
+            });
 
-      const { data, error } = await supabase.storage
-        .from(bucket)
-        .upload(fullPath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
+            if (res.ok) {
+              const json = await res.json();
+              if (json.asset) {
+                this.saveMediaAsset(json.asset);
+              }
+              resolve({ url: json.url || base64Data, asset: json.asset });
+              return;
+            }
+          } catch (serverErr) {
+            console.warn('Server fallback upload error:', serverErr);
+          }
 
-      if (error) {
-        return { url: null, error: error.message };
-      }
+          reject(new Error(supabaseErr?.message || 'Media upload failed'));
+        };
 
-      const { data: publicUrlData } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(data.path);
+        reader.onerror = () => reject(new Error('File reading error from local PC'));
+        reader.readAsDataURL(file);
+      });
+    }
+  },
 
-      return { url: publicUrlData.publicUrl, error: null };
+  // SUPABASE STORAGE UPLOADER (Backwards compatible helper)
+  async uploadMedia(bucket: 'product-images' | 'hero-images' | 'hero-videos' | 'category-images' | 'site-assets', file: File, pathPrefix = ''): Promise<{ url: string | null; error: string | null }> {
+    try {
+      const res = await this.uploadToSupabaseStorage(bucket, file, pathPrefix);
+      return { url: res.url, error: null };
     } catch (err: any) {
       return { url: null, error: err.message || 'Upload failed' };
     }

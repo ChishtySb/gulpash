@@ -7,6 +7,8 @@ interface MediaUploaderCardProps {
   spec?: MediaSpecification;
   currentUrl?: string;
   onUrlChange: (newUrl: string) => void;
+  onAutoSave?: (newUrl: string) => Promise<void>;
+  onStatusChange?: (status: 'idle' | 'uploading' | 'saving' | 'saved' | 'failed', message?: string) => void;
   labelOverride?: string;
   subLabelOverride?: string;
   className?: string;
@@ -28,12 +30,16 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
   spec,
   currentUrl,
   onUrlChange,
+  onAutoSave,
+  onStatusChange,
   labelOverride,
   subLabelOverride,
   className = ''
 }) => {
   const activeSpec = spec || DEFAULT_MEDIA_SPEC;
   const [uploading, setUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'saving' | 'saved' | 'failed'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [metadata, setMetadata] = useState<FileMetadata | null>(null);
   const [showAdvancedUrl, setShowAdvancedUrl] = useState(false);
@@ -95,8 +101,10 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
 
     try {
       setUploading(true);
+      setUploadStatus('uploading');
+      setErrorMessage(null);
 
-      // Measure client-side dimensions & ratio before uploading
+      // 1. Measure client-side dimensions & ratio before uploading
       let measuredMeta: Partial<FileMetadata> = {
         fileSize: `${(file.size / (1024 * 1024)).toFixed(2)} MB`,
         format: file.type.split('/')[1]?.toUpperCase() || file.name.split('.').pop()?.toUpperCase() || ''
@@ -149,20 +157,76 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
 
       setMetadata(measuredMeta as FileMetadata);
 
-      // Upload permanently to Supabase Storage via StorageService
-      const category = (activeSpec.storageFolder === 'hero' ? 'homepage-image' :
-                        activeSpec.storageFolder === 'collection-banners' ? 'collection-banner' :
-                        activeSpec.storageFolder === 'collection-cards' ? 'collection-image' :
-                        activeSpec.storageFolder === 'product-videos' ? 'product-video' : 'product-image') as any;
-
-      const res = await StorageService.uploadMediaFile(file, category, [activeSpec.label]);
-      if (res.url) {
-        onUrlChange(res.url);
-        setManualUrl(res.url);
+      // Determine target Supabase storage bucket
+      let targetBucket: 'hero-images' | 'product-images' | 'hero-videos' | 'category-images' | 'site-assets' = 'product-images';
+      if (activeSpec.storageFolder === 'hero') {
+        targetBucket = activeSpec.mediaType === 'video' ? 'hero-videos' : 'hero-images';
+      } else if (activeSpec.storageFolder === 'collection-banners') {
+        targetBucket = 'category-images';
+      } else if (activeSpec.storageFolder === 'collection-cards') {
+        targetBucket = 'product-images';
+      } else if (activeSpec.storageFolder === 'product-videos') {
+        targetBucket = 'hero-videos';
+      } else if (activeSpec.storageFolder === 'seo' || activeSpec.storageFolder === 'brand' || activeSpec.storageFolder === 'cms') {
+        targetBucket = 'site-assets';
       }
+
+      onStatusChange?.('uploading', `Uploading ${activeSpec.label} to Supabase Storage (${targetBucket})...`);
+
+      // 2. Upload to Supabase Storage
+      let finalUrl = '';
+      try {
+        const res = await StorageService.uploadToSupabaseStorage(targetBucket, file, '', {
+          dimensions: `${activeSpec.recommendedWidth} × ${activeSpec.recommendedHeight} px`,
+          aspectRatio: activeSpec.aspectRatio,
+          label: activeSpec.label
+        });
+        finalUrl = res.url;
+      } catch (directUploadErr: any) {
+        console.warn('Direct Supabase storage upload attempt encountered error, attempting fallback route:', directUploadErr?.message);
+        // Fallback to uploadMediaFile
+        const category = (activeSpec.storageFolder === 'hero' ? 'homepage-image' :
+                          activeSpec.storageFolder === 'collection-banners' ? 'collection-banner' :
+                          activeSpec.storageFolder === 'collection-cards' ? 'collection-image' :
+                          activeSpec.storageFolder === 'product-videos' ? 'product-video' : 'product-image') as any;
+        const res = await StorageService.uploadMediaFile(file, category, [activeSpec.label]);
+        finalUrl = res.url;
+      }
+
+      if (!finalUrl) {
+        throw new Error('Upload completed but returned no valid URL');
+      }
+
+      // Assert valid returned URL (No local blob or raw base64 data)
+      if (finalUrl.startsWith('blob:')) {
+        throw new Error('Temporary blob URL detected. Permanent storage URL required.');
+      }
+
+      // 3. Update React URL state
+      onUrlChange(finalUrl);
+      setManualUrl(finalUrl);
+
+      // 4. If auto-save handler provided, persist database/CMS record
+      if (onAutoSave) {
+        setUploadStatus('saving');
+        onStatusChange?.('saving', `Saving ${activeSpec.label} and updating database records...`);
+        await onAutoSave(finalUrl);
+      }
+
+      // 5. Success state
+      setUploadStatus('saved');
+      onStatusChange?.('saved', `${activeSpec.label} saved successfully!`);
+
+      // Reset back to idle after 4 seconds
+      setTimeout(() => {
+        setUploadStatus('idle');
+      }, 4000);
     } catch (err: any) {
-      console.error('Upload error:', err);
-      alert(`Failed to upload media: ${err.message || 'Unknown error'}`);
+      console.error('Media upload & save pipeline error:', err);
+      const msg = err?.message || 'Failed to upload and save media';
+      setErrorMessage(msg);
+      setUploadStatus('failed');
+      onStatusChange?.('failed', msg);
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -206,6 +270,43 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
           <span className="text-stone-300">{activeSpec.acceptedFormats.join('/')}</span>
         </div>
       </div>
+
+      {/* Real-time Operation Status Feedback */}
+      {uploadStatus !== 'idle' && (
+        <div className={`p-2.5 rounded text-xs flex items-center justify-between font-medium animate-in fade-in duration-150 ${
+          uploadStatus === 'uploading' ? 'bg-amber-50 border border-amber-200 text-amber-900' :
+          uploadStatus === 'saving' ? 'bg-sky-50 border border-sky-200 text-sky-900' :
+          uploadStatus === 'saved' ? 'bg-emerald-50 border border-emerald-200 text-emerald-900' :
+          'bg-rose-50 border border-rose-200 text-rose-900'
+        }`}>
+          <div className="flex items-center gap-2">
+            {(uploadStatus === 'uploading' || uploadStatus === 'saving') && (
+              <RefreshCw className="w-3.5 h-3.5 animate-spin shrink-0 text-amber-600" aria-hidden="true" />
+            )}
+            {uploadStatus === 'saved' && (
+              <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-600" aria-hidden="true" />
+            )}
+            {uploadStatus === 'failed' && (
+              <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-rose-600" aria-hidden="true" />
+            )}
+            <span>
+              {uploadStatus === 'uploading' && `Uploading ${activeSpec.label} to Supabase Storage...`}
+              {uploadStatus === 'saving' && `Saving media & updating database records...`}
+              {uploadStatus === 'saved' && `Saved: Media uploaded and database records updated successfully.`}
+              {uploadStatus === 'failed' && (errorMessage || `Media upload failed. Please try again.`)}
+            </span>
+          </div>
+          {uploadStatus === 'failed' && (
+            <button
+              type="button"
+              onClick={() => { setUploadStatus('idle'); setErrorMessage(null); }}
+              className="p-1 text-rose-700 hover:text-rose-900 text-xs font-semibold underline cursor-pointer"
+            >
+              Dismiss
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Main Upload / Preview Area */}
       {currentUrl ? (

@@ -18,7 +18,7 @@ interface ProductsSectionProps {
   onSelectProductToEdit: (product: Product | null) => void;
   onNavigateSub: (sub: 'all' | 'add' | 'collections' | 'inventory') => void;
   onNavigateToStoreProduct?: (slug: string) => void;
-  onNotify: (msg: string) => void;
+  onNotify: (msg: string, status?: 'saving' | 'saved' | 'failed') => void;
 }
 
 export const ProductsSection: React.FC<ProductsSectionProps> = ({
@@ -706,14 +706,20 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
         <ProductEditForm
           initialProduct={editingProduct}
           categories={categories}
-          onSave={(savedProduct, isDraft) => {
-            StorageService.saveProduct(savedProduct);
-            onNotify(isDraft 
-              ? `Saved draft for "${savedProduct.title || 'Untitled'}" successfully!` 
-              : `Published "${savedProduct.title}" successfully to storefront!`
-            );
-            onSelectProductToEdit(null);
-            onNavigateSub('all');
+          onSave={async (savedProduct, isDraft) => {
+            onNotify(`Saving "${savedProduct.title || 'Product'}"...`, 'saving');
+            const res = await StorageService.saveProductAsync(savedProduct);
+            if (res.success) {
+              onNotify(isDraft 
+                ? `Saved draft for "${savedProduct.title || 'Untitled'}" successfully!` 
+                : `Published "${savedProduct.title}" successfully to storefront!`,
+                'saved'
+              );
+              onSelectProductToEdit(null);
+              onNavigateSub('all');
+            } else {
+              onNotify(`Failed saving product: ${res.error || 'Unknown error'}`, 'failed');
+            }
           }}
           onCancel={() => {
             onSelectProductToEdit(null);

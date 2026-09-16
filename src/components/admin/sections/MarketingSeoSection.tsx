@@ -12,7 +12,7 @@ interface MarketingSeoSectionProps {
   settings: SiteSettings;
   subview: 'seo' | 'promotions';
   onNavigateSub: (sub: 'seo' | 'promotions') => void;
-  onNotify: (msg: string) => void;
+  onNotify: (msg: string, status?: 'saving' | 'saved' | 'failed') => void;
 }
 
 export const MarketingSeoSection: React.FC<MarketingSeoSectionProps> = ({
@@ -25,36 +25,44 @@ export const MarketingSeoSection: React.FC<MarketingSeoSectionProps> = ({
   const [cms, setCms] = useState<HomepageCMS>(() => StorageService.getCMS());
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleSaveSeo = () => {
-    setIsSaving(true);
-    StorageService.saveSettings(siteSettings);
-    StorageService.addActivityLog({
-      action: 'SEO Metadata Updated',
-      category: 'settings',
-      actor: 'Admin Concierge',
-      details: `Updated meta title: "${siteSettings.seo.siteTitle}" and Open Graph share image.`
-    });
-
-    setTimeout(() => {
+  const handleSaveSeo = async () => {
+    try {
+      setIsSaving(true);
+      onNotify('Saving SEO Configuration...', 'saving');
+      await StorageService.saveSettingsAsync(siteSettings);
+      StorageService.addActivityLog({
+        action: 'SEO Metadata Updated',
+        category: 'settings',
+        actor: 'Admin Concierge',
+        details: `Updated meta title: "${siteSettings.seo.siteTitle}" and Open Graph share image.`
+      });
+      onNotify('SEO & Metadata saved successfully.', 'saved');
+    } catch (err: any) {
+      console.error('Failed saving SEO:', err);
+      onNotify(err?.message || 'Failed to save SEO configuration.', 'failed');
+    } finally {
       setIsSaving(false);
-      onNotify('SEO & Metadata saved successfully.');
-    }, 400);
+    }
   };
 
-  const handleSavePromotions = () => {
-    setIsSaving(true);
-    StorageService.saveCMS(cms);
-    StorageService.addActivityLog({
-      action: 'Promotional Banners Updated',
-      category: 'cms',
-      actor: 'Admin Concierge',
-      details: 'Updated promotional banners and campaign announcements.'
-    });
-
-    setTimeout(() => {
+  const handleSavePromotions = async () => {
+    try {
+      setIsSaving(true);
+      onNotify('Saving Promotional Banners...', 'saving');
+      await StorageService.saveCMSAsync(cms);
+      StorageService.addActivityLog({
+        action: 'Promotional Banners Updated',
+        category: 'cms',
+        actor: 'Admin Concierge',
+        details: 'Updated promotional banners and campaign announcements.'
+      });
+      onNotify('Promotional banners saved successfully.', 'saved');
+    } catch (err: any) {
+      console.error('Failed saving promotional banners:', err);
+      onNotify(err?.message || 'Failed to save promotional banners.', 'failed');
+    } finally {
       setIsSaving(false);
-      onNotify('Promotional banners saved successfully.');
-    }, 400);
+    }
   };
 
   return (
@@ -154,6 +162,15 @@ export const MarketingSeoSection: React.FC<MarketingSeoSectionProps> = ({
                       ...siteSettings,
                       seo: { ...siteSettings.seo, ogImage: url }
                     })}
+                    onStatusChange={(status, msg) => {
+                      if (status === 'uploading' || status === 'saving') {
+                        onNotify(msg || 'Uploading OG share image...', 'saving');
+                      } else if (status === 'saved') {
+                        onNotify(msg || 'Open Graph share image uploaded!', 'saved');
+                      } else if (status === 'failed') {
+                        onNotify(msg || 'Failed to upload OG image', 'failed');
+                      }
+                    }}
                   />
                 </div>
               </div>
@@ -368,6 +385,26 @@ export const MarketingSeoSection: React.FC<MarketingSeoSectionProps> = ({
                       imageUrl: url
                     }
                   })}
+                  onAutoSave={async (url) => {
+                    const updated = {
+                      ...cms,
+                      editorialShowcase: {
+                        ...cms.editorialShowcase,
+                        imageUrl: url
+                      }
+                    };
+                    setCms(updated);
+                    await StorageService.saveCMSAsync(updated);
+                  }}
+                  onStatusChange={(status, msg) => {
+                    if (status === 'uploading' || status === 'saving') {
+                      onNotify(msg || 'Uploading promotional banner...', 'saving');
+                    } else if (status === 'saved') {
+                      onNotify(msg || 'Promotional banner uploaded & saved!', 'saved');
+                    } else if (status === 'failed') {
+                      onNotify(msg || 'Failed to upload promotional banner', 'failed');
+                    }
+                  }}
                 />
               </div>
             </div>

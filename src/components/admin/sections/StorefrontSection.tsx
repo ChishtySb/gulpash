@@ -27,7 +27,7 @@ interface StorefrontSectionProps {
   settings: SiteSettings;
   subview: StorefrontSubview;
   onNavigateSub: (sub: StorefrontSubview) => void;
-  onNotify: (msg: string) => void;
+  onNotify: (msg: string, status?: 'saving' | 'saved' | 'failed') => void;
 }
 
 export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
@@ -47,60 +47,74 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
   const [isSaving, setIsSaving] = useState(false);
 
   // Save Collection Changes
-  const handleSaveCollection = (e: React.FormEvent) => {
+  const handleSaveCollection = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingCollection) return;
     try {
+      setIsSaving(true);
+      onNotify(`Saving collection "${editingCollection.name}"...`, 'saving');
       const updated: Collection = {
         ...editingCollection,
         order: Number(editingCollection.order) || 1,
         displayOrder: Number(editingCollection.order) || 1
       };
-      StorageService.updateCollection(updated.id, updated);
+      await StorageService.updateCollectionAsync(updated.id, updated);
       StorageService.addActivityLog({
         action: 'Collection Updated',
         category: 'collection',
         actor: 'Admin Concierge',
         details: `Updated collection "${updated.name}" banner and card media.`
       });
-      onNotify(`Collection "${updated.name}" updated successfully!`);
+      onNotify(`Collection "${updated.name}" updated and saved successfully!`, 'saved');
       setEditingCollection(null);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Failed updating collection:', err);
-      onNotify('Error updating collection assets.');
+      onNotify(err?.message || 'Error updating collection assets.', 'failed');
+    } finally {
+      setIsSaving(false);
     }
   };
 
   // Save CMS Config
-  const handleSaveCMS = (label: string = 'Storefront CMS') => {
-    setIsSaving(true);
-    StorageService.saveCMS(cmsConfig);
-    StorageService.addActivityLog({
-      action: `${label} Saved`,
-      category: 'cms',
-      actor: 'Admin Concierge',
-      details: `Saved changes to ${label.toLowerCase()}.`
-    });
-    setTimeout(() => {
+  const handleSaveCMS = async (label: string = 'Storefront CMS') => {
+    try {
+      setIsSaving(true);
+      onNotify(`Saving ${label}...`, 'saving');
+      await StorageService.saveCMSAsync(cmsConfig);
+      StorageService.addActivityLog({
+        action: `${label} Saved`,
+        category: 'cms',
+        actor: 'Admin Concierge',
+        details: `Saved changes to ${label.toLowerCase()}.`
+      });
+      onNotify(`${label} saved successfully!`, 'saved');
+    } catch (err: any) {
+      console.error(`Failed saving ${label}:`, err);
+      onNotify(`Failed to save ${label}: ${err?.message || 'Storage error'}`, 'failed');
+    } finally {
       setIsSaving(false);
-      onNotify(`${label} saved successfully!`);
-    }, 400);
+    }
   };
 
   // Save Settings Config (Navigation, Footer, etc.)
-  const handleSaveSettings = (label: string = 'Storefront Settings') => {
-    setIsSaving(true);
-    StorageService.saveSettings(siteSettings);
-    StorageService.addActivityLog({
-      action: `${label} Saved`,
-      category: 'settings',
-      actor: 'Admin Concierge',
-      details: `Saved changes to ${label.toLowerCase()}.`
-    });
-    setTimeout(() => {
+  const handleSaveSettings = async (label: string = 'Storefront Settings') => {
+    try {
+      setIsSaving(true);
+      onNotify(`Saving ${label}...`, 'saving');
+      await StorageService.saveSettingsAsync(siteSettings);
+      StorageService.addActivityLog({
+        action: `${label} Saved`,
+        category: 'settings',
+        actor: 'Admin Concierge',
+        details: `Saved changes to ${label.toLowerCase()}.`
+      });
+      onNotify(`${label} saved successfully!`, 'saved');
+    } catch (err: any) {
+      console.error(`Failed saving ${label}:`, err);
+      onNotify(`Failed to save ${label}: ${err?.message || 'Storage error'}`, 'failed');
+    } finally {
       setIsSaving(false);
-      onNotify(`${label} saved successfully!`);
-    }, 400);
+    }
   };
 
   const storefrontTabs: Array<{ id: StorefrontSubview; label: string }> = [
@@ -258,17 +272,42 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
                 currentUrl={(cmsConfig.hero?.type === 'video') ? cmsConfig.hero?.videoUrl : cmsConfig.hero?.image}
                 onUrlChange={(url) => {
                   if (cmsConfig.hero?.type === 'video') {
-                    setCmsConfig({
-                      ...cmsConfig,
-                      hero: { ...cmsConfig.hero, videoUrl: url }
-                    });
+                    setCmsConfig(prev => ({
+                      ...prev,
+                      hero: { ...prev.hero, videoUrl: url }
+                    }));
                   } else {
-                    setCmsConfig({
-                      ...cmsConfig,
-                      hero: { ...cmsConfig.hero, image: url }
-                    });
+                    setCmsConfig(prev => ({
+                      ...prev,
+                      hero: { ...prev.hero, image: url }
+                    }));
                   }
-                  onNotify('Hero desktop media updated.');
+                }}
+                onAutoSave={async (url) => {
+                  const updated: CMSConfig = {
+                    ...cmsConfig,
+                    hero: {
+                      ...cmsConfig.hero,
+                      [cmsConfig.hero?.type === 'video' ? 'videoUrl' : 'image']: url
+                    }
+                  };
+                  setCmsConfig(updated);
+                  await StorageService.saveCMSAsync(updated);
+                  StorageService.addActivityLog({
+                    action: 'Hero Desktop Media Updated',
+                    category: 'cms',
+                    actor: 'Admin Concierge',
+                    details: 'Persisted desktop hero media to Supabase homepage_cms.'
+                  });
+                }}
+                onStatusChange={(status, msg) => {
+                  if (status === 'uploading' || status === 'saving') {
+                    onNotify(msg || 'Saving media...', 'saving');
+                  } else if (status === 'saved') {
+                    onNotify(msg || 'Hero desktop media saved successfully!', 'saved');
+                  } else if (status === 'failed') {
+                    onNotify(msg || 'Failed to save media', 'failed');
+                  }
                 }}
               />
             </div>
@@ -280,17 +319,42 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
                 currentUrl={(cmsConfig.hero?.type === 'video') ? cmsConfig.hero?.mobileVideoUrl : (cmsConfig.hero?.mobileImage || cmsConfig.hero?.image)}
                 onUrlChange={(url) => {
                   if (cmsConfig.hero?.type === 'video') {
-                    setCmsConfig({
-                      ...cmsConfig,
-                      hero: { ...cmsConfig.hero, mobileVideoUrl: url }
-                    });
+                    setCmsConfig(prev => ({
+                      ...prev,
+                      hero: { ...prev.hero, mobileVideoUrl: url }
+                    }));
                   } else {
-                    setCmsConfig({
-                      ...cmsConfig,
-                      hero: { ...cmsConfig.hero, mobileImage: url }
-                    });
+                    setCmsConfig(prev => ({
+                      ...prev,
+                      hero: { ...prev.hero, mobileImage: url }
+                    }));
                   }
-                  onNotify('Hero mobile media updated.');
+                }}
+                onAutoSave={async (url) => {
+                  const updated: CMSConfig = {
+                    ...cmsConfig,
+                    hero: {
+                      ...cmsConfig.hero,
+                      [cmsConfig.hero?.type === 'video' ? 'mobileVideoUrl' : 'mobileImage']: url
+                    }
+                  };
+                  setCmsConfig(updated);
+                  await StorageService.saveCMSAsync(updated);
+                  StorageService.addActivityLog({
+                    action: 'Hero Mobile Media Updated',
+                    category: 'cms',
+                    actor: 'Admin Concierge',
+                    details: 'Persisted mobile hero media to Supabase homepage_cms.'
+                  });
+                }}
+                onStatusChange={(status, msg) => {
+                  if (status === 'uploading' || status === 'saving') {
+                    onNotify(msg || 'Saving media...', 'saving');
+                  } else if (status === 'saved') {
+                    onNotify(msg || 'Hero mobile media saved successfully!', 'saved');
+                  } else if (status === 'failed') {
+                    onNotify(msg || 'Failed to save media', 'failed');
+                  }
                 }}
               />
             </div>
@@ -534,6 +598,15 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
                         imageUrl: url,
                         image: url
                       })}
+                      onStatusChange={(status, msg) => {
+                        if (status === 'uploading' || status === 'saving') {
+                          onNotify(msg || 'Uploading collection card photo...', 'saving');
+                        } else if (status === 'saved') {
+                          onNotify(msg || 'Collection card photo uploaded!', 'saved');
+                        } else if (status === 'failed') {
+                          onNotify(msg || 'Failed to upload photo', 'failed');
+                        }
+                      }}
                     />
                   </div>
 
@@ -563,6 +636,15 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
                             bannerDesktopImage: url,
                             bannerUrl: url
                           })}
+                          onStatusChange={(status, msg) => {
+                            if (status === 'uploading' || status === 'saving') {
+                              onNotify(msg || 'Uploading collection banner...', 'saving');
+                            } else if (status === 'saved') {
+                              onNotify(msg || 'Collection banner uploaded!', 'saved');
+                            } else if (status === 'failed') {
+                              onNotify(msg || 'Failed to upload banner', 'failed');
+                            }
+                          }}
                         />
                       </div>
 
@@ -575,6 +657,15 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
                             ...editingCollection,
                             bannerMobileImage: url
                           })}
+                          onStatusChange={(status, msg) => {
+                            if (status === 'uploading' || status === 'saving') {
+                              onNotify(msg || 'Uploading mobile collection banner...', 'saving');
+                            } else if (status === 'saved') {
+                              onNotify(msg || 'Mobile collection banner uploaded!', 'saved');
+                            } else if (status === 'failed') {
+                              onNotify(msg || 'Failed to upload mobile banner', 'failed');
+                            }
+                          }}
                         />
                       </div>
                     </div>

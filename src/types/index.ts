@@ -441,7 +441,7 @@ export interface MediaAsset {
   fileSize?: string; // e.g. "420 KB"
   uploadedAt: string;
   mediaType: 'image' | 'video';
-  category: 'product-image' | 'product-video' | 'collection-image' | 'collection-banner' | 'homepage-image' | 'homepage-video';
+  category: 'product-image' | 'product-video' | 'collection-image' | 'collection-banner' | 'homepage-image' | 'homepage-video' | 'brand-asset' | 'campaign-graphic';
   usedIn?: string[]; // e.g. ["TRENDING Collection Banner", "Product: Plum 3Piece"]
 }
 

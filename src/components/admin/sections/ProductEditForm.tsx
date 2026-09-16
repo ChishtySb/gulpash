@@ -53,7 +53,7 @@ interface ProductEditFormProps {
   onSave: (product: Product, isDraft: boolean) => void;
   onCancel: () => void;
   onPreviewStorefront?: (slug: string) => void;
-  onNotify: (msg: string) => void;
+  onNotify: (msg: string, status?: 'saving' | 'saved' | 'failed') => void;
 }
 
 export const ProductEditForm: React.FC<ProductEditFormProps> = ({
@@ -253,6 +253,7 @@ export const ProductEditForm: React.FC<ProductEditFormProps> = ({
     setIsDirty(true);
     try {
       setUploadingImage(true);
+      onNotify(`Uploading ${files.length} photo(s)...`, 'saving');
       const currentImages = Array.isArray(formData.images) ? [...formData.images] : [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -263,10 +264,10 @@ export const ProductEditForm: React.FC<ProductEditFormProps> = ({
         }
       }
       setFormData(prev => ({ ...prev, images: currentImages }));
-      onNotify(`Uploaded ${files.length} photo(s) successfully.`);
-    } catch (err) {
+      onNotify(`Uploaded ${files.length} photo(s) successfully!`, 'saved');
+    } catch (err: any) {
       console.error('Upload drop error:', err);
-      alert('Failed to upload dropped photos.');
+      onNotify(err?.message || 'Failed to upload dropped photos.', 'failed');
     } finally {
       setUploadingImage(false);
     }
@@ -287,14 +288,15 @@ export const ProductEditForm: React.FC<ProductEditFormProps> = ({
     setIsDirty(true);
     try {
       setUploadingVideo(true);
+      onNotify('Uploading runway preview video to Supabase Storage...', 'saving');
       const res = await StorageService.uploadMediaFile(file, 'product-video', [`Video: ${formData.title || 'Product'}`]);
       if (res.url) {
         setFormData(prev => ({ ...prev, videoUrl: res.url }));
-        onNotify('Runway preview video uploaded successfully!');
+        onNotify('Runway preview video uploaded successfully!', 'saved');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Video upload error:', err);
-      alert('Failed to upload video from PC.');
+      onNotify(err?.message || 'Failed to upload video from PC.', 'failed');
     } finally {
       setUploadingVideo(false);
       if (videoInputRef.current) videoInputRef.current.value = '';
@@ -308,14 +310,15 @@ export const ProductEditForm: React.FC<ProductEditFormProps> = ({
     setIsDirty(true);
     try {
       setUploadingPoster(true);
+      onNotify('Uploading video poster thumbnail...', 'saving');
       const res = await StorageService.uploadMediaFile(file, 'product-image', [`Video Poster: ${formData.title || 'Product'}`]);
       if (res.url) {
         setFormData(prev => ({ ...prev, videoPoster: res.url }));
-        onNotify('Video poster thumbnail uploaded!');
+        onNotify('Video poster thumbnail uploaded!', 'saved');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Poster upload error:', err);
-      alert('Failed to upload video poster.');
+      onNotify(err?.message || 'Failed to upload video poster.', 'failed');
     } finally {
       setUploadingPoster(false);
       if (posterInputRef.current) posterInputRef.current.value = '';
@@ -359,16 +362,17 @@ export const ProductEditForm: React.FC<ProductEditFormProps> = ({
     setIsDirty(true);
     try {
       setUploadingImage(true);
+      onNotify('Replacing product photo in storage...', 'saving');
       const res = await StorageService.uploadMediaFile(files[0], 'product-image', [`Product: ${formData.title || 'Item'}`]);
       if (res.url) {
         const list = [...formData.images];
         list[replaceTargetIndex] = res.url;
         setFormData(prev => ({ ...prev, images: list }));
-        onNotify(`Replaced image ${replaceTargetIndex + 1} successfully!`);
+        onNotify(`Replaced image ${replaceTargetIndex + 1} successfully!`, 'saved');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Replace image error:', err);
-      alert('Failed to replace image.');
+      onNotify(err?.message || 'Failed to replace image.', 'failed');
     } finally {
       setUploadingImage(false);
       setReplaceTargetIndex(null);

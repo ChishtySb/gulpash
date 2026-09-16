@@ -108,11 +108,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setStatusMessage(message);
     setSaveStatus(status);
 
-    if (status !== 'saving') {
+    if (status === 'saving') {
+      // Safety auto-release after 15 seconds if any asynchronous operation hangs
+      const safetyTimer = setTimeout(() => {
+        setSaveStatus(prev => (prev === 'saving' ? 'idle' : prev));
+        setStatusMessage(prev => (prev === message ? null : prev));
+      }, 15000);
+      return () => clearTimeout(safetyTimer);
+    } else {
       const timer = setTimeout(() => {
         setStatusMessage(null);
         setSaveStatus('idle');
-      }, 4000);
+      }, 4500);
       return () => clearTimeout(timer);
     }
   }, []);

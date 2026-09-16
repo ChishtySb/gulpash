@@ -14,7 +14,7 @@ interface SettingsSectionProps {
   settings: SiteSettings;
   subview: 'store' | 'shipping' | 'payments' | 'whatsapp' | 'social' | 'roles';
   onNavigateSub: (sub: 'store' | 'shipping' | 'payments' | 'whatsapp' | 'social' | 'roles') => void;
-  onNotify: (msg: string) => void;
+  onNotify: (msg: string, status?: 'saving' | 'saved' | 'failed') => void;
 }
 
 export const SettingsSection: React.FC<SettingsSectionProps> = ({
@@ -68,13 +68,14 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
 
   const handleSave = async (sectionName: string) => {
     setIsSaving(true);
+    onNotify(`Saving ${sectionName.toLowerCase()} settings...`, 'saving');
     try {
       // Auto-normalize WhatsApp numbers if edited
       if (formData.whatsappNumber) {
         formData.whatsappNumber = formData.whatsappNumber.trim();
       }
 
-      await StorageService.saveSettings(formData);
+      await StorageService.saveSettingsAsync(formData);
       StorageService.addActivityLog({
         action: `${sectionName} Settings Updated`,
         category: 'settings',
@@ -82,9 +83,10 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
         details: `Saved modifications to ${sectionName.toLowerCase()} settings.`
       });
 
-      onNotify(`${sectionName} settings saved successfully!`);
-    } catch (e) {
-      onNotify('Error saving settings. Please try again.');
+      onNotify(`${sectionName} settings saved successfully!`, 'saved');
+    } catch (e: any) {
+      console.error('Failed saving settings:', e);
+      onNotify(e?.message || 'Error saving settings. Please try again.', 'failed');
     } finally {
       setIsSaving(false);
     }
@@ -186,6 +188,20 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                   spec={MEDIA_SPECS.STORE_LOGO}
                   currentUrl={formData.logoUrl}
                   onUrlChange={(url) => setFormData({ ...formData, logoUrl: url })}
+                  onAutoSave={async (url) => {
+                    const updated = { ...formData, logoUrl: url };
+                    setFormData(updated);
+                    await StorageService.saveSettingsAsync(updated);
+                  }}
+                  onStatusChange={(status, msg) => {
+                    if (status === 'uploading' || status === 'saving') {
+                      onNotify(msg || 'Uploading store logo...', 'saving');
+                    } else if (status === 'saved') {
+                      onNotify(msg || 'Store logo uploaded & saved!', 'saved');
+                    } else if (status === 'failed') {
+                      onNotify(msg || 'Failed to upload logo', 'failed');
+                    }
+                  }}
                 />
               </div>
 
@@ -195,6 +211,20 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                   spec={MEDIA_SPECS.STORE_FAVICON}
                   currentUrl={formData.faviconUrl}
                   onUrlChange={(url) => setFormData({ ...formData, faviconUrl: url })}
+                  onAutoSave={async (url) => {
+                    const updated = { ...formData, faviconUrl: url };
+                    setFormData(updated);
+                    await StorageService.saveSettingsAsync(updated);
+                  }}
+                  onStatusChange={(status, msg) => {
+                    if (status === 'uploading' || status === 'saving') {
+                      onNotify(msg || 'Uploading favicon...', 'saving');
+                    } else if (status === 'saved') {
+                      onNotify(msg || 'Favicon uploaded & saved!', 'saved');
+                    } else if (status === 'failed') {
+                      onNotify(msg || 'Failed to upload favicon', 'failed');
+                    }
+                  }}
                 />
               </div>
             </div>

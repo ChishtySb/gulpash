@@ -10,7 +10,7 @@ import { MEDIA_SPECS, MediaSpecification } from '../../../constants/mediaSpecs';
 import { MediaUploaderCard } from '../MediaUploaderCard';
 
 interface MediaLibrarySectionProps {
-  onNotify: (msg: string) => void;
+  onNotify: (msg: string, status?: 'saving' | 'saved' | 'failed') => void;
 }
 
 export const MediaLibrarySection: React.FC<MediaLibrarySectionProps> = ({ onNotify }) => {
@@ -310,7 +310,16 @@ export const MediaLibrarySection: React.FC<MediaLibrarySectionProps> = ({ onNoti
               onUrlChange={(url) => {
                 refreshList();
                 setShowUploadModal(false);
-                onNotify('Asset uploaded to Media Library!');
+                onNotify('Asset uploaded to Media Library!', 'saved');
+              }}
+              onStatusChange={(status, msg) => {
+                if (status === 'uploading' || status === 'saving') {
+                  onNotify(msg || 'Uploading asset to Media Library...', 'saving');
+                } else if (status === 'saved') {
+                  onNotify(msg || 'Asset uploaded to Media Library!', 'saved');
+                } else if (status === 'failed') {
+                  onNotify(msg || 'Failed to upload asset', 'failed');
+                }
               }}
             />
 
