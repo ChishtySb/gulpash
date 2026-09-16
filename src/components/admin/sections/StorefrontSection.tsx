@@ -693,6 +693,37 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
                 </li>
               </ul>
             </div>
+
+            {/* Empty Collection Display Policy */}
+            <div className="p-4 bg-stone-50 rounded border border-stone-200 flex items-center justify-between">
+              <div>
+                <strong className="block text-xs text-stone-900 font-bold">Show Empty Collections on Storefront</strong>
+                <p className="text-[11px] text-stone-500 mt-0.5">
+                  When OFF (recommended), collections with 0 products (e.g. Short Length) will not clutter customer navigation or filter tabs until items are assigned.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const updated = {
+                    ...siteSettings,
+                    showEmptyCollectionsOnStorefront: !siteSettings.showEmptyCollectionsOnStorefront
+                  };
+                  setSiteSettings(updated);
+                  StorageService.saveSettings(updated);
+                  onNotify(`Show empty collections set to: ${!siteSettings.showEmptyCollectionsOnStorefront ? 'ENABLED' : 'DISABLED (Recommended)'}`);
+                }}
+                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors cursor-pointer shrink-0 ${
+                  siteSettings.showEmptyCollectionsOnStorefront ? 'bg-stone-900' : 'bg-stone-300'
+                }`}
+              >
+                <span
+                  className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
+                    siteSettings.showEmptyCollectionsOnStorefront ? 'translate-x-4.5' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
           </div>
         </div>
       )}

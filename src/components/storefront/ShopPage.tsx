@@ -78,8 +78,17 @@ export const ShopPage: React.FC<ShopPageProps> = ({
     'all'
   ];
 
+  const allProducts = StorageService.getProducts(false);
+  const siteSettings = StorageService.getSettings();
+  const showEmpty = siteSettings?.showEmptyCollectionsOnStorefront ?? false;
+
   const collections = StorageService.getCollections()
-    .filter(c => c.isVisible)
+    .filter(c => {
+      if (!c.isVisible) return false;
+      const count = c.productCount ?? (c.productIds?.length || (c.slug === 'all' ? allProducts.length : 0));
+      if (!showEmpty && count === 0) return false;
+      return true;
+    })
     .sort((a, b) => {
       const idxA = collectionOrder.indexOf(a.slug);
       const idxB = collectionOrder.indexOf(b.slug);
@@ -88,7 +97,6 @@ export const ShopPage: React.FC<ShopPageProps> = ({
       if (idxB !== -1) return 1;
       return (a.order || 0) - (b.order || 0);
     });
-  const allProducts = StorageService.getProducts(false);
 
   // Extract unique fabrics
   const fabrics = useMemo(() => {

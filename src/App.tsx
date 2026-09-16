@@ -46,6 +46,7 @@ export default function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
+  const [sizeGuideProduct, setSizeGuideProduct] = useState<Product | null>(null);
   const [isTrackOrderOpen, setIsTrackOrderOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
@@ -345,7 +346,10 @@ export default function App() {
             onSelectProduct={(slug) => navigate('product', slug)}
             onOpenQuickView={(p) => setQuickViewProduct(p)}
             onQuickAddToCart={(p, size) => handleAddToCart(p, size, 1)}
-            onOpenSizeGuide={() => setIsSizeGuideOpen(true)}
+            onOpenSizeGuide={() => {
+              setSizeGuideProduct(currentProduct);
+              setIsSizeGuideOpen(true);
+            }}
             isWishlisted={wishlistIds.includes(currentProduct.id)}
             onToggleWishlist={handleToggleWishlist}
             onNavigate={navigate}
@@ -405,6 +409,7 @@ export default function App() {
       <SizeGuideModal
         isOpen={isSizeGuideOpen}
         onClose={() => setIsSizeGuideOpen(false)}
+        product={sizeGuideProduct}
       />
 
       {/* 8. QUICK VIEW MODAL */}
@@ -416,7 +421,10 @@ export default function App() {
         onViewFullDetails={(slug) => navigate('product', slug)}
         isWishlisted={quickViewProduct ? wishlistIds.includes(quickViewProduct.id) : false}
         onToggleWishlist={handleToggleWishlist}
-        onOpenSizeGuide={() => setIsSizeGuideOpen(true)}
+        onOpenSizeGuide={() => {
+          setSizeGuideProduct(quickViewProduct);
+          setIsSizeGuideOpen(true);
+        }}
       />
 
       {/* 9. ORDER TRACKING LOOKUP MODAL */}

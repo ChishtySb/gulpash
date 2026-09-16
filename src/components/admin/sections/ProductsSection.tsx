@@ -1,13 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { 
   Package, Search, Plus, Edit, Trash2, Copy, ExternalLink, 
-  Eye, EyeOff, Check, X, ArrowUpDown, Filter, Upload, Image as ImageIcon,
-  Video, Sparkles, AlertCircle, AlertTriangle, CheckCircle2, ChevronDown, Layers,
-  ArrowLeft, ArrowRight, RefreshCw
+  Eye, EyeOff, Check, X, ArrowUpDown, Filter, Sparkles, 
+  AlertTriangle, CheckCircle2, ChevronDown, Layers
 } from 'lucide-react';
 import { Product, Category, Collection } from '../../../types';
 import { StorageService } from '../../../lib/storage';
 import { formatPrice } from '../../../lib/currency';
+import { ProductEditForm, STOREFRONT_COLLECTIONS } from './ProductEditForm';
 
 interface ProductsSectionProps {
   products: Product[];
@@ -20,16 +20,6 @@ interface ProductsSectionProps {
   onNavigateToStoreProduct?: (slug: string) => void;
   onNotify: (msg: string) => void;
 }
-
-// Pre-defined 6 Active Storefront Collections (Source of Truth)
-const STOREFRONT_COLLECTIONS = [
-  { slug: 'new-arrivals', name: 'NEW ARRIVALS' },
-  { slug: 'best-selling', name: 'TRENDING' },
-  { slug: 'winter-collection', name: 'WINTER COLLECTION' },
-  { slug: 'co-ords', name: 'CO-ORDS' },
-  { slug: 'short-length-article', name: 'SHORT LENGTH' },
-  { slug: 'all', name: 'ALL ENSEMBLES' }
-];
 
 export const ProductsSection: React.FC<ProductsSectionProps> = ({
   products = [],
@@ -47,60 +37,15 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedCollection, setSelectedCollection] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [selectedStockFilter, setSelectedStockFilter] = useState<'all' | 'in_stock' | 'low_stock' | 'out_of_stock'>('all');
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
 
   // Bulk action state
   const [bulkActionOpen, setBulkActionOpen] = useState(false);
 
-  // Quick inline stock editor state
+  // Modals & inline stock editing
   const [inlineStockEdit, setInlineStockEdit] = useState<{ id: string; stock: number } | null>(null);
   const [deleteConfirmModal, setDeleteConfirmModal] = useState<{ id: string; title: string } | null>(null);
-
-  // Form tabs for Add / Edit
-  const [formTab, setFormTab] = useState<'basic' | 'media' | 'pricing' | 'collections' | 'fabric' | 'status'>('basic');
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [uploadingVideo, setUploadingVideo] = useState(false);
-  const [uploadingPoster, setUploadingPoster] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const replaceInputRef = useRef<HTMLInputElement>(null);
-  const [replaceTargetIndex, setReplaceTargetIndex] = useState<number | null>(null);
-  const videoInputRef = useRef<HTMLInputElement>(null);
-  const posterInputRef = useRef<HTMLInputElement>(null);
-
-  // Form state
-  const [formData, setFormData] = useState<Partial<Product>>(() => {
-    if (editingProduct) return { ...editingProduct };
-    return {
-      id: `gp-${Date.now()}`,
-      title: '',
-      slug: '',
-      sku: '',
-      price: 0,
-      compareAtPrice: undefined,
-      description: '',
-      images: [],
-      videoUrl: '',
-      stock: 15,
-      status: 'Active',
-      isVisible: true,
-      category: categories?.[0]?.name || 'Luxury Pret',
-      categoryId: categories?.[0]?.id || 'cat-1',
-      categorySlug: categories?.[0]?.slug || 'luxury-pret',
-      collectionNames: ['NEW ARRIVALS'],
-      tags: [],
-      fabricDetails: 'Pure Organza & Raw Silk 80g',
-      pieceCount: '3-Piece (Shirt, Trouser & Dupatta)',
-      sizes: ['XS', 'S', 'M', 'L', 'XL']
-    };
-  });
-
-  // When editingProduct changes externally
-  React.useEffect(() => {
-    if (editingProduct) {
-      setFormData({ ...editingProduct });
-      setFormTab('basic');
-    }
-  }, [editingProduct]);
 
   // Derived filtered products
   const filteredProducts = products.filter(p => {
@@ -125,7 +70,22 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
 
     const matchesStatus = selectedStatus === 'all' || p.status === selectedStatus;
 
-    return matchesSearch && matchesCategory && matchesCollection && matchesStatus;
+    const matchesStock = (() => {
+      if (selectedStockFilter === 'all') return true;
+      const isOutOfStock = p.isSoldOut || (p.stock ?? 0) <= 0;
+      if (selectedStockFilter === 'out_of_stock') return isOutOfStock;
+      if (selectedStockFilter === 'low_stock') {
+        if (p.inventoryMode === 'availability') return false;
+        const threshold = p.lowStockThreshold || 3;
+        return !isOutOfStock && (p.stock ?? 0) <= threshold;
+      }
+      if (selectedStockFilter === 'in_stock') {
+        return !isOutOfStock;
+      }
+      return true;
+    })();
+
+    return matchesSearch && matchesCategory && matchesCollection && matchesStatus && matchesStock;
   });
 
   // DUPLICATE PRODUCT
@@ -156,7 +116,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
     if (p) {
       const updated: Product = { ...p, status: 'Archived', isVisible: false };
       StorageService.saveProduct(updated);
-      onNotify(`Product "${p.title}" has been safely archived. Historical orders preserved.`);
+      onNotify(`Product "${p.title}" has been safely archived. Historical customer orders preserved.`);
     }
     setDeleteConfirmModal(null);
   };
@@ -166,18 +126,6 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
     StorageService.deleteProduct(deleteConfirmModal.id, false);
     onNotify(`Product "${deleteConfirmModal.title}" permanently deleted.`);
     setDeleteConfirmModal(null);
-  };
-
-  // QUICK STOCK SAVE
-  const handleSaveInlineStock = (id: string) => {
-    if (!inlineStockEdit || inlineStockEdit.id !== id) return;
-    const p = products.find(prod => prod.id === id);
-    if (p) {
-      const updated = { ...p, stock: Number(inlineStockEdit.stock) || 0 };
-      StorageService.saveProduct(updated);
-      setInlineStockEdit(null);
-      onNotify(`Stock updated to ${updated.stock} units.`);
-    }
   };
 
   // BULK ACTIONS
@@ -198,204 +146,33 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
     setBulkActionOpen(false);
   };
 
-  // IMAGE UPLOAD HANDLER FROM PC
-  const handleImageFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    try {
-      setUploadingImage(true);
-      const currentImages = Array.isArray(formData.images) ? [...formData.images] : [];
-
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const res = await StorageService.uploadMediaFile(file, 'product-image', [`Product: ${formData.title || 'New Item'}`]);
-        if (res.url) {
-          currentImages.push(res.url);
-        }
-      }
-
-      setFormData(prev => ({ ...prev, images: currentImages }));
-      onNotify(`Uploaded ${files.length} image(s) to product media!`);
-    } catch (err) {
-      console.error('Image upload error:', err);
-      alert('Failed to upload image from PC.');
-    } finally {
-      setUploadingImage(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
+  const handleBulkDelete = () => {
+    if (selectedProductIds.length === 0) return;
+    if (confirm(`Are you sure you want to delete ${selectedProductIds.length} selected products?`)) {
+      selectedProductIds.forEach(id => {
+        StorageService.deleteProduct(id, false);
+      });
+      onNotify(`Deleted ${selectedProductIds.length} products.`);
+      setSelectedProductIds([]);
+      setBulkActionOpen(false);
     }
-  };
-
-  // VIDEO UPLOAD HANDLER FROM PC
-  const handleVideoFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setUploadingVideo(true);
-      const res = await StorageService.uploadMediaFile(file, 'product-video', [`Video: ${formData.title || 'New Item'}`]);
-      if (res.url) {
-        setFormData(prev => ({ ...prev, videoUrl: res.url }));
-        onNotify('Runway preview video uploaded successfully!');
-      }
-    } catch (err) {
-      console.error('Video upload error:', err);
-      alert('Failed to upload video from PC.');
-    } finally {
-      setUploadingVideo(false);
-      if (videoInputRef.current) videoInputRef.current.value = '';
-    }
-  };
-
-  // POSTER IMAGE UPLOAD HANDLER FROM PC
-  const handlePosterFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setUploadingPoster(true);
-      const res = await StorageService.uploadMediaFile(file, 'product-image', [`Video Poster: ${formData.title || 'New Item'}`]);
-      if (res.url) {
-        setFormData(prev => ({ ...prev, videoPoster: res.url }));
-        onNotify('Video poster thumbnail uploaded successfully!');
-      }
-    } catch (err) {
-      console.error('Poster upload error:', err);
-      alert('Failed to upload video poster from PC.');
-    } finally {
-      setUploadingPoster(false);
-      if (posterInputRef.current) posterInputRef.current.value = '';
-    }
-  };
-
-  // SET PRIMARY THUMBNAIL
-  const handleSetPrimaryImage = (index: number) => {
-    if (!formData.images || index === 0) return;
-    const list = [...formData.images];
-    const target = list.splice(index, 1)[0];
-    list.unshift(target);
-    setFormData(prev => ({ ...prev, images: list }));
-    onNotify('Primary storefront thumbnail updated.');
-  };
-
-  // REORDER IMAGE (MOVE LEFT / RIGHT)
-  const handleMoveImage = (index: number, direction: 'left' | 'right') => {
-    if (!formData.images) return;
-    const targetIdx = direction === 'left' ? index - 1 : index + 1;
-    if (targetIdx < 0 || targetIdx >= formData.images.length) return;
-    const list = [...formData.images];
-    const temp = list[index];
-    list[index] = list[targetIdx];
-    list[targetIdx] = temp;
-    setFormData(prev => ({ ...prev, images: list }));
-    onNotify(`Image reordered to position ${targetIdx + 1}.`);
-  };
-
-  // TRIGGER REPLACE IMAGE
-  const handleTriggerReplace = (index: number) => {
-    setReplaceTargetIndex(index);
-    if (replaceInputRef.current) {
-      replaceInputRef.current.value = '';
-      replaceInputRef.current.click();
-    }
-  };
-
-  // HANDLE REPLACE FILE SELECTION
-  const handleReplaceFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0 || replaceTargetIndex === null || !formData.images) return;
-    try {
-      setUploadingImage(true);
-      const res = await StorageService.uploadMediaFile(files[0], 'product-image', [`Product: ${formData.title || 'Item'}`]);
-      if (res.url) {
-        const list = [...formData.images];
-        list[replaceTargetIndex] = res.url;
-        setFormData(prev => ({ ...prev, images: list }));
-        onNotify(`Replaced image ${replaceTargetIndex + 1} successfully!`);
-      }
-    } catch (err) {
-      console.error('Replace image error:', err);
-      alert('Failed to replace image.');
-    } finally {
-      setUploadingImage(false);
-      setReplaceTargetIndex(null);
-      if (replaceInputRef.current) replaceInputRef.current.value = '';
-    }
-  };
-
-  // REMOVE IMAGE
-  const handleRemoveImage = (index: number) => {
-    if (!formData.images) return;
-    const list = formData.images.filter((_, idx) => idx !== index);
-    setFormData(prev => ({ ...prev, images: list }));
-  };
-
-  // SAVE PRODUCT FORM
-  const handleSaveProduct = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.title?.trim()) {
-      alert('Please enter a product title.');
-      setFormTab('basic');
-      return;
-    }
-
-    const generatedSlug = formData.slug?.trim() || formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    const generatedSku = formData.sku?.trim() || `GP-${Date.now().toString().slice(-5)}`;
-
-    const fullProduct: Product = {
-      id: formData.id || `gp-${Date.now()}`,
-      title: formData.title.trim(),
-      slug: generatedSlug,
-      sku: generatedSku,
-      price: Number(formData.price) || 0,
-      compareAtPrice: formData.compareAtPrice ? Number(formData.compareAtPrice) : undefined,
-      description: formData.description || '',
-      images: formData.images && formData.images.length > 0 ? formData.images : ['https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1200&q=80'],
-      videoUrl: formData.videoUrl || undefined,
-      videoPoster: formData.videoPoster || undefined,
-      stock: Number(formData.stock) || 0,
-      status: formData.status || 'Active',
-      isVisible: formData.isVisible ?? true,
-      category: formData.category || 'Luxury Pret',
-      categoryId: formData.categoryId || 'cat-1',
-      categorySlug: formData.categorySlug || 'luxury-pret',
-      collectionNames: formData.collectionNames || ['NEW ARRIVALS'],
-      tags: formData.tags || [],
-      fabric: formData.fabric || formData.fabricDetails || 'Luxury Chiffon / Lawn',
-      fabricDetails: formData.fabricDetails,
-      pieceCount: formData.pieceCount,
-      rating: formData.rating ?? 5.0,
-      reviewCount: formData.reviewCount ?? 12,
-      sizes: formData.sizes && formData.sizes.length > 0 ? formData.sizes : ['XS', 'S', 'M', 'L', 'XL'],
-      isNewArrival: formData.collectionNames?.includes('NEW ARRIVALS'),
-      isBestSeller: formData.collectionNames?.includes('TRENDING') || formData.collectionNames?.includes('BEST SELLING'),
-      createdAt: formData.createdAt || new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    StorageService.saveProduct(fullProduct);
-    onNotify(`Saved product "${fullProduct.title}" successfully!`);
-    onSelectProductToEdit(null);
-    onNavigateSub('all');
   };
 
   return (
     <div className="space-y-6">
-      {/* Sub-navigation Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-200 pb-3">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+      {/* Top Header & Sub-Navigation Tabs */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 pb-4">
+        <div className="flex items-center gap-2 overflow-x-auto">
           <button
             type="button"
-            onClick={() => {
-              onSelectProductToEdit(null);
-              onNavigateSub('all');
-            }}
+            onClick={() => onNavigateSub('all')}
             className={`px-3 py-1.5 text-xs font-medium rounded transition-colors whitespace-nowrap cursor-pointer ${
               subview === 'all' ? 'bg-stone-900 text-white' : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
             }`}
           >
             All Products ({products.length})
           </button>
+
           <button
             type="button"
             onClick={() => {
@@ -409,6 +186,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
             <Plus className="w-3.5 h-3.5" />
             <span>{editingProduct ? 'Edit Product' : 'Add Product'}</span>
           </button>
+
           <button
             type="button"
             onClick={() => onNavigateSub('inventory')}
@@ -416,8 +194,9 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
               subview === 'inventory' ? 'bg-stone-900 text-white' : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
             }`}
           >
-            Stock & Inventory
+            Inventory & Stock
           </button>
+
           <button
             type="button"
             onClick={() => onNavigateSub('collections')}
@@ -425,25 +204,16 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
               subview === 'collections' ? 'bg-stone-900 text-white' : 'text-stone-600 hover:text-stone-900 hover:bg-stone-100'
             }`}
           >
-            Collections Grid
+            Storefront Collections
           </button>
         </div>
 
-        {subview === 'all' && (
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                onSelectProductToEdit(null);
-                onNavigateSub('add');
-              }}
-              className="bg-stone-900 hover:bg-stone-800 text-white text-xs font-medium uppercase tracking-wider px-3 py-1.5 rounded flex items-center gap-1 transition-colors cursor-pointer"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Add Product</span>
-            </button>
-          </div>
-        )}
+        {/* Informative catalog stats pill */}
+        <div className="text-xs text-stone-500 font-mono flex items-center gap-3">
+          <span>Active: <strong className="text-stone-900">{products.filter(p => p.status === 'Active').length}</strong></span>
+          <span>•</span>
+          <span>Drafts: <strong className="text-stone-900">{products.filter(p => p.status === 'Draft').length}</strong></span>
+        </div>
       </div>
 
       {/* ======================================================== */}
@@ -453,7 +223,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
         <div className="space-y-4">
           {/* Filters Bar */}
           <div className="bg-white p-4 border border-stone-200 rounded-lg space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
               {/* Search */}
               <div className="relative">
                 <Search className="w-4 h-4 text-stone-400 absolute left-3 top-2.5" />
@@ -507,6 +277,20 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
                   <option value="Archived">Archived</option>
                 </select>
               </div>
+
+              {/* Stock / Availability Filter */}
+              <div>
+                <select
+                  value={selectedStockFilter}
+                  onChange={(e) => setSelectedStockFilter(e.target.value as any)}
+                  className="w-full py-2 px-3 text-xs border border-stone-300 rounded bg-white focus:outline-none focus:border-stone-900"
+                >
+                  <option value="all">All Inventory Status</option>
+                  <option value="in_stock">In Stock (Available)</option>
+                  <option value="low_stock">Low Stock (≤ 3 units)</option>
+                  <option value="out_of_stock">Out of Stock (Sold Out)</option>
+                </select>
+              </div>
             </div>
 
             {/* Bulk Actions Bar */}
@@ -521,49 +305,66 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
                     <button
                       type="button"
                       onClick={() => setBulkActionOpen(!bulkActionOpen)}
-                      className="bg-stone-800 hover:bg-stone-700 text-white px-2.5 py-1 rounded text-xs flex items-center gap-1"
+                      className="px-3 py-1.5 bg-stone-800 hover:bg-stone-700 text-white rounded flex items-center gap-1 cursor-pointer font-medium"
                     >
                       <span>Bulk Actions</span>
                       <ChevronDown className="w-3.5 h-3.5" />
                     </button>
 
                     {bulkActionOpen && (
-                      <div className="absolute right-0 mt-1 w-52 bg-white text-stone-900 border border-stone-200 rounded shadow-xl py-1 z-30 text-xs">
-                        <div className="px-3 py-1 text-[10px] uppercase font-bold text-stone-400">Change Status</div>
+                      <div className="absolute right-0 bottom-full mb-1 w-56 bg-white text-stone-800 rounded-lg shadow-xl border border-stone-200 py-1.5 z-30 animate-in fade-in">
+                        <div className="px-3 py-1 text-[10px] font-bold text-stone-400 uppercase tracking-wider">
+                          Update Status
+                        </div>
                         <button
                           type="button"
                           onClick={() => handleBulkStatusChange('Active')}
-                          className="w-full text-left px-3 py-1.5 hover:bg-stone-100"
+                          className="w-full text-left px-3 py-1.5 hover:bg-stone-100 text-xs flex items-center gap-2"
                         >
-                          Mark as Active
+                          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                          Set Status to Active
                         </button>
                         <button
                           type="button"
                           onClick={() => handleBulkStatusChange('Draft')}
-                          className="w-full text-left px-3 py-1.5 hover:bg-stone-100"
+                          className="w-full text-left px-3 py-1.5 hover:bg-stone-100 text-xs flex items-center gap-2"
                         >
-                          Mark as Draft
+                          <span className="w-2 h-2 rounded-full bg-amber-500" />
+                          Set Status to Draft
                         </button>
                         <button
                           type="button"
                           onClick={() => handleBulkStatusChange('Archived')}
-                          className="w-full text-left px-3 py-1.5 hover:bg-stone-100"
+                          className="w-full text-left px-3 py-1.5 hover:bg-stone-100 text-xs flex items-center gap-2"
                         >
-                          Mark as Archived
+                          <span className="w-2 h-2 rounded-full bg-stone-400" />
+                          Archive Products
                         </button>
 
-                        <div className="border-t border-stone-100 my-1"></div>
-                        <div className="px-3 py-1 text-[10px] uppercase font-bold text-stone-400">Add to Collection</div>
-                        {STOREFRONT_COLLECTIONS.map(col => (
+                        <div className="border-t border-stone-100 my-1" />
+                        <div className="px-3 py-1 text-[10px] font-bold text-stone-400 uppercase tracking-wider">
+                          Add to Collection
+                        </div>
+                        {STOREFRONT_COLLECTIONS.filter(c => c.slug !== 'all').map(col => (
                           <button
                             key={col.slug}
                             type="button"
                             onClick={() => handleBulkAddToCollection(col.slug)}
-                            className="w-full text-left px-3 py-1.5 hover:bg-stone-100 truncate"
+                            className="w-full text-left px-3 py-1.5 hover:bg-stone-100 text-xs truncate"
                           >
                             + {col.name}
                           </button>
                         ))}
+
+                        <div className="border-t border-stone-100 my-1" />
+                        <button
+                          type="button"
+                          onClick={handleBulkDelete}
+                          className="w-full text-left px-3 py-1.5 hover:bg-rose-50 text-rose-600 text-xs flex items-center gap-2"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          Delete Selected
+                        </button>
                       </div>
                     )}
                   </div>
@@ -571,26 +372,25 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
                   <button
                     type="button"
                     onClick={() => setSelectedProductIds([])}
-                    className="text-stone-400 hover:text-white text-xs underline"
+                    className="p-1 text-stone-400 hover:text-white"
                   >
-                    Deselect
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Products Table (Responsive for Desktop and Mobile) */}
-          <div className="bg-white border border-stone-200 rounded-lg overflow-hidden">
-            {/* Desktop Table */}
-            <div className="hidden md:block overflow-x-auto">
+          {/* Desktop Products Table */}
+          <div className="bg-white border border-stone-200 rounded-lg overflow-hidden hidden md:block">
+            <div className="overflow-x-auto">
               <table className="w-full text-left text-xs text-stone-700">
-                <thead className="bg-stone-50 border-b border-stone-200 text-[10px] uppercase font-bold tracking-wider text-stone-500">
+                <thead className="bg-stone-50 border-b border-stone-200 text-[10px] uppercase font-bold text-stone-500 tracking-wider">
                   <tr>
                     <th className="p-3 w-8">
                       <input
                         type="checkbox"
-                        checked={selectedProductIds.length === filteredProducts.length && filteredProducts.length > 0}
+                        checked={selectedProductIds.length > 0 && selectedProductIds.length === filteredProducts.length}
                         onChange={(e) => {
                           if (e.target.checked) {
                             setSelectedProductIds(filteredProducts.map(p => p.id));
@@ -598,1015 +398,330 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
                             setSelectedProductIds([]);
                           }
                         }}
+                        className="accent-stone-900"
                       />
                     </th>
-                    <th className="p-3">Product</th>
-                    <th className="p-3">SKU</th>
+                    <th className="p-3 w-16">Image</th>
+                    <th className="p-3 min-w-[180px]">Product & SKU</th>
                     <th className="p-3">Category</th>
-                    <th className="p-3">Collections</th>
+                    <th className="p-3 min-w-[150px]">Collections</th>
                     <th className="p-3">Price</th>
-                    <th className="p-3">Stock</th>
+                    <th className="p-3">Stock / Availability</th>
                     <th className="p-3">Status</th>
+                    <th className="p-3">Visibility</th>
                     <th className="p-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-stone-100">
-                  {filteredProducts.map((p) => {
-                    const isSelected = selectedProductIds.includes(p.id);
-                    const isLowStock = (p.stock || 0) <= 5;
+                  {filteredProducts.length === 0 ? (
+                    <tr>
+                      <td colSpan={10} className="p-8 text-center text-stone-500">
+                        No products match your current search and filter criteria.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredProducts.map((p) => {
+                      const isSelected = selectedProductIds.includes(p.id);
+                      const isLowStock = p.inventoryMode !== 'availability' && (p.stock || 0) <= (p.lowStockThreshold || 3) && (p.stock || 0) > 0;
+                      const isOutOfStock = p.isSoldOut || (p.stock || 0) <= 0;
 
-                    return (
-                      <tr key={p.id} className={`hover:bg-stone-50/80 transition-colors ${isSelected ? 'bg-stone-50' : ''}`}>
-                        <td className="p-3">
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setSelectedProductIds([...selectedProductIds, p.id]);
-                              } else {
-                                setSelectedProductIds(selectedProductIds.filter(id => id !== p.id));
-                              }
-                            }}
-                          />
-                        </td>
-                        <td className="p-3">
-                          <div className="flex items-center gap-3">
-                            <img
-                              src={p.images?.[0] || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=400&q=80'}
-                              alt={p.title}
-                              className="w-12 h-16 object-cover border border-stone-200 rounded shrink-0"
+                      return (
+                        <tr key={p.id} className={`hover:bg-stone-50/80 transition-colors ${isSelected ? 'bg-amber-50/40' : ''}`}>
+                          <td className="p-3">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedProductIds(prev => [...prev, p.id]);
+                                } else {
+                                  setSelectedProductIds(prev => prev.filter(id => id !== p.id));
+                                }
+                              }}
+                              className="accent-stone-900"
                             />
-                            <div className="min-w-0">
-                              <h4 className="font-medium text-stone-900 truncate max-w-xs">{p.title}</h4>
-                              <div className="flex items-center gap-1.5 mt-0.5">
-                                {p.videoUrl && (
-                                  <span className="text-[9px] bg-indigo-50 text-indigo-700 px-1 py-0.5 rounded font-mono">
-                                    VIDEO
+                          </td>
+                          <td className="p-3">
+                            <div className="relative w-10 h-13 rounded overflow-hidden border border-stone-200 bg-stone-100">
+                              <img
+                                src={p.images?.[0] || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=200&q=80'}
+                                alt={p.title}
+                                className="w-full h-full object-cover object-top"
+                              />
+                              {p.videoUrl && (
+                                <span className="absolute bottom-0 right-0 bg-stone-900/80 text-white text-[8px] px-1 py-0.2 rounded-tl">
+                                  VID
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="p-3">
+                            <div className="font-medium text-stone-900 line-clamp-1">{p.title}</div>
+                            <div className="text-[10px] font-mono text-stone-500 flex items-center gap-1 mt-0.5">
+                              <span>SKU: {p.sku || '—'}</span>
+                              <span>•</span>
+                              <span className="truncate max-w-[120px]">{p.slug}</span>
+                            </div>
+                          </td>
+                          <td className="p-3">
+                            <span className="text-stone-700">{p.category || 'Luxury Pret'}</span>
+                          </td>
+                          <td className="p-3">
+                            <div className="flex flex-wrap gap-1 max-w-[190px]">
+                              {(p.collectionNames || []).slice(0, 2).map((cName, idx) => (
+                                <span key={idx} className="text-[9px] bg-stone-100 text-stone-700 px-1.5 py-0.5 rounded font-medium truncate max-w-[90px]">
+                                  {cName}
+                                </span>
+                              ))}
+                              {(p.collectionNames || []).length > 2 && (
+                                <div className="relative inline-block group">
+                                  <button
+                                    type="button"
+                                    className="text-[9px] bg-stone-200 hover:bg-stone-300 text-stone-800 px-1.5 py-0.5 rounded font-bold cursor-pointer transition-colors"
+                                  >
+                                    +{(p.collectionNames || []).length - 2} more
+                                  </button>
+                                  <div className="hidden group-hover:block group-focus-within:block absolute left-0 bottom-full mb-1 z-40 w-48 p-2.5 bg-stone-900 text-white text-[10px] rounded-md shadow-xl border border-stone-800 pointer-events-none">
+                                    <div className="font-bold uppercase tracking-wider text-amber-400 mb-1.5 text-[9px]">
+                                      Assigned Collections ({(p.collectionNames || []).length})
+                                    </div>
+                                    <div className="space-y-1">
+                                      {(p.collectionNames || []).map((col, cIdx) => (
+                                        <div key={cIdx} className="flex items-center gap-1.5">
+                                          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                                          <span className="truncate">{col}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                          <td className="p-3">
+                            <div className="font-mono font-bold text-stone-900">
+                              {formatPrice(p.price, 'PKR')}
+                            </div>
+                            {p.compareAtPrice && p.compareAtPrice > p.price && (
+                              <div className="text-[10px] font-mono text-stone-400 line-through">
+                                {formatPrice(p.compareAtPrice, 'PKR')}
+                              </div>
+                            )}
+                          </td>
+                          <td className="p-3">
+                            {p.inventoryMode === 'availability' ? (
+                              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold ${
+                                p.isSoldOut 
+                                  ? 'bg-rose-50 text-rose-700 border border-rose-200' 
+                                  : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              }`}>
+                                {p.isSoldOut ? 'Sold Out' : 'Available'}
+                              </span>
+                            ) : (
+                              <div className="flex items-center gap-1.5">
+                                <span className={`font-mono font-bold ${
+                                  isOutOfStock ? 'text-rose-700' : isLowStock ? 'text-amber-700' : 'text-stone-900'
+                                }`}>
+                                  {p.stock} units
+                                </span>
+                                {isOutOfStock && (
+                                  <span className="text-[9px] bg-rose-50 text-rose-700 font-bold px-1 rounded border border-rose-200">
+                                    OUT
                                   </span>
                                 )}
-                                {!p.isVisible && (
-                                  <span className="text-[9px] bg-stone-200 text-stone-700 px-1 py-0.5 rounded">
-                                    Hidden
+                                {isLowStock && (
+                                  <span className="text-[9px] bg-amber-50 text-amber-800 font-bold px-1 rounded border border-amber-300">
+                                    LOW
                                   </span>
                                 )}
                               </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="p-3 font-mono text-[11px] text-stone-600">
-                          {p.sku || '—'}
-                        </td>
-                        <td className="p-3 text-stone-600">
-                          {p.category}
-                        </td>
-                        <td className="p-3">
-                          <div className="flex flex-wrap gap-1 max-w-[180px]">
-                            {(p.collectionNames || []).slice(0, 2).map((cName, idx) => (
-                              <span key={idx} className="text-[9px] bg-stone-100 text-stone-700 px-1.5 py-0.5 rounded">
-                                {cName}
-                              </span>
-                            ))}
-                            {(p.collectionNames || []).length > 2 && (
-                              <span className="text-[9px] text-stone-400">
-                                +{(p.collectionNames || []).length - 2}
-                              </span>
                             )}
-                          </div>
-                        </td>
-                        <td className="p-3 font-mono font-medium text-stone-900">
-                          {formatPrice(p.price, 'PKR')}
-                          {p.compareAtPrice && p.compareAtPrice > p.price && (
-                            <span className="line-through text-[10px] text-stone-400 block">
-                              {formatPrice(p.compareAtPrice, 'PKR')}
+                          </td>
+                          <td className="p-3">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${
+                              p.status === 'Active' ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' :
+                              p.status === 'Draft' ? 'bg-amber-50 text-amber-800 border border-amber-200' :
+                              'bg-stone-100 text-stone-600'
+                            }`}>
+                              {p.status}
                             </span>
-                          )}
-                        </td>
-                        <td className="p-3">
-                          {inlineStockEdit?.id === p.id ? (
-                            <div className="flex items-center gap-1">
-                              <input
-                                type="number"
-                                value={inlineStockEdit.stock}
-                                onChange={(e) => setInlineStockEdit({ id: p.id, stock: Number(e.target.value) })}
-                                className="w-14 p-1 text-xs border border-stone-300 rounded"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => handleSaveInlineStock(p.id)}
-                                className="p-1 bg-emerald-700 text-white rounded hover:bg-emerald-800"
-                              >
-                                <Check className="w-3 h-3" />
-                              </button>
-                            </div>
-                          ) : (
-                            <button
-                              type="button"
-                              onClick={() => setInlineStockEdit({ id: p.id, stock: p.stock || 0 })}
-                              className={`text-xs px-2 py-0.5 rounded border hover:border-stone-400 cursor-pointer ${
-                                isLowStock ? 'bg-rose-50 border-rose-200 text-rose-800 font-bold' : 'bg-stone-50 border-stone-200 text-stone-800'
-                              }`}
-                              title="Click to edit stock inline"
-                            >
-                              {p.stock} units
-                            </button>
-                          )}
-                        </td>
-                        <td className="p-3">
-                          <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${
-                            p.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                            p.status === 'Draft' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                            'bg-stone-100 text-stone-600'
-                          }`}>
-                            {p.status}
-                          </span>
-                        </td>
-                        <td className="p-3 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
-                            {/* Toggle visibility */}
+                          </td>
+                          <td className="p-3">
                             <button
                               type="button"
                               onClick={() => handleToggleVisibility(p)}
-                              className="p-1.5 text-stone-400 hover:text-stone-900 hover:bg-stone-100 rounded"
-                              title={p.isVisible ? 'Hide from storefront' : 'Show on storefront'}
+                              className="text-stone-500 hover:text-stone-900 cursor-pointer"
+                              title={p.isVisible ? 'Hide from storefront catalog' : 'Show on storefront catalog'}
                             >
-                              {p.isVisible ? <Eye className="w-4 h-4 text-emerald-600" /> : <EyeOff className="w-4 h-4 text-stone-400" />}
+                              {p.isVisible ? (
+                                <span className="flex items-center gap-1 text-[11px] text-emerald-700">
+                                  <Eye className="w-3.5 h-3.5" />
+                                  <span>Visible</span>
+                                </span>
+                              ) : (
+                                <span className="flex items-center gap-1 text-[11px] text-stone-400">
+                                  <EyeOff className="w-3.5 h-3.5" />
+                                  <span>Hidden</span>
+                                </span>
+                              )}
                             </button>
-
-                            {/* View on store */}
-                            {onNavigateToStoreProduct && (
+                          </td>
+                          <td className="p-3 text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              {p.slug && onNavigateToStoreProduct && (
+                                <button
+                                  type="button"
+                                  onClick={() => onNavigateToStoreProduct(p.slug)}
+                                  className="p-1 hover:bg-stone-100 rounded text-stone-500 hover:text-stone-900 cursor-pointer"
+                                  title="View on Storefront"
+                                >
+                                  <ExternalLink className="w-3.5 h-3.5" />
+                                </button>
+                              )}
                               <button
                                 type="button"
-                                onClick={() => onNavigateToStoreProduct(p.slug)}
-                                className="p-1.5 text-stone-400 hover:text-stone-900 hover:bg-stone-100 rounded"
-                                title="View on storefront"
+                                onClick={() => handleDuplicate(p.id)}
+                                className="p-1 hover:bg-stone-100 rounded text-stone-500 hover:text-stone-900 cursor-pointer"
+                                title="Duplicate Product"
                               >
-                                <ExternalLink className="w-4 h-4" />
+                                <Copy className="w-3.5 h-3.5" />
                               </button>
-                            )}
-
-                            {/* Duplicate */}
-                            <button
-                              type="button"
-                              onClick={() => handleDuplicate(p.id)}
-                              className="p-1.5 text-stone-400 hover:text-stone-900 hover:bg-stone-100 rounded"
-                              title="Duplicate product"
-                            >
-                              <Copy className="w-4 h-4" />
-                            </button>
-
-                            {/* Edit */}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                onSelectProductToEdit(p);
-                                onNavigateSub('add');
-                              }}
-                              className="p-1.5 text-stone-700 hover:text-stone-900 hover:bg-stone-100 rounded"
-                              title="Edit product"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-
-                            {/* Delete */}
-                            <button
-                              type="button"
-                              onClick={() => handleDelete(p.id, p.title)}
-                              className="p-1.5 text-stone-400 hover:text-rose-700 hover:bg-stone-100 rounded"
-                              title="Delete product"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  onSelectProductToEdit(p);
+                                  onNavigateSub('add');
+                                }}
+                                className="p-1 hover:bg-stone-100 rounded text-stone-700 hover:text-stone-900 cursor-pointer"
+                                title="Edit Product"
+                              >
+                                <Edit className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDelete(p.id, p.title)}
+                                className="p-1 hover:bg-rose-50 rounded text-rose-500 hover:text-rose-700 cursor-pointer"
+                                title="Archive / Delete"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
+          </div>
 
-            {/* Mobile Cards View (Touch-friendly for phone screens) */}
-            <div className="md:hidden divide-y divide-stone-200">
-              {filteredProducts.map((p) => {
-                const isLowStock = (p.stock || 0) <= 5;
+          {/* Mobile Card List View */}
+          <div className="md:hidden space-y-3">
+            {filteredProducts.map((p) => {
+              const isLowStock = p.inventoryMode !== 'availability' && (p.stock || 0) <= (p.lowStockThreshold || 3) && (p.stock || 0) > 0;
+              const isOutOfStock = p.isSoldOut || (p.stock || 0) <= 0;
 
-                return (
-                  <div key={p.id} className="p-4 space-y-3">
-                    <div className="flex gap-3">
-                      <img
-                        src={p.images?.[0] || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=400&q=80'}
-                        alt={p.title}
-                        className="w-16 h-22 object-cover border border-stone-200 rounded shrink-0"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <h4 className="font-medium text-stone-900 text-xs line-clamp-2">{p.title}</h4>
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded shrink-0 ${
-                            p.status === 'Active' ? 'bg-emerald-50 text-emerald-800' : 'bg-stone-100 text-stone-700'
-                          }`}>
-                            {p.status}
-                          </span>
-                        </div>
-                        <div className="text-[11px] font-mono text-stone-500 mt-1">
-                          SKU: {p.sku || '—'}
-                        </div>
-                        <div className="text-xs font-mono font-bold text-stone-900 mt-1">
-                          {formatPrice(p.price, 'PKR')}
-                        </div>
-                        <div className="mt-1 flex items-center gap-2 text-[11px]">
-                          <span className={isLowStock ? 'text-rose-700 font-bold' : 'text-stone-500'}>
-                            Stock: {p.stock}
-                          </span>
-                          <span>&bull;</span>
-                          <span className="text-stone-500">{p.category}</span>
-                        </div>
+              return (
+                <div key={p.id} className="bg-white border border-stone-200 rounded-lg p-3 space-y-3">
+                  <div className="flex gap-3">
+                    <img
+                      src={p.images?.[0] || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=200&q=80'}
+                      alt={p.title}
+                      className="w-16 h-22 object-cover border border-stone-200 rounded shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <h4 className="font-medium text-stone-900 text-xs line-clamp-2">{p.title}</h4>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded shrink-0 ${
+                          p.status === 'Active' ? 'bg-emerald-50 text-emerald-800' : 'bg-stone-100 text-stone-700'
+                        }`}>
+                          {p.status}
+                        </span>
                       </div>
-                    </div>
-
-                    {/* Mobile Card Action Bar */}
-                    <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs">
-                      <button
-                        type="button"
-                        onClick={() => handleToggleVisibility(p)}
-                        className="text-stone-600 flex items-center gap-1"
-                      >
-                        {p.isVisible ? <Eye className="w-3.5 h-3.5 text-emerald-600" /> : <EyeOff className="w-3.5 h-3.5" />}
-                        <span>{p.isVisible ? 'Visible' : 'Hidden'}</span>
-                      </button>
-
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleDuplicate(p.id)}
-                          className="px-2 py-1 bg-stone-100 rounded text-stone-700"
-                        >
-                          Duplicate
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            onSelectProductToEdit(p);
-                            onNavigateSub('add');
-                          }}
-                          className="px-3 py-1 bg-stone-900 text-white rounded font-medium"
-                        >
-                          Edit
-                        </button>
+                      <div className="text-[11px] font-mono text-stone-500 mt-1">
+                        SKU: {p.sku || '—'}
+                      </div>
+                      <div className="text-xs font-mono font-bold text-stone-900 mt-1">
+                        {formatPrice(p.price, 'PKR')}
+                      </div>
+                      <div className="mt-1 flex items-center gap-2 text-[11px]">
+                        {p.inventoryMode === 'availability' ? (
+                          <span className={p.isSoldOut ? 'text-rose-700 font-bold' : 'text-emerald-700 font-bold'}>
+                            {p.isSoldOut ? 'Sold Out' : 'Available'}
+                          </span>
+                        ) : (
+                          <span className={isOutOfStock ? 'text-rose-700 font-bold' : isLowStock ? 'text-amber-700 font-bold' : 'text-stone-500'}>
+                            Stock: {p.stock} units
+                          </span>
+                        )}
+                        <span>&bull;</span>
+                        <span className="text-stone-500">{p.category}</span>
                       </div>
                     </div>
                   </div>
-                );
-              })}
-            </div>
+
+                  {/* Mobile Card Action Bar */}
+                  <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleVisibility(p)}
+                      className="text-stone-600 flex items-center gap-1"
+                    >
+                      {p.isVisible ? <Eye className="w-3.5 h-3.5 text-emerald-600" /> : <EyeOff className="w-3.5 h-3.5" />}
+                      <span>{p.isVisible ? 'Visible' : 'Hidden'}</span>
+                    </button>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleDuplicate(p.id)}
+                        className="px-2 py-1 bg-stone-100 rounded text-stone-700"
+                      >
+                        Duplicate
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          onSelectProductToEdit(p);
+                          onNavigateSub('add');
+                        }}
+                        className="px-3 py-1 bg-stone-900 text-white rounded font-medium"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
 
       {/* ======================================================== */}
-      {/* 2. ADD / EDIT PRODUCT VIEW (Tabbed CMS Experience)        */}
+      {/* 2. ADD / EDIT PRODUCT VIEW (Modular CMS Experience)       */}
       {/* ======================================================== */}
       {subview === 'add' && (
-        <form onSubmit={handleSaveProduct} className="space-y-6">
-          {/* Sub-tabs for Form */}
-          <div className="bg-white border border-stone-200 rounded-lg p-2 flex items-center gap-1 overflow-x-auto text-xs">
-            <button
-              type="button"
-              onClick={() => setFormTab('basic')}
-              className={`px-3 py-1.5 rounded font-medium whitespace-nowrap transition-colors ${
-                formTab === 'basic' ? 'bg-stone-900 text-white' : 'text-stone-600 hover:bg-stone-100'
-              }`}
-            >
-              1. Basic Info
-            </button>
-            <button
-              type="button"
-              onClick={() => setFormTab('media')}
-              className={`px-3 py-1.5 rounded font-medium whitespace-nowrap transition-colors ${
-                formTab === 'media' ? 'bg-stone-900 text-white' : 'text-stone-600 hover:bg-stone-100'
-              }`}
-            >
-              2. Media & Runway Video
-            </button>
-            <button
-              type="button"
-              onClick={() => setFormTab('pricing')}
-              className={`px-3 py-1.5 rounded font-medium whitespace-nowrap transition-colors ${
-                formTab === 'pricing' ? 'bg-stone-900 text-white' : 'text-stone-600 hover:bg-stone-100'
-              }`}
-            >
-              3. Pricing & Inventory
-            </button>
-            <button
-              type="button"
-              onClick={() => setFormTab('collections')}
-              className={`px-3 py-1.5 rounded font-medium whitespace-nowrap transition-colors ${
-                formTab === 'collections' ? 'bg-stone-900 text-white' : 'text-stone-600 hover:bg-stone-100'
-              }`}
-            >
-              4. Storefront Collections & Category
-            </button>
-            <button
-              type="button"
-              onClick={() => setFormTab('fabric')}
-              className={`px-3 py-1.5 rounded font-medium whitespace-nowrap transition-colors ${
-                formTab === 'fabric' ? 'bg-stone-900 text-white' : 'text-stone-600 hover:bg-stone-100'
-              }`}
-            >
-              5. Fabric & Measurements
-            </button>
-            <button
-              type="button"
-              onClick={() => setFormTab('status')}
-              className={`px-3 py-1.5 rounded font-medium whitespace-nowrap transition-colors ${
-                formTab === 'status' ? 'bg-stone-900 text-white' : 'text-stone-600 hover:bg-stone-100'
-              }`}
-            >
-              6. Status & Visibility
-            </button>
-          </div>
-
-          {/* Form Content Body */}
-          <div className="bg-white border border-stone-200 rounded-lg p-5 sm:p-7 space-y-6">
-            {/* 1. BASIC INFO */}
-            {formTab === 'basic' && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-stone-900 border-b border-stone-200 pb-2">
-                  General Product Details
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
-                    <label className="block text-xs font-bold text-stone-800 mb-1">
-                      Product Title *
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Meherbaan Raw Silk Anarkali"
-                      value={formData.title || ''}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                      className="w-full p-2.5 text-xs border border-stone-300 rounded focus:outline-none focus:border-stone-900"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-stone-800 mb-1">
-                      SKU (Stock Keeping Unit)
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. GP-LUX-001"
-                      value={formData.sku || ''}
-                      onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-                      className="w-full p-2.5 text-xs font-mono border border-stone-300 rounded focus:outline-none focus:border-stone-900"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-stone-800 mb-1">
-                      URL Slug
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. meherbaan-raw-silk-anarkali"
-                      value={formData.slug || ''}
-                      onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                      className="w-full p-2.5 text-xs font-mono border border-stone-300 rounded focus:outline-none focus:border-stone-900"
-                    />
-                  </div>
-
-                  <div className="md:col-span-2">
-                    <label className="block text-xs font-bold text-stone-800 mb-1">
-                      Full Product Description
-                    </label>
-                    <textarea
-                      rows={5}
-                      placeholder="Enter detailed description, embroidery motifs, silhouette, and styling notes..."
-                      value={formData.description || ''}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                      className="w-full p-2.5 text-xs border border-stone-300 rounded focus:outline-none focus:border-stone-900"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* 2. MEDIA & RUNWAY VIDEO */}
-            {formTab === 'media' && (
-              <div className="space-y-5">
-                <div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-stone-900">
-                    Product Images & Runway Video
-                  </h3>
-                  <p className="text-xs text-stone-500 mt-0.5">
-                    Upload high-resolution photography and portrait runway videos directly from your PC.
-                  </p>
-                </div>
-
-                {/* IMAGE CANVAS GUIDANCE (Mandatory Requirement) */}
-                <div className="p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-md text-xs text-amber-900 flex items-start gap-2.5">
-                  <Sparkles className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
-                  <div className="space-y-0.5">
-                    <p className="font-semibold uppercase tracking-wider text-[11px] text-amber-900">
-                      Product Image Canvas Specifications
-                    </p>
-                    <p className="text-amber-800 text-[11px] leading-relaxed">
-                      <span className="font-medium">Recommended Resolution:</span> 1200 × 1500 px &nbsp;|&nbsp; 
-                      <span className="font-medium">Aspect Ratio:</span> 4:5 Portrait &nbsp;|&nbsp; 
-                      <span className="font-medium">Format:</span> WebP / JPG. 
-                      Non-destructive storefront presentation preserves authentic fashion photography without distortion.
-                    </p>
-                  </div>
-                </div>
-
-                {/* PC Upload Button */}
-                <div className="p-6 border-2 border-dashed border-stone-300 rounded-lg text-center space-y-3 bg-stone-50 hover:bg-stone-100/60 transition-colors">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageFileChange}
-                    className="hidden"
-                  />
-                  <input
-                    ref={replaceInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleReplaceFileChange}
-                    className="hidden"
-                  />
-                  <ImageIcon className="w-8 h-8 mx-auto text-stone-400" />
-                  <div>
-                    <button
-                      type="button"
-                      disabled={uploadingImage}
-                      onClick={() => fileInputRef.current?.click()}
-                      className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white text-xs font-medium uppercase tracking-wider rounded inline-flex items-center gap-2 cursor-pointer disabled:opacity-50"
-                    >
-                      <Upload className="w-4 h-4" />
-                      <span>{uploadingImage ? 'Uploading Photos...' : 'Upload Photos from PC'}</span>
-                    </button>
-                    <p className="text-[11px] text-stone-500 mt-1">
-                      Select one or multiple photos (JPG, PNG, WEBP). First photo is storefront primary thumbnail. URL input is not mandatory.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Images Preview Grid with Reorder, Replace, Set Primary, Remove */}
-                {formData.images && formData.images.length > 0 && (
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="text-xs font-bold uppercase text-stone-700">
-                        Uploaded Gallery Images ({formData.images.length})
-                      </h4>
-                      <span className="text-[11px] text-stone-500">
-                        Hover an image to reorder, replace, set primary, or remove
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                      {formData.images.map((imgUrl, idx) => (
-                        <div key={idx} className="relative group border border-stone-200 rounded-sm overflow-hidden bg-stone-100 aspect-[3/4] flex flex-col justify-between shadow-2xs">
-                          <img
-                            src={imgUrl}
-                            alt={`Preview ${idx + 1}`}
-                            className="w-full h-full object-cover object-top"
-                          />
-                          
-                          {/* Badges */}
-                          <div className="absolute top-1.5 left-1.5 flex flex-col gap-1 z-10 pointer-events-none">
-                            {idx === 0 ? (
-                              <span className="bg-stone-900 text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider shadow-xs">
-                                Primary
-                              </span>
-                            ) : (
-                              <span className="bg-black/60 backdrop-blur-xs text-white text-[9px] font-mono px-1 py-0.5 rounded">
-                                #{idx + 1}
-                              </span>
-                            )}
-                          </div>
-
-                          {/* Hover Action Overlay */}
-                          <div className="absolute inset-0 bg-stone-900/75 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-1.5 z-20">
-                            {/* Top row: Reorder arrows */}
-                            <div className="flex items-center justify-between">
-                              <button
-                                type="button"
-                                disabled={idx === 0}
-                                onClick={() => handleMoveImage(idx, 'left')}
-                                className="p-1 bg-white/90 hover:bg-white text-stone-800 disabled:opacity-30 rounded text-xs cursor-pointer"
-                                title="Move Left"
-                              >
-                                <ArrowLeft className="w-3 h-3" />
-                              </button>
-                              <button
-                                type="button"
-                                disabled={idx === (formData.images?.length || 0) - 1}
-                                onClick={() => handleMoveImage(idx, 'right')}
-                                className="p-1 bg-white/90 hover:bg-white text-stone-800 disabled:opacity-30 rounded text-xs cursor-pointer"
-                                title="Move Right"
-                              >
-                                <ArrowRight className="w-3 h-3" />
-                              </button>
-                            </div>
-
-                            {/* Middle: Set Main and Replace */}
-                            <div className="flex flex-col gap-1 items-center">
-                              {idx !== 0 && (
-                                <button
-                                  type="button"
-                                  onClick={() => handleSetPrimaryImage(idx)}
-                                  className="w-full py-1 px-1.5 bg-white text-stone-900 rounded text-[10px] font-medium tracking-wide uppercase hover:bg-stone-100 cursor-pointer text-center"
-                                  title="Set as storefront primary thumbnail"
-                                >
-                                  Set Primary
-                                </button>
-                              )}
-                              <button
-                                type="button"
-                                onClick={() => handleTriggerReplace(idx)}
-                                className="w-full py-1 px-1.5 bg-stone-800 hover:bg-stone-700 text-white rounded text-[10px] font-medium tracking-wide flex items-center justify-center gap-1 cursor-pointer"
-                                title="Replace image from PC"
-                              >
-                                <RefreshCw className="w-2.5 h-2.5" />
-                                <span>Replace</span>
-                              </button>
-                            </div>
-
-                            {/* Bottom: Remove */}
-                            <div className="flex justify-end">
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveImage(idx)}
-                                className="p-1 bg-rose-600 hover:bg-rose-700 text-white rounded cursor-pointer"
-                                title="Remove image"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Video Upload / URL Section */}
-                <div className="pt-4 border-t border-stone-200 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="text-xs font-bold uppercase text-stone-700 flex items-center gap-1.5">
-                        <Video className="w-4 h-4 text-indigo-700" />
-                        <span>Runway Video Preview (Optional)</span>
-                      </h4>
-                      <p className="text-[11px] text-stone-500 mt-0.5">
-                        Recommended Canvas: 1080 × 1350 px (4:5) or 1080 × 1920 px (9:16 vertical runway). Formats: MP4, WebM.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-[11px] font-medium text-stone-600 mb-1">
-                        Upload Video from PC (.mp4, .webm)
-                      </label>
-                      <input
-                        ref={videoInputRef}
-                        type="file"
-                        accept="video/mp4,video/webm"
-                        onChange={handleVideoFileChange}
-                        className="hidden"
-                      />
-                      <button
-                        type="button"
-                        disabled={uploadingVideo}
-                        onClick={() => videoInputRef.current?.click()}
-                        className="w-full p-2.5 bg-stone-100 hover:bg-stone-200 border border-stone-300 rounded text-xs text-stone-800 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                      >
-                        <Upload className="w-4 h-4" />
-                        <span>{uploadingVideo ? 'Uploading Runway Video...' : formData.videoUrl ? 'Replace Video from PC' : 'Choose Video File from PC'}</span>
-                      </button>
-                    </div>
-
-                    <div>
-                      <label className="block text-[11px] font-medium text-stone-600 mb-1">
-                        Or Paste Video URL
-                      </label>
-                      <input
-                        type="url"
-                        placeholder="https://.../video.mp4"
-                        value={formData.videoUrl || ''}
-                        onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
-                        className="w-full p-2.5 text-xs border border-stone-300 rounded focus:outline-none focus:border-stone-900"
-                      />
-                    </div>
-                  </div>
-
-                  {formData.videoUrl && (
-                    <div className="p-3 bg-stone-50 border border-stone-200 rounded space-y-3">
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
-                        <span className="truncate max-w-sm font-mono text-[11px] text-stone-700">{formData.videoUrl}</span>
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => videoInputRef.current?.click()}
-                            className="text-stone-700 hover:text-stone-900 font-medium underline"
-                          >
-                            Replace
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setFormData({ ...formData, videoUrl: '', videoPoster: '' })}
-                            className="text-rose-700 hover:underline font-medium"
-                          >
-                            Remove Video
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Video Player Preview */}
-                      <div className="max-w-xs bg-black rounded overflow-hidden aspect-[4/5] flex items-center justify-center">
-                        <video
-                          src={formData.videoUrl}
-                          poster={formData.videoPoster}
-                          controls
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Video Poster Image Management */}
-                  <div className="p-3 bg-stone-50 border border-stone-200 rounded space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label className="block text-[11px] font-bold text-stone-800">
-                        Video Poster / Thumbnail Image
-                      </label>
-                      <span className="text-[10px] text-stone-500 font-mono">Recommended: 1080 × 1350 px (4:5)</span>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      {formData.videoPoster ? (
-                        <img
-                          src={formData.videoPoster}
-                          alt="Poster Preview"
-                          className="w-14 h-18 object-cover rounded border border-stone-300 shrink-0"
-                        />
-                      ) : (
-                        <div className="w-14 h-18 bg-stone-200 border border-dashed border-stone-300 rounded flex items-center justify-center text-[9px] text-stone-500 text-center p-1">
-                          No Poster
-                        </div>
-                      )}
-
-                      <div className="space-y-1.5">
-                        <input
-                          ref={posterInputRef}
-                          type="file"
-                          accept="image/*"
-                          onChange={handlePosterFileChange}
-                          className="hidden"
-                        />
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            disabled={uploadingPoster}
-                            onClick={() => posterInputRef.current?.click()}
-                            className="px-3 py-1.5 bg-stone-900 text-white rounded text-[11px] font-medium hover:bg-stone-800 disabled:opacity-50"
-                          >
-                            {uploadingPoster ? 'Uploading...' : formData.videoPoster ? 'Replace Poster' : 'Upload Poster from PC'}
-                          </button>
-                          {formData.videoPoster && (
-                            <button
-                              type="button"
-                              onClick={() => setFormData({ ...formData, videoPoster: '' })}
-                              className="px-2.5 py-1.5 border border-stone-300 text-stone-700 hover:bg-stone-100 rounded text-[11px]"
-                            >
-                              Remove
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* 3. PRICING & INVENTORY */}
-            {formTab === 'pricing' && (
-              <div className="space-y-5">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-stone-900 border-b border-stone-200 pb-2">
-                  Pricing & Stock Inventory
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-stone-800 mb-1">
-                      Selling Price (PKR) *
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="e.g. 18500"
-                      value={formData.price || ''}
-                      onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
-                      className="w-full p-2.5 text-xs font-mono font-bold border border-stone-300 rounded focus:outline-none focus:border-stone-900"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-stone-800 mb-1">
-                      Original / Compare Price (PKR)
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="e.g. 24000 (Shows strikethrough)"
-                      value={formData.compareAtPrice || ''}
-                      onChange={(e) => setFormData({ ...formData, compareAtPrice: Number(e.target.value) })}
-                      className="w-full p-2.5 text-xs font-mono border border-stone-300 rounded focus:outline-none focus:border-stone-900"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-stone-800 mb-1">
-                      Total Available Stock
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="e.g. 15"
-                      value={formData.stock || ''}
-                      onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
-                      className="w-full p-2.5 text-xs font-mono border border-stone-300 rounded focus:outline-none focus:border-stone-900"
-                    />
-                  </div>
-                </div>
-
-                <div className="p-3.5 bg-stone-50 border border-stone-200 rounded text-xs text-stone-600 space-y-2">
-                  <h4 className="font-bold text-stone-800 uppercase tracking-wide text-[11px]">
-                    Standard Pakistani Couture Sizing
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {['XS', 'S', 'M', 'L', 'XL', 'Custom'].map((sz) => {
-                      const hasSize = (formData.sizes || []).includes(sz as any);
-                      return (
-                        <label key={sz} className="inline-flex items-center gap-1.5 p-1.5 bg-white border border-stone-300 rounded cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={hasSize}
-                            onChange={(e) => {
-                              const current = formData.sizes || [];
-                              const updated = e.target.checked
-                                ? [...current, sz as any]
-                                : current.filter(s => s !== sz);
-                              setFormData({ ...formData, sizes: updated });
-                            }}
-                          />
-                          <span className="font-mono text-xs">{sz}</span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* 4. STOREFRONT COLLECTIONS & CATEGORY */}
-            {formTab === 'collections' && (
-              <div className="space-y-5">
-                <div>
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-stone-900">
-                    Storefront Collections & Category Allocation
-                  </h3>
-                  <p className="text-xs text-stone-500 mt-0.5">
-                    Select which of the 6 signature storefront collections this product should appear under.
-                  </p>
-                </div>
-
-                {/* Primary Category Dropdown */}
-                <div>
-                  <label className="block text-xs font-bold text-stone-800 mb-1">
-                    Primary Category *
-                  </label>
-                  <select
-                    value={formData.category || ''}
-                    onChange={(e) => {
-                      const catName = e.target.value;
-                      const catObj = categories.find(c => c.name === catName);
-                      setFormData({
-                        ...formData,
-                        category: catName,
-                        categoryId: catObj?.id,
-                        categorySlug: catObj?.slug
-                      });
-                    }}
-                    className="w-full p-2.5 text-xs border border-stone-300 rounded bg-white focus:outline-none focus:border-stone-900"
-                  >
-                    {categories.map(c => (
-                      <option key={c.id} value={c.name}>{c.name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* 6 Storefront Collections Multi-select Checkboxes */}
-                <div className="space-y-3 pt-3 border-t border-stone-200">
-                  <label className="block text-xs font-bold text-stone-800">
-                    Storefront Collections (Multi-Select)
-                  </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                    {STOREFRONT_COLLECTIONS.map(col => {
-                      const colTargetName = col.name.toUpperCase();
-                      const isChecked = !!(
-                        formData.collectionNames?.some(n => n.toUpperCase() === colTargetName) ||
-                        formData.tags?.includes(col.slug) ||
-                        formData.collection === colTargetName ||
-                        formData.collectionSlug === col.slug
-                      );
-
-                      return (
-                        <label
-                          key={col.slug}
-                          className={`p-3 border rounded flex items-center gap-3 cursor-pointer transition-colors ${
-                            isChecked ? 'bg-amber-50/70 border-amber-400 font-medium' : 'bg-white border-stone-300 hover:border-stone-400'
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={(e) => {
-                              const checked = e.target.checked;
-                              let names = Array.isArray(formData.collectionNames) ? [...formData.collectionNames] : [];
-                              let tags = Array.isArray(formData.tags) ? [...formData.tags] : [];
-
-                              if (checked) {
-                                if (!names.includes(col.name)) names.push(col.name);
-                                if (!tags.includes(col.slug)) tags.push(col.slug);
-                              } else {
-                                names = names.filter(n => n.toUpperCase() !== colTargetName);
-                                tags = tags.filter(t => t !== col.slug);
-                              }
-
-                              setFormData({
-                                ...formData,
-                                collectionNames: names,
-                                tags
-                              });
-                            }}
-                            className="accent-stone-900"
-                          />
-                          <span className="text-xs text-stone-900">{col.name}</span>
-                        </label>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Special Tags */}
-                <div className="space-y-2 pt-3 border-t border-stone-200">
-                  <label className="block text-xs font-bold text-stone-800">
-                    Promotional Badges
-                  </label>
-                  <div className="flex gap-4 text-xs">
-                    <label className="inline-flex items-center gap-1.5 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.collectionNames?.includes('NEW ARRIVALS')}
-                        onChange={(e) => {
-                          let names = formData.collectionNames || [];
-                          if (e.target.checked) {
-                            if (!names.includes('NEW ARRIVALS')) names = [...names, 'NEW ARRIVALS'];
-                          } else {
-                            names = names.filter(n => n !== 'NEW ARRIVALS');
-                          }
-                          setFormData({ ...formData, collectionNames: names });
-                        }}
-                      />
-                      <span>Mark as "New Arrival"</span>
-                    </label>
-
-                    <label className="inline-flex items-center gap-1.5 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.collectionNames?.includes('TRENDING')}
-                        onChange={(e) => {
-                          let names = formData.collectionNames || [];
-                          if (e.target.checked) {
-                            if (!names.includes('TRENDING')) names = [...names, 'TRENDING'];
-                          } else {
-                            names = names.filter(n => n !== 'TRENDING');
-                          }
-                          setFormData({ ...formData, collectionNames: names });
-                        }}
-                      />
-                      <span>Mark as "Trending"</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* 5. FABRIC & MEASUREMENTS */}
-            {formTab === 'fabric' && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-stone-900 border-b border-stone-200 pb-2">
-                  Fabric, Silhouette & Specifications
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-stone-800 mb-1">
-                      Fabric Composition
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. 100% Pure Raw Silk 80g with Zari thread work"
-                      value={formData.fabricDetails || ''}
-                      onChange={(e) => setFormData({ ...formData, fabricDetails: e.target.value })}
-                      className="w-full p-2.5 text-xs border border-stone-300 rounded focus:outline-none focus:border-stone-900"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-stone-800 mb-1">
-                      Piece Count
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. 3-Piece (Shirt, Trouser & Organza Dupatta)"
-                      value={formData.pieceCount || ''}
-                      onChange={(e) => setFormData({ ...formData, pieceCount: e.target.value })}
-                      className="w-full p-2.5 text-xs border border-stone-300 rounded focus:outline-none focus:border-stone-900"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* 6. STATUS & VISIBILITY */}
-            {formTab === 'status' && (
-              <div className="space-y-5">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-stone-900 border-b border-stone-200 pb-2">
-                  Publishing & Visibility
-                </h3>
-
-                <div className="space-y-4 max-w-lg">
-                  <div>
-                    <label className="block text-xs font-bold text-stone-800 mb-1">
-                      Publishing Status
-                    </label>
-                    <select
-                      value={formData.status || 'Active'}
-                      onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                      className="w-full p-2.5 text-xs border border-stone-300 rounded bg-white focus:outline-none focus:border-stone-900"
-                    >
-                      <option value="Active">Active (Available for purchase)</option>
-                      <option value="Draft">Draft (Hidden work in progress)</option>
-                      <option value="Archived">Archived (Discontinued)</option>
-                    </select>
-                  </div>
-
-                  <div className="p-3.5 bg-stone-50 border border-stone-200 rounded flex items-center justify-between">
-                    <div>
-                      <strong className="block text-xs text-stone-900 font-bold">Storefront Visibility</strong>
-                      <span className="text-[11px] text-stone-500">Enable to display on public catalog and search</span>
-                    </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={formData.isVisible ?? true}
-                        onChange={(e) => setFormData({ ...formData, isVisible: e.target.checked })}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-stone-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-stone-900"></div>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Sticky Action Bar (Mobile & Desktop UX) */}
-          <div className="sticky bottom-4 bg-white/95 backdrop-blur-md border border-stone-300 rounded-lg p-3 sm:p-4 shadow-xl flex items-center justify-between z-20">
-            <button
-              type="button"
-              onClick={() => {
-                onSelectProductToEdit(null);
-                onNavigateSub('all');
-              }}
-              className="px-4 py-2 border border-stone-300 text-stone-700 hover:bg-stone-50 rounded text-xs font-medium cursor-pointer"
-            >
-              Cancel
-            </button>
-
-            <button
-              type="submit"
-              className="px-6 py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded text-xs font-medium uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-md"
-            >
-              <Check className="w-4 h-4" />
-              <span>{editingProduct ? 'Save Changes' : 'Publish Product'}</span>
-            </button>
-          </div>
-        </form>
+        <ProductEditForm
+          initialProduct={editingProduct}
+          categories={categories}
+          onSave={(savedProduct, isDraft) => {
+            StorageService.saveProduct(savedProduct);
+            onNotify(isDraft 
+              ? `Saved draft for "${savedProduct.title || 'Untitled'}" successfully!` 
+              : `Published "${savedProduct.title}" successfully to storefront!`
+            );
+            onSelectProductToEdit(null);
+            onNavigateSub('all');
+          }}
+          onCancel={() => {
+            onSelectProductToEdit(null);
+            onNavigateSub('all');
+          }}
+          onPreviewStorefront={onNavigateToStoreProduct}
+          onNotify={onNotify}
+        />
       )}
 
       {/* ======================================================== */}
@@ -1617,10 +732,10 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
           <div className="bg-white p-4 border border-stone-200 rounded-lg flex items-center justify-between">
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wider text-stone-900">
-                Inventory & Low Stock Control
+                Inventory & Stock Control
               </h3>
               <p className="text-xs text-stone-500 mt-0.5">
-                Update stock units on the fly without entering full product edit mode.
+                Quick-adjust units for Mode A tracked items, or toggle Availability for Mode B source items.
               </p>
             </div>
           </div>
@@ -1632,18 +747,27 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
                   <th className="p-3">Product</th>
                   <th className="p-3">SKU</th>
                   <th className="p-3">Price</th>
-                  <th className="p-3">Stock Units</th>
+                  <th className="p-3">Tracking Mode</th>
+                  <th className="p-3">Stock / Availability</th>
                   <th className="p-3">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-stone-100">
                 {products.map(p => {
-                  const isLow = (p.stock || 0) <= 5;
+                  const isModeB = p.inventoryMode === 'availability';
+                  const isLow = !isModeB && (p.stock || 0) <= (p.lowStockThreshold || 3) && (p.stock || 0) > 0;
 
                   return (
                     <tr key={p.id} className="hover:bg-stone-50">
                       <td className="p-3 font-medium text-stone-900 max-w-xs truncate">
-                        {p.title}
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={p.images?.[0] || 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=100&q=80'}
+                            alt={p.title}
+                            className="w-8 h-10 object-cover rounded border border-stone-200 shrink-0"
+                          />
+                          <span className="truncate">{p.title}</span>
+                        </div>
                       </td>
                       <td className="p-3 font-mono text-stone-500">
                         {p.sku || '—'}
@@ -1652,25 +776,50 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({
                         {formatPrice(p.price, 'PKR')}
                       </td>
                       <td className="p-3">
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="number"
-                            defaultValue={p.stock}
-                            onBlur={(e) => {
-                              const newStock = Number(e.target.value);
-                              if (newStock !== p.stock) {
-                                StorageService.saveProduct({ ...p, stock: newStock });
-                                onNotify(`Updated stock for "${p.title}" to ${newStock}.`);
-                              }
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-stone-100 text-stone-700">
+                          {isModeB ? 'Availability' : 'Quantity Units'}
+                        </span>
+                      </td>
+                      <td className="p-3">
+                        {isModeB ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newSoldOut = !p.isSoldOut;
+                              const updated = { ...p, isSoldOut: newSoldOut, stock: newSoldOut ? 0 : 1 };
+                              StorageService.saveProduct(updated);
+                              onNotify(`"${p.title}" marked as ${newSoldOut ? 'Sold Out' : 'Available'}.`);
                             }}
-                            className="w-20 p-1 border border-stone-300 rounded text-xs font-mono"
-                          />
-                          {isLow && (
-                            <span className="text-[10px] text-rose-700 font-bold bg-rose-50 px-1.5 py-0.5 rounded">
-                              LOW
-                            </span>
-                          )}
-                        </div>
+                            className={`px-2.5 py-1 rounded text-[11px] font-medium border cursor-pointer ${
+                              p.isSoldOut
+                                ? 'bg-rose-50 border-rose-300 text-rose-700'
+                                : 'bg-emerald-50 border-emerald-300 text-emerald-700'
+                            }`}
+                          >
+                            {p.isSoldOut ? 'Sold Out (Click to make Available)' : 'Available (Click to mark Sold Out)'}
+                          </button>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              min={0}
+                              defaultValue={p.stock}
+                              onBlur={(e) => {
+                                const newStock = Math.max(0, Number(e.target.value));
+                                if (newStock !== p.stock) {
+                                  StorageService.saveProduct({ ...p, stock: newStock, isSoldOut: newStock <= 0 });
+                                  onNotify(`Updated stock for "${p.title}" to ${newStock} units.`);
+                                }
+                              }}
+                              className="w-20 p-1 border border-stone-300 rounded text-xs font-mono font-bold"
+                            />
+                            {isLow && (
+                              <span className="text-[10px] text-amber-700 font-bold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-300">
+                                LOW
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </td>
                       <td className="p-3">
                         <span className="text-[10px] px-2 py-0.5 bg-stone-100 rounded text-stone-700">

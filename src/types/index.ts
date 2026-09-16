@@ -73,6 +73,8 @@ export interface Product {
   compareAtPrice?: number | null; // original price in PKR
   costPrice?: number;
   stock: number;
+  inventoryMode?: 'quantity' | 'availability';
+  lowStockThreshold?: number;
   sizes: (ProductSize | string)[];
   fabric: string;
   fabricDetails?: string;
@@ -97,9 +99,18 @@ export interface Product {
     shirt?: string;
     dupatta?: string;
     trouser?: string;
+    work?: string;
     careInstructions?: string;
     stitchingDetails?: string;
   };
+  sizeGuideMode?: 'standard' | 'custom';
+  customMeasurements?: Record<string, {
+    chest?: string;
+    waist?: string;
+    hip?: string;
+    length?: string;
+    trouserLength?: string;
+  }>;
   seoTitle?: string;
   seoDescription?: string;
   sourceUrl?: string;
@@ -486,6 +497,7 @@ export interface SiteSettings {
     metaDescription: string;
     ogImage: string;
   };
+  showEmptyCollectionsOnStorefront?: boolean;
 }
 
 export interface ActivityLogItem {

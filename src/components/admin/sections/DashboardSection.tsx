@@ -118,25 +118,41 @@ export const DashboardSection: React.FC<DashboardSectionProps> = ({
 
   const lowStockProducts = useMemo(() => {
     return products.filter(p => {
+      if (p.inventoryMode === 'availability') return false; // availability-only items don't have unit thresholds
       const stock = p.stock ?? 0;
-      return stock > 0 && stock <= lowStockThreshold;
+      return stock > 0 && stock <= (p.lowStockThreshold || lowStockThreshold);
     });
   }, [products, lowStockThreshold]);
 
   const outOfStockProducts = useMemo(() => {
-    return products.filter(p => (p.stock ?? 0) === 0);
+    return products.filter(p => {
+      if (p.isSoldOut) return true;
+      return (p.stock ?? 0) <= 0;
+    });
   }, [products]);
 
-  // Total inventory units = sum of all physical stock units across all items and variants
-  const totalInventoryUnits = useMemo(() => {
-    return products.reduce((total, p) => {
+  const inStockProducts = useMemo(() => {
+    return products.filter(p => {
+      if (p.isSoldOut) return false;
+      if (p.inventoryMode === 'availability') return (p.stock ?? 0) > 0;
+      return (p.stock ?? 0) > (p.lowStockThreshold || lowStockThreshold);
+    });
+  }, [products, lowStockThreshold]);
+
+  // Quantity-managed products and authentic units
+  const quantityManagedProducts = useMemo(() => {
+    return products.filter(p => p.inventoryMode === 'quantity');
+  }, [products]);
+
+  const quantityManagedUnits = useMemo(() => {
+    return quantityManagedProducts.reduce((sum, p) => {
       if (p.variants && p.variants.length > 0) {
         const variantSum = p.variants.reduce((vSum, v) => vSum + (v.stock || 0), 0);
-        return total + (variantSum > 0 ? variantSum : (p.stock || 0));
+        return sum + (variantSum > 0 ? variantSum : (p.stock || 0));
       }
-      return total + (p.stock || 0);
+      return sum + (p.stock || 0);
     }, 0);
-  }, [products]);
+  }, [quantityManagedProducts]);
 
   // Payment split
   const advanceOrders = useMemo(() => orders.filter(o => o.paymentMethod !== 'Cash on Delivery (COD)'), [orders]);
@@ -437,17 +453,19 @@ export const DashboardSection: React.FC<DashboardSectionProps> = ({
             </div>
           </div>
 
-          {/* Total Inventory Units */}
+          {/* In Stock Products */}
           <div className="bg-white border border-stone-200 rounded-xl p-4 sm:p-5 shadow-xs">
             <div className="flex items-center justify-between text-stone-400 mb-2">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-500">Total Stock Units</span>
-              <Layers className="w-4 h-4 text-stone-700" />
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-500">In Stock Products</span>
+              <Layers className="w-4 h-4 text-emerald-700" />
             </div>
             <div className="text-xl sm:text-2xl font-serif font-light text-stone-900 font-mono">
-              {totalInventoryUnits.toLocaleString()}
+              {inStockProducts.length}
             </div>
             <div className="text-[11px] text-stone-500 mt-1">
-              Combined variant quantities
+              {quantityManagedProducts.length > 0 
+                ? `${quantityManagedUnits.toLocaleString()} units in ${quantityManagedProducts.length} tracked styles` 
+                : 'Available for immediate orders'}
             </div>
           </div>
 

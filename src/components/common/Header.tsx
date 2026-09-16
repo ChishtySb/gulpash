@@ -38,6 +38,23 @@ export const Header: React.FC<HeaderProps> = ({
   const [settings, setSettings] = useState<SiteSettings>(StorageService.getSettings());
   const [cms, setCms] = useState<HomepageCMS>(StorageService.getCMS());
   const [categories, setCategories] = useState<Category[]>(StorageService.getCategories());
+  const [collections, setCollections] = useState(StorageService.getCollections());
+
+  const showEmptyCols = settings?.showEmptyCollectionsOnStorefront ?? false;
+  const storeNavItems = [
+    { label: 'NEW ARRIVALS', slug: 'new-arrivals', id: 'new-arrivals' },
+    { label: 'TRENDING', slug: 'best-selling', id: 'trending' },
+    { label: 'WINTER COLLECTION', slug: 'winter-collection', id: 'winter-collection' },
+    { label: 'CO-ORDS', slug: 'co-ords', id: 'co-ords' },
+    { label: 'SHORT LENGTH', slug: 'short-length-article', id: 'short-length' },
+    { label: 'ALL ENSEMBLES', slug: 'all', id: 'all-ensembles' }
+  ].filter(item => {
+    if (showEmptyCols || item.slug === 'all') return true;
+    const match = collections.find(c => c.slug === item.slug);
+    if (!match) return true;
+    const count = match.productCount ?? (match.productIds?.length || 0);
+    return count > 0;
+  });
   const [activeAnnouncementIdx, setActiveAnnouncementIdx] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
@@ -299,14 +316,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* 3. PRIMARY DESKTOP NAVIGATION BAR */}
         <div className="hidden lg:block border-t border-stone-200 bg-[#FAF9F6]">
           <div className="max-w-7xl mx-auto px-4 flex items-center justify-center space-x-8 xl:space-x-10 h-11">
-            {[
-              { label: 'NEW ARRIVALS', slug: 'new-arrivals', id: 'new-arrivals' },
-              { label: 'TRENDING', slug: 'best-selling', id: 'trending' },
-              { label: 'WINTER COLLECTION', slug: 'winter-collection', id: 'winter-collection' },
-              { label: 'CO-ORDS', slug: 'co-ords', id: 'co-ords' },
-              { label: 'SHORT LENGTH', slug: 'short-length-article', id: 'short-length' },
-              { label: 'ALL ENSEMBLES', slug: 'all', id: 'all-ensembles' }
-            ].map(item => {
+            {storeNavItems.map(item => {
               const isActive = currentView === 'shop' && (
                 currentParam === item.slug || 
                 (item.slug === 'all' && (!currentParam || currentParam === 'all' || currentParam === 'ready-to-wear'))
@@ -357,14 +367,7 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
 
               <nav className="mt-6 flex flex-col space-y-2">
-                {[
-                  { label: 'NEW ARRIVALS', slug: 'new-arrivals', id: 'new-arrivals' },
-                  { label: 'TRENDING', slug: 'best-selling', id: 'trending' },
-                  { label: 'WINTER COLLECTION', slug: 'winter-collection', id: 'winter-collection' },
-                  { label: 'CO-ORDS', slug: 'co-ords', id: 'co-ords' },
-                  { label: 'SHORT LENGTH', slug: 'short-length-article', id: 'short-length' },
-                  { label: 'ALL ENSEMBLES', slug: 'all', id: 'all-ensembles' }
-                ].map(item => {
+                {storeNavItems.map(item => {
                   const isActive = currentView === 'shop' && (
                     currentParam === item.slug || 
                     (item.slug === 'all' && (!currentParam || currentParam === 'all' || currentParam === 'ready-to-wear'))

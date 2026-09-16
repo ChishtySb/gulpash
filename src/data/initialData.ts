@@ -198,5 +198,6 @@ export const INITIAL_SETTINGS: SiteSettings = {
     siteTitle: 'GulPash | Luxury Pakistani Fashion | Unstitched & Stitched Ensembles',
     metaDescription: 'Shop GulPash for authentic Pakistani luxury women fashion. Unstitched & Stitched collections delivered nationwide with Cash on Delivery.',
     ogImage: MIGRATED_PRODUCTS[0]?.images[0] || ''
-  }
+  },
+  showEmptyCollectionsOnStorefront: false
 };

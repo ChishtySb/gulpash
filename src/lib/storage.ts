@@ -45,19 +45,20 @@ export const StorageService = {
       const data = localStorage.getItem(KEYS.PRODUCTS);
       let list: Product[] = data ? JSON.parse(data) : INITIAL_PRODUCTS;
       
-      // Auto-heal if older dummy data exists, catalog size doesn't match, or any description has raw/escaped markup
-      const hasMalformedDesc = list && list.some(p => 
-        !p.description ||
-        p.description.includes('&lt;') ||
-        p.description.includes('&gt;') ||
-        p.description.includes('<div') ||
-        p.description.includes('<img') ||
-        p.description.includes('style=') ||
-        p.description.includes('class=') ||
-        p.description.includes('Tawakal')
+      // Auto-heal ONLY if old Tawakal dummy data exists or escaped HTML markup from legacy migration is detected
+      const hasLegacyDummy = list && list.some(p => 
+        p.id === 'gp-001' || 
+        p.sku?.startsWith('TAW-') || 
+        p.sku?.includes('10523493630267') ||
+        (p.description && (
+          p.description.includes('&lt;') ||
+          p.description.includes('&gt;') ||
+          p.description.includes('<div') ||
+          p.description.includes('Tawakal')
+        ))
       );
 
-      if (!list || !Array.isArray(list) || list.length === 0 || list.some(p => p.id === 'gp-001' || p.sku?.startsWith('TAW-') || p.sku?.includes('10523493630267')) || hasMalformedDesc) {
+      if (!list || !Array.isArray(list) || list.length === 0 || hasLegacyDummy) {
         list = INITIAL_PRODUCTS;
         localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(list));
       }
