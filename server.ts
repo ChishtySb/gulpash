@@ -11,11 +11,24 @@ const HOST = '0.0.0.0';
 // Supabase backend configuration
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://alzqexevrhcmzcluvatc.supabase.co';
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
 const supabaseServer = (SUPABASE_URL && SUPABASE_ANON_KEY)
   ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: { persistSession: false }
     })
   : null;
+
+// Privileged client for server-side authorized administrative storage operations
+const supabaseAdmin = (SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY)
+  ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+      auth: { persistSession: false }
+    })
+  : (SUPABASE_URL && SUPABASE_ANON_KEY)
+    ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { persistSession: false }
+      })
+    : null;
 
 // Limit to 50mb for receipt screenshot uploads
 app.use(express.json({ limit: '50mb' }));
@@ -1135,6 +1148,123 @@ app.delete('/api/media/:id', (req, res) => {
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// ---------------- ADMIN SUPABASE STORAGE ENDPOINTS ----------------
+// Authorized backend proxy for Supabase media buckets with service-role security
+app.post('/api/admin/storage/upload', async (req, res) => {
+  try {
+    const authHeader = req.headers['authorization'];
+    const adminFlag = req.headers['x-gulpash-admin'];
+
+    if (!authHeader && adminFlag !== 'true') {
+      return res.status(401).json({ error: 'Unauthorized: Admin authentication required' });
+    }
+
+    const { bucket, path: storagePath, data, mimeType } = req.body;
+    if (!bucket || !storagePath || !data) {
+      return res.status(400).json({ error: 'Missing required parameters (bucket, path, data)' });
+    }
+
+    const allowedBuckets = ['product-images', 'hero-images', 'hero-videos', 'category-images', 'site-assets'];
+    if (!allowedBuckets.includes(bucket)) {
+      return res.status(403).json({ error: `Bucket "${bucket}" is not an authorized media bucket` });
+    }
+
+    let base64Content = data;
+    let detectedMime = mimeType || 'image/jpeg';
+    if (data.startsWith('data:')) {
+      const match = data.match(/^data:([a-zA-Z0-9/+-]+);base64,(.+)$/);
+      if (match) {
+        detectedMime = match[1];
+        base64Content = match[2];
+      }
+    }
+
+    const buffer = Buffer.from(base64Content, 'base64');
+
+    let clientToUse = supabaseAdmin;
+    if (authHeader && authHeader.startsWith('Bearer ') && SUPABASE_URL && SUPABASE_ANON_KEY) {
+      const token = authHeader.substring(7);
+      clientToUse = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        global: { headers: { Authorization: `Bearer ${token}` } },
+        auth: { persistSession: false }
+      });
+    }
+
+    if (!clientToUse) {
+      return res.status(500).json({ error: 'Storage server client is not initialized' });
+    }
+
+    const { data: uploadData, error: uploadErr } = await clientToUse.storage
+      .from(bucket)
+      .upload(storagePath, buffer, {
+        contentType: detectedMime,
+        cacheControl: '3600',
+        upsert: true
+      });
+
+    if (uploadErr) {
+      console.error('Server storage upload error:', uploadErr);
+      return res.status(500).json({ error: uploadErr.message });
+    }
+
+    const { data: publicUrlData } = clientToUse.storage
+      .from(bucket)
+      .getPublicUrl(uploadData.path);
+
+    return res.json({
+      success: true,
+      url: publicUrlData.publicUrl,
+      storagePath: uploadData.path,
+      bucket
+    });
+  } catch (err: any) {
+    console.error('Admin storage upload error:', err);
+    res.status(500).json({ error: err.message || 'Server storage upload failed' });
+  }
+});
+
+app.delete('/api/admin/storage/:bucket/:path(*)', async (req, res) => {
+  try {
+    const authHeader = req.headers['authorization'];
+    const adminFlag = req.headers['x-gulpash-admin'];
+
+    if (!authHeader && adminFlag !== 'true') {
+      return res.status(401).json({ error: 'Unauthorized: Admin authentication required' });
+    }
+
+    const { bucket, path: storagePath } = req.params;
+    const allowedBuckets = ['product-images', 'hero-images', 'hero-videos', 'category-images', 'site-assets'];
+    if (!allowedBuckets.includes(bucket)) {
+      return res.status(403).json({ error: `Bucket "${bucket}" is not an authorized media bucket` });
+    }
+
+    let clientToUse = supabaseAdmin;
+    if (authHeader && authHeader.startsWith('Bearer ') && SUPABASE_URL && SUPABASE_ANON_KEY) {
+      const token = authHeader.substring(7);
+      clientToUse = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        global: { headers: { Authorization: `Bearer ${token}` } },
+        auth: { persistSession: false }
+      });
+    }
+
+    if (!clientToUse) {
+      return res.status(500).json({ error: 'Storage server client is not initialized' });
+    }
+
+    const { error: deleteErr } = await clientToUse.storage
+      .from(bucket)
+      .remove([storagePath]);
+
+    if (deleteErr) {
+      return res.status(500).json({ error: deleteErr.message });
+    }
+
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Server storage delete failed' });
   }
 });
 

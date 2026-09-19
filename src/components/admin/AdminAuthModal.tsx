@@ -10,10 +10,13 @@ interface AdminAuthModalProps {
 }
 
 export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({ isOpen, onSuccess, onCancel }) => {
-  const [email, setEmail] = useState('');
+  const [authMode, setAuthMode] = useState<'password' | 'otp_request' | 'otp_verify'>('password');
+  const [email, setEmail] = useState('admin@gulpash.online');
   const [password, setPassword] = useState('');
+  const [otpToken, setOtpToken] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const [supabaseReady, setSupabaseReady] = useState(false);
 
   useEffect(() => {
@@ -30,26 +33,25 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({ isOpen, onSucces
     const cleanEmail = email.trim().toLowerCase();
     const cleanPassword = password.trim();
 
-    // 1. Instant fallback authentication for store owners
-    if ((cleanEmail === 'admin@gulpash.online' || cleanEmail === 'admin@gulpash.pk') && cleanPassword === 'gulpash123') {
-      StorageService.setAdminAuthenticated(true);
+    const supabase = getSupabaseClient();
+
+    if (!supabase) {
+      setError('Supabase client is not configured. Please check environment credentials.');
       setLoading(false);
-      onSuccess();
       return;
     }
 
-    const supabase = getSupabaseClient();
-
-    if (supabase) {
-      // 2. Production Supabase Auth flow
-      try {
-        const { data, error: authError } = await supabase.auth.signInWithPassword({
+    try {
+      if (authMode === 'otp_verify') {
+        // Verify OTP code
+        const { data, error: otpError } = await supabase.auth.verifyOtp({
           email: cleanEmail,
-          password: cleanPassword
+          token: otpToken.trim(),
+          type: 'email'
         });
 
-        if (authError) {
-          setError(authError.message || 'Authentication failed. Please check credentials.');
+        if (otpError) {
+          setError(otpError.message || 'Invalid or expired verification code.');
           setLoading(false);
           return;
         }
@@ -60,15 +62,48 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({ isOpen, onSucces
           onSuccess();
           return;
         }
-      } catch (err: any) {
-        setError(err.message || 'Remote authentication error.');
+      } else if (authMode === 'otp_request') {
+        // Send OTP email
+        const { error: sendError } = await supabase.auth.signInWithOtp({
+          email: cleanEmail
+        });
+
+        if (sendError) {
+          setError(sendError.message || 'Failed to send one-time login code.');
+          setLoading(false);
+          return;
+        }
+
+        setAuthMode('otp_verify');
+        setInfoMessage(`A 6-digit verification code was sent to ${cleanEmail}. Please enter it below.`);
         setLoading(false);
         return;
+      } else {
+        // Standard email + password authentication
+        const { data, error: authError } = await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password: cleanPassword
+        });
+
+        if (authError) {
+          setError(authError.message || 'Authentication failed. Please check your credentials.');
+          setLoading(false);
+          return;
+        }
+
+        if (data.session) {
+          StorageService.setAdminAuthenticated(true);
+          setLoading(false);
+          onSuccess();
+          return;
+        }
       }
-    } else {
-      setError('Invalid email or password. Use admin credentials (admin@gulpash.online / gulpash123) to access the Admin Panel.');
+    } catch (err: any) {
+      setError(err.message || 'Remote authentication error.');
       setLoading(false);
       return;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -95,6 +130,13 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({ isOpen, onSucces
           </div>
         )}
 
+        {infoMessage && (
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 text-blue-800 text-xs rounded-sm flex items-start gap-2">
+            <ShieldCheck className="w-4 h-4 shrink-0 mt-0.5 text-blue-600" />
+            <span>{infoMessage}</span>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
             <label className="block text-xs font-semibold text-stone-700 mb-1">
@@ -113,22 +155,74 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({ isOpen, onSucces
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-stone-700 mb-1">
-              Password
-            </label>
-            <div className="relative">
-              <Key className="w-4 h-4 text-stone-400 absolute left-3 top-3" />
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••••••"
-                className="w-full pl-9 pr-3 py-2 text-xs border border-stone-300 rounded-sm focus:outline-hidden focus:border-stone-900"
-              />
+          {authMode === 'password' && (
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-stone-700">
+                  Password
+                </label>
+                <button
+                  type="button"
+                  onClick={() => { setAuthMode('otp_request'); setError(null); setInfoMessage(null); }}
+                  className="text-[11px] text-stone-500 hover:text-stone-900 underline"
+                >
+                  Use OTP Code instead
+                </button>
+              </div>
+              <div className="relative">
+                <Key className="w-4 h-4 text-stone-400 absolute left-3 top-3" />
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••••••"
+                  className="w-full pl-9 pr-3 py-2 text-xs border border-stone-300 rounded-sm focus:outline-hidden focus:border-stone-900"
+                />
+              </div>
             </div>
-          </div>
+          )}
+
+          {authMode === 'otp_verify' && (
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-stone-700">
+                  6-Digit OTP Verification Code
+                </label>
+                <button
+                  type="button"
+                  onClick={() => { setAuthMode('otp_request'); setError(null); }}
+                  className="text-[11px] text-stone-500 hover:text-stone-900 underline"
+                >
+                  Resend code
+                </button>
+              </div>
+              <div className="relative">
+                <Key className="w-4 h-4 text-stone-400 absolute left-3 top-3" />
+                <input
+                  type="text"
+                  required
+                  value={otpToken}
+                  onChange={(e) => setOtpToken(e.target.value)}
+                  placeholder="123456"
+                  maxLength={10}
+                  className="w-full pl-9 pr-3 py-2 text-xs font-mono tracking-widest border border-stone-300 rounded-sm focus:outline-hidden focus:border-stone-900"
+                />
+              </div>
+            </div>
+          )}
+
+          {authMode === 'otp_request' && (
+            <div className="pt-1">
+              <button
+                type="button"
+                onClick={() => { setAuthMode('password'); setError(null); setInfoMessage(null); }}
+                className="text-[11px] text-stone-500 hover:text-stone-900 underline"
+              >
+                ← Back to Password Login
+              </button>
+            </div>
+          )}
 
           <div className="flex items-center justify-between pt-2">
             <button
@@ -151,7 +245,9 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({ isOpen, onSucces
               ) : (
                 <>
                   <ShieldCheck className="w-4 h-4" />
-                  <span>Authenticate</span>
+                  <span>
+                    {authMode === 'otp_request' ? 'Send Code' : authMode === 'otp_verify' ? 'Verify & Login' : 'Authenticate'}
+                  </span>
                 </>
               )}
             </button>

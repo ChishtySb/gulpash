@@ -46,6 +46,7 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
   const [manualUrl, setManualUrl] = useState(currentUrl || '');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const lastAttemptedFileRef = useRef<File | null>(null);
 
   useEffect(() => {
     setManualUrl(currentUrl || '');
@@ -98,6 +99,7 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
 
   const handleFile = async (file: File) => {
     if (!file) return;
+    lastAttemptedFileRef.current = file;
 
     try {
       setUploading(true);
@@ -297,13 +299,28 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
             </span>
           </div>
           {uploadStatus === 'failed' && (
-            <button
-              type="button"
-              onClick={() => { setUploadStatus('idle'); setErrorMessage(null); }}
-              className="p-1 text-rose-700 hover:text-rose-900 text-xs font-semibold underline cursor-pointer"
-            >
-              Dismiss
-            </button>
+            <div className="flex items-center gap-2 shrink-0">
+              {lastAttemptedFileRef.current && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (lastAttemptedFileRef.current) {
+                      handleFile(lastAttemptedFileRef.current);
+                    }
+                  }}
+                  className="px-2 py-0.5 bg-rose-700 hover:bg-rose-800 text-white text-[11px] font-medium rounded-xs cursor-pointer transition-colors"
+                >
+                  Retry
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={() => { setUploadStatus('idle'); setErrorMessage(null); }}
+                className="p-1 text-rose-700 hover:text-rose-900 text-xs font-semibold underline cursor-pointer"
+              >
+                Dismiss
+              </button>
+            </div>
           )}
         </div>
       )}
