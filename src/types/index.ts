@@ -278,6 +278,67 @@ export interface Review {
   verifiedPurchase: boolean;
 }
 
+export interface HeroSlideItem {
+  id: string;
+  order: number;
+  enabled: boolean;
+  mediaType: 'image' | 'video';
+  desktopImageUrl: string;
+  mobileImageUrl?: string;
+  videoUrl?: string;
+  mobileVideoUrl?: string;
+  posterImageUrl?: string;
+  
+  // Text Overlay Toggles
+  showOverlay: boolean;
+  overlayOpacity: number; // 0 to 100
+  showTextAndCta: boolean; // Main ON/OFF for text & CTA
+  showEyebrow: boolean;
+  showHeading: boolean;
+  showDescription: boolean;
+  showCta: boolean;
+  showSecondaryCta?: boolean;
+  
+  // Text Content
+  eyebrow?: string;
+  heading: string;
+  description: string;
+  ctaLabel: string;
+  ctaUrl: string;
+  secondaryCtaLabel?: string;
+  secondaryCtaUrl?: string;
+  
+  // Alignment & Styling
+  horizontalAlignment: 'left' | 'center' | 'right';
+  verticalAlignment: 'top' | 'center' | 'bottom';
+  textTheme: 'light' | 'dark';
+  objectPositionDesktop: 'center' | 'top' | 'bottom' | 'left' | 'right';
+  objectPositionMobile: 'center' | 'top' | 'bottom' | 'left' | 'right';
+  
+  createdAt?: string;
+  updatedAt?: string;
+
+  // Compatibility aliases with legacy HeroSlideConfig
+  image?: string;
+  mobileImage?: string;
+  type?: 'image' | 'video';
+  isActive?: boolean;
+  buttonText?: string;
+  buttonUrl?: string;
+  secondaryButtonText?: string;
+  secondaryButtonUrl?: string;
+  subheading?: string;
+  badge?: string;
+}
+
+export interface HeroSliderSettings {
+  autoPlay: boolean;
+  slideDuration: number; // in seconds (3, 4, 5, 6, 8)
+  showArrows: boolean;
+  showDots: boolean;
+  pauseOnHover: boolean;
+}
+
 export interface HeroSlideConfig {
   type: 'video' | 'image';
   heading: string;
@@ -299,6 +360,18 @@ export interface HeroSlideConfig {
   title?: string;
   subtitle?: string;
   linkUrl?: string;
+  // Multi-slide extension
+  showTextAndCta?: boolean;
+  showOverlay?: boolean;
+  showEyebrow?: boolean;
+  showHeading?: boolean;
+  showDescription?: boolean;
+  showCta?: boolean;
+  horizontalAlignment?: 'left' | 'center' | 'right';
+  verticalAlignment?: 'top' | 'center' | 'bottom';
+  textTheme?: 'light' | 'dark';
+  objectPositionDesktop?: 'center' | 'top' | 'bottom' | 'left' | 'right';
+  objectPositionMobile?: 'center' | 'top' | 'bottom' | 'left' | 'right';
 }
 
 export interface AnnouncementItem {
@@ -310,6 +383,8 @@ export interface AnnouncementItem {
 
 export interface HomepageCMS {
   hero: HeroSlideConfig;
+  heroSlides?: HeroSlideItem[];
+  heroSliderSettings?: HeroSliderSettings;
   announcements: AnnouncementItem[];
   announcementBarActive: boolean;
   showFeaturedCollections: boolean;

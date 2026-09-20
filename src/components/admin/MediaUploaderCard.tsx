@@ -291,6 +291,12 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
           <span className="font-semibold text-amber-300">{activeSpec.aspectRatio}</span>
           <span className="text-stone-400">•</span>
           <span className="text-stone-300">{activeSpec.acceptedFormats.join('/')}</span>
+          {activeSpec.maxSizeLabel && (
+            <>
+              <span className="text-stone-400">•</span>
+              <span className="text-stone-300">Max {activeSpec.maxSizeLabel}</span>
+            </>
+          )}
         </div>
       </div>
 

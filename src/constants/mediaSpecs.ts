@@ -11,6 +11,7 @@ export interface MediaSpecification {
   mediaType: 'image' | 'video';
   description: string;
   storageFolder: string;
+  maxSizeLabel?: string;
 }
 
 export const MEDIA_SPECS: Record<string, MediaSpecification> = {
@@ -18,58 +19,62 @@ export const MEDIA_SPECS: Record<string, MediaSpecification> = {
   HOMEPAGE_HERO_DESKTOP_IMAGE: {
     id: 'hero_desktop_image',
     label: 'Desktop Hero Image',
-    subLabel: 'Primary full-width hero canvas for desktop and laptop displays',
+    subLabel: 'Standardized 16:7 luxury fashion master canvas for desktop and laptop displays',
     recommendedWidth: 1920,
-    recommendedHeight: 1080,
-    aspectRatio: '16:9',
-    ratioValue: 1920 / 1080, // 1.777
-    ratioTolerance: 0.15,
+    recommendedHeight: 840,
+    aspectRatio: '16:7',
+    ratioValue: 1920 / 840, // 2.2857
+    ratioTolerance: 0.18,
     acceptedFormats: ['WebP', 'JPG', 'PNG'],
     mediaType: 'image',
-    description: 'Rendered full-bleed on large displays. Focus key subject in center-right safe zone.',
-    storageFolder: 'hero'
+    description: 'Rendered at exact 16:7 aspect ratio. Recommended master: 1920 × 840 px.',
+    storageFolder: 'hero',
+    maxSizeLabel: '15 MB'
   },
   HOMEPAGE_HERO_MOBILE_IMAGE: {
     id: 'hero_mobile_image',
     label: 'Mobile Hero Image',
-    subLabel: 'Optimized portrait orientation for smartphones and compact touch screens',
+    subLabel: 'Optimized 4:5 vertical portrait orientation for mobile touch displays',
     recommendedWidth: 1080,
     recommendedHeight: 1350,
     aspectRatio: '4:5',
     ratioValue: 1080 / 1350, // 0.8
-    ratioTolerance: 0.15,
+    ratioTolerance: 0.18,
     acceptedFormats: ['WebP', 'JPG', 'PNG'],
     mediaType: 'image',
-    description: 'Vertical 4:5 portrait crop ensuring full visibility without cropping heads or hems on mobile devices.',
-    storageFolder: 'hero'
+    description: 'Vertical 4:5 portrait crop ensuring full garment visibility without cropping heads or hems on mobile.',
+    storageFolder: 'hero',
+    maxSizeLabel: '15 MB'
   },
   HOMEPAGE_HERO_DESKTOP_VIDEO: {
     id: 'hero_desktop_video',
     label: 'Desktop Hero Runway Video',
-    subLabel: 'High-definition runway cinematic loop for desktop screens',
+    subLabel: 'High-definition runway cinematic loop for desktop screens (16:7)',
     recommendedWidth: 1920,
-    recommendedHeight: 1080,
-    aspectRatio: '16:9',
-    ratioValue: 1920 / 1080,
-    ratioTolerance: 0.15,
+    recommendedHeight: 840,
+    aspectRatio: '16:7',
+    ratioValue: 1920 / 840,
+    ratioTolerance: 0.18,
     acceptedFormats: ['MP4', 'WebM'],
     mediaType: 'video',
-    description: 'Muted autoplay loop. Recommended bitrate under 5 Mbps for instant streaming cold-starts.',
-    storageFolder: 'hero'
+    description: 'Muted autoplay loop formatted to 16:7 canvas. Recommended bitrate under 5 Mbps.',
+    storageFolder: 'hero',
+    maxSizeLabel: '50 MB'
   },
   HOMEPAGE_HERO_MOBILE_VIDEO: {
     id: 'hero_mobile_video',
     label: 'Mobile Hero Runway Video',
-    subLabel: 'Vertical fashion video for smartphone touchscreens',
+    subLabel: 'Vertical fashion video for smartphone touchscreens (4:5)',
     recommendedWidth: 1080,
-    recommendedHeight: 1920,
-    aspectRatio: '9:16',
-    ratioValue: 1080 / 1920, // 0.5625
-    ratioTolerance: 0.15,
+    recommendedHeight: 1350,
+    aspectRatio: '4:5',
+    ratioValue: 1080 / 1350, // 0.8
+    ratioTolerance: 0.18,
     acceptedFormats: ['MP4', 'WebM'],
     mediaType: 'video',
-    description: 'Full-screen mobile story/reel format. Ensure primary garment is vertically centered.',
-    storageFolder: 'hero'
+    description: 'Vertical 4:5 mobile video loop.',
+    storageFolder: 'hero',
+    maxSizeLabel: '50 MB'
   },
   HOMEPAGE_HERO_DESKTOP_POSTER: {
     id: 'hero_desktop_poster',

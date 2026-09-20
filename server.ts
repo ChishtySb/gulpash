@@ -1316,9 +1316,23 @@ app.get('/api/admin/cms/homepage', async (req, res) => {
       return res.status(500).json({ error: error.message });
     }
 
+    const heroData = data?.data || null;
+    const slides = heroData?.heroSlides || heroData?.slides || (heroData ? [heroData] : []);
+    const sliderSettings = heroData?.heroSliderSettings || heroData?.sliderSettings || {
+      autoPlay: true,
+      slideDuration: 5,
+      showArrows: true,
+      showDots: true,
+      pauseOnHover: true
+    };
+
     return res.json({
       success: true,
-      hero: data?.data || null,
+      hero: heroData,
+      slides,
+      heroSlides: slides,
+      sliderSettings,
+      heroSliderSettings: sliderSettings,
       record: data || null
     });
   } catch (err: any) {
@@ -1357,11 +1371,34 @@ app.put('/api/admin/cms/homepage', async (req, res) => {
     const body = req.body || {};
     const heroData = body.hero ? body.hero : (body.desktopImageUrl || body.image ? body : null);
 
-    if (!heroData && !body.data) {
+    if (!heroData && !body.data && !body.slides && !body.heroSlides) {
       return res.status(400).json({ error: 'Invalid payload: hero configuration is required' });
     }
 
-    const finalHeroConfig = heroData || body.data;
+    const rawSlides = body.heroSlides || body.slides || (body.data?.heroSlides || body.data?.slides);
+    const rawSettings = body.heroSliderSettings || body.sliderSettings || (body.data?.heroSliderSettings || body.data?.sliderSettings);
+    
+    let finalHeroConfig: any;
+    if (body.data && !rawSlides && !heroData) {
+      finalHeroConfig = body.data;
+    } else {
+      const slides = rawSlides || (heroData ? [heroData] : []);
+      const sliderSettings = rawSettings || {
+        autoPlay: true,
+        slideDuration: 5,
+        showArrows: true,
+        showDots: true,
+        pauseOnHover: true
+      };
+      const primarySlide = heroData || slides[0] || {};
+      finalHeroConfig = {
+        ...primarySlide,
+        slides,
+        heroSlides: slides,
+        sliderSettings,
+        heroSliderSettings: sliderSettings
+      };
+    }
 
     // 3. Upsert / update canonical row where section_key = 'hero' to prevent duplicate rows
     const { data: existingRows } = await supabaseAdmin

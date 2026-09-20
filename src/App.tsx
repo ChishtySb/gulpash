@@ -348,9 +348,11 @@ export default function App() {
         {/* VIEW: HOME */}
         {currentView === 'home' && (
           <div>
-            {/* HERO: Phase 6 Feature - Supports Option A (Image) & Option B (Video) */}
+            {/* HERO: Luxury Multi-Slide Hero Carousel with Exact 16:7 Canvas */}
             <HeroSection
               config={cms.hero}
+              slides={cms.heroSlides}
+              settings={cms.heroSliderSettings}
               onNavigate={navigate}
             />
 

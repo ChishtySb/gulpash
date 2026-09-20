@@ -6,6 +6,7 @@ import {
   INITIAL_CATEGORIES, INITIAL_COLLECTIONS, INITIAL_PRODUCTS, 
   INITIAL_ORDERS, INITIAL_REVIEWS, INITIAL_CMS, INITIAL_SETTINGS 
 } from '../data/initialData';
+import { migrateHeroToSlides, syncSlideToLegacyHero, DEFAULT_HERO_SLIDER_SETTINGS } from './heroHelper';
 import { NotificationService } from './notifications';
 import { adminAuthService } from './adminAuth';
 import { 
@@ -686,7 +687,13 @@ export const StorageService = {
   getCMS(): HomepageCMS {
     try {
       const data = localStorage.getItem(KEYS.CMS);
-      if (!data) return INITIAL_CMS;
+      if (!data) {
+        const initial = { ...INITIAL_CMS };
+        const { slides, settings } = migrateHeroToSlides(initial);
+        initial.heroSlides = slides;
+        initial.heroSliderSettings = settings;
+        return initial;
+      }
       const cms: HomepageCMS = JSON.parse(data);
       let changed = false;
       if (cms.hero?.buttonText === 'EXPLORE BEST SELLERS') {
@@ -709,16 +716,38 @@ export const StorageService = {
           return a;
         });
       }
+
+      // Ensure heroSlides and heroSliderSettings are properly populated and synced
+      if (!cms.heroSlides || cms.heroSlides.length === 0) {
+        const { slides, settings } = migrateHeroToSlides(cms);
+        cms.heroSlides = slides;
+        cms.heroSliderSettings = cms.heroSliderSettings || settings;
+        changed = true;
+      }
+      if (!cms.heroSliderSettings) {
+        cms.heroSliderSettings = DEFAULT_HERO_SLIDER_SETTINGS;
+        changed = true;
+      }
+
       if (changed) {
         localStorage.setItem(KEYS.CMS, JSON.stringify(cms));
       }
       return cms;
     } catch {
-      return INITIAL_CMS;
+      const fallback = { ...INITIAL_CMS };
+      const { slides, settings } = migrateHeroToSlides(fallback);
+      fallback.heroSlides = slides;
+      fallback.heroSliderSettings = settings;
+      return fallback;
     }
   },
 
   saveCMS(cms: HomepageCMS): void {
+    // Keep legacy hero synchronized with active slide 1
+    if (cms.heroSlides && cms.heroSlides.length > 0) {
+      const activeSlide = cms.heroSlides.find(s => s.enabled) || cms.heroSlides[0];
+      cms.hero = syncSlideToLegacyHero(activeSlide);
+    }
     localStorage.setItem(KEYS.CMS, JSON.stringify(cms));
     notifyChange('cms');
     if (typeof fetch !== 'undefined') {
@@ -743,6 +772,12 @@ export const StorageService = {
       throw new Error('Admin authentication session is not active. Please sign in to the Admin Dashboard first.');
     }
 
+    // Sync legacy hero if slides exist
+    if (cms.heroSlides && cms.heroSlides.length > 0) {
+      const activeSlide = cms.heroSlides.find(s => s.enabled) || cms.heroSlides[0];
+      cms.hero = syncSlideToLegacyHero(activeSlide);
+    }
+
     // 2. Authoritative privileged Server Admin CMS endpoint
     // Calls PUT /api/admin/cms/homepage which independently verifies JWT + role='admin'
     // and uses SUPABASE_SERVICE_ROLE_KEY to update the canonical homepage_cms row.
@@ -756,6 +791,8 @@ export const StorageService = {
         },
         body: JSON.stringify({
           hero: cms.hero,
+          heroSlides: cms.heroSlides,
+          heroSliderSettings: cms.heroSliderSettings,
           cms
         })
       });
@@ -1586,13 +1623,17 @@ export const StorageService = {
         const cmsData = await cmsRes.value.json();
         if (cmsData && (cmsData.hero || cmsData.record?.data)) {
           const heroPayload = cmsData.hero || cmsData.record?.data;
+          const rawSlides = heroPayload.heroSlides || heroPayload.slides || cmsData.heroSlides || cmsData.slides;
+          const rawSettings = heroPayload.heroSliderSettings || heroPayload.sliderSettings || cmsData.heroSliderSettings || cmsData.sliderSettings;
           const current = this.getCMS();
           const merged = {
             ...current,
             hero: {
               ...current.hero,
               ...heroPayload
-            }
+            },
+            heroSlides: rawSlides && rawSlides.length > 0 ? rawSlides : current.heroSlides,
+            heroSliderSettings: rawSettings || current.heroSliderSettings
           };
           localStorage.setItem(KEYS.CMS, JSON.stringify(merged));
           hasChanges = true;
@@ -1609,14 +1650,18 @@ export const StorageService = {
             .select('*')
             .eq('section_key', 'hero')
             .single();
-          if (dbHero?.data && (dbHero.data.desktopImageUrl || dbHero.data.image)) {
+          if (dbHero?.data && (dbHero.data.desktopImageUrl || dbHero.data.image || dbHero.data.heroSlides)) {
             const current = this.getCMS();
+            const rawSlides = dbHero.data.heroSlides || dbHero.data.slides;
+            const rawSettings = dbHero.data.heroSliderSettings || dbHero.data.sliderSettings;
             const merged = {
               ...current,
               hero: {
                 ...current.hero,
                 ...dbHero.data
-              }
+              },
+              heroSlides: rawSlides && rawSlides.length > 0 ? rawSlides : current.heroSlides,
+              heroSliderSettings: rawSettings || current.heroSliderSettings
             };
             localStorage.setItem(KEYS.CMS, JSON.stringify(merged));
             hasChanges = true;
