@@ -11,10 +11,12 @@ import { MEDIA_SPECS } from '../../../constants/mediaSpecs';
 import { MediaUploaderCard } from '../MediaUploaderCard';
 import { MediaLibrarySection } from './MediaLibrarySection';
 import { HeroSlideManager } from './HeroSlideManager';
+import { EditorialCampaignManager } from './EditorialCampaignManager';
 
 export type StorefrontSubview = 
   | 'homepage' 
   | 'hero' 
+  | 'campaign'
   | 'collections' 
   | 'banners' 
   | 'navigation' 
@@ -121,6 +123,7 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
   const storefrontTabs: Array<{ id: StorefrontSubview; label: string }> = [
     { id: 'homepage', label: 'Homepage CMS' },
     { id: 'hero', label: 'Hero Slides (Video/Img)' },
+    { id: 'campaign', label: 'Editorial Campaign' },
     { id: 'collections', label: 'Collections & Cards' },
     { id: 'banners', label: 'Page Banners' },
     { id: 'navigation', label: 'Header & Navigation' },
@@ -215,6 +218,17 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
           cmsConfig={cmsConfig}
           onUpdateCMS={(updated) => setCmsConfig(updated)}
           onNotify={(msg, status) => onNotify(msg, status === 'info' ? 'saved' : status)}
+        />
+      )}
+
+      {/* ======================================================== */}
+      {/* 2B. EDITORIAL CAMPAIGN (16:7 DESKTOP / 4:5 MOBILE CANVAS) */}
+      {/* ======================================================== */}
+      {subview === 'campaign' && (
+        <EditorialCampaignManager
+          cmsConfig={cmsConfig}
+          onUpdateCMS={(updated) => setCmsConfig(updated)}
+          onNotify={(msg, status) => onNotify(msg, status)}
         />
       )}
 

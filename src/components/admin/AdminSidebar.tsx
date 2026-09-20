@@ -125,6 +125,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
       subviews: [
         { id: 'homepage', label: 'Homepage' },
         { id: 'hero', label: 'Hero & Media' },
+        { id: 'campaign', label: 'Editorial Campaign' },
         { id: 'collections', label: 'Collections' },
         { id: 'banners', label: 'Banners' },
         { id: 'navigation', label: 'Header & Navigation' },

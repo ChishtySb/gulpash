@@ -122,6 +122,40 @@ export default async function handler(req: any, res: any) {
       };
     }
 
+    const editorialCampaignData = body.editorialCampaign || body.cms?.editorialCampaign;
+    if (editorialCampaignData) {
+      finalHeroConfig.editorialCampaign = editorialCampaignData;
+      
+      try {
+        const { data: existingCampRows } = await supabaseAdmin
+          .from('homepage_cms')
+          .select('id, section_key')
+          .eq('section_key', 'editorial_campaign');
+        
+        if (existingCampRows && existingCampRows.length > 0) {
+          await supabaseAdmin
+            .from('homepage_cms')
+            .update({
+              data: editorialCampaignData,
+              is_active: true,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', existingCampRows[0].id);
+        } else {
+          await supabaseAdmin
+            .from('homepage_cms')
+            .insert({
+              section_key: 'editorial_campaign',
+              data: editorialCampaignData,
+              is_active: true,
+              updated_at: new Date().toISOString()
+            });
+        }
+      } catch (campErr) {
+        console.warn('Note: editorial_campaign row upsert non-fatal:', campErr);
+      }
+    }
+
     // 3. Upsert / update canonical row where section_key = 'hero'
     // Ensure we do NOT create duplicate rows:
     const { data: existingRows } = await supabaseAdmin

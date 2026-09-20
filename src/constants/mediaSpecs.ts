@@ -239,6 +239,98 @@ export const MEDIA_SPECS: Record<string, MediaSpecification> = {
     mediaType: 'image',
     description: 'Square monogram insignia. Bold, high-contrast icon visible in compact browser tabs.',
     storageFolder: 'brand'
+  },
+
+  // EDITORIAL ROYAL COUTURE CAMPAIGN (16:7 DESKTOP / 4:5 MOBILE)
+  CAMPAIGN_DESKTOP_IMAGE: {
+    id: 'campaign_desktop_image',
+    label: 'Desktop Campaign Image',
+    subLabel: 'Standardized 16:7 luxury fashion editorial banner for desktop viewports',
+    recommendedWidth: 1920,
+    recommendedHeight: 840,
+    aspectRatio: '16:7',
+    ratioValue: 1920 / 840, // 2.2857
+    ratioTolerance: 0.18,
+    acceptedFormats: ['WebP', 'JPG', 'PNG'],
+    mediaType: 'image',
+    description: 'Rendered at exact 16:7 master canvas ratio (1920 × 840 px). Up to 15 MB.',
+    storageFolder: 'campaigns',
+    maxSizeLabel: '15 MB'
+  },
+  CAMPAIGN_MOBILE_IMAGE: {
+    id: 'campaign_mobile_image',
+    label: 'Mobile Campaign Image',
+    subLabel: 'Optimized 4:5 vertical portrait artwork for mobile touch screens',
+    recommendedWidth: 1080,
+    recommendedHeight: 1350,
+    aspectRatio: '4:5',
+    ratioValue: 1080 / 1350, // 0.8
+    ratioTolerance: 0.18,
+    acceptedFormats: ['WebP', 'JPG', 'PNG'],
+    mediaType: 'image',
+    description: 'Vertical 4:5 portrait artwork ensuring zero awkward cropping on smartphones. Up to 15 MB.',
+    storageFolder: 'campaigns',
+    maxSizeLabel: '15 MB'
+  },
+  CAMPAIGN_DESKTOP_VIDEO: {
+    id: 'campaign_desktop_video',
+    label: 'Desktop Campaign Video',
+    subLabel: 'Cinematic fashion video loop formatted to 16:7 canvas',
+    recommendedWidth: 1920,
+    recommendedHeight: 840,
+    aspectRatio: '16:7',
+    ratioValue: 1920 / 840,
+    ratioTolerance: 0.18,
+    acceptedFormats: ['MP4', 'WebM'],
+    mediaType: 'video',
+    description: 'Cinematic runway / atelier video loop. MP4 (H.264) preferred. Up to 50 MB.',
+    storageFolder: 'campaigns',
+    maxSizeLabel: '50 MB'
+  },
+  CAMPAIGN_MOBILE_VIDEO: {
+    id: 'campaign_mobile_video',
+    label: 'Mobile Campaign Video',
+    subLabel: 'Vertical fashion video for smartphone displays (4:5)',
+    recommendedWidth: 1080,
+    recommendedHeight: 1350,
+    aspectRatio: '4:5',
+    ratioValue: 1080 / 1350,
+    ratioTolerance: 0.18,
+    acceptedFormats: ['MP4', 'WebM'],
+    mediaType: 'video',
+    description: 'Vertical 4:5 mobile video loop. Up to 50 MB.',
+    storageFolder: 'campaigns',
+    maxSizeLabel: '50 MB'
+  },
+  CAMPAIGN_DESKTOP_POSTER: {
+    id: 'campaign_desktop_poster',
+    label: 'Desktop Video Poster / Fallback Image',
+    subLabel: 'Static 16:7 master frame displayed while the desktop video buffers or loads',
+    recommendedWidth: 1920,
+    recommendedHeight: 840,
+    aspectRatio: '16:7',
+    ratioValue: 1920 / 840,
+    ratioTolerance: 0.18,
+    acceptedFormats: ['WebP', 'JPG', 'PNG'],
+    mediaType: 'image',
+    description: 'First high-resolution frame to eliminate black loading screens and support reduced-motion users.',
+    storageFolder: 'campaigns',
+    maxSizeLabel: '15 MB'
+  },
+  CAMPAIGN_MOBILE_POSTER: {
+    id: 'campaign_mobile_poster',
+    label: 'Mobile Video Poster / Fallback Image',
+    subLabel: 'Vertical 4:5 image displayed while the mobile video buffers',
+    recommendedWidth: 1080,
+    recommendedHeight: 1350,
+    aspectRatio: '4:5',
+    ratioValue: 1080 / 1350,
+    ratioTolerance: 0.18,
+    acceptedFormats: ['WebP', 'JPG', 'PNG'],
+    mediaType: 'image',
+    description: 'Vertical 4:5 poster frame for seamless mobile initial paint and constrained data connections.',
+    storageFolder: 'campaigns',
+    maxSizeLabel: '15 MB'
   }
 };
 

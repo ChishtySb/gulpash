@@ -7,6 +7,7 @@ import {
   INITIAL_ORDERS, INITIAL_REVIEWS, INITIAL_CMS, INITIAL_SETTINGS 
 } from '../data/initialData';
 import { migrateHeroToSlides, syncSlideToLegacyHero, DEFAULT_HERO_SLIDER_SETTINGS } from './heroHelper';
+import { normalizeEditorialCampaign, syncCampaignToLegacyBanner } from './campaignHelper';
 import { NotificationService } from './notifications';
 import { adminAuthService } from './adminAuth';
 import { 
@@ -729,6 +730,14 @@ export const StorageService = {
         changed = true;
       }
 
+      // Ensure editorialCampaign is normalized and populated
+      if (!cms.editorialCampaign || !cms.editorialCampaign.campaigns || cms.editorialCampaign.campaigns.length === 0) {
+        cms.editorialCampaign = normalizeEditorialCampaign(cms);
+        cms.showEditorialCampaign = cms.editorialCampaign.enabled;
+        cms.showEditorialBanner = cms.editorialCampaign.enabled;
+        changed = true;
+      }
+
       if (changed) {
         localStorage.setItem(KEYS.CMS, JSON.stringify(cms));
       }
@@ -738,6 +747,9 @@ export const StorageService = {
       const { slides, settings } = migrateHeroToSlides(fallback);
       fallback.heroSlides = slides;
       fallback.heroSliderSettings = settings;
+      fallback.editorialCampaign = normalizeEditorialCampaign(fallback);
+      fallback.showEditorialCampaign = fallback.editorialCampaign.enabled;
+      fallback.showEditorialBanner = fallback.editorialCampaign.enabled;
       return fallback;
     }
   },
@@ -747,6 +759,17 @@ export const StorageService = {
     if (cms.heroSlides && cms.heroSlides.length > 0) {
       const activeSlide = cms.heroSlides.find(s => s.enabled) || cms.heroSlides[0];
       cms.hero = syncSlideToLegacyHero(activeSlide);
+    }
+    // Keep legacy editorial banner synchronized with active campaign
+    if (cms.editorialCampaign?.campaigns && cms.editorialCampaign.campaigns.length > 0) {
+      const activeCamp = cms.editorialCampaign.campaigns.find(c => c.id === cms.editorialCampaign?.activeCampaignId) ||
+        cms.editorialCampaign.campaigns.find(c => c.enabled) ||
+        cms.editorialCampaign.campaigns[0];
+      if (activeCamp) {
+        cms.editorialBanner = syncCampaignToLegacyBanner(activeCamp);
+      }
+      cms.showEditorialBanner = cms.editorialCampaign.enabled !== false;
+      cms.showEditorialCampaign = cms.editorialCampaign.enabled !== false;
     }
     localStorage.setItem(KEYS.CMS, JSON.stringify(cms));
     notifyChange('cms');
@@ -778,6 +801,18 @@ export const StorageService = {
       cms.hero = syncSlideToLegacyHero(activeSlide);
     }
 
+    // Sync legacy editorial banner
+    if (cms.editorialCampaign?.campaigns && cms.editorialCampaign.campaigns.length > 0) {
+      const activeCamp = cms.editorialCampaign.campaigns.find(c => c.id === cms.editorialCampaign?.activeCampaignId) ||
+        cms.editorialCampaign.campaigns.find(c => c.enabled) ||
+        cms.editorialCampaign.campaigns[0];
+      if (activeCamp) {
+        cms.editorialBanner = syncCampaignToLegacyBanner(activeCamp);
+      }
+      cms.showEditorialBanner = cms.editorialCampaign.enabled !== false;
+      cms.showEditorialCampaign = cms.editorialCampaign.enabled !== false;
+    }
+
     // 2. Authoritative privileged Server Admin CMS endpoint
     // Calls PUT /api/admin/cms/homepage which independently verifies JWT + role='admin'
     // and uses SUPABASE_SERVICE_ROLE_KEY to update the canonical homepage_cms row.
@@ -793,6 +828,7 @@ export const StorageService = {
           hero: cms.hero,
           heroSlides: cms.heroSlides,
           heroSliderSettings: cms.heroSliderSettings,
+          editorialCampaign: cms.editorialCampaign,
           cms
         })
       });
@@ -1621,48 +1657,60 @@ export const StorageService = {
 
       if (cmsRes.status === 'fulfilled' && cmsRes.value.ok) {
         const cmsData = await cmsRes.value.json();
-        if (cmsData && (cmsData.hero || cmsData.record?.data)) {
+        if (cmsData && (cmsData.hero || cmsData.record?.data || cmsData.editorialCampaign)) {
           const heroPayload = cmsData.hero || cmsData.record?.data;
-          const rawSlides = heroPayload.heroSlides || heroPayload.slides || cmsData.heroSlides || cmsData.slides;
-          const rawSettings = heroPayload.heroSliderSettings || heroPayload.sliderSettings || cmsData.heroSliderSettings || cmsData.sliderSettings;
+          const rawSlides = heroPayload?.heroSlides || heroPayload?.slides || cmsData.heroSlides || cmsData.slides;
+          const rawSettings = heroPayload?.heroSliderSettings || heroPayload?.sliderSettings || cmsData.heroSliderSettings || cmsData.sliderSettings;
+          const rawCampaign = cmsData.editorialCampaign || heroPayload?.editorialCampaign;
           const current = this.getCMS();
           const merged = {
             ...current,
-            hero: {
+            hero: heroPayload ? {
               ...current.hero,
               ...heroPayload
-            },
+            } : current.hero,
             heroSlides: rawSlides && rawSlides.length > 0 ? rawSlides : current.heroSlides,
-            heroSliderSettings: rawSettings || current.heroSliderSettings
+            heroSliderSettings: rawSettings || current.heroSliderSettings,
+            editorialCampaign: rawCampaign ? normalizeEditorialCampaign({ editorialCampaign: rawCampaign }) : current.editorialCampaign
           };
           localStorage.setItem(KEYS.CMS, JSON.stringify(merged));
           hasChanges = true;
         }
       }
 
-      // Also directly query public Supabase homepage_cms for fresh hero data
+      // Also directly query public Supabase homepage_cms for fresh hero and campaign data
       try {
         const { getSupabaseClient } = await import('./supabaseClient');
         const supabase = getSupabaseClient();
         if (supabase) {
-          const { data: dbHero } = await supabase
+          const { data: dbRows } = await supabase
             .from('homepage_cms')
-            .select('*')
-            .eq('section_key', 'hero')
-            .single();
-          if (dbHero?.data && (dbHero.data.desktopImageUrl || dbHero.data.image || dbHero.data.heroSlides)) {
+            .select('*');
+          
+          if (Array.isArray(dbRows) && dbRows.length > 0) {
+            const dbHero = dbRows.find(r => r.section_key === 'hero');
+            const dbCampaign = dbRows.find(r => r.section_key === 'editorial_campaign');
             const current = this.getCMS();
-            const rawSlides = dbHero.data.heroSlides || dbHero.data.slides;
-            const rawSettings = dbHero.data.heroSliderSettings || dbHero.data.sliderSettings;
-            const merged = {
-              ...current,
-              hero: {
+            let merged = { ...current };
+
+            if (dbHero?.data && (dbHero.data.desktopImageUrl || dbHero.data.image || dbHero.data.heroSlides || dbHero.data.editorialCampaign)) {
+              const rawSlides = dbHero.data.heroSlides || dbHero.data.slides;
+              const rawSettings = dbHero.data.heroSliderSettings || dbHero.data.sliderSettings;
+              merged.hero = {
                 ...current.hero,
                 ...dbHero.data
-              },
-              heroSlides: rawSlides && rawSlides.length > 0 ? rawSlides : current.heroSlides,
-              heroSliderSettings: rawSettings || current.heroSliderSettings
-            };
+              };
+              if (rawSlides && rawSlides.length > 0) merged.heroSlides = rawSlides;
+              if (rawSettings) merged.heroSliderSettings = rawSettings;
+              if (dbHero.data.editorialCampaign) {
+                merged.editorialCampaign = normalizeEditorialCampaign({ editorialCampaign: dbHero.data.editorialCampaign });
+              }
+            }
+
+            if (dbCampaign?.data) {
+              merged.editorialCampaign = normalizeEditorialCampaign({ editorialCampaign: dbCampaign.data });
+            }
+
             localStorage.setItem(KEYS.CMS, JSON.stringify(merged));
             hasChanges = true;
           }

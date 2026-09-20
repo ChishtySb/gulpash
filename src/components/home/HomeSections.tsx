@@ -4,16 +4,18 @@ import {
   Instagram, Heart, Shield, Award, Scissors, Truck,
   ChevronDown, ChevronUp, HelpCircle, Mail, Send, Check
 } from 'lucide-react';
-import { Product, CurrencyCode, ProductSize, Collection, Category } from '../../types';
+import { Product, CurrencyCode, ProductSize, Collection, Category, CMSConfig } from '../../types';
 import { ProductCard } from '../storefront/ProductCard';
 import { CategoryCard } from './CategoryCard';
 import { formatPrice } from '../../lib/currency';
+import { EditorialCampaignSection } from '../storefront/EditorialCampaignSection';
 
 interface HomeSectionsProps {
   products: Product[];
   categories: Category[];
   collections: Collection[];
   currency: CurrencyCode;
+  cms?: CMSConfig;
   onSelectProduct: (slug: string) => void;
   onQuickView: (product: Product) => void;
   onQuickAddToCart: (product: Product, size: ProductSize) => void;
@@ -117,6 +119,7 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
   categories,
   collections,
   currency,
+  cms,
   onSelectProduct,
   onQuickView,
   onQuickAddToCart,
@@ -456,41 +459,11 @@ export const HomeSections: React.FC<HomeSectionsProps> = ({
         </div>
       </section>
 
-      {/* 5. EDITORIAL ATELIER CAMPAIGN BANNER (AUTHENTIC PRODUCT ASSET) */}
-      <section className="relative w-full h-[60vh] sm:h-[70vh] bg-stone-900 overflow-hidden flex items-center justify-center text-center text-white">
-        {editorialBannerImage ? (
-          <img
-            src={editorialBannerImage}
-            alt="GulPash Atelier Campaign"
-            className="absolute inset-0 w-full h-full object-cover object-center opacity-35"
-          />
-        ) : null}
-        <div className="absolute inset-0 bg-stone-950/50 backdrop-blur-[1px]" />
-
-        <div className="relative z-10 max-w-2xl mx-auto px-4 space-y-5">
-          <span className="text-[10px] uppercase tracking-[0.35em] text-stone-300 font-medium block">
-            ROYAL COUTURE CAMPAIGN
-          </span>
-
-          <h2 className="font-serif text-3xl sm:text-5xl font-light italic tracking-wide leading-tight text-white">
-            The Sovereign Craft of Pakistani Embroidery
-          </h2>
-
-          <p className="text-xs sm:text-sm text-stone-200 max-w-lg mx-auto font-light leading-relaxed">
-            Witness the intricate zardozi, hand-tilla motifs, and fine pure threadwork brought to life in our Lahore ateliers.
-          </p>
-
-          <div className="pt-2">
-            <button
-              onClick={() => onNavigate('collection', 'best-selling')}
-              className="inline-flex items-center gap-2 bg-white text-stone-900 hover:bg-stone-100 text-[11px] font-medium uppercase tracking-[0.25em] py-3.5 px-8 transition-colors duration-300 cursor-pointer shadow-lg"
-            >
-              <span>Explore Trending Ensembles</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </section>
+      {/* 5. EDITORIAL ATELIER & ROYAL COUTURE CAMPAIGN (CMS-CONTROLLED) */}
+      <EditorialCampaignSection
+        config={cms?.editorialCampaign}
+        onNavigate={onNavigate}
+      />
 
       {/* 4. THE GULPASH ATELIER PILLARS */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

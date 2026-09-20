@@ -362,6 +362,7 @@ export default function App() {
               categories={categories}
               collections={collections}
               currency={currency}
+              cms={cms}
               onSelectProduct={(slug) => navigate('product', slug)}
               onQuickView={(p) => setQuickViewProduct(p)}
               onQuickAddToCart={(p, size) => handleAddToCart(p, size, 1)}

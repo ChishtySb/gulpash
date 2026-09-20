@@ -381,6 +381,73 @@ export interface AnnouncementItem {
   isActive: boolean;
 }
 
+export interface EditorialCampaignItem {
+  id: string;
+  order: number;
+  enabled: boolean;
+  name: string; // e.g. "Royal Couture Campaign", "Festive Edit"
+  mediaType: 'image' | 'video';
+  desktopImageUrl?: string;
+  mobileImageUrl?: string;
+  videoUrl?: string;
+  mobileVideoUrl?: string;
+  posterImageUrl?: string;
+  mobilePosterImageUrl?: string;
+  mobileVideoFallback?: 'mobile_poster' | 'desktop_video' | 'mobile_image';
+  altText?: string;
+
+  // Video playback
+  videoAutoplay?: boolean;
+  videoLoop?: boolean;
+  videoMuted?: boolean;
+  videoPauseOnHover?: boolean;
+  videoShowControls?: boolean;
+
+  // Dark overlay
+  showOverlay?: boolean;
+  overlayOpacity?: number; // 0 to 80
+
+  // Text & CTA master toggle
+  showTextAndCta?: boolean;
+
+  // Sub-elements
+  showEyebrow?: boolean;
+  eyebrow?: string;
+  showHeading?: boolean;
+  heading?: string;
+  showDescription?: boolean;
+  description?: string;
+  showCta?: boolean;
+  ctaLabel?: string;
+  ctaUrl?: string;
+  showSecondaryCta?: boolean;
+  secondaryCtaLabel?: string;
+  secondaryCtaUrl?: string;
+
+  // Alignment & appearance
+  horizontalAlignment?: 'left' | 'center' | 'right';
+  verticalAlignment?: 'top' | 'center' | 'bottom';
+  textTheme?: 'light' | 'dark';
+
+  // Crop / Object position
+  objectPositionDesktop?: 'center' | 'top' | 'bottom' | 'left' | 'right';
+  objectPositionMobile?: 'center' | 'top' | 'bottom' | 'left' | 'right';
+}
+
+export interface EditorialCampaignSectionConfig {
+  enabled: boolean;
+  displayMode: 'single' | 'slider';
+  activeCampaignId?: string;
+  sliderSettings?: {
+    autoPlay: boolean;
+    slideDuration: number;
+    showArrows: boolean;
+    showDots: boolean;
+    pauseOnHover: boolean;
+  };
+  campaigns: EditorialCampaignItem[];
+}
+
 export interface HomepageCMS {
   hero: HeroSlideConfig;
   heroSlides?: HeroSlideItem[];
@@ -392,6 +459,8 @@ export interface HomepageCMS {
   showNewArrivals: boolean;
   showCategories: boolean;
   showEditorialBanner: boolean;
+  showEditorialCampaign?: boolean;
+  editorialCampaign?: EditorialCampaignSectionConfig;
   showCustomerReviews: boolean;
   showInstagramFeed: boolean;
   editorialBanner: {
