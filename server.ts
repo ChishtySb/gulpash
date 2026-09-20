@@ -692,15 +692,20 @@ app.put('/api/collections/:id', (req, res) => {
 // CMS API
 app.get('/api/cms', async (req, res) => {
   try {
-    if (!serverCMS && supabaseAdmin) {
+    if ((!serverCMS || !serverCMS.editorialCampaign) && supabaseAdmin) {
       try {
-        const { data: dbHero } = await supabaseAdmin
+        const { data: dbRows } = await supabaseAdmin
           .from('homepage_cms')
-          .select('*')
-          .eq('section_key', 'hero')
-          .single();
-        if (dbHero?.data) {
-          serverCMS = { hero: dbHero.data };
+          .select('*');
+        if (dbRows && dbRows.length > 0) {
+          const dbHero = dbRows.find((r: any) => r.section_key === 'hero');
+          const dbCamp = dbRows.find((r: any) => r.section_key === 'editorial_campaign');
+          const editorialCampaign = dbCamp?.data || dbHero?.data?.editorialCampaign || null;
+          serverCMS = {
+            ...(serverCMS || {}),
+            hero: dbHero?.data || (serverCMS?.hero || {}),
+            editorialCampaign
+          };
         }
       } catch (dbErr) {
         console.warn('Initial CMS load from Supabase note:', dbErr);

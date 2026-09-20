@@ -1,19 +1,19 @@
 import { EditorialCampaignItem, EditorialCampaignSectionConfig, HomepageCMS } from '../types';
 
-export const DEFAULT_ROYAL_COUTURE_CAMPAIGN: EditorialCampaignItem = {
-  id: 'campaign-1-royal-couture',
+export const EMPTY_CAMPAIGN_ITEM: EditorialCampaignItem = {
+  id: '',
   order: 1,
   enabled: true,
-  name: 'Royal Couture Campaign',
+  name: 'Campaign 1',
   mediaType: 'image',
-  desktopImageUrl: 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/4_65e648be-58bb-4b95-a22c-a2b130e9d6d7.png?v=1787217112',
-  mobileImageUrl: 'https://cdn.shopify.com/s/files/1/0935/5368/8891/files/4_65e648be-58bb-4b95-a22c-a2b130e9d6d7.png?v=1787217112',
+  desktopImageUrl: '',
+  mobileImageUrl: '',
   posterImageUrl: '',
   mobilePosterImageUrl: '',
   videoUrl: '',
   mobileVideoUrl: '',
   mobileVideoFallback: 'mobile_poster',
-  altText: 'The Sovereign Craft of Pakistani Embroidery - GulPash Royal Couture Atelier',
+  altText: '',
 
   // Video playback
   videoAutoplay: true,
@@ -31,14 +31,14 @@ export const DEFAULT_ROYAL_COUTURE_CAMPAIGN: EditorialCampaignItem = {
 
   // Sub-elements
   showEyebrow: true,
-  eyebrow: 'ROYAL COUTURE CAMPAIGN',
+  eyebrow: '',
   showHeading: true,
-  heading: 'The Sovereign Craft of Pakistani Embroidery',
+  heading: '',
   showDescription: true,
-  description: 'Witness the intricate zardozi, hand-tilla motifs, and fine pure threadwork brought to life in our Lahore ateliers.',
+  description: '',
   showCta: true,
-  ctaLabel: 'EXPLORE TRENDING ENSEMBLES',
-  ctaUrl: '/collections/best-selling',
+  ctaLabel: '',
+  ctaUrl: '',
   showSecondaryCta: false,
   secondaryCtaLabel: '',
   secondaryCtaUrl: '',
@@ -54,9 +54,9 @@ export const DEFAULT_ROYAL_COUTURE_CAMPAIGN: EditorialCampaignItem = {
 };
 
 export const DEFAULT_EDITORIAL_CAMPAIGN_CONFIG: EditorialCampaignSectionConfig = {
-  enabled: true,
+  enabled: false,
   displayMode: 'single',
-  activeCampaignId: 'campaign-1-royal-couture',
+  activeCampaignId: '',
   sliderSettings: {
     autoPlay: true,
     slideDuration: 6,
@@ -64,35 +64,73 @@ export const DEFAULT_EDITORIAL_CAMPAIGN_CONFIG: EditorialCampaignSectionConfig =
     showDots: true,
     pauseOnHover: true
   },
-  campaigns: [DEFAULT_ROYAL_COUTURE_CAMPAIGN]
+  campaigns: []
 };
 
 /**
- * Normalizes and migrates any CMS config to ensure editorialCampaign is populated,
- * preserving existing royal couture content or custom legacy banner content.
+ * Normalizes CMS config strictly from canonical CMS data without forcing legacy fallbacks.
+ * Preserves intentional admin edits, empty text fields, and disabled states.
  */
 export function normalizeEditorialCampaign(cms?: Partial<HomepageCMS>): EditorialCampaignSectionConfig {
   if (!cms) {
-    return JSON.parse(JSON.stringify(DEFAULT_EDITORIAL_CAMPAIGN_CONFIG));
+    return {
+      enabled: false,
+      displayMode: 'single',
+      activeCampaignId: '',
+      sliderSettings: {
+        autoPlay: true,
+        slideDuration: 6,
+        showArrows: true,
+        showDots: true,
+        pauseOnHover: true
+      },
+      campaigns: []
+    };
   }
 
-  // Check if editorialCampaign is already configured with campaigns
-  if (cms.editorialCampaign && Array.isArray(cms.editorialCampaign.campaigns) && cms.editorialCampaign.campaigns.length > 0) {
+  // Check if editorialCampaign is configured
+  if (cms.editorialCampaign) {
     const rawConfig = cms.editorialCampaign;
-    const normalizedCampaigns: EditorialCampaignItem[] = rawConfig.campaigns.map((c, idx) => ({
-      ...DEFAULT_ROYAL_COUTURE_CAMPAIGN,
-      ...c,
+    const rawCampaigns = Array.isArray(rawConfig.campaigns) ? rawConfig.campaigns : [];
+
+    const normalizedCampaigns: EditorialCampaignItem[] = rawCampaigns.map((c, idx) => ({
       id: c.id || `campaign-${idx + 1}-${Date.now()}`,
       order: typeof c.order === 'number' ? c.order : idx + 1,
+      enabled: c.enabled !== false,
       name: c.name || `Campaign ${idx + 1}`,
       mediaType: c.mediaType === 'video' ? 'video' : 'image',
-      overlayOpacity: typeof c.overlayOpacity === 'number' ? c.overlayOpacity : 45,
-      showTextAndCta: c.showTextAndCta !== false,
+      desktopImageUrl: c.desktopImageUrl ?? '',
+      mobileImageUrl: c.mobileImageUrl ?? '',
+      posterImageUrl: c.posterImageUrl ?? '',
+      mobilePosterImageUrl: c.mobilePosterImageUrl ?? '',
+      videoUrl: c.videoUrl ?? '',
+      mobileVideoUrl: c.mobileVideoUrl ?? '',
+      mobileVideoFallback: c.mobileVideoFallback || 'mobile_poster',
+      altText: c.altText ?? '',
+
+      videoAutoplay: c.videoAutoplay !== false,
+      videoLoop: c.videoLoop !== false,
+      videoMuted: c.videoMuted !== false,
+      videoPauseOnHover: c.videoPauseOnHover === true,
+      videoShowControls: c.videoShowControls === true,
+
       showOverlay: c.showOverlay !== false,
+      overlayOpacity: typeof c.overlayOpacity === 'number' ? c.overlayOpacity : 45,
+
+      showTextAndCta: c.showTextAndCta !== false,
       showEyebrow: c.showEyebrow !== false,
+      eyebrow: c.eyebrow ?? '',
       showHeading: c.showHeading !== false,
+      heading: c.heading ?? '',
       showDescription: c.showDescription !== false,
+      description: c.description ?? '',
       showCta: c.showCta !== false,
+      ctaLabel: c.ctaLabel ?? '',
+      ctaUrl: c.ctaUrl ?? '',
+      showSecondaryCta: c.showSecondaryCta === true,
+      secondaryCtaLabel: c.secondaryCtaLabel ?? '',
+      secondaryCtaUrl: c.secondaryCtaUrl ?? '',
+
       horizontalAlignment: c.horizontalAlignment || 'center',
       verticalAlignment: c.verticalAlignment || 'center',
       textTheme: c.textTheme || 'light',
@@ -100,10 +138,10 @@ export function normalizeEditorialCampaign(cms?: Partial<HomepageCMS>): Editoria
       objectPositionMobile: c.objectPositionMobile || 'center'
     }));
 
-    const activeId = rawConfig.activeCampaignId || normalizedCampaigns.find(c => c.enabled)?.id || normalizedCampaigns[0].id;
+    const activeId = rawConfig.activeCampaignId || normalizedCampaigns[0]?.id || '';
 
     return {
-      enabled: rawConfig.enabled !== false && cms.showEditorialBanner !== false && cms.showEditorialCampaign !== false,
+      enabled: rawConfig.enabled !== false && cms.showEditorialCampaign !== false,
       displayMode: rawConfig.displayMode === 'slider' ? 'slider' : 'single',
       activeCampaignId: activeId,
       sliderSettings: rawConfig.sliderSettings || {
@@ -117,30 +155,10 @@ export function normalizeEditorialCampaign(cms?: Partial<HomepageCMS>): Editoria
     };
   }
 
-  // Otherwise, create Campaign 1 based on legacy editorialBanner if available or default
-  const legacyBanner = cms.editorialBanner;
-  const legacyImg = legacyBanner?.imageUrl || '';
-  const legacyHeading = legacyBanner?.heading;
-  const legacySubheading = legacyBanner?.subheading;
-  const legacyBtn = legacyBanner?.buttonText;
-  const legacyUrl = legacyBanner?.buttonUrl;
-
-  const campaign1: EditorialCampaignItem = {
-    ...DEFAULT_ROYAL_COUTURE_CAMPAIGN,
-    desktopImageUrl: legacyImg || DEFAULT_ROYAL_COUTURE_CAMPAIGN.desktopImageUrl,
-    mobileImageUrl: legacyImg || DEFAULT_ROYAL_COUTURE_CAMPAIGN.mobileImageUrl,
-    heading: legacyHeading || DEFAULT_ROYAL_COUTURE_CAMPAIGN.heading,
-    description: legacySubheading || DEFAULT_ROYAL_COUTURE_CAMPAIGN.description,
-    ctaLabel: legacyBtn || DEFAULT_ROYAL_COUTURE_CAMPAIGN.ctaLabel,
-    ctaUrl: legacyUrl || DEFAULT_ROYAL_COUTURE_CAMPAIGN.ctaUrl
-  };
-
-  const isEnabled = cms.showEditorialBanner !== false && (cms as any).showEditorial !== false;
-
   return {
-    enabled: isEnabled,
+    enabled: false,
     displayMode: 'single',
-    activeCampaignId: campaign1.id,
+    activeCampaignId: '',
     sliderSettings: {
       autoPlay: true,
       slideDuration: 6,
@@ -148,14 +166,14 @@ export function normalizeEditorialCampaign(cms?: Partial<HomepageCMS>): Editoria
       showDots: true,
       pauseOnHover: true
     },
-    campaigns: [campaign1]
+    campaigns: []
   };
 }
 
 /**
  * Keeps legacy editorialBanner structure synchronized with the active campaign for backwards compatibility.
  */
-export function syncCampaignToLegacyBanner(campaign: EditorialCampaignItem): {
+export function syncCampaignToLegacyBanner(campaign?: EditorialCampaignItem | null): {
   heading: string;
   subheading: string;
   buttonText: string;
@@ -163,35 +181,60 @@ export function syncCampaignToLegacyBanner(campaign: EditorialCampaignItem): {
   imageUrl: string;
 } {
   return {
-    heading: campaign.heading || 'The Art of Pakistani Luxury Fashion',
-    subheading: campaign.description || 'Each GulPash creation embodies centuries-old Pakistani artisan heritage.',
-    buttonText: campaign.ctaLabel || 'DISCOVER THE CATALOG',
-    buttonUrl: campaign.ctaUrl || '/shop',
-    imageUrl: campaign.desktopImageUrl || campaign.posterImageUrl || ''
+    heading: campaign?.heading ?? '',
+    subheading: campaign?.description ?? '',
+    buttonText: campaign?.ctaLabel ?? '',
+    buttonUrl: campaign?.ctaUrl ?? '',
+    imageUrl: campaign?.desktopImageUrl || campaign?.posterImageUrl || ''
   };
 }
 
 /**
- * Creates a new blank campaign item with sensible defaults.
+ * Creates a new blank campaign item.
  */
 export function createNewCampaign(order: number, name?: string): EditorialCampaignItem {
   return {
-    ...DEFAULT_ROYAL_COUTURE_CAMPAIGN,
     id: `campaign-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
     order,
-    enabled: false, // created as draft
+    enabled: true,
     name: name || `Campaign ${order}`,
     mediaType: 'image',
     desktopImageUrl: '',
     mobileImageUrl: '',
-    videoUrl: '',
-    mobileVideoUrl: '',
     posterImageUrl: '',
     mobilePosterImageUrl: '',
-    eyebrow: 'ROYAL COUTURE CAMPAIGN',
-    heading: 'New Campaign Heading',
-    description: 'Enter editorial campaign description for this seasonal release.',
+    videoUrl: '',
+    mobileVideoUrl: '',
+    mobileVideoFallback: 'mobile_poster',
+    altText: '',
+
+    videoAutoplay: true,
+    videoLoop: true,
+    videoMuted: true,
+    videoPauseOnHover: false,
+    videoShowControls: false,
+
+    showOverlay: true,
+    overlayOpacity: 45,
+
+    showTextAndCta: true,
+    showEyebrow: true,
+    eyebrow: '',
+    showHeading: true,
+    heading: '',
+    showDescription: true,
+    description: '',
+    showCta: true,
     ctaLabel: 'EXPLORE COLLECTION',
-    ctaUrl: '/shop'
+    ctaUrl: '/shop',
+    showSecondaryCta: false,
+    secondaryCtaLabel: '',
+    secondaryCtaUrl: '',
+
+    horizontalAlignment: 'center',
+    verticalAlignment: 'center',
+    textTheme: 'light',
+    objectPositionDesktop: 'center',
+    objectPositionMobile: 'center'
   };
 }

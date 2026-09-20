@@ -730,12 +730,9 @@ export const StorageService = {
         changed = true;
       }
 
-      // Ensure editorialCampaign is normalized and populated
-      if (!cms.editorialCampaign || !cms.editorialCampaign.campaigns || cms.editorialCampaign.campaigns.length === 0) {
+      // Ensure editorialCampaign is normalized if present
+      if (cms.editorialCampaign) {
         cms.editorialCampaign = normalizeEditorialCampaign(cms);
-        cms.showEditorialCampaign = cms.editorialCampaign.enabled;
-        cms.showEditorialBanner = cms.editorialCampaign.enabled;
-        changed = true;
       }
 
       if (changed) {

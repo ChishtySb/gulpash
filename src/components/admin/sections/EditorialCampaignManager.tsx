@@ -21,8 +21,7 @@ import { MediaUploaderCard } from '../MediaUploaderCard';
 import { StorageService } from '../../../lib/storage';
 import { 
   normalizeEditorialCampaign, 
-  createNewCampaign, 
-  DEFAULT_ROYAL_COUTURE_CAMPAIGN 
+  createNewCampaign 
 } from '../../../lib/campaignHelper';
 
 interface EditorialCampaignManagerProps {
@@ -43,7 +42,7 @@ export const EditorialCampaignManager: React.FC<EditorialCampaignManagerProps> =
   const campaignConfig: EditorialCampaignSectionConfig = normalizeEditorialCampaign(cmsConfig);
   const campaigns = campaignConfig.campaigns && campaignConfig.campaigns.length > 0
     ? campaignConfig.campaigns
-    : [DEFAULT_ROYAL_COUTURE_CAMPAIGN];
+    : [createNewCampaign(1, 'Campaign 1')];
 
   const [activeCampaignIdx, setActiveCampaignIdx] = useState<number>(() => {
     const activeIdx = campaigns.findIndex(c => c.id === campaignConfig.activeCampaignId);
@@ -51,7 +50,7 @@ export const EditorialCampaignManager: React.FC<EditorialCampaignManagerProps> =
   });
 
   const safeIdx = activeCampaignIdx < campaigns.length ? activeCampaignIdx : 0;
-  const currentCampaign = campaigns[safeIdx] || campaigns[0] || DEFAULT_ROYAL_COUTURE_CAMPAIGN;
+  const currentCampaign = campaigns[safeIdx] || campaigns[0];
 
   // Helper to commit changes to local React state
   const updateSectionConfig = (newConfig: EditorialCampaignSectionConfig) => {
@@ -778,7 +777,8 @@ export const EditorialCampaignManager: React.FC<EditorialCampaignManagerProps> =
               </div>
               <input
                 type="text"
-                value={currentCampaign.eyebrow || 'ROYAL COUTURE CAMPAIGN'}
+                value={currentCampaign.eyebrow ?? ''}
+                placeholder="e.g. ROYAL COUTURE CAMPAIGN"
                 onChange={(e) => updateCurrentCampaign({ eyebrow: e.target.value })}
                 disabled={currentCampaign.showEyebrow === false}
                 className="w-full p-2 border border-stone-300 rounded disabled:bg-stone-100 uppercase tracking-widest font-mono text-[11px]"
@@ -801,7 +801,8 @@ export const EditorialCampaignManager: React.FC<EditorialCampaignManagerProps> =
               </div>
               <input
                 type="text"
-                value={currentCampaign.heading || 'The Sovereign Craft of Pakistani Embroidery'}
+                value={currentCampaign.heading ?? ''}
+                placeholder="e.g. The Sovereign Craft of Pakistani Embroidery"
                 onChange={(e) => updateCurrentCampaign({ heading: e.target.value })}
                 disabled={currentCampaign.showHeading === false}
                 className="w-full p-2.5 border border-stone-300 rounded font-serif text-sm font-medium disabled:bg-stone-100"
@@ -824,7 +825,8 @@ export const EditorialCampaignManager: React.FC<EditorialCampaignManagerProps> =
               </div>
               <textarea
                 rows={2}
-                value={currentCampaign.description || ''}
+                value={currentCampaign.description ?? ''}
+                placeholder="Witness the intricate zardozi, hand-tilla motifs, and fine pure threadwork..."
                 onChange={(e) => updateCurrentCampaign({ description: e.target.value })}
                 disabled={currentCampaign.showDescription === false}
                 className="w-full p-2 border border-stone-300 rounded disabled:bg-stone-100 font-sans"
@@ -848,7 +850,8 @@ export const EditorialCampaignManager: React.FC<EditorialCampaignManagerProps> =
                 </div>
                 <input
                   type="text"
-                  value={currentCampaign.ctaLabel || 'EXPLORE TRENDING ENSEMBLES'}
+                  value={currentCampaign.ctaLabel ?? ''}
+                  placeholder="e.g. EXPLORE TRENDING ENSEMBLES"
                   onChange={(e) => updateCurrentCampaign({ ctaLabel: e.target.value })}
                   disabled={currentCampaign.showCta === false}
                   className="w-full p-2 border border-stone-300 rounded disabled:bg-stone-100"
@@ -859,7 +862,8 @@ export const EditorialCampaignManager: React.FC<EditorialCampaignManagerProps> =
                 <label className="block font-bold text-stone-800">Primary CTA Link</label>
                 <input
                   type="text"
-                  value={currentCampaign.ctaUrl || '/collections/best-selling'}
+                  value={currentCampaign.ctaUrl ?? ''}
+                  placeholder="e.g. /collections/best-selling"
                   onChange={(e) => updateCurrentCampaign({ ctaUrl: e.target.value })}
                   disabled={currentCampaign.showCta === false}
                   className="w-full p-2 border border-stone-300 rounded font-mono text-xs disabled:bg-stone-100"
@@ -1043,12 +1047,17 @@ export const EditorialCampaignManager: React.FC<EditorialCampaignManagerProps> =
                 playsInline
                 className="absolute inset-0 w-full h-full object-cover"
               />
-            ) : (
+            ) : (previewViewport === 'mobile' ? (currentCampaign.mobileImageUrl || currentCampaign.desktopImageUrl) : currentCampaign.desktopImageUrl) ? (
               <img
                 src={previewViewport === 'mobile' ? (currentCampaign.mobileImageUrl || currentCampaign.desktopImageUrl) : currentCampaign.desktopImageUrl}
                 alt="Preview"
                 className="absolute inset-0 w-full h-full object-cover"
               />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center bg-stone-900 text-stone-500 text-xs p-4 text-center">
+                <ImageIcon className="w-8 h-8 stroke-1 text-stone-600 mb-1" />
+                <span>No media configured</span>
+              </div>
             )}
 
             {/* Dark Overlay */}
@@ -1093,14 +1102,14 @@ export const EditorialCampaignManager: React.FC<EditorialCampaignManagerProps> =
                     </p>
                   )}
 
-                  {currentCampaign.showCta !== false && (
+                  {currentCampaign.showCta !== false && currentCampaign.ctaLabel && (
                     <div className="pt-2">
                       <span className={`inline-flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-widest py-2 px-4 shadow-sm ${
                         currentCampaign.textTheme === 'dark'
                           ? 'bg-stone-900 text-white'
                           : 'bg-white text-stone-900'
                       }`}>
-                        <span>{currentCampaign.ctaLabel || 'EXPLORE TRENDING ENSEMBLES'}</span>
+                        <span>{currentCampaign.ctaLabel}</span>
                       </span>
                     </div>
                   )}

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { EditorialCampaignItem, EditorialCampaignSectionConfig } from '../../types';
-import { DEFAULT_ROYAL_COUTURE_CAMPAIGN } from '../../lib/campaignHelper';
 
 interface EditorialCampaignSectionProps {
   config?: EditorialCampaignSectionConfig;
@@ -12,17 +11,18 @@ export const EditorialCampaignSection: React.FC<EditorialCampaignSectionProps> =
   config,
   onNavigate
 }) => {
-  // Master Section Toggle: If disabled, completely disappear from storefront (no vertical gap)
-  if (config && config.enabled === false) {
+  // Master Section Toggle: If disabled or unconfigured, completely disappear from storefront (no vertical gap)
+  if (!config || config.enabled === false) {
     return null;
   }
 
-  const campaigns = config?.campaigns && config.campaigns.length > 0
-    ? config.campaigns
-    : [DEFAULT_ROYAL_COUTURE_CAMPAIGN];
+  const campaigns = config.campaigns || [];
+  if (campaigns.length === 0) {
+    return null;
+  }
 
-  const displayMode = config?.displayMode || 'single';
-  const sliderSettings = config?.sliderSettings || {
+  const displayMode = config.displayMode || 'single';
+  const sliderSettings = config.sliderSettings || {
     autoPlay: true,
     slideDuration: 6,
     showArrows: true,
@@ -33,9 +33,14 @@ export const EditorialCampaignSection: React.FC<EditorialCampaignSectionProps> =
   // Determine active campaigns
   const activeCampaigns = displayMode === 'slider'
     ? campaigns.filter(c => c.enabled)
-    : campaigns.filter(c => c.id === config?.activeCampaignId || c.enabled);
+    : campaigns.filter(c => (config.activeCampaignId ? c.id === config.activeCampaignId : true) && c.enabled);
 
-  const displayList = activeCampaigns.length > 0 ? activeCampaigns : [campaigns[0] || DEFAULT_ROYAL_COUTURE_CAMPAIGN];
+  // If no campaigns are enabled, completely disappear from storefront
+  if (activeCampaigns.length === 0) {
+    return null;
+  }
+
+  const displayList = activeCampaigns;
 
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -280,14 +285,14 @@ export const EditorialCampaignSection: React.FC<EditorialCampaignSectionProps> =
                 : getObjectPositionClass(currentCampaign.objectPositionDesktop)
             }`}
           />
-        ) : (
+        ) : (desktopImg || (isMobileViewport && mobileImg)) ? (
           <picture className="w-full h-full block">
             {mobileImg && mobileImg !== desktopImg && (
               <source media="(max-width: 639px)" srcSet={mobileImg} />
             )}
             <img
-              src={isMobileViewport && mobileImg ? mobileImg : (desktopImg || effectivePosterSrc)}
-              alt={currentCampaign.altText || currentCampaign.heading || 'GulPash Royal Couture Campaign'}
+              src={isMobileViewport && mobileImg ? mobileImg : desktopImg}
+              alt={currentCampaign.altText || currentCampaign.heading || ''}
               loading="lazy"
               referrerPolicy="no-referrer"
               className={`w-full h-full object-cover transition-opacity duration-700 ${
@@ -297,6 +302,8 @@ export const EditorialCampaignSection: React.FC<EditorialCampaignSectionProps> =
               }`}
             />
           </picture>
+        ) : (
+          <div className="w-full h-full bg-stone-950" />
         )}
       </div>
 
@@ -313,37 +320,37 @@ export const EditorialCampaignSection: React.FC<EditorialCampaignSectionProps> =
         <div className={`absolute inset-0 z-10 flex flex-col px-6 sm:px-12 md:px-16 lg:px-24 ${getVerticalClasses(currentCampaign.verticalAlignment)}`}>
           <div className={`max-w-3xl flex flex-col space-y-4 sm:space-y-5 ${getHorizontalClasses(currentCampaign.horizontalAlignment)}`}>
             {/* Eyebrow */}
-            {currentCampaign.showEyebrow !== false && currentCampaign.eyebrow && (
+            {currentCampaign.showEyebrow !== false && currentCampaign.eyebrow ? (
               <span className={`text-[10px] sm:text-[11px] uppercase tracking-[0.35em] font-medium block transition-colors ${
                 isDarkTheme ? 'text-stone-700' : 'text-stone-300'
               }`}>
                 {currentCampaign.eyebrow}
               </span>
-            )}
+            ) : null}
 
             {/* Heading */}
-            {currentCampaign.showHeading !== false && currentCampaign.heading && (
+            {currentCampaign.showHeading !== false && currentCampaign.heading ? (
               <h2 className={`font-serif text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-light italic tracking-wide leading-tight sm:leading-tight transition-colors ${
                 isDarkTheme ? 'text-stone-950' : 'text-white drop-shadow-xs'
               }`}>
                 {currentCampaign.heading}
               </h2>
-            )}
+            ) : null}
 
             {/* Description */}
-            {currentCampaign.showDescription !== false && currentCampaign.description && (
+            {currentCampaign.showDescription !== false && currentCampaign.description ? (
               <p className={`text-xs sm:text-sm md:text-base font-light leading-relaxed max-w-xl transition-colors ${
                 isDarkTheme ? 'text-stone-800' : 'text-stone-200 drop-shadow-xs'
               }`}>
                 {currentCampaign.description}
               </p>
-            )}
+            ) : null}
 
             {/* CTAs */}
             {(currentCampaign.showCta !== false || currentCampaign.showSecondaryCta) && (
               <div className="pt-2 sm:pt-4 flex flex-wrap items-center gap-3">
                 {/* Primary CTA */}
-                {currentCampaign.showCta !== false && (
+                {currentCampaign.showCta !== false && currentCampaign.ctaLabel ? (
                   <button
                     type="button"
                     onClick={() => handleCtaClick(currentCampaign.ctaUrl)}
@@ -353,10 +360,10 @@ export const EditorialCampaignSection: React.FC<EditorialCampaignSectionProps> =
                         : 'bg-white text-stone-900 hover:bg-stone-100'
                     }`}
                   >
-                    <span>{currentCampaign.ctaLabel || 'EXPLORE TRENDING ENSEMBLES'}</span>
+                    <span>{currentCampaign.ctaLabel}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
-                )}
+                ) : null}
 
                 {/* Secondary CTA */}
                 {currentCampaign.showSecondaryCta && currentCampaign.secondaryCtaLabel && (
