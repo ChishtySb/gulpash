@@ -269,7 +269,7 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
             <div>
               <MediaUploaderCard
                 spec={(cmsConfig.hero?.type === 'video') ? MEDIA_SPECS.HERO_VIDEO_DESKTOP : MEDIA_SPECS.HERO_DESKTOP}
-                currentUrl={(cmsConfig.hero?.type === 'video') ? cmsConfig.hero?.videoUrl : cmsConfig.hero?.image}
+                currentUrl={(cmsConfig.hero?.type === 'video') ? cmsConfig.hero?.videoUrl : (cmsConfig.hero?.desktopImageUrl || cmsConfig.hero?.image)}
                 onUrlChange={(url) => {
                   if (cmsConfig.hero?.type === 'video') {
                     setCmsConfig(prev => ({
@@ -279,7 +279,7 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
                   } else {
                     setCmsConfig(prev => ({
                       ...prev,
-                      hero: { ...prev.hero, image: url }
+                      hero: { ...prev.hero, image: url, desktopImageUrl: url }
                     }));
                   }
                 }}
@@ -288,7 +288,9 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
                     ...cmsConfig,
                     hero: {
                       ...cmsConfig.hero,
-                      [cmsConfig.hero?.type === 'video' ? 'videoUrl' : 'image']: url
+                      ...(cmsConfig.hero?.type === 'video' 
+                        ? { videoUrl: url } 
+                        : { image: url, desktopImageUrl: url })
                     }
                   };
                   setCmsConfig(updated);
@@ -316,7 +318,7 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
             <div>
               <MediaUploaderCard
                 spec={(cmsConfig.hero?.type === 'video') ? MEDIA_SPECS.HERO_VIDEO_MOBILE : MEDIA_SPECS.HERO_MOBILE}
-                currentUrl={(cmsConfig.hero?.type === 'video') ? cmsConfig.hero?.mobileVideoUrl : (cmsConfig.hero?.mobileImage || cmsConfig.hero?.image)}
+                currentUrl={(cmsConfig.hero?.type === 'video') ? cmsConfig.hero?.mobileVideoUrl : (cmsConfig.hero?.mobileImageUrl || cmsConfig.hero?.mobileImage || cmsConfig.hero?.desktopImageUrl || cmsConfig.hero?.image)}
                 onUrlChange={(url) => {
                   if (cmsConfig.hero?.type === 'video') {
                     setCmsConfig(prev => ({
@@ -326,7 +328,7 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
                   } else {
                     setCmsConfig(prev => ({
                       ...prev,
-                      hero: { ...prev.hero, mobileImage: url }
+                      hero: { ...prev.hero, mobileImage: url, mobileImageUrl: url }
                     }));
                   }
                 }}
@@ -335,7 +337,9 @@ export const StorefrontSection: React.FC<StorefrontSectionProps> = ({
                     ...cmsConfig,
                     hero: {
                       ...cmsConfig.hero,
-                      [cmsConfig.hero?.type === 'video' ? 'mobileVideoUrl' : 'mobileImage']: url
+                      ...(cmsConfig.hero?.type === 'video'
+                        ? { mobileVideoUrl: url }
+                        : { mobileImage: url, mobileImageUrl: url })
                     }
                   };
                   setCmsConfig(updated);

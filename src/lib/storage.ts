@@ -449,42 +449,25 @@ export const StorageService = {
     const collections = this.getCollections();
     const idx = collections.findIndex(c => c.id === id);
     if (idx >= 0) {
-      collections[idx] = { ...collections[idx], ...updates };
+      collections[idx] = { ...collections[idx], ...updates, updatedAt: new Date().toISOString() };
       localStorage.setItem(KEYS.COLLECTIONS, JSON.stringify(collections));
       notifyChange('collections');
 
-      // Sync with Express server
+      // Sync with server collections endpoint (which synchronizes with Supabase using service role)
       if (typeof fetch !== 'undefined') {
         try {
-          await fetch('/api/collections', {
+          const { adminAuthService } = await import('./adminAuth');
+          const token = await adminAuthService.getCurrentAccessToken();
+          const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+          if (token) headers['Authorization'] = `Bearer ${token}`;
+
+          await fetch(`/api/collections/${encodeURIComponent(id)}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(collections)
+            headers,
+            body: JSON.stringify(collections[idx])
           });
         } catch (e) {
           console.warn('Server collections sync note:', e);
-        }
-      }
-
-      // Persist to Supabase collections table
-      const { getSupabaseClient } = await import('./supabaseClient');
-      const supabase = getSupabaseClient();
-      if (supabase) {
-        const item = collections[idx];
-        const { error } = await supabase.from('collections').update({
-          name: item.name,
-          description: item.description || '',
-          image_url: item.imageUrl || item.image || null,
-          banner_url: item.bannerDesktopImage || item.bannerUrl || null,
-          display_order: Number(item.order) || 1,
-          updated_at: new Date().toISOString()
-        }).eq('id', id);
-
-        if (error) {
-          if (error.message?.includes('row-level security') || error.code === '42501') {
-            throw new Error(`Supabase DB RLS error: Insufficient permissions to update "collections" table. (${error.message})`);
-          }
-          throw new Error(`Supabase DB error (${error.code || 'REST'}): ${error.message}`);
         }
       }
     }
@@ -752,51 +735,48 @@ export const StorageService = {
   },
 
   async saveCMSAsync(cms: HomepageCMS): Promise<{ success: boolean; error?: string }> {
-    // 1. Persist to localStorage synchronously for immediate client-side reactivity
+    // 1. Obtain current admin access token from Supabase Auth
+    const { adminAuthService } = await import('./adminAuth');
+    const token = await adminAuthService.getCurrentAccessToken();
+
+    if (!token) {
+      throw new Error('Admin authentication session is not active. Please sign in to the Admin Dashboard first.');
+    }
+
+    // 2. Authoritative privileged Server Admin CMS endpoint
+    // Calls PUT /api/admin/cms/homepage which independently verifies JWT + role='admin'
+    // and uses SUPABASE_SERVICE_ROLE_KEY to update the canonical homepage_cms row.
+    let serverRes: Response;
+    try {
+      serverRes = await fetch('/api/admin/cms/homepage', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          hero: cms.hero,
+          cms
+        })
+      });
+    } catch (networkErr: any) {
+      throw new Error(`Admin CMS network connection failed: ${networkErr?.message || 'Server unreachable'}`);
+    }
+
+    if (!serverRes.ok) {
+      const errJson = await serverRes.json().catch(() => ({}));
+      if (serverRes.status === 401) {
+        throw new Error('Admin session expired or invalid. Please sign in again.');
+      }
+      if (serverRes.status === 403) {
+        throw new Error('Access denied: Your account does not have administrator permissions (role: admin required).');
+      }
+      throw new Error(errJson.error || `Failed to persist homepage CMS (Status ${serverRes.status})`);
+    }
+
+    // 3. Persist to localStorage and notify UI only after confirmed server database success
     localStorage.setItem(KEYS.CMS, JSON.stringify(cms));
     notifyChange('cms');
-
-    // 2. Persist to Express custom server API
-    if (typeof fetch !== 'undefined') {
-      try {
-        await fetch('/api/cms', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(cms)
-        });
-      } catch (e) {
-        console.warn('Server CMS update non-fatal error:', e);
-      }
-    }
-
-    // 3. Persist directly to Supabase homepage_cms table
-    const { getSupabaseClient } = await import('./supabaseClient');
-    const supabase = getSupabaseClient();
-    if (supabase) {
-      // Upsert hero section config
-      const { error: heroErr } = await supabase.from('homepage_cms').upsert({
-        section_key: 'hero',
-        data: cms.hero || {},
-        is_active: true,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'section_key' });
-
-      // Upsert full homepage CMS snapshot
-      const { error: fullErr } = await supabase.from('homepage_cms').upsert({
-        section_key: 'homepage',
-        data: cms,
-        is_active: true,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'section_key' });
-
-      if (heroErr || fullErr) {
-        const err = heroErr || fullErr;
-        if (err?.message?.includes('row-level security') || err?.code === '42501') {
-          throw new Error(`Supabase DB RLS error: Insufficient permissions to update "homepage_cms" table. (${err.message})`);
-        }
-        throw new Error(`Supabase DB error (${err?.code || 'REST'}): ${err?.message || 'Failed updating homepage_cms'}`);
-      }
-    }
 
     return { success: true };
   },
@@ -962,34 +942,21 @@ export const StorageService = {
     localStorage.setItem(KEYS.SETTINGS, JSON.stringify(settings));
     notifyChange('settings');
 
-    // 2. Persist to Express server
+    // 2. Persist to server endpoint (which synchronizes with Supabase site_settings table via privileged client)
     if (typeof fetch !== 'undefined') {
       try {
+        const { adminAuthService } = await import('./adminAuth');
+        const token = await adminAuthService.getCurrentAccessToken();
+        const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
         await fetch('/api/settings', {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify(settings)
         });
       } catch (e) {
         console.warn('Server settings update non-fatal note:', e);
-      }
-    }
-
-    // 3. Persist to Supabase site_settings table
-    const { getSupabaseClient } = await import('./supabaseClient');
-    const supabase = getSupabaseClient();
-    if (supabase) {
-      const { error: setErr } = await supabase.from('site_settings').upsert({
-        setting_key: 'general_settings',
-        setting_value: settings,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'setting_key' });
-
-      if (setErr) {
-        if (setErr.message?.includes('row-level security') || setErr.code === '42501') {
-          throw new Error(`Supabase DB RLS error: Insufficient permissions to update "site_settings" table. (${setErr.message})`);
-        }
-        throw new Error(`Supabase DB error (${setErr.code || 'REST'}): ${setErr.message}`);
       }
     }
 
@@ -1617,10 +1584,46 @@ export const StorageService = {
 
       if (cmsRes.status === 'fulfilled' && cmsRes.value.ok) {
         const cmsData = await cmsRes.value.json();
-        if (cmsData && Object.keys(cmsData).length > 0 && cmsData.hero) {
-          localStorage.setItem(KEYS.CMS, JSON.stringify(cmsData));
+        if (cmsData && (cmsData.hero || cmsData.record?.data)) {
+          const heroPayload = cmsData.hero || cmsData.record?.data;
+          const current = this.getCMS();
+          const merged = {
+            ...current,
+            hero: {
+              ...current.hero,
+              ...heroPayload
+            }
+          };
+          localStorage.setItem(KEYS.CMS, JSON.stringify(merged));
           hasChanges = true;
         }
+      }
+
+      // Also directly query public Supabase homepage_cms for fresh hero data
+      try {
+        const { getSupabaseClient } = await import('./supabaseClient');
+        const supabase = getSupabaseClient();
+        if (supabase) {
+          const { data: dbHero } = await supabase
+            .from('homepage_cms')
+            .select('*')
+            .eq('section_key', 'hero')
+            .single();
+          if (dbHero?.data && (dbHero.data.desktopImageUrl || dbHero.data.image)) {
+            const current = this.getCMS();
+            const merged = {
+              ...current,
+              hero: {
+                ...current.hero,
+                ...dbHero.data
+              }
+            };
+            localStorage.setItem(KEYS.CMS, JSON.stringify(merged));
+            hasChanges = true;
+          }
+        }
+      } catch (dbHeroErr) {
+        // Non-fatal public read note
       }
 
       if (colRes.status === 'fulfilled' && colRes.value.ok) {

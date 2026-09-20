@@ -514,18 +514,15 @@ app.put('/api/settings', (req, res) => {
 
     writeSettings(updated);
 
-    // Asynchronously synchronize with Supabase site_settings
-    const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://alzqexevrhcmzcluvatc.supabase.co';
-    const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
-    if (supabaseKey && updated.whatsappAssistance) {
-      import('@supabase/supabase-js').then(({ createClient }) => {
-        const supabase = createClient(supabaseUrl, supabaseKey);
-        Promise.resolve(supabase.from('site_settings').upsert({
-          setting_key: 'whatsapp_assistance',
-          setting_value: updated.whatsappAssistance,
-          updated_at: new Date().toISOString()
-        }, { onConflict: 'setting_key' })).catch(() => {});
-      }).catch(() => {});
+    // Asynchronously synchronize with Supabase site_settings using privileged client
+    if (supabaseAdmin) {
+      Promise.resolve(supabaseAdmin.from('site_settings').upsert({
+        setting_key: 'general_settings',
+        setting_value: updated,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'setting_key' })).catch(err => {
+        console.warn('Supabase site_settings sync note:', err?.message || err);
+      });
     }
 
     res.json({ success: true, settings: updated });
@@ -671,6 +668,18 @@ app.put('/api/collections/:id', (req, res) => {
     if (idx >= 0) {
       collections[idx] = { ...collections[idx], ...req.body, updatedAt: new Date().toISOString() };
       writeCollections(collections);
+
+      if (supabaseAdmin) {
+        Promise.resolve(supabaseAdmin.from('collections').update({
+          name: collections[idx].name,
+          description: collections[idx].description || '',
+          image_url: collections[idx].imageUrl || collections[idx].image || null,
+          banner_url: collections[idx].bannerDesktopImage || collections[idx].bannerUrl || null,
+          display_order: Number(collections[idx].order) || 1,
+          updated_at: new Date().toISOString()
+        }).eq('id', id)).catch(err => console.warn('Supabase collections update note:', err));
+      }
+
       res.json({ success: true, collection: collections[idx] });
     } else {
       res.status(404).json({ error: 'Collection not found' });
@@ -681,8 +690,22 @@ app.put('/api/collections/:id', (req, res) => {
 });
 
 // CMS API
-app.get('/api/cms', (req, res) => {
+app.get('/api/cms', async (req, res) => {
   try {
+    if (!serverCMS && supabaseAdmin) {
+      try {
+        const { data: dbHero } = await supabaseAdmin
+          .from('homepage_cms')
+          .select('*')
+          .eq('section_key', 'hero')
+          .single();
+        if (dbHero?.data) {
+          serverCMS = { hero: dbHero.data };
+        }
+      } catch (dbErr) {
+        console.warn('Initial CMS load from Supabase note:', dbErr);
+      }
+    }
     const cms = readCMS();
     res.json(cms || {});
   } catch (err: any) {
@@ -1273,6 +1296,139 @@ app.delete('/api/admin/storage/:bucket/:path(*)', async (req, res) => {
   } catch (err: any) {
     console.error('Admin storage delete error:', err);
     res.status(500).json({ error: err.message || 'Server storage delete failed' });
+  }
+});
+
+// ---------------- ADMIN CMS HOMEPAGE ENDPOINTS ----------------
+// Privileged server endpoints for Supabase homepage_cms
+app.get('/api/admin/cms/homepage', async (req, res) => {
+  try {
+    if (!supabaseAdmin) {
+      return res.status(500).json({ error: 'Database client not initialized' });
+    }
+    const { data, error } = await supabaseAdmin
+      .from('homepage_cms')
+      .select('*')
+      .eq('section_key', 'hero')
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      return res.status(500).json({ error: error.message });
+    }
+
+    return res.json({
+      success: true,
+      hero: data?.data || null,
+      record: data || null
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.put('/api/admin/cms/homepage', async (req, res) => {
+  try {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Admin authentication session is not active. Please sign in again.' });
+    }
+
+    const token = authHeader.substring(7);
+    if (!supabaseAdmin) {
+      return res.status(500).json({ error: 'CMS server client is not initialized' });
+    }
+
+    // 1. Independently verify Admin session via Supabase Auth
+    const { data: userData, error: userErr } = await supabaseAdmin.auth.getUser(token);
+    if (userErr || !userData?.user) {
+      return res.status(401).json({ error: 'Admin session expired. Please sign in again.' });
+    }
+
+    const user = userData.user;
+    const isAuthorizedAdmin = 
+      user.app_metadata?.role === 'admin' ||
+      user.user_metadata?.role === 'admin';
+
+    if (!isAuthorizedAdmin) {
+      return res.status(403).json({ error: 'Your account does not have administrator permissions (role: admin required).' });
+    }
+
+    // 2. Validate payload
+    const body = req.body || {};
+    const heroData = body.hero ? body.hero : (body.desktopImageUrl || body.image ? body : null);
+
+    if (!heroData && !body.data) {
+      return res.status(400).json({ error: 'Invalid payload: hero configuration is required' });
+    }
+
+    const finalHeroConfig = heroData || body.data;
+
+    // 3. Upsert / update canonical row where section_key = 'hero' to prevent duplicate rows
+    const { data: existingRows } = await supabaseAdmin
+      .from('homepage_cms')
+      .select('id, section_key')
+      .eq('section_key', 'hero');
+
+    let resultRecord: any = null;
+
+    if (existingRows && existingRows.length > 0) {
+      const canonicalId = existingRows[0].id;
+      const { data: updated, error: updateErr } = await supabaseAdmin
+        .from('homepage_cms')
+        .update({
+          data: finalHeroConfig,
+          is_active: true,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', canonicalId)
+        .select()
+        .single();
+
+      if (updateErr) {
+        console.error('Server homepage_cms update error:', updateErr);
+        return res.status(500).json({ error: `Database update error: ${updateErr.message}` });
+      }
+      resultRecord = updated;
+    } else {
+      const { data: inserted, error: insertErr } = await supabaseAdmin
+        .from('homepage_cms')
+        .insert({
+          section_key: 'hero',
+          data: finalHeroConfig,
+          is_active: true,
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .single();
+
+      if (insertErr) {
+        console.error('Server homepage_cms insert error:', insertErr);
+        return res.status(500).json({ error: `Database insert error: ${insertErr.message}` });
+      }
+      resultRecord = inserted;
+    }
+
+    // Synchronize in-memory serverCMS state
+    if (body.cms) {
+      writeCMS(body.cms);
+    } else {
+      const current = readCMS() || {};
+      writeCMS({ ...current, hero: finalHeroConfig });
+    }
+
+    return res.json({
+      success: true,
+      hero: resultRecord.data,
+      record: {
+        id: resultRecord.id,
+        section_key: resultRecord.section_key,
+        updated_at: resultRecord.updated_at,
+        is_active: resultRecord.is_active
+      }
+    });
+  } catch (err: any) {
+    console.error('Admin CMS update error:', err);
+    res.status(500).json({ error: err.message || 'Server CMS update failed' });
   }
 });
 

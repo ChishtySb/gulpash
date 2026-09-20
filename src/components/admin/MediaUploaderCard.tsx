@@ -177,6 +177,9 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
 
       // 2. Upload to Supabase Storage
       let finalUrl = '';
+      let uploadedStoragePath = '';
+      let uploadedBucket = targetBucket;
+
       try {
         const res = await StorageService.uploadToSupabaseStorage(targetBucket, file, '', {
           dimensions: `${activeSpec.recommendedWidth} × ${activeSpec.recommendedHeight} px`,
@@ -184,6 +187,8 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
           label: activeSpec.label
         });
         finalUrl = res.url;
+        uploadedStoragePath = res.storagePath;
+        uploadedBucket = (res.bucket as any) || targetBucket;
       } catch (directUploadErr: any) {
         console.warn('Direct Supabase storage upload attempt encountered error, attempting fallback route:', directUploadErr?.message);
         // Fallback to uploadMediaFile
@@ -193,6 +198,7 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
                           activeSpec.storageFolder === 'product-videos' ? 'product-video' : 'product-image') as any;
         const res = await StorageService.uploadMediaFile(file, category, [activeSpec.label]);
         finalUrl = res.url;
+        uploadedStoragePath = (res as any).storagePath || '';
       }
 
       if (!finalUrl) {
@@ -204,18 +210,33 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
         throw new Error('Temporary blob URL detected. Permanent storage URL required.');
       }
 
-      // 3. Update React URL state
-      onUrlChange(finalUrl);
-      setManualUrl(finalUrl);
+      const previousUrl = currentUrl;
 
-      // 4. If auto-save handler provided, persist database/CMS record
+      // 3. If auto-save handler provided, persist database/CMS record BEFORE claiming saved
       if (onAutoSave) {
         setUploadStatus('saving');
-        onStatusChange?.('saving', `Saving ${activeSpec.label} and updating database records...`);
-        await onAutoSave(finalUrl);
+        onStatusChange?.('saving', `Saving ${activeSpec.label} to database...`);
+        try {
+          await onAutoSave(finalUrl);
+          // Commit URL to React state ONLY after database persistence is confirmed
+          onUrlChange(finalUrl);
+          setManualUrl(finalUrl);
+        } catch (dbErr: any) {
+          // Revert URL to previous active URL
+          onUrlChange(previousUrl || '');
+          setManualUrl(previousUrl || '');
+          // Remove orphaned upload from storage so storage doesn't accumulate failed uploads
+          if (uploadedStoragePath && uploadedBucket) {
+            StorageService.deleteFromSupabaseStorage(uploadedBucket, uploadedStoragePath).catch(() => {});
+          }
+          throw new Error(`CMS Save Failed: ${dbErr?.message || 'Database update rejected'}`);
+        }
+      } else {
+        onUrlChange(finalUrl);
+        setManualUrl(finalUrl);
       }
 
-      // 5. Success state
+      // 4. Success state (Confirmed: BOTH Storage upload + Database persistence succeeded)
       setUploadStatus('saved');
       onStatusChange?.('saved', `${activeSpec.label} saved successfully!`);
 
