@@ -5,7 +5,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { StorageService } from './lib/storage';
+import { adminAuthService, AdminAuthState } from './lib/adminAuth';
 import { Product, CartItem, CurrencyCode, ProductSize, CMSConfig } from './types';
+import { ShieldAlert, Loader2 } from 'lucide-react';
 
 // Components
 import { Header } from './components/common/Header';
@@ -33,7 +35,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState<'home' | 'shop' | 'product' | 'checkout' | 'admin' | 'policy'>('home');
   const [viewParam, setViewParam] = useState<string | undefined>(undefined);
   const [isAdminAuthModalOpen, setIsAdminAuthModalOpen] = useState(false);
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(StorageService.isAdminAuthenticated());
+  const [adminAuthState, setAdminAuthState] = useState<AdminAuthState>(() => adminAuthService.getState());
 
   // Global State
   const [currency, setCurrency] = useState<CurrencyCode>('PKR');
@@ -86,17 +88,21 @@ export default function App() {
     return { view: 'home' };
   };
 
+  // Initialize and synchronize authoritative Supabase Admin Auth
+  useEffect(() => {
+    adminAuthService.initialize();
+    const unsubscribe = adminAuthService.subscribe((state) => {
+      setAdminAuthState(state);
+    });
+    return () => unsubscribe();
+  }, []);
+
   // Synchronize initial URL & popstate
   useEffect(() => {
     try {
       const route = resolveRouteFromPath(window.location.pathname);
-      if (route.view === 'admin' && !StorageService.isAdminAuthenticated()) {
-        setIsAdminAuthModalOpen(true);
-        setCurrentView('home');
-      } else {
-        setCurrentView(route.view);
-        setViewParam(route.param);
-      }
+      setCurrentView(route.view);
+      setViewParam(route.param);
     } catch {
       // Ignore if window.location isn't readable
     }
@@ -160,10 +166,6 @@ export default function App() {
       setViewParam(undefined);
       newPath = '/checkout';
     } else if (view === 'admin') {
-      if (!StorageService.isAdminAuthenticated()) {
-        setIsAdminAuthModalOpen(true);
-        return;
-      }
       setCurrentView('admin');
       setViewParam(undefined);
       newPath = '/admin';
@@ -257,8 +259,63 @@ export default function App() {
   const collections = StorageService.getCollections();
   const wishlistProducts = products.filter(p => wishlistIds.includes(p.id));
 
-  // If viewing Admin Panel, render dedicated admin layout
+  // If viewing Admin Panel, enforce genuine Supabase Auth
   if (currentView === 'admin') {
+    if (adminAuthState.status === 'loading') {
+      return (
+        <div className="min-h-screen bg-stone-900 text-stone-100 flex flex-col items-center justify-center p-4">
+          <Loader2 className="w-8 h-8 text-stone-300 animate-spin mb-4" />
+          <p className="text-xs uppercase tracking-widest text-stone-400 font-mono">Verifying GulPash Admin Session...</p>
+        </div>
+      );
+    }
+
+    if (adminAuthState.status === 'offline') {
+      return (
+        <div className="min-h-screen bg-stone-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+          <AdminAuthModal
+            isOpen={true}
+            onSuccess={() => {
+              // adminAuthService will transition to active
+            }}
+            onCancel={() => navigate('home')}
+          />
+        </div>
+      );
+    }
+
+    if (adminAuthState.status === 'unauthorized') {
+      return (
+        <div className="min-h-screen bg-stone-100 flex flex-col items-center justify-center p-4">
+          <div className="max-w-md w-full bg-white p-6 sm:p-8 rounded-lg border border-red-200 shadow-xl text-center">
+            <div className="w-12 h-12 bg-red-100 text-red-700 rounded-full flex items-center justify-center mx-auto mb-4">
+              <ShieldAlert className="w-6 h-6" />
+            </div>
+            <h2 className="text-lg font-serif font-bold text-stone-900 mb-2">Access Denied (Role: Admin Required)</h2>
+            <p className="text-xs text-stone-600 mb-6 leading-relaxed">
+              Your account ({adminAuthState.user?.email || 'User'}) is authenticated, but does not have administrator privileges.
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => adminAuthService.signOut()}
+                className="px-4 py-2 text-xs font-medium text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-md transition-colors cursor-pointer"
+              >
+                Sign In with Different Account
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('home')}
+                className="px-4 py-2 text-xs font-medium text-white bg-stone-900 hover:bg-black rounded-md transition-colors cursor-pointer"
+              >
+                Back to Storefront
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <AdminDashboard
         onExitAdmin={() => navigate('home')}
@@ -449,7 +506,6 @@ export default function App() {
         isOpen={isAdminAuthModalOpen}
         onSuccess={() => {
           setIsAdminAuthModalOpen(false);
-          setIsAdminAuthenticated(true);
           setCurrentView('admin');
         }}
         onCancel={() => {

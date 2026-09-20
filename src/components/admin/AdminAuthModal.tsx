@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Lock, Mail, Key, ShieldCheck, AlertCircle, Loader2 } from 'lucide-react';
 import { getSupabaseClient, isSupabaseConfigured } from '../../lib/supabaseClient';
-import { StorageService } from '../../lib/storage';
+import { adminAuthService } from '../../lib/adminAuth';
 
 interface AdminAuthModalProps {
   isOpen: boolean;
@@ -44,7 +44,7 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({ isOpen, onSucces
     try {
       if (authMode === 'otp_verify') {
         // Verify OTP code
-        const { data, error: otpError } = await supabase.auth.verifyOtp({
+        const { error: otpError } = await supabase.auth.verifyOtp({
           email: cleanEmail,
           token: otpToken.trim(),
           type: 'email'
@@ -56,12 +56,26 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({ isOpen, onSucces
           return;
         }
 
-        if (data.session) {
-          StorageService.setAdminAuthenticated(true);
+        // Verify active session & user
+        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!session || !user) {
+          setError('Failed to establish an active authentication session. Please try again.');
           setLoading(false);
-          onSuccess();
           return;
         }
+
+        if (!adminAuthService.isAuthorizedAdmin(user)) {
+          setError('Access denied: Your account does not have the "admin" role in app_metadata.');
+          setLoading(false);
+          return;
+        }
+
+        await adminAuthService.initialize();
+        setLoading(false);
+        onSuccess();
+        return;
       } else if (authMode === 'otp_request') {
         // Send OTP email
         const { error: sendError } = await supabase.auth.signInWithOtp({
@@ -80,23 +94,25 @@ export const AdminAuthModal: React.FC<AdminAuthModalProps> = ({ isOpen, onSucces
         return;
       } else {
         // Standard email + password authentication
-        const { data, error: authError } = await supabase.auth.signInWithPassword({
-          email: cleanEmail,
-          password: cleanPassword
-        });
+        const res = await adminAuthService.signIn(cleanEmail, cleanPassword);
 
-        if (authError) {
-          setError(authError.message || 'Authentication failed. Please check your credentials.');
+        if (!res.success) {
+          setError(res.error || 'Authentication failed. Please check your credentials.');
           setLoading(false);
           return;
         }
 
-        if (data.session) {
-          StorageService.setAdminAuthenticated(true);
+        // Confirm active authenticated state
+        const state = adminAuthService.getState();
+        if (state.status !== 'active') {
+          setError('Authentication completed but admin session could not be established.');
           setLoading(false);
-          onSuccess();
           return;
         }
+
+        setLoading(false);
+        onSuccess();
+        return;
       }
     } catch (err: any) {
       setError(err.message || 'Remote authentication error.');

@@ -1156,10 +1156,28 @@ app.delete('/api/media/:id', (req, res) => {
 app.post('/api/admin/storage/upload', async (req, res) => {
   try {
     const authHeader = req.headers['authorization'];
-    const adminFlag = req.headers['x-gulpash-admin'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Admin authentication session is not active. Please sign in again.' });
+    }
 
-    if (!authHeader && adminFlag !== 'true') {
-      return res.status(401).json({ error: 'Unauthorized: Admin authentication required' });
+    const token = authHeader.substring(7);
+    if (!supabaseAdmin) {
+      return res.status(500).json({ error: 'Storage server client is not initialized' });
+    }
+
+    // Independently verify Admin session via Supabase Auth
+    const { data: userData, error: userErr } = await supabaseAdmin.auth.getUser(token);
+    if (userErr || !userData?.user) {
+      return res.status(401).json({ error: 'Admin session expired. Please sign in again.' });
+    }
+
+    const user = userData.user;
+    const isAuthorizedAdmin = 
+      user.app_metadata?.role === 'admin' ||
+      user.user_metadata?.role === 'admin';
+
+    if (!isAuthorizedAdmin) {
+      return res.status(403).json({ error: 'Your account does not have permission to upload this media.' });
     }
 
     const { bucket, path: storagePath, data, mimeType } = req.body;
@@ -1184,20 +1202,7 @@ app.post('/api/admin/storage/upload', async (req, res) => {
 
     const buffer = Buffer.from(base64Content, 'base64');
 
-    let clientToUse = supabaseAdmin;
-    if (authHeader && authHeader.startsWith('Bearer ') && SUPABASE_URL && SUPABASE_ANON_KEY) {
-      const token = authHeader.substring(7);
-      clientToUse = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-        global: { headers: { Authorization: `Bearer ${token}` } },
-        auth: { persistSession: false }
-      });
-    }
-
-    if (!clientToUse) {
-      return res.status(500).json({ error: 'Storage server client is not initialized' });
-    }
-
-    const { data: uploadData, error: uploadErr } = await clientToUse.storage
+    const { data: uploadData, error: uploadErr } = await supabaseAdmin.storage
       .from(bucket)
       .upload(storagePath, buffer, {
         contentType: detectedMime,
@@ -1210,7 +1215,7 @@ app.post('/api/admin/storage/upload', async (req, res) => {
       return res.status(500).json({ error: uploadErr.message });
     }
 
-    const { data: publicUrlData } = clientToUse.storage
+    const { data: publicUrlData } = supabaseAdmin.storage
       .from(bucket)
       .getPublicUrl(uploadData.path);
 
@@ -1229,10 +1234,28 @@ app.post('/api/admin/storage/upload', async (req, res) => {
 app.delete('/api/admin/storage/:bucket/:path(*)', async (req, res) => {
   try {
     const authHeader = req.headers['authorization'];
-    const adminFlag = req.headers['x-gulpash-admin'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Admin authentication session is not active. Please sign in again.' });
+    }
 
-    if (!authHeader && adminFlag !== 'true') {
-      return res.status(401).json({ error: 'Unauthorized: Admin authentication required' });
+    const token = authHeader.substring(7);
+    if (!supabaseAdmin) {
+      return res.status(500).json({ error: 'Storage server client is not initialized' });
+    }
+
+    // Independently verify Admin session via Supabase Auth
+    const { data: userData, error: userErr } = await supabaseAdmin.auth.getUser(token);
+    if (userErr || !userData?.user) {
+      return res.status(401).json({ error: 'Admin session expired. Please sign in again.' });
+    }
+
+    const user = userData.user;
+    const isAuthorizedAdmin = 
+      user.app_metadata?.role === 'admin' ||
+      user.user_metadata?.role === 'admin';
+
+    if (!isAuthorizedAdmin) {
+      return res.status(403).json({ error: 'Your account does not have permission to delete this media.' });
     }
 
     const { bucket, path: storagePath } = req.params;
@@ -1241,29 +1264,14 @@ app.delete('/api/admin/storage/:bucket/:path(*)', async (req, res) => {
       return res.status(403).json({ error: `Bucket "${bucket}" is not an authorized media bucket` });
     }
 
-    let clientToUse = supabaseAdmin;
-    if (authHeader && authHeader.startsWith('Bearer ') && SUPABASE_URL && SUPABASE_ANON_KEY) {
-      const token = authHeader.substring(7);
-      clientToUse = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-        global: { headers: { Authorization: `Bearer ${token}` } },
-        auth: { persistSession: false }
-      });
-    }
-
-    if (!clientToUse) {
-      return res.status(500).json({ error: 'Storage server client is not initialized' });
-    }
-
-    const { error: deleteErr } = await clientToUse.storage
-      .from(bucket)
-      .remove([storagePath]);
-
-    if (deleteErr) {
-      return res.status(500).json({ error: deleteErr.message });
+    const { error } = await supabaseAdmin.storage.from(bucket).remove([storagePath]);
+    if (error) {
+      return res.status(500).json({ error: error.message });
     }
 
     res.json({ success: true });
   } catch (err: any) {
+    console.error('Admin storage delete error:', err);
     res.status(500).json({ error: err.message || 'Server storage delete failed' });
   }
 });

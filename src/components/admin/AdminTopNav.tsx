@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { Product, Order } from '../../types';
 import { AdminNotificationCenter } from './AdminNotificationCenter';
+import { adminAuthService, AdminAuthState } from '../../lib/adminAuth';
 
 interface AdminTopNavProps {
   onToggleMobileMenu: () => void;
@@ -33,30 +34,13 @@ export const AdminTopNav: React.FC<AdminTopNavProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [hasSupabaseSession, setHasSupabaseSession] = useState<boolean | null>(null);
-  const [sessionEmail, setSessionEmail] = useState<string | null>(null);
+  const [authState, setAuthState] = useState<AdminAuthState>(() => adminAuthService.getState());
   const searchRef = useRef<HTMLDivElement>(null);
 
-  // Monitor Supabase Auth session status
+  // Monitor authoritative Supabase Auth status
   useEffect(() => {
-    let unsubscribe = () => {};
-    import('../../lib/supabaseClient').then(({ getSupabaseClient }) => {
-      const sb = getSupabaseClient();
-      if (sb) {
-        sb.auth.getSession().then(({ data }) => {
-          if (data.session) {
-            setHasSupabaseSession(true);
-            setSessionEmail(data.session.user?.email || null);
-          } else {
-            setHasSupabaseSession(false);
-          }
-        });
-        const { data: { subscription } } = sb.auth.onAuthStateChange((_event, session) => {
-          setHasSupabaseSession(!!session);
-          setSessionEmail(session?.user?.email || null);
-        });
-        unsubscribe = () => subscription.unsubscribe();
-      }
+    const unsubscribe = adminAuthService.subscribe((state) => {
+      setAuthState(state);
     });
     return () => unsubscribe();
   }, []);
@@ -249,23 +233,48 @@ export const AdminTopNav: React.FC<AdminTopNavProps> = ({
       {/* RIGHT: Actions, Notifications & Store Link */}
       <div className="flex items-center gap-2 sm:gap-3">
         {/* Supabase Auth Session Indicator */}
-        {hasSupabaseSession === true && (
+        {authState.status === 'active' && (
           <div 
             className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] rounded-md font-medium"
-            title={`Supabase Auth session active: ${sessionEmail || 'Admin'}`}
+            title={`Supabase Auth session active: ${authState.user?.email || 'Admin'} (role: admin)`}
           >
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span>Auth: Active</span>
+            <button
+              type="button"
+              onClick={() => adminAuthService.signOut()}
+              className="ml-1 text-[10px] text-emerald-700 hover:text-emerald-950 underline cursor-pointer"
+              title="Sign out of Supabase Admin"
+            >
+              Sign Out
+            </button>
           </div>
         )}
 
-        {hasSupabaseSession === false && (
+        {authState.status === 'offline' && (
           <div 
             className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 border border-amber-200 text-amber-800 text-[11px] rounded-md font-medium"
-            title="Direct Storage uploads require an active Supabase Admin session"
+            title="No active Supabase session"
           >
             <span className="w-2 h-2 rounded-full bg-amber-500"></span>
             <span>Auth: Offline</span>
+          </div>
+        )}
+
+        {authState.status === 'unauthorized' && (
+          <div 
+            className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-red-50 border border-red-200 text-red-800 text-[11px] rounded-md font-medium"
+            title="User authenticated but lacks admin role"
+          >
+            <span className="w-2 h-2 rounded-full bg-red-500"></span>
+            <span>Auth: Unauthorized</span>
+            <button
+              type="button"
+              onClick={() => adminAuthService.signOut()}
+              className="ml-1 text-[10px] text-red-700 hover:text-red-950 underline cursor-pointer"
+            >
+              Switch
+            </button>
           </div>
         )}
 

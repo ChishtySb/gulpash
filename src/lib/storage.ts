@@ -7,6 +7,7 @@ import {
   INITIAL_ORDERS, INITIAL_REVIEWS, INITIAL_CMS, INITIAL_SETTINGS 
 } from '../data/initialData';
 import { NotificationService } from './notifications';
+import { adminAuthService } from './adminAuth';
 import { 
   resolveWhatsAppSettings, 
   syncWhatsAppToSupabase, 
@@ -1067,16 +1068,22 @@ export const StorageService = {
     return Array.from(map.values());
   },
 
-  // ADMIN AUTH
+  // ADMIN AUTH (Canonical Supabase Auth State)
   isAdminAuthenticated(): boolean {
-    return localStorage.getItem(KEYS.ADMIN_AUTH) === 'true';
+    try {
+      localStorage.removeItem(KEYS.ADMIN_AUTH);
+      localStorage.removeItem('gulpash_admin_auth');
+    } catch {}
+    return adminAuthService.getState().status === 'active';
   },
 
   setAdminAuthenticated(val: boolean): void {
-    if (val) {
-      localStorage.setItem(KEYS.ADMIN_AUTH, 'true');
-    } else {
+    try {
       localStorage.removeItem(KEYS.ADMIN_AUTH);
+      localStorage.removeItem('gulpash_admin_auth');
+    } catch {}
+    if (!val) {
+      adminAuthService.signOut();
     }
     notifyChange('auth');
   },
@@ -1224,33 +1231,39 @@ export const StorageService = {
   async deleteFromSupabaseStorage(bucket: string, storagePath: string): Promise<boolean> {
     const { getSupabaseClient } = await import('./supabaseClient');
     const supabase = getSupabaseClient();
+    let token = '';
     if (supabase) {
       try {
         const { data: sessionData } = await supabase.auth.getSession();
-        if (sessionData?.session) {
-          const { error } = await supabase.storage.from(bucket).remove([storagePath]);
-          if (!error) return true;
-        }
-      } catch (err) {
-        console.warn('Client Supabase storage delete error:', err);
-      }
+        token = sessionData?.session?.access_token || '';
+      } catch {}
     }
 
-    if (typeof fetch !== 'undefined') {
+    if (token && typeof fetch !== 'undefined') {
       try {
         const res = await fetch(`/api/admin/storage/${bucket}/${encodeURIComponent(storagePath)}`, {
           method: 'DELETE',
-          headers: { 'x-gulpash-admin': 'true' }
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
         });
-        return res.ok;
-      } catch {
-        return false;
+        if (res.ok) return true;
+      } catch (err) {
+        console.warn('Server storage delete error:', err);
       }
+    }
+
+    // Direct client fallback
+    if (supabase) {
+      try {
+        const { error } = await supabase.storage.from(bucket).remove([storagePath]);
+        if (!error) return true;
+      } catch {}
     }
     return false;
   },
 
-  // SUPABASE STORAGE UPLOADER
+  // AUTHORITATIVE SUPABASE STORAGE UPLOADER
   async uploadToSupabaseStorage(
     bucket: 'product-images' | 'hero-images' | 'hero-videos' | 'category-images' | 'site-assets',
     file: File,
@@ -1279,13 +1292,61 @@ export const StorageService = {
     let uploadedPath = '';
     let publicUrl = '';
 
-    // Check if client has active Supabase session
-    const { data: sessionData } = await supabase.auth.getSession();
-    const hasClientSession = Boolean(sessionData?.session);
+    // 1. Check for genuine Supabase Auth session & token
+    const token = await adminAuthService.getCurrentAccessToken();
+    if (!token) {
+      throw new Error('Admin authentication session is not active. Please sign in again.');
+    }
 
-    let clientUploadError: any = null;
+    // 2. Primary Authoritative Route: Server Admin Storage API (Option B)
+    // Server independently verifies the admin access token and uses SUPABASE_SERVICE_ROLE_KEY
+    let serverUploadError: string | null = null;
+    let clientUploadError: string | null = null;
+    try {
+      const base64Data = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error('Failed reading file data for upload'));
+        reader.readAsDataURL(file);
+      });
 
-    if (hasClientSession) {
+      const serverRes = await fetch('/api/admin/storage/upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          bucket,
+          path: storagePath,
+          data: base64Data,
+          mimeType
+        })
+      });
+
+      if (serverRes.ok) {
+        const serverJson = await serverRes.json();
+        if (serverJson.url && serverJson.storagePath) {
+          uploadedPath = serverJson.storagePath;
+          publicUrl = serverJson.url;
+        }
+      } else {
+        const errJson = await serverRes.json().catch(() => ({}));
+        if (serverRes.status === 401) {
+          serverUploadError = 'Admin session expired. Please sign in again.';
+        } else if (serverRes.status === 403) {
+          serverUploadError = 'Your account does not have permission to upload this media.';
+        } else {
+          serverUploadError = errJson.error || `Server storage upload failed with status ${serverRes.status}`;
+        }
+      }
+    } catch (err: any) {
+      serverUploadError = err?.message || 'Server storage upload connection failed';
+    }
+
+    // 3. Fallback Route: Direct Supabase Client Upload (Option A)
+    // If the server route is unavailable (e.g. static preview host) or fails, try direct client upload
+    if (!uploadedPath || !publicUrl) {
       try {
         const { data, error } = await supabase.storage
           .from(bucket)
@@ -1295,77 +1356,37 @@ export const StorageService = {
             upsert: true
           });
 
-        if (error) {
-          clientUploadError = error;
-        } else if (data && data.path) {
+        if (!error && data?.path) {
           uploadedPath = data.path;
           const { data: publicUrlData } = supabase.storage.from(bucket).getPublicUrl(data.path);
           publicUrl = publicUrlData?.publicUrl || '';
-        }
-      } catch (err: any) {
-        clientUploadError = err;
-      }
-    }
-
-    // If client upload was skipped (no session) or failed, attempt server-side admin upload
-    if (!uploadedPath || !publicUrl) {
-      try {
-        const base64Data = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = () => reject(new Error('Failed to read file for server upload'));
-          reader.readAsDataURL(file);
-        });
-
-        const serverRes = await fetch('/api/admin/storage/upload', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-gulpash-admin': 'true',
-            ...(sessionData?.session?.access_token ? { 'Authorization': `Bearer ${sessionData.session.access_token}` } : {})
-          },
-          body: JSON.stringify({
-            bucket,
-            path: storagePath,
-            data: base64Data,
-            mimeType
-          })
-        });
-
-        if (serverRes.ok) {
-          const serverJson = await serverRes.json();
-          if (serverJson.url && serverJson.storagePath) {
-            uploadedPath = serverJson.storagePath;
-            publicUrl = serverJson.url;
+        } else if (error) {
+          console.warn('Direct client upload notice:', error.message);
+          if (error.message?.includes('row-level security') || error.message?.includes('violates row-level security')) {
+            clientUploadError = `Supabase Storage RLS error: Insufficient permissions to upload to "${bucket}" bucket. Please ensure admin is authenticated with Supabase Auth.`;
+          } else {
+            clientUploadError = error.message;
           }
         }
-      } catch (serverErr) {
-        console.warn('Server-side admin storage upload fallback error:', serverErr);
+      } catch (clientErr: any) {
+        console.warn('Direct client upload exception:', clientErr?.message);
+        clientUploadError = clientErr?.message;
       }
     }
 
-    // If both failed, construct a helpful, clear error message
+    // 4. Verification of successful upload
     if (!uploadedPath || !publicUrl) {
-      if (clientUploadError) {
-        console.error(`Supabase Storage upload error for bucket "${bucket}":`, clientUploadError);
-        if (clientUploadError.message?.includes('row-level security') || clientUploadError.statusCode === 403 || clientUploadError.status === 403) {
-          throw new Error(`Supabase Storage RLS error: Insufficient permissions to upload to "${bucket}" bucket. (new row violates row-level security policy). Please ensure admin is authenticated.`);
-        }
-        throw new Error(`Supabase Storage upload failed: ${clientUploadError.message || 'Access denied'}`);
-      }
-
-      if (!hasClientSession) {
-        throw new Error(`Supabase Storage RLS error: Insufficient permissions to upload to "${bucket}" bucket. Please ensure admin is authenticated with Supabase Auth.`);
-      }
-
-      throw new Error(`Supabase Storage upload failed for bucket "${bucket}". Please verify permissions and try again.`);
+      throw new Error(
+        serverUploadError || clientUploadError ||
+        `Supabase Storage upload failed for bucket "${bucket}". Please verify that admin is authenticated and try again.`
+      );
     }
 
     if (publicUrl.startsWith('blob:') || publicUrl.startsWith('data:')) {
-      throw new Error('Invalid public URL returned by Supabase Storage.');
+      throw new Error('Invalid temporary URL returned. Permanent storage URL required.');
     }
 
-    // Register asset in Media Library
+    // 5. Register asset in Media Library
     const asset: MediaAsset = {
       id: `media_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
       url: publicUrl,
