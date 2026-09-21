@@ -53,10 +53,67 @@ export const EMPTY_CAMPAIGN_ITEM: EditorialCampaignItem = {
   objectPositionMobile: 'center'
 };
 
+/**
+ * Initial Canonical Royal Couture Campaign
+ * Migrated one-time into canonical Supabase homepage_cms.
+ */
+export const INITIAL_ROYAL_COUTURE_CAMPAIGN: EditorialCampaignItem = {
+  id: 'campaign-1-royal-couture',
+  order: 1,
+  enabled: true,
+  name: 'Royal Couture Campaign',
+  mediaType: 'image',
+  desktopImageUrl: 'https://alzqexevrhcmzcluvatc.supabase.co/storage/v1/object/public/product-images/1789973438153_ias1z_gemini_generated_image_sl3a7usl3a7usl3a.jfif',
+  mobileImageUrl: 'https://alzqexevrhcmzcluvatc.supabase.co/storage/v1/object/public/product-images/1789973463030_2pd7w_gemini_generated_image_9egzlo9egzlo9egz.jfif',
+  posterImageUrl: '',
+  mobilePosterImageUrl: '',
+  videoUrl: '',
+  mobileVideoUrl: '',
+  mobileVideoFallback: 'mobile_poster',
+  altText: 'The Sovereign Craft of Pakistani Embroidery - GulPash Royal Couture Atelier',
+
+  // Video playback
+  videoAutoplay: true,
+  videoLoop: true,
+  videoMuted: true,
+  videoPauseOnHover: false,
+  videoShowControls: false,
+
+  // Dark overlay
+  showOverlay: true,
+  overlayOpacity: 50,
+
+  // Text & CTA master toggle (Honoring intentional admin preference)
+  showTextAndCta: false,
+
+  // Sub-elements
+  showEyebrow: false,
+  eyebrow: 'ROYAL COUTURE CAMPAIGN',
+  showHeading: false,
+  heading: 'The Sovereign Craft of Pakistani Embroidery',
+  showDescription: false,
+  description: 'Witness the intricate zardozi, hand-tilla motifs, and fine pure threadwork brought to life in our Lahore ateliers.',
+  showCta: true,
+  ctaLabel: 'Explore Trending Ensembles',
+  ctaUrl: '/collections/best-selling',
+  showSecondaryCta: false,
+  secondaryCtaLabel: '',
+  secondaryCtaUrl: '',
+
+  // Alignment & appearance
+  horizontalAlignment: 'center',
+  verticalAlignment: 'center',
+  textTheme: 'light',
+
+  // Crop / Object position
+  objectPositionDesktop: 'center',
+  objectPositionMobile: 'center'
+};
+
 export const DEFAULT_EDITORIAL_CAMPAIGN_CONFIG: EditorialCampaignSectionConfig = {
-  enabled: false,
+  enabled: true,
   displayMode: 'single',
-  activeCampaignId: '',
+  activeCampaignId: 'campaign-1-royal-couture',
   sliderSettings: {
     autoPlay: true,
     slideDuration: 6,
@@ -64,7 +121,7 @@ export const DEFAULT_EDITORIAL_CAMPAIGN_CONFIG: EditorialCampaignSectionConfig =
     showDots: true,
     pauseOnHover: true
   },
-  campaigns: []
+  campaigns: [INITIAL_ROYAL_COUTURE_CAMPAIGN]
 };
 
 /**
@@ -73,19 +130,7 @@ export const DEFAULT_EDITORIAL_CAMPAIGN_CONFIG: EditorialCampaignSectionConfig =
  */
 export function normalizeEditorialCampaign(cms?: Partial<HomepageCMS>): EditorialCampaignSectionConfig {
   if (!cms) {
-    return {
-      enabled: false,
-      displayMode: 'single',
-      activeCampaignId: '',
-      sliderSettings: {
-        autoPlay: true,
-        slideDuration: 6,
-        showArrows: true,
-        showDots: true,
-        pauseOnHover: true
-      },
-      campaigns: []
-    };
+    return { ...DEFAULT_EDITORIAL_CAMPAIGN_CONFIG };
   }
 
   // Check if editorialCampaign is configured
@@ -155,19 +200,7 @@ export function normalizeEditorialCampaign(cms?: Partial<HomepageCMS>): Editoria
     };
   }
 
-  return {
-    enabled: false,
-    displayMode: 'single',
-    activeCampaignId: '',
-    sliderSettings: {
-      autoPlay: true,
-      slideDuration: 6,
-      showArrows: true,
-      showDots: true,
-      pauseOnHover: true
-    },
-    campaigns: []
-  };
+  return { ...DEFAULT_EDITORIAL_CAMPAIGN_CONFIG };
 }
 
 /**

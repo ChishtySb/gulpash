@@ -263,7 +263,7 @@ export const EditorialCampaignSection: React.FC<EditorialCampaignSectionProps> =
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      aria-label={currentCampaign.name || 'Editorial Royal Couture Campaign'}
+      aria-label={currentCampaign.name || 'Editorial Campaign'}
     >
       {/* 1. MEDIA LAYER */}
       <div className="absolute inset-0 w-full h-full">

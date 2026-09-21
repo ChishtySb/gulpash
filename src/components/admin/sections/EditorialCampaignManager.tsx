@@ -77,6 +77,53 @@ export const EditorialCampaignManager: React.FC<EditorialCampaignManagerProps> =
     });
   };
 
+  // Persistent Auto-Save for Media Uploads (Persists to canonical Supabase CMS before confirming saved)
+  const autoSaveCampaignMedia = async (field: keyof EditorialCampaignItem, newUrl: string, label: string) => {
+    const previousValue = currentCampaign[field];
+
+    const updatedCampaigns = campaigns.map((c, idx) => {
+      if (idx === safeIdx) {
+        return { ...c, [field]: newUrl };
+      }
+      return c;
+    });
+
+    const updatedSection: EditorialCampaignSectionConfig = {
+      ...campaignConfig,
+      campaigns: updatedCampaigns
+    };
+
+    const updatedCMS: CMSConfig = {
+      ...cmsConfig,
+      showEditorialCampaign: updatedSection.enabled,
+      showEditorialBanner: updatedSection.enabled,
+      editorialCampaign: updatedSection
+    };
+
+    // 1. Authoritative CMS persistence to Supabase
+    await StorageService.saveCMSAsync(updatedCMS);
+
+    // 2. Safe cleanup of old replaced Supabase asset (ONLY after CMS save succeeded)
+    if (
+      typeof previousValue === 'string' &&
+      previousValue &&
+      previousValue !== newUrl &&
+      previousValue.includes('supabase.co/storage/v1/object/public/')
+    ) {
+      try {
+        const match = previousValue.match(/public\/([^/]+)\/(.+)$/);
+        if (match) {
+          const [, bucket, storagePath] = match;
+          StorageService.deleteFromSupabaseStorage(bucket, decodeURIComponent(storagePath)).catch(() => {});
+        }
+      } catch {}
+    }
+
+    // 3. Update React CMS state
+    updateSectionConfig(updatedSection);
+    onNotify(`${label} saved & published to CMS.`, 'saved');
+  };
+
   // Master Section Save Handler (Secure Server Endpoint)
   const handleSaveAll = async () => {
     try {
@@ -509,8 +556,7 @@ export const EditorialCampaignManager: React.FC<EditorialCampaignManagerProps> =
                   currentUrl={currentCampaign.desktopImageUrl}
                   onUrlChange={(url) => updateCurrentCampaign({ desktopImageUrl: url })}
                   onAutoSave={async (url) => {
-                    updateCurrentCampaign({ desktopImageUrl: url });
-                    onNotify('Campaign desktop image uploaded & saved.', 'saved');
+                    await autoSaveCampaignMedia('desktopImageUrl', url, 'Campaign desktop image');
                   }}
                   onStatusChange={(status, msg) => {
                     if (status === 'uploading' || status === 'saving') onNotify(msg || 'Uploading...', 'saving');
@@ -542,8 +588,7 @@ export const EditorialCampaignManager: React.FC<EditorialCampaignManagerProps> =
                   currentUrl={currentCampaign.mobileImageUrl || currentCampaign.desktopImageUrl}
                   onUrlChange={(url) => updateCurrentCampaign({ mobileImageUrl: url })}
                   onAutoSave={async (url) => {
-                    updateCurrentCampaign({ mobileImageUrl: url });
-                    onNotify('Campaign mobile image uploaded & saved.', 'saved');
+                    await autoSaveCampaignMedia('mobileImageUrl', url, 'Campaign mobile image');
                   }}
                   onStatusChange={(status, msg) => {
                     if (status === 'uploading' || status === 'saving') onNotify(msg || 'Uploading...', 'saving');
@@ -599,8 +644,7 @@ export const EditorialCampaignManager: React.FC<EditorialCampaignManagerProps> =
                   currentUrl={currentCampaign.videoUrl}
                   onUrlChange={(url) => updateCurrentCampaign({ videoUrl: url })}
                   onAutoSave={async (url) => {
-                    updateCurrentCampaign({ videoUrl: url });
-                    onNotify('Campaign desktop video saved.', 'saved');
+                    await autoSaveCampaignMedia('videoUrl', url, 'Campaign desktop video');
                   }}
                   onStatusChange={(status, msg) => {
                     if (status === 'uploading' || status === 'saving') onNotify(msg || 'Uploading video...', 'saving');
@@ -617,8 +661,7 @@ export const EditorialCampaignManager: React.FC<EditorialCampaignManagerProps> =
                   currentUrl={currentCampaign.mobileVideoUrl}
                   onUrlChange={(url) => updateCurrentCampaign({ mobileVideoUrl: url })}
                   onAutoSave={async (url) => {
-                    updateCurrentCampaign({ mobileVideoUrl: url });
-                    onNotify('Campaign mobile video saved.', 'saved');
+                    await autoSaveCampaignMedia('mobileVideoUrl', url, 'Campaign mobile video');
                   }}
                   onStatusChange={(status, msg) => {
                     if (status === 'uploading' || status === 'saving') onNotify(msg || 'Uploading video...', 'saving');
@@ -658,8 +701,7 @@ export const EditorialCampaignManager: React.FC<EditorialCampaignManagerProps> =
                   currentUrl={currentCampaign.posterImageUrl}
                   onUrlChange={(url) => updateCurrentCampaign({ posterImageUrl: url })}
                   onAutoSave={async (url) => {
-                    updateCurrentCampaign({ posterImageUrl: url });
-                    onNotify('Desktop poster image saved.', 'saved');
+                    await autoSaveCampaignMedia('posterImageUrl', url, 'Desktop video poster frame');
                   }}
                 />
 
@@ -668,8 +710,7 @@ export const EditorialCampaignManager: React.FC<EditorialCampaignManagerProps> =
                   currentUrl={currentCampaign.mobilePosterImageUrl}
                   onUrlChange={(url) => updateCurrentCampaign({ mobilePosterImageUrl: url })}
                   onAutoSave={async (url) => {
-                    updateCurrentCampaign({ mobilePosterImageUrl: url });
-                    onNotify('Mobile poster image saved.', 'saved');
+                    await autoSaveCampaignMedia('mobilePosterImageUrl', url, 'Mobile video poster frame');
                   }}
                 />
               </div>

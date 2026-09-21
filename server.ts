@@ -368,6 +368,22 @@ if (supabaseServer) {
         }));
       }
     } catch (e) {}
+
+    try {
+      if (supabaseServer) {
+        const { data: dbRows } = await supabaseServer.from('homepage_cms').select('*');
+        if (dbRows && dbRows.length > 0) {
+          const dbHero = dbRows.find((r: any) => r.section_key === 'hero');
+          const dbCamp = dbRows.find((r: any) => r.section_key === 'editorial_campaign');
+          const editorialCampaign = dbCamp?.data || dbHero?.data?.editorialCampaign || null;
+          serverCMS = {
+            hero: dbHero?.data || {},
+            editorialCampaign
+          };
+          console.log('[Supabase Boot] Hydrated homepage_cms (hero & canonical editorial_campaign)');
+        }
+      }
+    } catch (e) {}
   })();
 }
 
@@ -1176,6 +1192,123 @@ app.delete('/api/media/:id', (req, res) => {
     res.json({ success: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// ---------------- ADMIN SUPABASE STORAGE DIRECT SIGNED UPLOAD TARGET ----------------
+// Creates short-lived authorization so browser can upload raw video/image bytes directly to Supabase Storage
+// completely bypassing Vercel/serverless request body limits (HTTP 413 prevention)
+app.post('/api/admin/storage/create-upload', async (req, res) => {
+  try {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Admin authentication session is not active. Please sign in again.' });
+    }
+
+    const token = authHeader.substring(7);
+    if (!supabaseAdmin) {
+      return res.status(500).json({ error: 'Storage server client is not initialized' });
+    }
+
+    // 1. Independently verify Admin session via Supabase Auth
+    const { data: userData, error: userErr } = await supabaseAdmin.auth.getUser(token);
+    if (userErr || !userData?.user) {
+      return res.status(401).json({ error: 'Admin session expired or invalid. Please sign in again.' });
+    }
+
+    const user = userData.user;
+    const isAuthorizedAdmin = 
+      user.app_metadata?.role === 'admin' ||
+      user.user_metadata?.role === 'admin';
+
+    if (!isAuthorizedAdmin) {
+      return res.status(403).json({ error: 'Forbidden: Your account does not have permission to upload this media.' });
+    }
+
+    // 2. Extract & Validate metadata
+    const { bucket, filename, mimeType, fileSize, pathPrefix } = req.body || {};
+
+    if (!bucket || !filename || !mimeType) {
+      return res.status(400).json({ error: 'Missing required metadata: bucket, filename, and mimeType are required.' });
+    }
+
+    // 3. Strict Whitelist of permitted Admin media buckets
+    const ALLOWED_BUCKETS = ['hero-images', 'hero-videos', 'product-images', 'category-images', 'site-assets'];
+    if (!ALLOWED_BUCKETS.includes(bucket)) {
+      return res.status(403).json({ error: `Bucket "${bucket}" is not an authorized media bucket.` });
+    }
+
+    // 4. Validate MIME type & file size limits
+    const ALLOWED_VIDEO_MIMES = ['video/mp4', 'video/webm'];
+    const ALLOWED_IMAGE_MIMES = [
+      'image/jpeg', 'image/jpg', 'image/png', 'image/webp',
+      'image/gif', 'image/svg+xml', 'image/avif'
+    ];
+    const MAX_VIDEO_BYTES = 35 * 1024 * 1024; // 35 MB
+    const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10 MB
+
+    const isVideo = mimeType.startsWith('video/') || filename.endsWith('.mp4') || filename.endsWith('.webm');
+    if (isVideo) {
+      if (!ALLOWED_VIDEO_MIMES.includes(mimeType)) {
+        return res.status(400).json({
+          error: `Unsupported video format "${mimeType}". Allowed video formats: MP4 (video/mp4) and WebM (video/webm).`
+        });
+      }
+      if (fileSize && Number(fileSize) > MAX_VIDEO_BYTES) {
+        return res.status(400).json({
+          error: `Video file size exceeds the 35 MB limit (${(Number(fileSize) / (1024 * 1024)).toFixed(1)} MB). Please compress your video.`
+        });
+      }
+    } else {
+      if (!ALLOWED_IMAGE_MIMES.includes(mimeType)) {
+        return res.status(400).json({
+          error: `Unsupported image format "${mimeType}". Allowed image formats: JPG, PNG, WebP, GIF, SVG, AVIF.`
+        });
+      }
+      if (fileSize && Number(fileSize) > MAX_IMAGE_BYTES) {
+        return res.status(400).json({
+          error: `Image file size exceeds the 10 MB limit (${(Number(fileSize) / (1024 * 1024)).toFixed(1)} MB).`
+        });
+      }
+    }
+
+    // 5. Generate safe unique storage path
+    const rawExt = (filename.split('.').pop() || (isVideo ? 'mp4' : 'jpg')).toLowerCase().replace(/[^a-z0-9]/g, '');
+    const cleanBase = filename
+      .substring(0, filename.lastIndexOf('.') || filename.length)
+      .replace(/[^a-zA-Z0-9_-]/g, '_')
+      .substring(0, 50);
+    const cleanName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}_${cleanBase}.${rawExt}`;
+    const cleanPrefix = (pathPrefix || '').replace(/^\/+|\/+$/g, '');
+    const storagePath = cleanPrefix ? `${cleanPrefix}/${cleanName}` : cleanName;
+
+    // 6. Create short-lived Supabase signed upload target
+    const { data: signData, error: signErr } = await supabaseAdmin.storage
+      .from(bucket)
+      .createSignedUploadUrl(storagePath);
+
+    if (signErr || !signData) {
+      console.error('Supabase createSignedUploadUrl error:', signErr);
+      return res.status(500).json({ error: signErr?.message || 'Failed to generate signed upload authorization' });
+    }
+
+    // 7. Get public CDN URL for the target path
+    const { data: publicUrlData } = supabaseAdmin.storage
+      .from(bucket)
+      .getPublicUrl(signData.path);
+
+    // 8. Return ONLY the minimum upload information needed by browser
+    return res.json({
+      success: true,
+      signedUrl: signData.signedUrl,
+      token: signData.token,
+      path: signData.path,
+      bucket,
+      publicUrl: publicUrlData?.publicUrl || ''
+    });
+  } catch (err: any) {
+    console.error('Admin storage create-upload error:', err);
+    res.status(500).json({ error: err.message || 'Server failed to authorize signed upload' });
   }
 });
 

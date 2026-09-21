@@ -39,6 +39,8 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
   const activeSpec = spec || DEFAULT_MEDIA_SPEC;
   const [uploading, setUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'saving' | 'saved' | 'failed'>('idle');
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [uploadStepMessage, setUploadStepMessage] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [metadata, setMetadata] = useState<FileMetadata | null>(null);
@@ -101,9 +103,46 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
     if (!file) return;
     lastAttemptedFileRef.current = file;
 
+    // Strict Client-side format & size limits
+    const isVideo = activeSpec.mediaType === 'video' || file.type.startsWith('video/') || file.name.endsWith('.mp4') || file.name.endsWith('.webm');
+    const MAX_VIDEO_BYTES = 35 * 1024 * 1024; // 35 MB
+    const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10 MB
+
+    if (isVideo) {
+      const rawExt = (file.name.split('.').pop() || '').toLowerCase();
+      const isFormatAllowed = file.type === 'video/mp4' || file.type === 'video/webm' || rawExt === 'mp4' || rawExt === 'webm';
+      if (!isFormatAllowed) {
+        const errorMsg = `Unsupported video format (${file.type || rawExt || 'unknown'}). Only MP4 and WebM videos are permitted.`;
+        setErrorMessage(errorMsg);
+        setUploadStatus('failed');
+        onStatusChange?.('failed', errorMsg);
+        return;
+      }
+
+      if (file.size > MAX_VIDEO_BYTES) {
+        const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+        const errorMsg = `Video file size (${sizeMb} MB) exceeds the maximum allowed limit of 35 MB. Please compress your video before uploading.`;
+        setErrorMessage(errorMsg);
+        setUploadStatus('failed');
+        onStatusChange?.('failed', errorMsg);
+        return;
+      }
+    } else {
+      if (file.size > MAX_IMAGE_BYTES) {
+        const sizeMb = (file.size / (1024 * 1024)).toFixed(1);
+        const errorMsg = `Image file size (${sizeMb} MB) exceeds the maximum allowed limit of 10 MB.`;
+        setErrorMessage(errorMsg);
+        setUploadStatus('failed');
+        onStatusChange?.('failed', errorMsg);
+        return;
+      }
+    }
+
     try {
       setUploading(true);
       setUploadStatus('uploading');
+      setUploadProgress(0);
+      setUploadStepMessage('Preparing direct storage upload...');
       setErrorMessage(null);
 
       // 1. Measure client-side dimensions & ratio before uploading
@@ -173,40 +212,39 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
         targetBucket = 'site-assets';
       }
 
-      onStatusChange?.('uploading', `Uploading ${activeSpec.label} to Supabase Storage (${targetBucket})...`);
+      onStatusChange?.('uploading', `Uploading ${activeSpec.label} directly to Supabase Storage...`);
 
-      // 2. Upload to Supabase Storage
+      // 2. Direct-to-Supabase Storage Upload (Bypasses serverless payload limit)
       let finalUrl = '';
       let uploadedStoragePath = '';
       let uploadedBucket = targetBucket;
 
-      try {
-        const res = await StorageService.uploadToSupabaseStorage(targetBucket, file, '', {
+      const res = await StorageService.uploadToSupabaseStorage(
+        targetBucket,
+        file,
+        '',
+        {
           dimensions: `${activeSpec.recommendedWidth} × ${activeSpec.recommendedHeight} px`,
           aspectRatio: activeSpec.aspectRatio,
           label: activeSpec.label
-        });
-        finalUrl = res.url;
-        uploadedStoragePath = res.storagePath;
-        uploadedBucket = (res.bucket as any) || targetBucket;
-      } catch (directUploadErr: any) {
-        console.warn('Direct Supabase storage upload attempt encountered error, attempting fallback route:', directUploadErr?.message);
-        // Fallback to uploadMediaFile
-        const category = (activeSpec.storageFolder === 'hero' ? 'homepage-image' :
-                          activeSpec.storageFolder === 'collection-banners' ? 'collection-banner' :
-                          activeSpec.storageFolder === 'collection-cards' ? 'collection-image' :
-                          activeSpec.storageFolder === 'product-videos' ? 'product-video' : 'product-image') as any;
-        const res = await StorageService.uploadMediaFile(file, category, [activeSpec.label]);
-        finalUrl = res.url;
-        uploadedStoragePath = (res as any).storagePath || '';
-      }
+        },
+        (percent) => {
+          setUploadProgress(percent);
+          setUploadStepMessage(`Uploading directly to Supabase Storage (${percent}%)...`);
+          onStatusChange?.('uploading', `Uploading directly to Supabase Storage (${percent}%)...`);
+        }
+      );
+
+      finalUrl = res.url;
+      uploadedStoragePath = res.storagePath;
+      uploadedBucket = (res.bucket as any) || targetBucket;
 
       if (!finalUrl) {
         throw new Error('Upload completed but returned no valid URL');
       }
 
       // Assert valid returned URL (No local blob or raw base64 data)
-      if (finalUrl.startsWith('blob:')) {
+      if (finalUrl.startsWith('blob:') || finalUrl.startsWith('data:')) {
         throw new Error('Temporary blob URL detected. Permanent storage URL required.');
       }
 
@@ -215,7 +253,8 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
       // 3. If auto-save handler provided, persist database/CMS record BEFORE claiming saved
       if (onAutoSave) {
         setUploadStatus('saving');
-        onStatusChange?.('saving', `Saving ${activeSpec.label} to database...`);
+        setUploadStepMessage(`Saving ${activeSpec.label} to Supabase CMS...`);
+        onStatusChange?.('saving', `Saving ${activeSpec.label} to Supabase CMS...`);
         try {
           await onAutoSave(finalUrl);
           // Commit URL to React state ONLY after database persistence is confirmed
@@ -238,17 +277,21 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
 
       // 4. Success state (Confirmed: BOTH Storage upload + Database persistence succeeded)
       setUploadStatus('saved');
+      setUploadProgress(100);
+      setUploadStepMessage(`${activeSpec.label} uploaded and CMS updated successfully!`);
       onStatusChange?.('saved', `${activeSpec.label} saved successfully!`);
 
       // Reset back to idle after 4 seconds
       setTimeout(() => {
         setUploadStatus('idle');
+        setUploadProgress(null);
       }, 4000);
     } catch (err: any) {
       console.error('Media upload & save pipeline error:', err);
       const msg = err?.message || 'Failed to upload and save media';
       setErrorMessage(msg);
       setUploadStatus('failed');
+      setUploadProgress(null);
       onStatusChange?.('failed', msg);
     } finally {
       setUploading(false);
@@ -302,51 +345,69 @@ export const MediaUploaderCard: React.FC<MediaUploaderCardProps> = ({
 
       {/* Real-time Operation Status Feedback */}
       {uploadStatus !== 'idle' && (
-        <div className={`p-2.5 rounded text-xs flex items-center justify-between font-medium animate-in fade-in duration-150 ${
+        <div className={`p-3 rounded text-xs space-y-2 font-medium animate-in fade-in duration-150 ${
           uploadStatus === 'uploading' ? 'bg-amber-50 border border-amber-200 text-amber-900' :
           uploadStatus === 'saving' ? 'bg-sky-50 border border-sky-200 text-sky-900' :
           uploadStatus === 'saved' ? 'bg-emerald-50 border border-emerald-200 text-emerald-900' :
           'bg-rose-50 border border-rose-200 text-rose-900'
         }`}>
-          <div className="flex items-center gap-2">
-            {(uploadStatus === 'uploading' || uploadStatus === 'saving') && (
-              <RefreshCw className="w-3.5 h-3.5 animate-spin shrink-0 text-amber-600" aria-hidden="true" />
-            )}
-            {uploadStatus === 'saved' && (
-              <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-600" aria-hidden="true" />
-            )}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {(uploadStatus === 'uploading' || uploadStatus === 'saving') && (
+                <RefreshCw className="w-3.5 h-3.5 animate-spin shrink-0 text-amber-600" aria-hidden="true" />
+              )}
+              {uploadStatus === 'saved' && (
+                <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-emerald-600" aria-hidden="true" />
+              )}
+              {uploadStatus === 'failed' && (
+                <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-rose-600" aria-hidden="true" />
+              )}
+              <span>
+                {uploadStatus === 'uploading' && (uploadStepMessage || `Uploading ${activeSpec.label} directly to Supabase Storage...`)}
+                {uploadStatus === 'saving' && (uploadStepMessage || `Saving media & updating database records...`)}
+                {uploadStatus === 'saved' && (uploadStepMessage || `Saved: Media uploaded and database records updated successfully.`)}
+                {uploadStatus === 'failed' && (errorMessage || `Media upload failed. Please try again.`)}
+              </span>
+            </div>
             {uploadStatus === 'failed' && (
-              <AlertTriangle className="w-3.5 h-3.5 shrink-0 text-rose-600" aria-hidden="true" />
-            )}
-            <span>
-              {uploadStatus === 'uploading' && `Uploading ${activeSpec.label} to Supabase Storage...`}
-              {uploadStatus === 'saving' && `Saving media & updating database records...`}
-              {uploadStatus === 'saved' && `Saved: Media uploaded and database records updated successfully.`}
-              {uploadStatus === 'failed' && (errorMessage || `Media upload failed. Please try again.`)}
-            </span>
-          </div>
-          {uploadStatus === 'failed' && (
-            <div className="flex items-center gap-2 shrink-0">
-              {lastAttemptedFileRef.current && (
+              <div className="flex items-center gap-2 shrink-0">
+                {lastAttemptedFileRef.current && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (lastAttemptedFileRef.current) {
+                        handleFile(lastAttemptedFileRef.current);
+                      }
+                    }}
+                    className="px-2 py-0.5 bg-rose-700 hover:bg-rose-800 text-white text-[11px] font-medium rounded-xs cursor-pointer transition-colors"
+                  >
+                    Retry
+                  </button>
+                )}
                 <button
                   type="button"
-                  onClick={() => {
-                    if (lastAttemptedFileRef.current) {
-                      handleFile(lastAttemptedFileRef.current);
-                    }
-                  }}
-                  className="px-2 py-0.5 bg-rose-700 hover:bg-rose-800 text-white text-[11px] font-medium rounded-xs cursor-pointer transition-colors"
+                  onClick={() => { setUploadStatus('idle'); setErrorMessage(null); setUploadProgress(null); }}
+                  className="p-1 text-rose-700 hover:text-rose-900 text-xs font-semibold underline cursor-pointer"
                 >
-                  Retry
+                  Dismiss
                 </button>
-              )}
-              <button
-                type="button"
-                onClick={() => { setUploadStatus('idle'); setErrorMessage(null); }}
-                className="p-1 text-rose-700 hover:text-rose-900 text-xs font-semibold underline cursor-pointer"
-              >
-                Dismiss
-              </button>
+              </div>
+            )}
+          </div>
+
+          {/* Real Upload Progress Bar */}
+          {uploadStatus === 'uploading' && uploadProgress !== null && (
+            <div className="space-y-1 pt-1">
+              <div className="flex items-center justify-between text-[11px] text-amber-800 font-mono">
+                <span>Direct Supabase Storage Transfer</span>
+                <span>{uploadProgress}%</span>
+              </div>
+              <div className="w-full bg-amber-200/80 h-1.5 rounded-full overflow-hidden">
+                <div
+                  className="bg-amber-600 h-full transition-all duration-150 rounded-full"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
             </div>
           )}
         </div>

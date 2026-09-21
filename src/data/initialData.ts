@@ -1,5 +1,6 @@
 import { Product, Category, Collection, SiteSettings, HomepageCMS, Order, Review } from '../types';
 import { MIGRATED_PRODUCTS, MIGRATED_CATEGORIES, MIGRATED_COLLECTIONS } from './migratedCatalog';
+import { DEFAULT_EDITORIAL_CAMPAIGN_CONFIG } from '../lib/campaignHelper';
 
 // 1. AUTHORITATIVE MIGRATED CATEGORIES (5 Categories from Source Catalog)
 export const INITIAL_CATEGORIES: Category[] = MIGRATED_CATEGORIES;
@@ -94,8 +95,10 @@ export const INITIAL_CMS: HomepageCMS = {
   showNewArrivals: true,
   showCategories: true,
   showEditorialBanner: true,
+  showEditorialCampaign: true,
   showCustomerReviews: false, // Hidden until authentic reviews are imported
   showInstagramFeed: true,
+  editorialCampaign: DEFAULT_EDITORIAL_CAMPAIGN_CONFIG,
   editorialBanner: {
     heading: 'The Art of Pakistani Luxury Fashion',
     subheading: 'Each GulPash creation embodies centuries-old Pakistani artisan heritage, exquisite hand embroidery, and premium pure textiles.',

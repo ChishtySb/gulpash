@@ -733,6 +733,9 @@ export const StorageService = {
       // Ensure editorialCampaign is normalized if present
       if (cms.editorialCampaign) {
         cms.editorialCampaign = normalizeEditorialCampaign(cms);
+      } else {
+        cms.editorialCampaign = normalizeEditorialCampaign(cms);
+        changed = true;
       }
 
       if (changed) {
@@ -1301,11 +1304,13 @@ export const StorageService = {
   },
 
   // AUTHORITATIVE SUPABASE STORAGE UPLOADER
+  // Uses direct-to-Supabase short-lived signed uploads for all media, completely bypassing serverless body limits (HTTP 413)
   async uploadToSupabaseStorage(
     bucket: 'product-images' | 'hero-images' | 'hero-videos' | 'category-images' | 'site-assets',
     file: File,
     pathPrefix = '',
-    specMetadata?: { dimensions?: string; aspectRatio?: string; label?: string }
+    specMetadata?: { dimensions?: string; aspectRatio?: string; label?: string },
+    onProgress?: (percent: number) => void
   ): Promise<{ url: string; storagePath: string; bucket: string; asset?: MediaAsset }> {
     const { getSupabaseClient } = await import('./supabaseClient');
     const supabase = getSupabaseClient();
@@ -1316,38 +1321,42 @@ export const StorageService = {
 
     const isVideo = file.type.startsWith('video/') || file.name.endsWith('.mp4') || file.name.endsWith('.webm');
     const rawExt = file.name.split('.').pop()?.toLowerCase() || (isVideo ? 'mp4' : 'jpg');
-    const cleanBase = file.name.substring(0, file.name.lastIndexOf('.') || file.name.length)
-      .replace(/[^a-zA-Z0-9_-]/g, '_')
-      .toLowerCase();
-    const cleanName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}_${cleanBase}.${rawExt}`;
-    const cleanPrefix = pathPrefix.replace(/^\/+|\/+$/g, '');
-    const storagePath = cleanPrefix ? `${cleanPrefix}/${cleanName}` : cleanName;
 
     // Detect valid MIME type
     const mimeType = file.type || (isVideo ? 'video/mp4' : rawExt === 'png' ? 'image/png' : rawExt === 'webp' ? 'image/webp' : 'image/jpeg');
 
-    let uploadedPath = '';
-    let publicUrl = '';
+    // 1. Client-Side Strict Validation (Reject invalid formats or oversized files BEFORE upload)
+    const MAX_VIDEO_BYTES = 35 * 1024 * 1024; // 35 MB verified max
+    const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10 MB
 
-    // 1. Check for genuine Supabase Auth session & token
+    if (isVideo) {
+      const allowedVideoMimes = ['video/mp4', 'video/webm'];
+      if (!allowedVideoMimes.includes(mimeType) && !['mp4', 'webm'].includes(rawExt)) {
+        throw new Error(`Unsupported video format "${mimeType || rawExt}". Please select an MP4 or WebM video.`);
+      }
+      if (file.size > MAX_VIDEO_BYTES) {
+        throw new Error(`Video file size (${(file.size / (1024 * 1024)).toFixed(1)} MB) exceeds the 35 MB maximum limit. Please compress your video before uploading.`);
+      }
+    } else {
+      if (file.size > MAX_IMAGE_BYTES) {
+        throw new Error(`Image file size (${(file.size / (1024 * 1024)).toFixed(1)} MB) exceeds the 10 MB maximum limit.`);
+      }
+    }
+
+    // 2. Authenticate Admin session
     const token = await adminAuthService.getCurrentAccessToken();
     if (!token) {
       throw new Error('Admin authentication session is not active. Please sign in again.');
     }
 
-    // 2. Primary Authoritative Route: Server Admin Storage API (Option B)
-    // Server independently verifies the admin access token and uses SUPABASE_SERVICE_ROLE_KEY
-    let serverUploadError: string | null = null;
-    let clientUploadError: string | null = null;
-    try {
-      const base64Data = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = () => reject(new Error('Failed reading file data for upload'));
-        reader.readAsDataURL(file);
-      });
+    let uploadedPath = '';
+    let publicUrl = '';
+    let directUploadError: string | null = null;
 
-      const serverRes = await fetch('/api/admin/storage/upload', {
+    // 3. PRIMARY ARCHITECTURE: Request short-lived signed upload target from Admin API
+    // Request payload is only ~200 bytes of metadata (ZERO file bytes through Vercel/serverless)
+    try {
+      const authRes = await fetch('/api/admin/storage/create-upload', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1355,67 +1364,114 @@ export const StorageService = {
         },
         body: JSON.stringify({
           bucket,
-          path: storagePath,
-          data: base64Data,
-          mimeType
+          filename: file.name,
+          mimeType,
+          fileSize: file.size,
+          pathPrefix
         })
       });
 
-      if (serverRes.ok) {
-        const serverJson = await serverRes.json();
-        if (serverJson.url && serverJson.storagePath) {
-          uploadedPath = serverJson.storagePath;
-          publicUrl = serverJson.url;
+      if (authRes.ok) {
+        const authData = await authRes.json();
+        if (authData.signedUrl && authData.path) {
+          // BROWSER DIRECT-TO-SUPABASE STORAGE UPLOAD (Raw File object via XMLHttpRequest)
+          // Progress events are reported directly from the browser's upload socket
+          await new Promise<void>((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('PUT', authData.signedUrl);
+            xhr.setRequestHeader('Content-Type', mimeType);
+
+            if (xhr.upload && onProgress) {
+              xhr.upload.onprogress = (evt) => {
+                if (evt.lengthComputable) {
+                  const pct = Math.min(99, Math.round((evt.loaded / evt.total) * 100));
+                  onProgress(pct);
+                }
+              };
+            }
+
+            xhr.onload = () => {
+              if (xhr.status >= 200 && xhr.status < 300) {
+                if (onProgress) onProgress(100);
+                resolve();
+              } else {
+                reject(new Error(`Direct Supabase Storage upload failed with status ${xhr.status}`));
+              }
+            };
+
+            xhr.onerror = () => reject(new Error('Network error during direct Supabase Storage upload'));
+            xhr.ontimeout = () => reject(new Error('Direct Supabase Storage upload timed out'));
+            xhr.send(file);
+          });
+
+          uploadedPath = authData.path;
+          publicUrl = authData.publicUrl;
         }
       } else {
-        const errJson = await serverRes.json().catch(() => ({}));
-        if (serverRes.status === 401) {
-          serverUploadError = 'Admin session expired. Please sign in again.';
-        } else if (serverRes.status === 403) {
-          serverUploadError = 'Your account does not have permission to upload this media.';
+        const errJson = await authRes.json().catch(() => ({}));
+        if (authRes.status === 401) {
+          throw new Error('Admin session expired or invalid. Please sign in again.');
+        } else if (authRes.status === 403) {
+          throw new Error('Your account does not have admin permissions to upload media.');
         } else {
-          serverUploadError = errJson.error || `Server storage upload failed with status ${serverRes.status}`;
+          directUploadError = errJson.error || `Failed to create upload authorization (status ${authRes.status})`;
         }
       }
     } catch (err: any) {
-      serverUploadError = err?.message || 'Server storage upload connection failed';
+      if (err?.message?.includes('Admin session') || err?.message?.includes('permissions')) {
+        throw err;
+      }
+      console.warn('Direct signed upload target creation failed:', err);
+      directUploadError = err?.message || 'Signed upload initialization failed';
     }
 
-    // 3. Fallback Route: Direct Supabase Client Upload (Option A)
-    // If the server route is unavailable (e.g. static preview host) or fails, try direct client upload
-    if (!uploadedPath || !publicUrl) {
+    // 4. Fallback for small images (< 4 MB) only if signed upload target was unreachable
+    // (Large videos are STRICTLY forbidden from legacy proxying to prevent HTTP 413)
+    if ((!uploadedPath || !publicUrl) && !isVideo && file.size <= 4 * 1024 * 1024) {
       try {
-        const { data, error } = await supabase.storage
-          .from(bucket)
-          .upload(storagePath, file, {
-            contentType: mimeType,
-            cacheControl: '3600',
-            upsert: true
-          });
+        const base64Data = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = () => reject(new Error('Failed reading file data for upload'));
+          reader.readAsDataURL(file);
+        });
 
-        if (!error && data?.path) {
-          uploadedPath = data.path;
-          const { data: publicUrlData } = supabase.storage.from(bucket).getPublicUrl(data.path);
-          publicUrl = publicUrlData?.publicUrl || '';
-        } else if (error) {
-          console.warn('Direct client upload notice:', error.message);
-          if (error.message?.includes('row-level security') || error.message?.includes('violates row-level security')) {
-            clientUploadError = `Supabase Storage RLS error: Insufficient permissions to upload to "${bucket}" bucket. Please ensure admin is authenticated with Supabase Auth.`;
-          } else {
-            clientUploadError = error.message;
-          }
+        const cleanBase = file.name.substring(0, file.name.lastIndexOf('.') || file.name.length)
+          .replace(/[^a-zA-Z0-9_-]/g, '_')
+          .toLowerCase();
+        const cleanName = `${Date.now()}_${Math.random().toString(36).substring(2, 7)}_${cleanBase}.${rawExt}`;
+        const cleanPrefix = pathPrefix.replace(/^\/+|\/+$/g, '');
+        const fallbackStoragePath = cleanPrefix ? `${cleanPrefix}/${cleanName}` : cleanName;
+
+        const serverRes = await fetch('/api/admin/storage/upload', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            bucket,
+            path: fallbackStoragePath,
+            data: base64Data,
+            mimeType
+          })
+        });
+
+        if (serverRes.ok) {
+          const serverJson = await serverRes.json();
+          uploadedPath = serverJson.storagePath;
+          publicUrl = serverJson.url;
         }
-      } catch (clientErr: any) {
-        console.warn('Direct client upload exception:', clientErr?.message);
-        clientUploadError = clientErr?.message;
+      } catch (fbErr) {
+        console.warn('Fallback upload also failed:', fbErr);
       }
     }
 
-    // 4. Verification of successful upload
+    // 5. Verification of successful upload
     if (!uploadedPath || !publicUrl) {
       throw new Error(
-        serverUploadError || clientUploadError ||
-        `Supabase Storage upload failed for bucket "${bucket}". Please verify that admin is authenticated and try again.`
+        directUploadError ||
+        `Supabase Storage upload failed for bucket "${bucket}". Please verify your connection and try again.`
       );
     }
 
