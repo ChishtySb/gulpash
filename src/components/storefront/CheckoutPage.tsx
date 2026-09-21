@@ -113,6 +113,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
   // Placed order result state
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
 
   // Post-order upload proof state on confirmation screen
   const [postTrxRef, setPostTrxRef] = useState('');
@@ -368,23 +369,32 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
       updatedAt: new Date().toISOString()
     };
 
-    // Save to storage
-    StorageService.saveOrder(newOrder);
+    setSubmissionError(null);
 
-    // Trigger in-app notification and browser chime
+    // 1. Authoritative persistence through backend to Supabase Postgres
+    const submission = await StorageService.submitStorefrontOrder(newOrder);
+    if (!submission.success || !submission.order) {
+      setIsSubmitting(false);
+      setSubmissionError(submission.error || 'Failed to complete order. Please check your connection and try again.');
+      return;
+    }
+
+    const confirmedOrder = submission.order;
+
+    // 2. Trigger in-app notification and browser chime ONLY after confirmed database persistence
     NotificationService.notify({
       type: 'NEW_ORDER',
-      title: `New Order Placed: #${newOrder.orderNumber}`,
-      message: `${newOrder.customer.fullName} placed an order of ${formatPrice(newOrder.total, currency)} via ${newOrder.paymentMethod}.`,
-      orderId: newOrder.id,
-      orderNumber: newOrder.orderNumber,
-      orderTotal: newOrder.total,
-      customerName: newOrder.customer.fullName,
-      paymentMethod: newOrder.paymentMethod
+      title: `New Order Placed: #${confirmedOrder.orderNumber}`,
+      message: `${confirmedOrder.customer.fullName} placed an order of ${formatPrice(confirmedOrder.total, currency)} via ${confirmedOrder.paymentMethod}.`,
+      orderId: confirmedOrder.id,
+      orderNumber: confirmedOrder.orderNumber,
+      orderTotal: confirmedOrder.total,
+      customerName: confirmedOrder.customer.fullName,
+      paymentMethod: confirmedOrder.paymentMethod
     });
 
     onClearCart();
-    setPlacedOrder(newOrder);
+    setPlacedOrder(confirmedOrder);
     setIsSubmitting(false);
 
     // Trigger celebratory confetti
@@ -1170,6 +1180,16 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                   </div>
                 )}
               </div>
+
+              {submissionError && (
+                <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-800 text-xs rounded-xs flex items-start gap-2.5">
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-semibold block">Order Submission Error</span>
+                    <span>{submissionError}</span>
+                  </div>
+                </div>
+              )}
 
               {/* Submit Order Button (Mobile / Desktop) */}
               <button

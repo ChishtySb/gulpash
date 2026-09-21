@@ -481,9 +481,13 @@ export const StorageService = {
   getOrders(): Order[] {
     try {
       const data = localStorage.getItem(KEYS.ORDERS);
-      return data ? JSON.parse(data) : INITIAL_ORDERS;
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) return parsed;
+      }
+      return [];
     } catch {
-      return INITIAL_ORDERS;
+      return [];
     }
   },
 
@@ -492,16 +496,47 @@ export const StorageService = {
       const res = await fetch('/api/orders');
       if (res.ok) {
         const serverOrders = await res.json();
-        if (Array.isArray(serverOrders) && serverOrders.length > 0) {
+        if (Array.isArray(serverOrders)) {
           localStorage.setItem(KEYS.ORDERS, JSON.stringify(serverOrders));
           notifyChange('orders');
           return serverOrders;
         }
       }
     } catch (err) {
-      console.warn('Could not fetch server orders, using cached:', err);
+      console.warn('[StorageService] Could not fetch server orders, using cached:', err);
     }
     return this.getOrders();
+  },
+
+  async submitStorefrontOrder(order: Order): Promise<{ success: boolean; order?: Order; error?: string }> {
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(order)
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success || !data.order) {
+        return {
+          success: false,
+          error: data.error || `Failed to submit order (Server responded with HTTP ${res.status}).`
+        };
+      }
+
+      const canonicalOrder = data.order as Order;
+      const currentOrders = this.getOrders().filter(o => o.id !== canonicalOrder.id && o.orderNumber !== canonicalOrder.orderNumber);
+      currentOrders.unshift(canonicalOrder);
+      localStorage.setItem(KEYS.ORDERS, JSON.stringify(currentOrders));
+      notifyChange('orders');
+
+      return { success: true, order: canonicalOrder };
+    } catch (err: any) {
+      console.error('[StorageService] Order submission network error:', err);
+      return {
+        success: false,
+        error: err.message || 'Network connection error while placing order. Please check your connection and retry.'
+      };
+    }
   },
 
   getOrderByNumber(orderNumber: string): Order | undefined {

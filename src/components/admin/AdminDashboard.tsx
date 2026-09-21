@@ -89,6 +89,55 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setCollections(StorageService.getCollections());
     setCategories(StorageService.getCategories());
     setUnreadCount(NotificationService.getUnreadCount());
+    StorageService.fetchOrdersAsync().then(latest => {
+      if (Array.isArray(latest)) setOrders(latest);
+    }).catch(() => {});
+  }, []);
+
+  // Fetch orders from database on mount
+  useEffect(() => {
+    StorageService.fetchOrdersAsync().then(latest => {
+      if (Array.isArray(latest)) setOrders(latest);
+    }).catch(() => {});
+  }, []);
+
+  // Supabase Realtime synchronization for Orders & Admin Notifications
+  useEffect(() => {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://alzqexevrhcmzcluvatc.supabase.co';
+    const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    if (!supabaseUrl || !supabaseAnonKey) return;
+
+    let isMounted = true;
+    let channel: any = null;
+
+    import('@supabase/supabase-js').then(({ createClient }) => {
+      if (!isMounted) return;
+      const sb = createClient(supabaseUrl, supabaseAnonKey, { auth: { persistSession: false } });
+
+      channel = sb.channel('admin-dashboard-orders-realtime')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, async () => {
+          if (!isMounted) return;
+          console.log('[AdminRealtime] Order table change in Supabase detected, re-fetching...');
+          const fresh = await StorageService.fetchOrdersAsync();
+          if (isMounted && Array.isArray(fresh)) {
+            setOrders(fresh);
+          }
+        })
+        .on('broadcast', { event: 'NEW_ORDER' }, async (evt) => {
+          if (!isMounted) return;
+          console.log('[AdminRealtime] Broadcast NEW_ORDER received:', evt.payload);
+          const fresh = await StorageService.fetchOrdersAsync();
+          if (isMounted && Array.isArray(fresh)) {
+            setOrders(fresh);
+          }
+        })
+        .subscribe();
+    }).catch(() => {});
+
+    return () => {
+      isMounted = false;
+      if (channel) channel.unsubscribe();
+    };
   }, []);
 
   // Listen for storage change events to keep UI synchronized
@@ -160,7 +209,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Listen for background push / toast deep-link to order
+  // Listen for background push / toast / URL query deep-link to order
   useEffect(() => {
     const handleNavigateOrder = (e: any) => {
       const orderId = e.detail?.orderId;
@@ -174,8 +223,26 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       }
     };
     window.addEventListener('gulpash_navigate_order', handleNavigateOrder);
+
+    // Also inspect URL query params (e.g. from mobile push notification click)
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get('tab');
+      const orderId = params.get('orderId');
+      if (orderId) {
+        const found = orders.find(o => o.id === orderId || o.orderNumber === orderId);
+        if (found) {
+          handleSelectOrder(found);
+        } else if (tab === 'orders') {
+          handleNavigate('orders', 'all');
+        }
+      } else if (tab && tab !== activeSection) {
+        handleNavigate(tab as any);
+      }
+    } catch {}
+
     return () => window.removeEventListener('gulpash_navigate_order', handleNavigateOrder);
-  }, [orders]);
+  }, [orders, activeSection]);
 
   // Quick action: Add new product
   const handleQuickAddProduct = () => {
