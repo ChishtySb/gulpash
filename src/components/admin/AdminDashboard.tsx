@@ -24,7 +24,10 @@ import { SettingsSection } from './sections/SettingsSection';
 import { StorefrontControlAuditSection } from './sections/StorefrontControlAuditSection';
 import { ActivityLogSection } from './sections/ActivityLogSection';
 import { CatalogSyncSection } from './sections/CatalogSyncSection';
+import { NotificationsSection } from './sections/NotificationsSection';
 import { MigrationReportView } from './MigrationReportView';
+import { AdminInAppToast } from './AdminInAppToast';
+import { AdminPwaInstallBanner } from './AdminPwaInstallBanner';
 
 interface AdminDashboardProps {
   onExitAdmin: () => void;
@@ -139,7 +142,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       else if (targetSection === 'customers') setActiveSubview('all');
       else if (targetSection === 'storefront') setActiveSubview('homepage');
       else if (targetSection === 'marketing') setActiveSubview('seo');
-      else if (targetSection === 'notifications') setActiveSubview('all');
+      else if (targetSection === 'notifications') setActiveSubview('channels');
       else if (targetSection === 'settings') setActiveSubview('store');
       else if (targetSection === 'system') setActiveSubview('audit');
       else setActiveSubview('overview');
@@ -156,6 +159,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     // Scroll main window to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // Listen for background push / toast deep-link to order
+  useEffect(() => {
+    const handleNavigateOrder = (e: any) => {
+      const orderId = e.detail?.orderId;
+      if (orderId) {
+        const found = orders.find(o => o.id === orderId || o.orderNumber === orderId);
+        if (found) {
+          handleSelectOrder(found);
+        } else {
+          handleNavigate('orders', 'all');
+        }
+      }
+    };
+    window.addEventListener('gulpash_navigate_order', handleNavigateOrder);
+    return () => window.removeEventListener('gulpash_navigate_order', handleNavigateOrder);
+  }, [orders]);
 
   // Quick action: Add new product
   const handleQuickAddProduct = () => {
@@ -180,6 +200,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   return (
     <div className="min-h-screen bg-[#f8f7f5] text-stone-900 font-sans antialiased flex flex-col">
+      {/* REAL-TIME INTERACTIVE TOAST POPUP (DISMISS / VIEW ORDER / CHIME) */}
+      <AdminInAppToast
+        onSelectOrder={(orderId) => {
+          const found = orders.find(o => o.id === orderId || o.orderNumber === orderId);
+          if (found) handleSelectOrder(found);
+          else handleNavigate('orders', 'all');
+        }}
+        onNavigateTab={handleNavigate}
+      />
+
       {/* 1. LEFT SIDEBAR (COLLAPSIBLE DESKTOP + MOBILE DRAWER) */}
       <AdminSidebar
         activeSection={activeSection}
@@ -239,6 +269,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
           </div>
         )}
+
+        {/* PWA INSTALLATION BANNER (STANDALONE / INSTALL PROMPT / IOS GUIDE) */}
+        <div className="px-4 sm:px-6 lg:px-8 pt-3">
+          <AdminPwaInstallBanner />
+        </div>
 
         {/* WORKSPACE CONTENT WRAPPED IN REACT ERROR BOUNDARY */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
@@ -338,76 +373,37 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               />
             )}
 
-            {/* 7. NOTIFICATIONS */}
+            {/* 7. NOTIFICATIONS & WEB PUSH (REAL-TIME + BACKGROUND ALERTS) */}
             {activeSection === 'notifications' && (
-              <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-xs space-y-4">
-                <div className="flex items-center justify-between border-b border-stone-200 pb-4">
-                  <div>
-                    <h2 className="text-lg font-bold text-stone-900">Admin Notification History</h2>
-                    <p className="text-xs text-stone-500 mt-0.5">
-                      Audit log of customer order placements, advance payment screenshots, and inventory alerts.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      NotificationService.markAllAsRead();
-                      setUnreadCount(0);
-                      triggerNotification('All notifications marked as read.');
-                    }}
-                    className="px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold rounded-md transition-colors cursor-pointer"
-                  >
-                    Mark All Read
-                  </button>
-                </div>
-
-                <div className="divide-y divide-stone-100">
-                  {NotificationService.getNotifications().length === 0 ? (
-                    <div className="py-12 text-center text-stone-400 text-xs">
-                      <Bell className="w-8 h-8 mx-auto text-stone-300 mb-2" />
-                      <p>No notifications recorded yet.</p>
-                    </div>
-                  ) : (
-                    NotificationService.getNotifications().map(n => (
-                      <div key={n.id} className="py-3 flex items-start justify-between gap-4 text-xs">
-                        <div className="flex items-start gap-3">
-                          <div className="w-2 h-2 rounded-full bg-amber-500 mt-1.5 shrink-0" />
-                          <div>
-                            <h4 className="font-semibold text-stone-900">{n.title}</h4>
-                            <p className="text-stone-600 mt-0.5">{n.message}</p>
-                            <span className="text-[10px] text-stone-400 font-mono mt-1 block">
-                              {new Date(n.timestamp).toLocaleString('en-PK')}
-                            </span>
-                          </div>
-                        </div>
-                        {n.orderId && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const found = orders.find(o => o.id === n.orderId);
-                              if (found) handleSelectOrder(found);
-                              else handleNavigate('orders', 'all');
-                            }}
-                            className="text-[11px] text-amber-800 font-bold hover:underline shrink-0"
-                          >
-                            Open Order
-                          </button>
-                        )}
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
+              <NotificationsSection
+                orders={orders}
+                subview={(activeSubview as any) || 'channels'}
+                onNavigateSub={(sub) => setActiveSubview(sub)}
+                onSelectOrder={handleSelectOrder}
+                onNotify={triggerNotification}
+              />
             )}
 
             {/* 8. SETTINGS */}
             {activeSection === 'settings' && (
-              <SettingsSection
-                settings={settings}
-                subview={activeSubview as any}
-                onNavigateSub={(sub) => setActiveSubview(sub)}
-                onNotify={triggerNotification}
-              />
+              <>
+                {activeSubview === 'notifications' ? (
+                  <NotificationsSection
+                    orders={orders}
+                    subview="channels"
+                    onNavigateSub={(sub) => setActiveSubview(sub)}
+                    onSelectOrder={handleSelectOrder}
+                    onNotify={triggerNotification}
+                  />
+                ) : (
+                  <SettingsSection
+                    settings={settings}
+                    subview={activeSubview as any}
+                    onNavigateSub={(sub) => setActiveSubview(sub)}
+                    onNotify={triggerNotification}
+                  />
+                )}
+              </>
             )}
 
             {/* 9. SYSTEM AUDIT & CATALOG REPORTS */}

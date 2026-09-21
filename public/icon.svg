@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18181b"/>
+      <stop offset="50%" stop-color="#0f0f11"/>
+      <stop offset="100%" stop-color="#09090b"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F5E6BE"/>
+      <stop offset="35%" stop-color="#D4AF37"/>
+      <stop offset="70%" stop-color="#AA8022"/>
+      <stop offset="100%" stop-color="#E5C378"/>
+    </linearGradient>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#27272a"/>
+      <stop offset="100%" stop-color="#18181b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background rounded rect -->
+  <rect width="512" height="512" rx="100" fill="url(#bgGrad)"/>
+  
+  <!-- Outer Gold Border -->
+  <rect x="20" y="20" width="472" height="472" rx="84" fill="none" stroke="url(#goldGrad)" stroke-width="4" stroke-opacity="0.4"/>
+  
+  <!-- Inner Border -->
+  <rect x="34" y="34" width="444" height="444" rx="72" fill="none" stroke="#27272a" stroke-width="1.5"/>
+
+  <!-- Royal Crest / Diamond Emblem -->
+  <g transform="translate(256, 140)">
+    <!-- Crown Diamond -->
+    <path d="M 0 -45 L 28 -20 L 0 5 L -28 -20 Z" fill="url(#goldGrad)"/>
+    <circle cx="-50" cy="-20" r="6" fill="url(#goldGrad)"/>
+    <circle cx="0" cy="-55" r="7" fill="url(#goldGrad)"/>
+    <circle cx="50" cy="-20" r="6" fill="url(#goldGrad)"/>
+    <path d="M -50 -10 L -30 18 L 30 18 L 50 -10 L 25 -2 L 0 10 L -25 -2 Z" fill="url(#goldGrad)"/>
+  </g>
+
+  <!-- Main GP Monogram -->
+  <g id="monogram">
+    <!-- Letter G -->
+    <text x="256" y="315" 
+          font-family="Playfair Display, Georgia, 'Cormorant Garamond', serif" 
+          font-size="160" 
+          font-weight="700" 
+          letter-spacing="6" 
+          text-anchor="middle" 
+          fill="url(#goldGrad)">
+      GP
+    </text>
+  </g>
+
+  <!-- Subtle divider line -->
+  <line x1="160" y1="355" x2="352" y2="355" stroke="url(#goldGrad)" stroke-width="2" stroke-linecap="round" stroke-opacity="0.7"/>
+
+  <!-- Wordmark -->
+  <text x="256" y="395" 
+        font-family="-apple-system, BlinkMacSystemFont, 'Plus Jakarta Sans', sans-serif" 
+        font-size="34" 
+        font-weight="700" 
+        letter-spacing="12" 
+        text-anchor="middle" 
+        fill="#FFFFFF">
+    GULPASH
+  </text>
+
+  <!-- ADMIN Badge -->
+  <g transform="translate(256, 440)">
+    <rect x="-65" y="-18" width="130" height="28" rx="6" fill="#27272A" stroke="url(#goldGrad)" stroke-width="1.5"/>
+    <text x="0" y="2" 
+          font-family="monospace, 'Courier New', sans-serif" 
+          font-size="16" 
+          font-weight="800" 
+          letter-spacing="5" 
+          text-anchor="middle" 
+          fill="#F5E6BE">
+      ADMIN
+    </text>
+  </g>
+</svg>

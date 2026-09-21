@@ -528,24 +528,58 @@ export interface AdvanceFreeDeliverySettings {
   badgeText?: string;
 }
 
+export interface AdminNotificationChannels {
+  inApp: boolean;
+  popup: boolean;
+  sound: boolean;
+  push: boolean;
+}
+
+export interface AdminNotificationEventSettings {
+  newOrder: boolean;
+  newPaymentProof: boolean;
+  paymentResubmitted: boolean;
+  paymentVerified: boolean;
+  paymentActionRequired: boolean;
+  readyToDispatch: boolean;
+  lowStock: boolean;
+}
+
 export interface AdminNotificationSettings {
+  masterEnabled?: boolean;
+  channels?: AdminNotificationChannels;
+  events?: AdminNotificationEventSettings;
   soundEnabled: boolean;
   browserNotificationsEnabled?: boolean;
-  events?: {
-    newOrder: boolean;
-    newPaymentProof: boolean;
-    paymentResubmitted: boolean;
-    paymentVerified: boolean;
-    paymentActionRequired: boolean;
-    readyToDispatch: boolean;
-    lowStock: boolean;
-  };
   lowStockThreshold: number; // default 3
   browserEnabled?: boolean;
   orderAlerts?: boolean;
   paymentProofAlerts?: boolean;
   lowStockAlerts?: boolean;
   soundVolume?: number;
+}
+
+export interface AdminNotificationPreferences {
+  masterEnabled: boolean;
+  channels: AdminNotificationChannels;
+  events: AdminNotificationEventSettings;
+  lowStockThreshold: number;
+  soundVolume: number;
+}
+
+export interface AdminPushSubscription {
+  id: string;
+  user_id?: string;
+  endpoint: string;
+  p256dh?: string;
+  auth?: string;
+  device_name?: string;
+  user_agent?: string;
+  enabled: boolean;
+  created_at: string;
+  updated_at: string;
+  last_success_at?: string;
+  failure_count?: number;
 }
 
 export type NotificationEventType = 

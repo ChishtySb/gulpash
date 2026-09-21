@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
 import { createClient } from '@supabase/supabase-js';
+import webPush from 'web-push';
 
 const app = express();
 const PORT = 3000;
@@ -458,19 +459,317 @@ function writeNotifications(notifs: any[]) {
   serverNotifications = notifs.slice(0, 150);
 }
 
+const DEFAULT_NOTIFICATION_PREFERENCES = {
+  masterEnabled: true,
+  channels: {
+    inApp: true,
+    popup: true,
+    sound: true,
+    push: true
+  },
+  events: {
+    newOrder: true,
+    newPaymentProof: true,
+    paymentResubmitted: true,
+    paymentVerified: true,
+    paymentActionRequired: true,
+    readyToDispatch: true,
+    lowStock: true
+  },
+  lowStockThreshold: 3,
+  soundVolume: 0.8
+};
+
+let vapidPublicKey = process.env.VAPID_PUBLIC_KEY || '';
+let vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || '';
+const vapidSubject = process.env.VAPID_SUBJECT || 'mailto:admin@gulpash.online';
+let vapidInitialized = false;
+
+let serverPushSubscriptions: any[] = [];
+let serverNotificationPreferences: any = { ...DEFAULT_NOTIFICATION_PREFERENCES };
+
+async function initVapidAndPush() {
+  try {
+    const client = supabaseAdmin || supabaseServer;
+    if (client) {
+      // 1. Hydrate VAPID keys
+      if (!vapidPublicKey || !vapidPrivateKey) {
+        const { data: vapidRow } = await client
+          .from('site_settings')
+          .select('*')
+          .eq('setting_key', 'vapid_keys')
+          .maybeSingle();
+
+        if (vapidRow?.setting_value?.publicKey && vapidRow?.setting_value?.privateKey) {
+          vapidPublicKey = vapidRow.setting_value.publicKey;
+          vapidPrivateKey = vapidRow.setting_value.privateKey;
+          console.log('[WebPush] Loaded persistent VAPID keys from Supabase site_settings');
+        } else {
+          const generated = webPush.generateVAPIDKeys();
+          vapidPublicKey = generated.publicKey;
+          vapidPrivateKey = generated.privateKey;
+          await client.from('site_settings').upsert({
+            setting_key: 'vapid_keys',
+            setting_value: {
+              publicKey: vapidPublicKey,
+              privateKey: vapidPrivateKey,
+              subject: vapidSubject
+            },
+            updated_at: new Date().toISOString()
+          });
+          console.log('[WebPush] Generated and persisted new VAPID keys in Supabase site_settings');
+        }
+      }
+
+      if (vapidPublicKey && vapidPrivateKey) {
+        webPush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
+        vapidInitialized = true;
+      }
+
+      // 2. Hydrate Push Subscriptions
+      const { data: subsRow } = await client
+        .from('site_settings')
+        .select('*')
+        .eq('setting_key', 'admin_push_subscriptions')
+        .maybeSingle();
+
+      if (subsRow?.setting_value && Array.isArray(subsRow.setting_value)) {
+        serverPushSubscriptions = subsRow.setting_value;
+        console.log(`[WebPush] Hydrated ${serverPushSubscriptions.length} push subscription(s)`);
+      }
+
+      // 3. Hydrate Notification Preferences
+      const { data: prefsRow } = await client
+        .from('site_settings')
+        .select('*')
+        .eq('setting_key', 'notification_preferences')
+        .maybeSingle();
+
+      if (prefsRow?.setting_value) {
+        serverNotificationPreferences = {
+          ...DEFAULT_NOTIFICATION_PREFERENCES,
+          ...prefsRow.setting_value,
+          channels: { ...DEFAULT_NOTIFICATION_PREFERENCES.channels, ...(prefsRow.setting_value.channels || {}) },
+          events: { ...DEFAULT_NOTIFICATION_PREFERENCES.events, ...(prefsRow.setting_value.events || {}) }
+        };
+        console.log('[WebPush] Hydrated notification preferences');
+      }
+
+      // 4. Hydrate Notification History
+      const { data: notifsRow } = await client
+        .from('site_settings')
+        .select('*')
+        .eq('setting_key', 'admin_notifications')
+        .maybeSingle();
+
+      if (notifsRow?.setting_value && Array.isArray(notifsRow.setting_value) && notifsRow.setting_value.length > 0) {
+        serverNotifications = notifsRow.setting_value.slice(0, 150);
+        console.log(`[WebPush] Hydrated ${serverNotifications.length} notifications history`);
+      }
+    }
+  } catch (err: any) {
+    console.warn('[WebPush] Error during VAPID/subscription hydration:', err?.message || err);
+  }
+}
+
+function savePushSubscriptions(subs: any[]) {
+  serverPushSubscriptions = subs;
+  const client = supabaseAdmin || supabaseServer;
+  if (client) {
+    Promise.resolve(client.from('site_settings').upsert({
+      setting_key: 'admin_push_subscriptions',
+      setting_value: serverPushSubscriptions,
+      updated_at: new Date().toISOString()
+    })).catch((err: any) => console.warn('[WebPush] Failed to persist push subscriptions:', err?.message));
+  }
+}
+
+function saveNotificationPreferences(prefs: any) {
+  serverNotificationPreferences = prefs;
+  const client = supabaseAdmin || supabaseServer;
+  if (client) {
+    Promise.resolve(client.from('site_settings').upsert({
+      setting_key: 'notification_preferences',
+      setting_value: serverNotificationPreferences,
+      updated_at: new Date().toISOString()
+    })).catch((err: any) => console.warn('[WebPush] Failed to persist preferences:', err?.message));
+  }
+}
+
+async function requireAdminAuth(req: express.Request, res: express.Response): Promise<{ user: any } | null> {
+  const authHeader = req.headers['authorization'];
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    res.status(401).json({ error: 'Unauthorized: Admin authentication session is required.' });
+    return null;
+  }
+  const token = authHeader.substring(7);
+  if (!supabaseAdmin) {
+    res.status(500).json({ error: 'Server authentication client is not initialized.' });
+    return null;
+  }
+  const { data: userData, error: userErr } = await supabaseAdmin.auth.getUser(token);
+  if (userErr || !userData?.user) {
+    res.status(401).json({ error: 'Admin session expired or invalid. Please sign in again.' });
+    return null;
+  }
+  const user = userData.user;
+  const isAuthorizedAdmin = user.app_metadata?.role === 'admin' || user.user_metadata?.role === 'admin';
+  if (!isAuthorizedAdmin) {
+    res.status(403).json({ error: 'Forbidden: Administrator permissions required (role: admin).' });
+    return null;
+  }
+  return { user };
+}
+
+async function broadcastAdminNotification(notification: any) {
+  try {
+    if (supabaseAdmin) {
+      const channel = supabaseAdmin.channel('admin-notifications');
+      await channel.send({
+        type: 'broadcast',
+        event: notification.type || 'NEW_ORDER',
+        payload: notification
+      });
+      await channel.send({
+        type: 'broadcast',
+        event: 'NOTIFICATION_RECEIVED',
+        payload: notification
+      });
+    }
+  } catch (err: any) {
+    console.warn('[Realtime] Broadcast error:', err?.message);
+  }
+}
+
+async function sendWebPushToAdmins(payload: {
+  title: string;
+  body: string;
+  type?: string;
+  icon?: string;
+  badge?: string;
+  tag?: string;
+  data?: any;
+}) {
+  if (!vapidInitialized || !vapidPublicKey || !vapidPrivateKey) {
+    return { delivered: 0, failed: 0, reason: 'VAPID not initialized' };
+  }
+
+  // Check master and push channel toggles
+  if (serverNotificationPreferences.masterEnabled === false || serverNotificationPreferences.channels?.push === false) {
+    return { delivered: 0, failed: 0, reason: 'Push channel disabled in preferences' };
+  }
+
+  // Check specific event toggle
+  if (payload.type && serverNotificationPreferences.events) {
+    const eventMap: Record<string, string> = {
+      'NEW_ORDER': 'newOrder',
+      'NEW_PAYMENT_PROOF': 'newPaymentProof',
+      'PAYMENT_PROOF_SUBMITTED': 'newPaymentProof',
+      'PAYMENT_PROOF_RESUBMITTED': 'paymentResubmitted',
+      'PAYMENT_VERIFIED': 'paymentVerified',
+      'PAYMENT_ACTION_REQUIRED': 'paymentActionRequired',
+      'READY_TO_DISPATCH': 'readyToDispatch',
+      'LOW_STOCK': 'lowStock'
+    };
+    const eventKey = eventMap[payload.type];
+    if (eventKey && serverNotificationPreferences.events[eventKey] === false) {
+      return { delivered: 0, failed: 0, reason: `Event ${payload.type} disabled in preferences` };
+    }
+  }
+
+  const activeSubs = serverPushSubscriptions.filter(s => s.enabled);
+  if (activeSubs.length === 0) {
+    return { delivered: 0, failed: 0, reason: 'No active subscriptions' };
+  }
+
+  const pushString = JSON.stringify({
+    title: payload.title,
+    body: payload.body,
+    icon: payload.icon || '/pwa-192x192.png',
+    badge: payload.badge || '/favicon.png',
+    tag: payload.tag || (payload.data?.orderId ? `order-${payload.data.orderId}` : `gulpash-${Date.now()}`),
+    data: payload.data || { url: '/admin' }
+  });
+
+  let delivered = 0;
+  let failed = 0;
+  const deadEndpoints: string[] = [];
+
+  for (const sub of activeSubs) {
+    try {
+      await webPush.sendNotification(
+        {
+          endpoint: sub.endpoint,
+          keys: {
+            p256dh: sub.p256dh,
+            auth: sub.auth
+          }
+        },
+        pushString,
+        {
+          TTL: 86400,
+          urgency: 'high'
+        }
+      );
+      sub.last_success_at = new Date().toISOString();
+      sub.failure_count = 0;
+      delivered++;
+    } catch (err: any) {
+      failed++;
+      console.warn(`[WebPush] Push delivery failed (${err.statusCode || err.message})`);
+      if (err.statusCode === 410 || err.statusCode === 404) {
+        deadEndpoints.push(sub.endpoint);
+      } else {
+        sub.failure_count = (sub.failure_count || 0) + 1;
+        if (sub.failure_count >= 5) {
+          sub.enabled = false;
+        }
+      }
+    }
+  }
+
+  // Prune dead subscriptions
+  if (deadEndpoints.length > 0) {
+    const remaining = serverPushSubscriptions.filter(s => !deadEndpoints.includes(s.endpoint));
+    savePushSubscriptions(remaining);
+    console.log(`[WebPush] Pruned ${deadEndpoints.length} dead subscription(s)`);
+  } else if (delivered > 0) {
+    savePushSubscriptions(serverPushSubscriptions);
+  }
+
+  return { delivered, failed };
+}
+
 function addServerNotification(item: any) {
   try {
-    const id = `notif-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const id = item.id || `notif-${item.type || 'GENERAL'}-${item.orderId || item.productId || Date.now()}`;
+    // Deduplicate in-memory if already exists
+    const existing = serverNotifications.find(n => n.id === id || (n.type === item.type && item.orderId && n.orderId === item.orderId));
+    if (existing) {
+      return existing;
+    }
+
     const newNotif = {
       id,
       ...item,
-      timestamp: new Date().toISOString(),
+      timestamp: item.timestamp || new Date().toISOString(),
       read: false
     };
     serverNotifications.unshift(newNotif);
     if (serverNotifications.length > 150) {
       serverNotifications = serverNotifications.slice(0, 150);
     }
+
+    // Persist to Supabase site_settings asynchronously
+    const client = supabaseAdmin || supabaseServer;
+    if (client) {
+      Promise.resolve(client.from('site_settings').upsert({
+        setting_key: 'admin_notifications',
+        setting_value: serverNotifications,
+        updated_at: new Date().toISOString()
+      })).catch(() => {});
+    }
+
     return newNotif;
   } catch (e) {
     return null;
@@ -800,7 +1099,7 @@ app.post('/api/orders', (req, res) => {
         updatedAt: new Date().toISOString()
       });
       // Notify admin of new order
-      addServerNotification({
+      const notifItem = {
         type: 'NEW_ORDER',
         title: `New Order Placed: #${newOrder.orderNumber}`,
         message: `${newOrder.customer?.fullName || 'Customer'} ordered ${newOrder.items?.length || 1} item(s) totaling PKR ${newOrder.total.toLocaleString()} via ${newOrder.paymentMethod}.`,
@@ -809,7 +1108,64 @@ app.post('/api/orders', (req, res) => {
         orderTotal: newOrder.total,
         customerName: newOrder.customer?.fullName,
         paymentMethod: newOrder.paymentMethod
-      });
+      };
+      addServerNotification(notifItem);
+      broadcastAdminNotification(notifItem).catch(() => {});
+      sendWebPushToAdmins({
+        title: 'GulPash — New Order',
+        body: `Order #${newOrder.orderNumber} • Rs. ${newOrder.total.toLocaleString()}\nTap to view order.`,
+        type: 'NEW_ORDER',
+        tag: `order-${newOrder.id}`,
+        data: {
+          orderId: newOrder.id,
+          orderNumber: newOrder.orderNumber,
+          orderTotal: newOrder.total,
+          url: `/admin?tab=orders&orderId=${newOrder.id}`
+        }
+      }).catch((e) => console.warn('[WebPush] Error sending order push:', e));
+
+      // Stock tracking & Low Stock Alert
+      try {
+        const allProducts = readProducts();
+        let productsUpdated = false;
+        if (newOrder.items && Array.isArray(newOrder.items)) {
+          for (const item of newOrder.items) {
+            const pIdx = allProducts.findIndex(p => p.id === item.productId || (item.sku && p.sku === item.sku));
+            if (pIdx >= 0 && allProducts[pIdx].stock !== undefined) {
+              allProducts[pIdx].stock = Math.max(0, allProducts[pIdx].stock - (item.quantity || 1));
+              productsUpdated = true;
+              const threshold = serverNotificationPreferences?.lowStockThreshold || 3;
+              if (allProducts[pIdx].stock <= threshold) {
+                const lowStockNotif = {
+                  type: 'LOW_STOCK',
+                  title: `Low Stock Alert: ${allProducts[pIdx].title}`,
+                  message: `Only ${allProducts[pIdx].stock} unit(s) remaining for SKU ${allProducts[pIdx].sku || allProducts[pIdx].id}.`,
+                  productId: allProducts[pIdx].id,
+                  productTitle: allProducts[pIdx].title,
+                  stock: allProducts[pIdx].stock
+                };
+                addServerNotification(lowStockNotif);
+                broadcastAdminNotification(lowStockNotif).catch(() => {});
+                sendWebPushToAdmins({
+                  title: 'GulPash — Low Stock Alert',
+                  body: `${allProducts[pIdx].title}: Only ${allProducts[pIdx].stock} unit(s) remaining.`,
+                  type: 'LOW_STOCK',
+                  tag: `low-stock-${allProducts[pIdx].id}`,
+                  data: {
+                    productId: allProducts[pIdx].id,
+                    url: `/admin?tab=catalog&subview=inventory&productId=${allProducts[pIdx].id}`
+                  }
+                }).catch(() => {});
+              }
+            }
+          }
+          if (productsUpdated) {
+            writeProducts(allProducts);
+          }
+        }
+      } catch (err) {
+        console.warn('[Stock] Error processing stock update:', err);
+      }
     }
     writeOrders(orders);
 
@@ -855,6 +1211,25 @@ app.put('/api/orders/:id/status', (req, res) => {
     orders[idx].status = status;
     orders[idx].updatedAt = new Date().toISOString();
     writeOrders(orders);
+
+    if (status === 'Ready to Dispatch') {
+      const readyNotif = {
+        type: 'READY_TO_DISPATCH',
+        title: `Ready to Dispatch: #${orders[idx].orderNumber}`,
+        message: `Order #${orders[idx].orderNumber} has been packed and marked ready for courier handover.`,
+        orderId: orders[idx].id,
+        orderNumber: orders[idx].orderNumber
+      };
+      addServerNotification(readyNotif);
+      broadcastAdminNotification(readyNotif).catch(() => {});
+      sendWebPushToAdmins({
+        title: 'GulPash — Ready to Dispatch',
+        body: `Order #${orders[idx].orderNumber} ready for courier pickup.`,
+        type: 'READY_TO_DISPATCH',
+        data: { orderId: orders[idx].id, url: `/admin?tab=orders&orderId=${orders[idx].id}` }
+      }).catch(() => {});
+    }
+
     res.json({ success: true, order: orders[idx] });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -881,7 +1256,7 @@ app.put('/api/orders/:id/verify', (req, res) => {
     orders[idx].updatedAt = new Date().toISOString();
     writeOrders(orders);
 
-    addServerNotification({
+    const verifyNotif = {
       type: 'PAYMENT_VERIFIED',
       title: `Payment Verified: #${orders[idx].orderNumber}`,
       message: `Payment confirmed by ${verifiedBy || 'Admin'}. Order marked Ready to Dispatch.`,
@@ -890,7 +1265,15 @@ app.put('/api/orders/:id/verify', (req, res) => {
       orderTotal: orders[idx].total,
       customerName: orders[idx].customer?.fullName,
       paymentMethod: orders[idx].paymentMethod
-    });
+    };
+    addServerNotification(verifyNotif);
+    broadcastAdminNotification(verifyNotif).catch(() => {});
+    sendWebPushToAdmins({
+      title: 'GulPash — Payment Verified',
+      body: `Order #${orders[idx].orderNumber} payment confirmed. Ready for dispatch.`,
+      type: 'PAYMENT_VERIFIED',
+      data: { orderId: orders[idx].id, url: `/admin?tab=orders&orderId=${orders[idx].id}` }
+    }).catch(() => {});
 
     res.json({ success: true, order: orders[idx] });
   } catch (err: any) {
@@ -917,7 +1300,7 @@ app.put('/api/orders/:id/reject', (req, res) => {
     orders[idx].updatedAt = new Date().toISOString();
     writeOrders(orders);
 
-    addServerNotification({
+    const rejectNotif = {
       type: 'PAYMENT_ACTION_REQUIRED',
       title: `Payment Action Required: #${orders[idx].orderNumber}`,
       message: `Proof rejected: "${reason || 'Payment could not be verified'}". Order remains active.`,
@@ -926,7 +1309,15 @@ app.put('/api/orders/:id/reject', (req, res) => {
       orderTotal: orders[idx].total,
       customerName: orders[idx].customer?.fullName,
       paymentMethod: orders[idx].paymentMethod
-    });
+    };
+    addServerNotification(rejectNotif);
+    broadcastAdminNotification(rejectNotif).catch(() => {});
+    sendWebPushToAdmins({
+      title: 'GulPash — Payment Action Required',
+      body: `Order #${orders[idx].orderNumber}: Customer payment proof was rejected.`,
+      type: 'PAYMENT_ACTION_REQUIRED',
+      data: { orderId: orders[idx].id, url: `/admin?tab=orders&orderId=${orders[idx].id}` }
+    }).catch(() => {});
 
     res.json({ success: true, order: orders[idx] });
   } catch (err: any) {
@@ -956,7 +1347,7 @@ app.put('/api/orders/:id/proof', (req, res) => {
     orders[idx].updatedAt = new Date().toISOString();
     writeOrders(orders);
 
-    addServerNotification({
+    const proofNotif = {
       type: hadProof ? 'PAYMENT_PROOF_RESUBMITTED' : 'NEW_PAYMENT_PROOF',
       title: hadProof ? `Proof Resubmitted: #${orders[idx].orderNumber}` : `New Payment Receipt: #${orders[idx].orderNumber}`,
       message: `TID: ${transactionReference || 'Attached'}. Ready for merchant review.`,
@@ -965,7 +1356,15 @@ app.put('/api/orders/:id/proof', (req, res) => {
       orderTotal: orders[idx].total,
       customerName: orders[idx].customer?.fullName,
       paymentMethod: orders[idx].paymentMethod
-    });
+    };
+    addServerNotification(proofNotif);
+    broadcastAdminNotification(proofNotif).catch(() => {});
+    sendWebPushToAdmins({
+      title: hadProof ? 'GulPash — Payment Proof Resubmitted' : 'GulPash — New Payment Proof',
+      body: `Order #${orders[idx].orderNumber}: Customer submitted payment verification receipt.`,
+      type: hadProof ? 'PAYMENT_PROOF_RESUBMITTED' : 'NEW_PAYMENT_PROOF',
+      data: { orderId: orders[idx].id, url: `/admin?tab=orders&orderId=${orders[idx].id}` }
+    }).catch(() => {});
 
     res.json({ success: true, order: orders[idx] });
   } catch (err: any) {
@@ -1642,7 +2041,23 @@ app.put('/api/admin/cms/homepage', async (req, res) => {
   }
 });
 
-// ---------------- NOTIFICATIONS ENDPOINTS (Req 26-34) ----------------
+// ---------------- PWA & SERVICE WORKER ROUTES ----------------
+app.get('/sw.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+  res.setHeader('Service-Worker-Allowed', '/');
+  const swPath = path.join(process.cwd(), 'public', 'sw.js');
+  res.sendFile(swPath);
+});
+
+app.get(['/manifest.json', '/manifest.webmanifest'], (req, res) => {
+  res.setHeader('Content-Type', 'application/manifest+json');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  const mPath = path.join(process.cwd(), 'public', 'manifest.json');
+  res.sendFile(mPath);
+});
+
+// ---------------- NOTIFICATIONS & WEB PUSH ENDPOINTS ----------------
 app.get('/api/notifications', (req, res) => {
   const notifs = readNotifications();
   res.json(notifs);
@@ -1651,6 +2066,9 @@ app.get('/api/notifications', (req, res) => {
 app.post('/api/notifications', (req, res) => {
   try {
     const created = addServerNotification(req.body);
+    if (created) {
+      broadcastAdminNotification(created).catch(() => {});
+    }
     res.json({ success: true, notification: created });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -1677,8 +2095,185 @@ app.put('/api/notifications/read-all', (req, res) => {
   }
 });
 
+// Public endpoint: Get VAPID public key for browser push subscription
+app.get('/api/notifications/vapid-public-key', (req, res) => {
+  res.json({
+    publicKey: vapidPublicKey,
+    initialized: vapidInitialized
+  });
+});
+
+// Admin endpoint: List registered push subscriptions
+app.get('/api/admin/push-subscriptions', async (req, res) => {
+  const auth = await requireAdminAuth(req, res);
+  if (!auth) return;
+
+  const safeSubs = serverPushSubscriptions.map(s => ({
+    id: s.id,
+    endpoint: s.endpoint,
+    device_name: s.device_name || 'Admin Device',
+    user_agent: s.user_agent,
+    enabled: s.enabled !== false,
+    created_at: s.created_at,
+    updated_at: s.updated_at,
+    last_success_at: s.last_success_at,
+    failure_count: s.failure_count || 0
+  }));
+
+  res.json({ success: true, subscriptions: safeSubs });
+});
+
+// Admin endpoint: Register or update a push subscription
+app.post('/api/admin/push-subscriptions', async (req, res) => {
+  const auth = await requireAdminAuth(req, res);
+  if (!auth) return;
+
+  const { subscription, deviceName } = req.body || {};
+  if (!subscription || !subscription.endpoint || !subscription.keys?.p256dh || !subscription.keys?.auth) {
+    return res.status(400).json({ error: 'Invalid push subscription payload: endpoint and keys required' });
+  }
+
+  const existingIdx = serverPushSubscriptions.findIndex(s => s.endpoint === subscription.endpoint);
+  const now = new Date().toISOString();
+
+  const subRecord = {
+    id: existingIdx >= 0 ? serverPushSubscriptions[existingIdx].id : `sub-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`,
+    user_id: auth.user.id,
+    endpoint: subscription.endpoint,
+    p256dh: subscription.keys.p256dh,
+    auth: subscription.keys.auth,
+    device_name: deviceName || (existingIdx >= 0 ? serverPushSubscriptions[existingIdx].device_name : 'Admin Device'),
+    user_agent: req.headers['user-agent'] || '',
+    enabled: true,
+    created_at: existingIdx >= 0 ? serverPushSubscriptions[existingIdx].created_at : now,
+    updated_at: now,
+    last_success_at: existingIdx >= 0 ? serverPushSubscriptions[existingIdx].last_success_at : null,
+    failure_count: 0
+  };
+
+  if (existingIdx >= 0) {
+    serverPushSubscriptions[existingIdx] = subRecord;
+  } else {
+    serverPushSubscriptions.unshift(subRecord);
+  }
+
+  savePushSubscriptions(serverPushSubscriptions);
+
+  res.json({
+    success: true,
+    subscription: {
+      id: subRecord.id,
+      endpoint: subRecord.endpoint,
+      device_name: subRecord.device_name,
+      enabled: subRecord.enabled,
+      created_at: subRecord.created_at
+    }
+  });
+});
+
+// Admin endpoint: Toggle a push subscription
+app.put('/api/admin/push-subscriptions/:id/toggle', async (req, res) => {
+  const auth = await requireAdminAuth(req, res);
+  if (!auth) return;
+
+  const idx = serverPushSubscriptions.findIndex(s => s.id === req.params.id || s.endpoint === req.params.id);
+  if (idx === -1) {
+    return res.status(404).json({ error: 'Subscription not found' });
+  }
+
+  serverPushSubscriptions[idx].enabled = !serverPushSubscriptions[idx].enabled;
+  serverPushSubscriptions[idx].updated_at = new Date().toISOString();
+  savePushSubscriptions(serverPushSubscriptions);
+
+  res.json({ success: true, enabled: serverPushSubscriptions[idx].enabled });
+});
+
+// Admin endpoint: Delete a push subscription
+app.delete('/api/admin/push-subscriptions/:id', async (req, res) => {
+  const auth = await requireAdminAuth(req, res);
+  if (!auth) return;
+
+  const target = req.params.id;
+  const initialLen = serverPushSubscriptions.length;
+  serverPushSubscriptions = serverPushSubscriptions.filter(s => s.id !== target && s.endpoint !== target);
+  savePushSubscriptions(serverPushSubscriptions);
+
+  res.json({ success: true, removed: initialLen - serverPushSubscriptions.length });
+});
+
+// Admin endpoint: Send a test Web Push notification to current device or all enabled devices
+app.post('/api/admin/push-subscriptions/test', async (req, res) => {
+  const auth = await requireAdminAuth(req, res);
+  if (!auth) return;
+
+  const { endpoint } = req.body || {};
+  let targets = serverPushSubscriptions.filter(s => s.enabled);
+  if (endpoint) {
+    targets = targets.filter(s => s.endpoint === endpoint);
+  }
+
+  if (targets.length === 0) {
+    return res.status(400).json({
+      error: 'No active push subscription found for this device. Please enable notifications on this device first.'
+    });
+  }
+
+  const result = await sendWebPushToAdmins({
+    title: 'GulPash Admin — Push Alert Test',
+    body: 'Instant order notifications are active for this device.',
+    icon: '/pwa-192x192.png',
+    badge: '/favicon.png',
+    tag: `test-push-${Date.now()}`,
+    data: {
+      url: '/admin?tab=notifications',
+      type: 'TEST_PUSH',
+      timestamp: Date.now()
+    }
+  });
+
+  res.json({
+    success: true,
+    message: `Test notification dispatched to ${result.delivered} device(s).`,
+    ...result
+  });
+});
+
+// Admin endpoint: Get notification preferences
+app.get('/api/admin/notifications/preferences', async (req, res) => {
+  const auth = await requireAdminAuth(req, res);
+  if (!auth) return;
+
+  res.json({ success: true, preferences: serverNotificationPreferences });
+});
+
+// Admin endpoint: Update notification preferences
+app.put('/api/admin/notifications/preferences', async (req, res) => {
+  const auth = await requireAdminAuth(req, res);
+  if (!auth) return;
+
+  const incoming = req.body || {};
+  serverNotificationPreferences = {
+    ...serverNotificationPreferences,
+    ...incoming,
+    channels: {
+      ...serverNotificationPreferences.channels,
+      ...(incoming.channels || {})
+    },
+    events: {
+      ...serverNotificationPreferences.events,
+      ...(incoming.events || {})
+    }
+  };
+
+  saveNotificationPreferences(serverNotificationPreferences);
+  res.json({ success: true, preferences: serverNotificationPreferences });
+});
+
 // ---------------- DEV & PROD SETUP ----------------
 async function start() {
+  // Initialize VAPID keys and push state from Supabase
+  await initVapidAndPush();
+
   // Direct local product image serving
   app.use('/products', express.static(path.join(process.cwd(), 'public', 'products')));
 

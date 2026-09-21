@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGradM" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18181b"/>
+      <stop offset="50%" stop-color="#0f0f11"/>
+      <stop offset="100%" stop-color="#09090b"/>
+    </linearGradient>
+    <linearGradient id="goldGradM" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F5E6BE"/>
+      <stop offset="35%" stop-color="#D4AF37"/>
+      <stop offset="70%" stop-color="#AA8022"/>
+      <stop offset="100%" stop-color="#E5C378"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Full bleed background for Android masking -->
+  <rect width="512" height="512" fill="url(#bgGradM)"/>
+
+  <!-- Centered content safely inside 80% circle (radius 200) -->
+  <g transform="translate(256, 256) scale(0.82) translate(-256, -256)">
+    <!-- Outer Gold Border -->
+    <rect x="20" y="20" width="472" height="472" rx="84" fill="none" stroke="url(#goldGradM)" stroke-width="4" stroke-opacity="0.5"/>
+
+    <!-- Royal Crest -->
+    <g transform="translate(256, 140)">
+      <path d="M 0 -45 L 28 -20 L 0 5 L -28 -20 Z" fill="url(#goldGradM)"/>
+      <circle cx="-50" cy="-20" r="6" fill="url(#goldGradM)"/>
+      <circle cx="0" cy="-55" r="7" fill="url(#goldGradM)"/>
+      <circle cx="50" cy="-20" r="6" fill="url(#goldGradM)"/>
+      <path d="M -50 -10 L -30 18 L 30 18 L 50 -10 L 25 -2 L 0 10 L -25 -2 Z" fill="url(#goldGradM)"/>
+    </g>
+
+    <!-- Main GP Monogram -->
+    <text x="256" y="315" 
+          font-family="Playfair Display, Georgia, serif" 
+          font-size="160" 
+          font-weight="700" 
+          letter-spacing="6" 
+          text-anchor="middle" 
+          fill="url(#goldGradM)">
+      GP
+    </text>
+
+    <!-- Divider -->
+    <line x1="160" y1="355" x2="352" y2="355" stroke="url(#goldGradM)" stroke-width="2" stroke-linecap="round" stroke-opacity="0.7"/>
+
+    <!-- Wordmark -->
+    <text x="256" y="395" 
+          font-family="-apple-system, sans-serif" 
+          font-size="34" 
+          font-weight="700" 
+          letter-spacing="12" 
+          text-anchor="middle" 
+          fill="#FFFFFF">
+      GULPASH
+    </text>
+
+    <!-- ADMIN Badge -->
+    <g transform="translate(256, 440)">
+      <rect x="-65" y="-18" width="130" height="28" rx="6" fill="#27272A" stroke="url(#goldGradM)" stroke-width="1.5"/>
+      <text x="0" y="2" 
+            font-family="monospace, sans-serif" 
+            font-size="16" 
+            font-weight="800" 
+            letter-spacing="5" 
+            text-anchor="middle" 
+            fill="#F5E6BE">
+        ADMIN
+      </text>
+    </g>
+  </g>
+</svg>
