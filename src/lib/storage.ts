@@ -512,14 +512,39 @@ export const StorageService = {
     try {
       const res = await fetch('/api/orders', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify(order)
       });
-      const data = await res.json();
-      if (!res.ok || !data.success || !data.order) {
+
+      const contentType = res.headers.get('content-type') || '';
+      let data: any = null;
+
+      if (contentType.includes('application/json')) {
+        try {
+          data = await res.json();
+        } catch (jsonErr) {
+          console.error('[StorageService] Failed to parse JSON response despite application/json header:', jsonErr);
+        }
+      } else {
+        const rawText = await res.text().catch(() => '');
+        console.error('[StorageService] Server returned non-JSON response:', {
+          status: res.status,
+          statusText: res.statusText,
+          contentType,
+          rawPreview: rawText.slice(0, 200)
+        });
+      }
+
+      if (!res.ok || !data || !data.success || !data.order) {
+        const customerMessage = data?.error || (res.status >= 500 
+          ? "We couldn't submit your order. Your cart has been kept. Please try again."
+          : "We couldn't submit your order. Please review your details and try again.");
         return {
           success: false,
-          error: data.error || `Failed to submit order (Server responded with HTTP ${res.status}).`
+          error: customerMessage
         };
       }
 
@@ -531,10 +556,10 @@ export const StorageService = {
 
       return { success: true, order: canonicalOrder };
     } catch (err: any) {
-      console.error('[StorageService] Order submission network error:', err);
+      console.error('[StorageService] Order submission network/client error:', err);
       return {
         success: false,
-        error: err.message || 'Network connection error while placing order. Please check your connection and retry.'
+        error: "We couldn't submit your order due to a network connection issue. Your cart has been kept. Please check your connection and try again."
       };
     }
   },

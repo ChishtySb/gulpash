@@ -1,4 +1,4 @@
-import { getSupabaseAdmin } from '../orderPipeline';
+import { getSupabaseAdmin } from '../_orderPipeline.ts';
 
 export default async function handler(req: any, res: any) {
   res.setHeader('Access-Control-Allow-Origin', '*');

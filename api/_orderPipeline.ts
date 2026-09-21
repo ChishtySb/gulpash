@@ -332,20 +332,19 @@ export async function createAuthoritativeOrder(orderData: any): Promise<{
       orderNumber = `GP-${Math.floor(10000 + Math.random() * 90000)}`;
     }
 
-    // Strict constraint mapping for Postgres schema
-    // 1. payment_method: 'Cash on Delivery (COD)' OR 'Direct Bank Transfer'
-    const rawMethod = String(orderData.paymentMethod || '').toLowerCase();
-    const dbPaymentMethod = (rawMethod.includes('cash on delivery') || rawMethod.includes('cod'))
-      ? 'Cash on Delivery (COD)'
-      : 'Direct Bank Transfer';
+    // Strict constraint mapping for live Postgres schema
+    // 1. orders_payment_method_check: ONLY 'Cash on Delivery (COD)' OR 'Direct Bank Transfer'
+    const rawMethod = String(orderData.paymentMethod || '').trim();
+    const isCod = rawMethod.toLowerCase().includes('cash on delivery') || rawMethod.toLowerCase().includes('cod');
+    const dbPaymentMethod = isCod ? 'Cash on Delivery (COD)' : 'Direct Bank Transfer';
 
-    // 2. payment_status: 'Unpaid' OR 'Paid'
-    const rawPayStatus = String(orderData.paymentStatus || '');
-    const dbPaymentStatus = rawPayStatus.toLowerCase() === 'paid' ? 'Paid' : 'Unpaid';
+    // 2. orders_payment_status_check: ONLY 'Unpaid' OR 'Paid'
+    const rawPayStatus = String(orderData.paymentStatus || '').toLowerCase();
+    const dbPaymentStatus = rawPayStatus === 'paid' ? 'Paid' : 'Unpaid';
 
-    // 3. order_status: 'Pending' | 'Confirmed' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled' | 'Returned'
-    const allowedOrderStatuses = ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'];
-    const dbOrderStatus = allowedOrderStatuses.includes(orderData.status) ? orderData.status : 'Pending';
+    // 3. orders_order_status_check: ONLY 'Pending' | 'Confirmed' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled' | 'Returned'
+    const dbAllowedOrderStatuses = ['Pending', 'Confirmed', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Returned'];
+    const dbOrderStatus = dbAllowedOrderStatuses.includes(orderData.status) ? orderData.status : 'Pending';
 
     // Calculate verified totals
     const subtotal = Number(orderData.subtotal) || 0;
@@ -355,6 +354,24 @@ export async function createAuthoritativeOrder(orderData: any): Promise<{
 
     const client = getSupabaseAdmin();
 
+    const cleanEmail = (customer.email || orderData.customerEmail || '').trim();
+    const customerEmail = cleanEmail || `${phone.replace(/\D/g, '') || 'guest'}@customer.gulpash.online`;
+
+    const cleanNotes = (customer.orderNotes || orderData.orderNotes || '').trim();
+    let finalOrderNotes = cleanNotes;
+    
+    // Store customer's specific chosen payment method & proof metadata in order_notes
+    const methodNote = !isCod ? `[Method: ${rawMethod || 'Direct Bank Transfer'}]` : '';
+    let proofNote = '';
+    if (orderData.paymentProof) {
+      const proofStr = typeof orderData.paymentProof === 'string' 
+        ? orderData.paymentProof 
+        : `Ref: ${orderData.paymentProof.transactionReference || orderData.paymentProof.trxId || 'N/A'} | Receipt: ${orderData.paymentProof.screenshotUrl || 'N/A'}`;
+      proofNote = `[Payment Proof] ${proofStr}`;
+    }
+    const notesParts = [cleanNotes, methodNote, proofNote].filter(Boolean);
+    finalOrderNotes = notesParts.join(' | ');
+
     // 1. Insert Order Header Row
     const { data: orderRow, error: orderError } = await client
       .from('orders')
@@ -362,15 +379,15 @@ export async function createAuthoritativeOrder(orderData: any): Promise<{
         id: orderId,
         order_number: orderNumber,
         customer_name: fullName,
-        customer_email: (customer.email || orderData.customerEmail || '').trim(),
+        customer_email: customerEmail,
         customer_phone: phone,
-        customer_whatsapp: (customer.whatsapp || customer.phone || phone).trim(),
+        customer_whatsapp: (customer.whatsapp || customer.phone || phone).trim() || null,
         address: address,
         apartment: (customer.apartment || orderData.apartment || '').trim() || null,
         city: city,
         province: (customer.province || orderData.province || 'Punjab').trim(),
         postal_code: (customer.postalCode || orderData.postalCode || '').trim() || null,
-        order_notes: (customer.orderNotes || orderData.orderNotes || '').trim() || null,
+        order_notes: finalOrderNotes || null,
         subtotal: subtotal,
         shipping_fee: shippingFee,
         discount: discount,
@@ -412,10 +429,13 @@ export async function createAuthoritativeOrder(orderData: any): Promise<{
     }
 
     // Prepare and Insert Order Items Rows
-    const orderItemsRows = rawItems.map((it: any) => {
+    const orderItemsRows = rawItems.map((it: any, idx: number) => {
       const validProductId = (isUUID(it.productId) && existingProductIds.has(it.productId))
         ? it.productId
         : null;
+
+      const rawSku = (typeof it.sku === 'string' && it.sku.trim().length > 0) ? it.sku.trim() : null;
+      const guaranteedSku = rawSku || (validProductId ? `SKU-${validProductId.slice(0, 8).toUpperCase()}` : `GP-ITEM-${idx + 1}`);
 
       return {
         order_id: orderId,
@@ -425,7 +445,7 @@ export async function createAuthoritativeOrder(orderData: any): Promise<{
         price: Number(it.price) || 0,
         quantity: Math.max(1, Number(it.quantity) || 1),
         image_url: it.image || it.imageUrl || it.product?.images?.[0] || null,
-        sku: it.sku || null
+        sku: guaranteedSku
       };
     });
 

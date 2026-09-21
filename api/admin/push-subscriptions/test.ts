@@ -1,4 +1,4 @@
-import { getSupabaseAdmin, sendWebPushToAdmins } from '../../orderPipeline';
+import { getSupabaseAdmin, sendWebPushToAdmins } from '../../_orderPipeline.ts';
 
 async function checkAdminAuth(req: any) {
   const authHeader = req.headers['authorization'] || req.headers['Authorization'];
