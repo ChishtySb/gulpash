@@ -10,6 +10,7 @@ import { migrateHeroToSlides, syncSlideToLegacyHero, DEFAULT_HERO_SLIDER_SETTING
 import { normalizeEditorialCampaign, syncCampaignToLegacyBanner } from './campaignHelper';
 import { NotificationService } from './notifications';
 import { adminAuthService } from './adminAuth';
+import { safeFetchJson } from './safeApi';
 import { 
   resolveWhatsAppSettings, 
   syncWhatsAppToSupabase, 
@@ -493,14 +494,11 @@ export const StorageService = {
 
   async fetchOrdersAsync(): Promise<Order[]> {
     try {
-      const res = await fetch('/api/orders');
-      if (res.ok) {
-        const serverOrders = await res.json();
-        if (Array.isArray(serverOrders)) {
-          localStorage.setItem(KEYS.ORDERS, JSON.stringify(serverOrders));
-          notifyChange('orders');
-          return serverOrders;
-        }
+      const res = await safeFetchJson<Order[]>('/api/orders', undefined, 'Could not fetch orders');
+      if (res.success && Array.isArray(res.data)) {
+        localStorage.setItem(KEYS.ORDERS, JSON.stringify(res.data));
+        notifyChange('orders');
+        return res.data;
       }
     } catch (err) {
       console.warn('[StorageService] Could not fetch server orders, using cached:', err);
@@ -510,45 +508,28 @@ export const StorageService = {
 
   async submitStorefrontOrder(order: Order): Promise<{ success: boolean; order?: Order; error?: string }> {
     try {
-      const res = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+      const res = await safeFetchJson<{ success: boolean; order?: Order; error?: string }>(
+        '/api/orders',
+        {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify(order)
         },
-        body: JSON.stringify(order)
-      });
+        "We couldn't submit your order. Your cart has been kept. Please try again."
+      );
 
-      const contentType = res.headers.get('content-type') || '';
-      let data: any = null;
-
-      if (contentType.includes('application/json')) {
-        try {
-          data = await res.json();
-        } catch (jsonErr) {
-          console.error('[StorageService] Failed to parse JSON response despite application/json header:', jsonErr);
-        }
-      } else {
-        const rawText = await res.text().catch(() => '');
-        console.error('[StorageService] Server returned non-JSON response:', {
-          status: res.status,
-          statusText: res.statusText,
-          contentType,
-          rawPreview: rawText.slice(0, 200)
-        });
-      }
-
-      if (!res.ok || !data || !data.success || !data.order) {
-        const customerMessage = data?.error || (res.status >= 500 
-          ? "We couldn't submit your order. Your cart has been kept. Please try again."
-          : "We couldn't submit your order. Please review your details and try again.");
+      if (!res.success || !res.data || !res.data.success || !res.data.order) {
+        const customerMessage = res.data?.error || res.error || "We couldn't submit your order. Your cart has been kept. Please try again.";
         return {
           success: false,
           error: customerMessage
         };
       }
 
-      const canonicalOrder = data.order as Order;
+      const canonicalOrder = res.data.order as Order;
       const currentOrders = this.getOrders().filter(o => o.id !== canonicalOrder.id && o.orderNumber !== canonicalOrder.orderNumber);
       currentOrders.unshift(canonicalOrder);
       localStorage.setItem(KEYS.ORDERS, JSON.stringify(currentOrders));
@@ -709,17 +690,14 @@ export const StorageService = {
         return dataUrl;
       }
 
-      const res = await fetch('/api/payment-proof/upload', {
+      const res = await safeFetchJson<{ url?: string }>('/api/payment-proof/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ data: dataUrl })
       });
 
-      if (res.ok) {
-        const json = await res.json();
-        if (json.url) {
-          return json.url;
-        }
+      if (res.success && res.data?.url) {
+        return res.data.url;
       }
     } catch (err) {
       console.error('Error uploading payment proof to server:', err);
@@ -876,35 +854,29 @@ export const StorageService = {
     // 2. Authoritative privileged Server Admin CMS endpoint
     // Calls PUT /api/admin/cms/homepage which independently verifies JWT + role='admin'
     // and uses SUPABASE_SERVICE_ROLE_KEY to update the canonical homepage_cms row.
-    let serverRes: Response;
-    try {
-      serverRes = await fetch('/api/admin/cms/homepage', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          hero: cms.hero,
-          heroSlides: cms.heroSlides,
-          heroSliderSettings: cms.heroSliderSettings,
-          editorialCampaign: cms.editorialCampaign,
-          cms
-        })
-      });
-    } catch (networkErr: any) {
-      throw new Error(`Admin CMS network connection failed: ${networkErr?.message || 'Server unreachable'}`);
-    }
+    const serverRes = await safeFetchJson<any>('/api/admin/cms/homepage', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        hero: cms.hero,
+        heroSlides: cms.heroSlides,
+        heroSliderSettings: cms.heroSliderSettings,
+        editorialCampaign: cms.editorialCampaign,
+        cms
+      })
+    });
 
-    if (!serverRes.ok) {
-      const errJson = await serverRes.json().catch(() => ({}));
+    if (!serverRes.success) {
       if (serverRes.status === 401) {
         throw new Error('Admin session expired or invalid. Please sign in again.');
       }
       if (serverRes.status === 403) {
         throw new Error('Access denied: Your account does not have administrator permissions (role: admin required).');
       }
-      throw new Error(errJson.error || `Failed to persist homepage CMS (Status ${serverRes.status})`);
+      throw new Error(serverRes.error || `Failed to persist homepage CMS (Status ${serverRes.status})`);
     }
 
     // 3. Persist to localStorage and notify UI only after confirmed server database success
@@ -1008,23 +980,21 @@ export const StorageService = {
 
     // 2. Fetch authoritative settings from server
     try {
-      const res = await fetch('/api/settings');
-      if (res.ok) {
-        const serverSettings = await res.json();
-        if (serverSettings && serverSettings.payments) {
-          // If server had settings, merge with WhatsApp configuration
-          settings = {
-            ...settings,
-            ...serverSettings,
-            whatsappNumber: serverSettings.whatsappNumber?.includes('8489999')
-              ? DEFAULT_WHATSAPP_NUMBER_VISIBLE 
-              : (serverSettings.whatsappNumber || DEFAULT_WHATSAPP_NUMBER_VISIBLE),
-            whatsappAssistance: resolveWhatsAppSettings(serverSettings)
-          };
-          localStorage.setItem(KEYS.SETTINGS, JSON.stringify(settings));
-          notifyChange('settings');
-          return settings;
-        }
+      const res = await safeFetchJson<any>('/api/settings');
+      if (res.success && res.data && res.data.payments) {
+        const serverSettings = res.data;
+        // If server had settings, merge with WhatsApp configuration
+        settings = {
+          ...settings,
+          ...serverSettings,
+          whatsappNumber: serverSettings.whatsappNumber?.includes('8489999')
+            ? DEFAULT_WHATSAPP_NUMBER_VISIBLE 
+            : (serverSettings.whatsappNumber || DEFAULT_WHATSAPP_NUMBER_VISIBLE),
+          whatsappAssistance: resolveWhatsAppSettings(serverSettings)
+        };
+        localStorage.setItem(KEYS.SETTINGS, JSON.stringify(settings));
+        notifyChange('settings');
+        return settings;
       }
     } catch (err) {
       console.warn('Could not fetch server settings, using cached:', err);
@@ -1416,7 +1386,7 @@ export const StorageService = {
     // 3. PRIMARY ARCHITECTURE: Request short-lived signed upload target from Admin API
     // Request payload is only ~200 bytes of metadata (ZERO file bytes through Vercel/serverless)
     try {
-      const authRes = await fetch('/api/admin/storage/create-upload', {
+      const authRes = await safeFetchJson<any>('/api/admin/storage/create-upload', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -1431,50 +1401,47 @@ export const StorageService = {
         })
       });
 
-      if (authRes.ok) {
-        const authData = await authRes.json();
-        if (authData.signedUrl && authData.path) {
-          // BROWSER DIRECT-TO-SUPABASE STORAGE UPLOAD (Raw File object via XMLHttpRequest)
-          // Progress events are reported directly from the browser's upload socket
-          await new Promise<void>((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open('PUT', authData.signedUrl);
-            xhr.setRequestHeader('Content-Type', mimeType);
+      if (authRes.success && authRes.data?.signedUrl && authRes.data?.path) {
+        const authData = authRes.data;
+        // BROWSER DIRECT-TO-SUPABASE STORAGE UPLOAD (Raw File object via XMLHttpRequest)
+        // Progress events are reported directly from the browser's upload socket
+        await new Promise<void>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open('PUT', authData.signedUrl);
+          xhr.setRequestHeader('Content-Type', mimeType);
 
-            if (xhr.upload && onProgress) {
-              xhr.upload.onprogress = (evt) => {
-                if (evt.lengthComputable) {
-                  const pct = Math.min(99, Math.round((evt.loaded / evt.total) * 100));
-                  onProgress(pct);
-                }
-              };
-            }
-
-            xhr.onload = () => {
-              if (xhr.status >= 200 && xhr.status < 300) {
-                if (onProgress) onProgress(100);
-                resolve();
-              } else {
-                reject(new Error(`Direct Supabase Storage upload failed with status ${xhr.status}`));
+          if (xhr.upload && onProgress) {
+            xhr.upload.onprogress = (evt) => {
+              if (evt.lengthComputable) {
+                const pct = Math.min(99, Math.round((evt.loaded / evt.total) * 100));
+                onProgress(pct);
               }
             };
+          }
 
-            xhr.onerror = () => reject(new Error('Network error during direct Supabase Storage upload'));
-            xhr.ontimeout = () => reject(new Error('Direct Supabase Storage upload timed out'));
-            xhr.send(file);
-          });
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              if (onProgress) onProgress(100);
+              resolve();
+            } else {
+              reject(new Error(`Direct Supabase Storage upload failed with status ${xhr.status}`));
+            }
+          };
 
-          uploadedPath = authData.path;
-          publicUrl = authData.publicUrl;
-        }
+          xhr.onerror = () => reject(new Error('Network error during direct Supabase Storage upload'));
+          xhr.ontimeout = () => reject(new Error('Direct Supabase Storage upload timed out'));
+          xhr.send(file);
+        });
+
+        uploadedPath = authData.path;
+        publicUrl = authData.publicUrl;
       } else {
-        const errJson = await authRes.json().catch(() => ({}));
         if (authRes.status === 401) {
           throw new Error('Admin session expired or invalid. Please sign in again.');
         } else if (authRes.status === 403) {
           throw new Error('Your account does not have admin permissions to upload media.');
         } else {
-          directUploadError = errJson.error || `Failed to create upload authorization (status ${authRes.status})`;
+          directUploadError = authRes.error || `Failed to create upload authorization (status ${authRes.status})`;
         }
       }
     } catch (err: any) {
@@ -1503,7 +1470,7 @@ export const StorageService = {
         const cleanPrefix = pathPrefix.replace(/^\/+|\/+$/g, '');
         const fallbackStoragePath = cleanPrefix ? `${cleanPrefix}/${cleanName}` : cleanName;
 
-        const serverRes = await fetch('/api/admin/storage/upload', {
+        const serverRes = await safeFetchJson<any>('/api/admin/storage/upload', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -1517,10 +1484,9 @@ export const StorageService = {
           })
         });
 
-        if (serverRes.ok) {
-          const serverJson = await serverRes.json();
-          uploadedPath = serverJson.storagePath;
-          publicUrl = serverJson.url;
+        if (serverRes.success && serverRes.data) {
+          uploadedPath = serverRes.data.storagePath;
+          publicUrl = serverRes.data.url;
         }
       } catch (fbErr) {
         console.warn('Fallback upload also failed:', fbErr);
@@ -1593,7 +1559,7 @@ export const StorageService = {
         reader.onload = async () => {
           const base64Data = reader.result as string;
           try {
-            const res = await fetch('/api/media/upload', {
+            const res = await safeFetchJson<any>('/api/media/upload', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -1608,12 +1574,11 @@ export const StorageService = {
               })
             });
 
-            if (res.ok) {
-              const json = await res.json();
-              if (json.asset) {
-                this.saveMediaAsset(json.asset);
+            if (res.success && res.data) {
+              if (res.data.asset) {
+                this.saveMediaAsset(res.data.asset);
               }
-              resolve({ url: json.url || base64Data, asset: json.asset });
+              resolve({ url: res.data.url || base64Data, asset: res.data.asset });
               return;
             }
           } catch (serverErr) {
@@ -1747,29 +1712,26 @@ export const StorageService = {
   },
 
   async fetchInitialDataAsync(): Promise<void> {
-    if (typeof fetch === 'undefined') return;
+    if (typeof window === 'undefined') return;
     try {
       const [pRes, cRes, colRes, sRes, oRes, cmsRes] = await Promise.allSettled([
-        fetch('/api/products'),
-        fetch('/api/categories'),
-        fetch('/api/collections'),
-        fetch('/api/settings'),
-        fetch('/api/orders'),
-        fetch('/api/cms')
+        safeFetchJson<any[]>('/api/products'),
+        safeFetchJson<any[]>('/api/categories'),
+        safeFetchJson<any[]>('/api/collections'),
+        safeFetchJson<any>('/api/settings'),
+        safeFetchJson<any[]>('/api/orders'),
+        safeFetchJson<any>('/api/cms')
       ]);
 
       let hasChanges = false;
 
-      if (pRes.status === 'fulfilled' && pRes.value.ok) {
-        const prods = await pRes.value.json();
-        if (Array.isArray(prods) && prods.length > 0) {
-          localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(prods));
-          hasChanges = true;
-        }
+      if (pRes.status === 'fulfilled' && pRes.value.success && Array.isArray(pRes.value.data) && pRes.value.data.length > 0) {
+        localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(pRes.value.data));
+        hasChanges = true;
       }
 
-      if (cmsRes.status === 'fulfilled' && cmsRes.value.ok) {
-        const cmsData = await cmsRes.value.json();
+      if (cmsRes.status === 'fulfilled' && cmsRes.value.success && cmsRes.value.data) {
+        const cmsData = cmsRes.value.data;
         if (cmsData && (cmsData.hero || cmsData.record?.data || cmsData.editorialCampaign)) {
           const heroPayload = cmsData.hero || cmsData.record?.data;
           const rawSlides = heroPayload?.heroSlides || heroPayload?.slides || cmsData.heroSlides || cmsData.slides;
@@ -1832,36 +1794,24 @@ export const StorageService = {
         // Non-fatal public read note
       }
 
-      if (colRes.status === 'fulfilled' && colRes.value.ok) {
-        const cols = await colRes.value.json();
-        if (Array.isArray(cols) && cols.length > 0) {
-          localStorage.setItem(KEYS.COLLECTIONS, JSON.stringify(cols));
-          hasChanges = true;
-        }
+      if (colRes.status === 'fulfilled' && colRes.value.success && Array.isArray(colRes.value.data) && colRes.value.data.length > 0) {
+        localStorage.setItem(KEYS.COLLECTIONS, JSON.stringify(colRes.value.data));
+        hasChanges = true;
       }
 
-      if (cRes.status === 'fulfilled' && cRes.value.ok) {
-        const cats = await cRes.value.json();
-        if (Array.isArray(cats) && cats.length > 0) {
-          localStorage.setItem(KEYS.CATEGORIES, JSON.stringify(cats));
-          hasChanges = true;
-        }
+      if (cRes.status === 'fulfilled' && cRes.value.success && Array.isArray(cRes.value.data) && cRes.value.data.length > 0) {
+        localStorage.setItem(KEYS.CATEGORIES, JSON.stringify(cRes.value.data));
+        hasChanges = true;
       }
 
-      if (sRes.status === 'fulfilled' && sRes.value.ok) {
-        const sets = await sRes.value.json();
-        if (sets && sets.payments) {
-          localStorage.setItem(KEYS.SETTINGS, JSON.stringify(sets));
-          hasChanges = true;
-        }
+      if (sRes.status === 'fulfilled' && sRes.value.success && sRes.value.data && sRes.value.data.payments) {
+        localStorage.setItem(KEYS.SETTINGS, JSON.stringify(sRes.value.data));
+        hasChanges = true;
       }
 
-      if (oRes.status === 'fulfilled' && oRes.value.ok) {
-        const ords = await oRes.value.json();
-        if (Array.isArray(ords)) {
-          localStorage.setItem(KEYS.ORDERS, JSON.stringify(ords));
-          hasChanges = true;
-        }
+      if (oRes.status === 'fulfilled' && oRes.value.success && Array.isArray(oRes.value.data)) {
+        localStorage.setItem(KEYS.ORDERS, JSON.stringify(oRes.value.data));
+        hasChanges = true;
       }
 
       if (hasChanges) {

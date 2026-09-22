@@ -59,7 +59,11 @@ export const NotificationsSection: React.FC<NotificationsSectionProps> = ({
 
     setIsLoadingDevices(true);
     try {
-      const list = await NotificationService.listSubscriptions();
+      let list = await NotificationService.listSubscriptions();
+      if (isSub && list.length === 0) {
+        await NotificationService.syncCurrentDeviceSubscription();
+        list = await NotificationService.listSubscriptions();
+      }
       setDevices(list);
     } catch {
       // ignore
@@ -70,6 +74,9 @@ export const NotificationsSection: React.FC<NotificationsSectionProps> = ({
 
   useEffect(() => {
     refreshStatus();
+    NotificationService.fetchServerNotifications().then(list => {
+      if (list && list.length > 0) setNotifications(list);
+    });
 
     const unsubNotifs = NotificationService.subscribe(() => {
       setNotifications(NotificationService.getNotifications());

@@ -1,6 +1,7 @@
 import { AdminNotification, NotificationEventType, AdminPushSubscription, AdminNotificationPreferences } from '../types';
 import { getSupabaseClient } from './supabaseClient';
 import { adminAuthService } from './adminAuth';
+import { safeFetchJson } from './safeApi';
 
 const NOTIFICATIONS_KEY = 'gulpash_admin_notifications_v1';
 const PREFERENCES_KEY = 'gulpash_notification_preferences_v1';
@@ -395,10 +396,15 @@ class NotificationManager {
   // ---------------- WEB PUSH SUBSCRIPTIONS ----------------
   public async getVapidPublicKey(): Promise<string | null> {
     try {
-      const res = await fetch('/api/notifications/vapid-public-key');
-      if (!res.ok) return null;
-      const data = await res.json();
-      return data.publicKey || null;
+      const res = await safeFetchJson<{ publicKey?: string }>(
+        '/api/notifications/vapid-public-key',
+        undefined,
+        'VAPID key unavailable'
+      );
+      if (res.success && res.data?.publicKey) {
+        return res.data.publicKey;
+      }
+      return null;
     } catch (err) {
       console.warn('[WebPush] Error fetching VAPID key:', err);
       return null;
@@ -452,21 +458,24 @@ class NotificationManager {
 
       // Send to server with genuine admin token
       const token = await adminAuthService.getCurrentAccessToken();
-      const res = await fetch('/api/admin/push-subscriptions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      const res = await safeFetchJson(
+        '/api/admin/push-subscriptions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify({
+            subscription: sub.toJSON(),
+            deviceName: deviceName || this.detectDeviceName()
+          })
         },
-        body: JSON.stringify({
-          subscription: sub.toJSON(),
-          deviceName: deviceName || this.detectDeviceName()
-        })
-      });
+        'Server rejected push registration.'
+      );
 
-      if (!res.ok) {
-        const errJson = await res.json().catch(() => ({}));
-        return { success: false, error: errJson.error || 'Server rejected push registration.' };
+      if (!res.success) {
+        return { success: false, error: res.error || 'Server rejected push registration.' };
       }
 
       window.dispatchEvent(new CustomEvent('gulpash_push_subscription_changed'));
@@ -474,6 +483,33 @@ class NotificationManager {
     } catch (err: any) {
       console.error('[WebPush] Subscription error:', err);
       return { success: false, error: err.message || 'Subscription failed.' };
+    }
+  }
+
+  public async syncCurrentDeviceSubscription(): Promise<void> {
+    try {
+      const sub = await this.getPushSubscription();
+      if (!sub) return;
+      const token = await adminAuthService.getCurrentAccessToken();
+      if (!token) return;
+
+      await safeFetchJson(
+        '/api/admin/push-subscriptions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            subscription: sub.toJSON(),
+            deviceName: this.detectDeviceName()
+          })
+        },
+        'Background sync'
+      );
+    } catch (e) {
+      console.warn('[WebPush] Automatic device sync skipped:', e);
     }
   }
 
@@ -490,10 +526,13 @@ class NotificationManager {
         // Notify server
         const token = await adminAuthService.getCurrentAccessToken();
         if (token) {
-          fetch(`/api/admin/push-subscriptions/${encodeURIComponent(endpoint)}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
-          }).catch(() => {});
+          safeFetchJson(
+            `/api/admin/push-subscriptions/${encodeURIComponent(endpoint)}`,
+            {
+              method: 'DELETE',
+              headers: { 'Authorization': `Bearer ${token}` }
+            }
+          ).catch(() => {});
         }
       }
 
@@ -509,12 +548,18 @@ class NotificationManager {
       const token = await adminAuthService.getCurrentAccessToken();
       if (!token) return [];
 
-      const res = await fetch('/api/admin/push-subscriptions', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!res.ok) return [];
-      const data = await res.json();
-      return data.subscriptions || [];
+      const res = await safeFetchJson<{ subscriptions?: AdminPushSubscription[] }>(
+        '/api/admin/push-subscriptions',
+        {
+          headers: { 'Authorization': `Bearer ${token}` }
+        },
+        'Could not list subscriptions'
+      );
+
+      if (res.success && Array.isArray(res.data?.subscriptions)) {
+        return res.data.subscriptions;
+      }
+      return [];
     } catch {
       return [];
     }
@@ -525,11 +570,31 @@ class NotificationManager {
       const token = await adminAuthService.getCurrentAccessToken();
       if (!token) return false;
 
-      const res = await fetch(`/api/admin/push-subscriptions/${encodeURIComponent(id)}/toggle`, {
-        method: 'PUT',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      return res.ok;
+      // 1. Try dynamic route
+      const res = await safeFetchJson(
+        `/api/admin/push-subscriptions/${encodeURIComponent(id)}`,
+        {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}` }
+        }
+      );
+
+      if (res.success) return true;
+
+      // 2. Fallback to POST action
+      const fallback = await safeFetchJson(
+        '/api/admin/push-subscriptions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ action: 'toggle', id })
+        }
+      );
+
+      return fallback.success;
     } catch {
       return false;
     }
@@ -540,11 +605,31 @@ class NotificationManager {
       const token = await adminAuthService.getCurrentAccessToken();
       if (!token) return false;
 
-      const res = await fetch(`/api/admin/push-subscriptions/${encodeURIComponent(id)}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      return res.ok;
+      // 1. Try dynamic route
+      const res = await safeFetchJson(
+        `/api/admin/push-subscriptions/${encodeURIComponent(id)}`,
+        {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        }
+      );
+
+      if (res.success) return true;
+
+      // 2. Fallback to POST action
+      const fallback = await safeFetchJson(
+        '/api/admin/push-subscriptions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ action: 'delete', id })
+        }
+      );
+
+      return fallback.success;
     } catch {
       return false;
     }
@@ -558,24 +643,37 @@ class NotificationManager {
       }
 
       const currentSub = await this.getPushSubscription();
-      const res = await fetch('/api/admin/push-subscriptions/test', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+      const res = await safeFetchJson<{ message?: string; error?: string }>(
+        '/api/admin/push-subscriptions/test',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            endpoint: currentSub?.endpoint || null
+          })
         },
-        body: JSON.stringify({
-          endpoint: currentSub?.endpoint || null
-        })
-      });
+        'Notification service is temporarily unavailable. Please retry.'
+      );
 
-      const data = await res.json();
-      if (!res.ok) {
-        return { success: false, error: data.error || 'Failed to dispatch test notification.' };
+      if (!res.success) {
+        return {
+          success: false,
+          error: res.error || 'Notification service is temporarily unavailable. Please retry.'
+        };
       }
-      return { success: true, message: data.message || 'Test push sent successfully!' };
+
+      return {
+        success: true,
+        message: res.data?.message || 'Test push notification dispatched successfully!'
+      };
     } catch (err: any) {
-      return { success: false, error: err.message || 'Network error sending test push.' };
+      return {
+        success: false,
+        error: 'Notification service is temporarily unavailable. Please retry.'
+      };
     }
   }
 
@@ -617,7 +715,7 @@ class NotificationManager {
 
       const token = await adminAuthService.getCurrentAccessToken();
       if (token) {
-        fetch('/api/admin/notifications/preferences', {
+        safeFetchJson('/api/admin/notifications/preferences', {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -649,13 +747,14 @@ class NotificationManager {
 
   public async fetchServerNotifications(): Promise<AdminNotification[]> {
     try {
-      const res = await fetch('/api/notifications');
-      if (res.ok) {
-        const list = await res.json();
-        if (Array.isArray(list)) {
-          this.saveNotifications(list);
-          return list;
-        }
+      const res = await safeFetchJson<AdminNotification[]>(
+        '/api/notifications',
+        undefined,
+        'Could not fetch notifications'
+      );
+      if (res.success && Array.isArray(res.data)) {
+        this.saveNotifications(res.data);
+        return res.data;
       }
     } catch {}
     return this.getNotifications();
@@ -705,8 +804,8 @@ class NotificationManager {
       window.dispatchEvent(new CustomEvent('gulpash_in_app_popup', { detail: newNotification }));
     }
 
-    if (typeof fetch !== 'undefined') {
-      fetch('/api/notifications', {
+    if (typeof window !== 'undefined') {
+      safeFetchJson('/api/notifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newNotification)
@@ -717,16 +816,16 @@ class NotificationManager {
   public markAsRead(id: string) {
     const list = this.getNotifications().map(n => n.id === id ? { ...n, read: true } : n);
     this.saveNotifications(list);
-    if (typeof fetch !== 'undefined') {
-      fetch(`/api/notifications/${id}/read`, { method: 'PUT' }).catch(() => {});
+    if (typeof window !== 'undefined') {
+      safeFetchJson(`/api/notifications/${encodeURIComponent(id)}/read`, { method: 'PUT' }).catch(() => {});
     }
   }
 
   public markAllAsRead() {
     const list = this.getNotifications().map(n => ({ ...n, read: true }));
     this.saveNotifications(list);
-    if (typeof fetch !== 'undefined') {
-      fetch('/api/notifications/read-all', { method: 'PUT' }).catch(() => {});
+    if (typeof window !== 'undefined') {
+      safeFetchJson('/api/notifications/read-all', { method: 'PUT' }).catch(() => {});
     }
   }
 

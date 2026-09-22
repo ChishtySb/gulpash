@@ -4,7 +4,7 @@ import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
 import { createClient } from '@supabase/supabase-js';
 import webPush from 'web-push';
-import { createAuthoritativeOrder, fetchAuthoritativeOrders } from './api/_orderPipeline.ts';
+import { createAuthoritativeOrder, fetchAuthoritativeOrders } from './api/orders.ts';
 
 const app = express();
 const PORT = 3000;
